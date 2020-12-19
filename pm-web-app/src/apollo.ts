@@ -1,0 +1,122 @@
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+
+const cache = new InMemoryCache({
+  addTypename: false,
+});
+const link = createHttpLink({
+  uri: 'http://localhost:8000/api/graphql',
+});
+
+export const client = new ApolloClient({
+  // Provide required constructor fields
+  cache,
+  link,
+});
+
+// gen code by https://graphql-code-generator.com/
+export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  access: Array<Scalars['String']>;
+};
+
+export type SimpleProj = {
+  __typename?: 'SimpleProj';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  isAssignMe?: Maybe<Scalars['Boolean']>;
+};
+
+export type EmployeeDaily = {
+  __typename?: 'EmployeeDaily';
+  id: Scalars['ID'];
+  dailies: Array<Daily>;
+};
+
+export type EmployeeDailyDailiesArgs = {
+  date?: Maybe<Scalars['String']>;
+};
+
+export type Daily = {
+  __typename?: 'Daily';
+  date: Scalars['String'];
+  projs: Array<ProjDaily>;
+};
+
+export type ProjDaily = {
+  __typename?: 'ProjDaily';
+  projId: Scalars['String'];
+  timeConsuming: Scalars['Int'];
+  content?: Maybe<Scalars['String']>;
+};
+
+export type Project = {
+  __typename?: 'Project';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  leader: Scalars['String'];
+  budget: Scalars['Int'];
+  createDate: Scalars['String'];
+  status: ProjectStatus;
+  participants: Array<Scalars['String']>;
+  contacts: Array<Contact>;
+};
+
+export type Contact = {
+  __typename?: 'Contact';
+  name: Scalars['String'];
+  duties?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+};
+
+export enum ProjectStatus {
+  Create = 'create',
+  Dev = 'dev',
+  Test = 'test',
+  Acceptance = 'acceptance',
+  Complete = 'complete',
+}
+
+export type Query = {
+  __typename?: 'Query';
+  me: User;
+  subordinates: Array<User>;
+  myDailies?: Maybe<EmployeeDaily>;
+  myProjs: Array<SimpleProj>;
+  iLeaderProjs: Array<Project>;
+  iLeaderProj: Project;
+};
+
+export type QueryILeaderProjArgs = {
+  projId: Scalars['String'];
+};
+
+export type DailyInput = {
+  projId: Scalars['String'];
+  timeConsuming: Scalars['Int'];
+  content?: Maybe<Scalars['String']>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  pushDaily: Scalars['ID'];
+};
+
+export type MutationPushDailyArgs = {
+  date: Scalars['String'];
+  projDailies: Array<DailyInput>;
+};

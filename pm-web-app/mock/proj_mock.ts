@@ -1,13 +1,18 @@
 import R from 'ramda';
 import { Request, Response } from 'express';
-import {graphql, buildSchema } from 'graphql'
+import { buildSchema, graphql } from 'graphql'
 
 const schema = buildSchema(`
-
 type User {
   id: ID!
   name: String
   access: [String!]!
+}
+
+type SimpleProj {
+  id: ID!
+  name: String!
+  isAssignMe: Boolean
 }
 
 type EmployeeDaily {
@@ -16,7 +21,7 @@ type EmployeeDaily {
 }
 
 type Daily {
-  date: String
+  date: String!
   projs: [ProjDaily!]!
 }
 
@@ -54,86 +59,92 @@ enum ProjectStatus {
 type Query {
   me: User!
   subordinates: [User!]!
-  myDaily: EmployeeDaily
+  myDailies: EmployeeDaily
+  myProjs: [SimpleProj!]!
   iLeaderProjs: [Project!]!
   iLeaderProj(projId: String!): Project!
 }
+
+input DailyInput {
+  projId: String!
+  timeConsuming: Int!
+  content: String
+}
+
+type Mutation {
+  pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
+  addTodo(type: String): String 
+}
 `)
 
-const root = {
-  me: () => ({id: '0001', name: 'cuitao', access: ['admin']})
+function randomNum(limit: number) {
+  return Math.floor(Math.random() * limit)
 }
-const make_data = (creator: (i: number) => {}) => (count: number) =>
-  R.range(0, count).map((_, i) => creator(i));
+function makeProjectDailies(projId: string) {
+  return {
+    projId,
+    timeConsuming: randomNum(11),
+    content: `test worke content`,
+  }
+}
 
-const make_users = make_data((i) => ({
-  id: `${i}`,
-  name: `用户 ${1}`,
-}));
+function makeDailies(date: string) {
+  return {
+    date,
+    projs: simpleProjs.map(p => makeProjectDailies(p.id)).filter(d => d.timeConsuming !== 0)
+  }
+}
 
-const make_projs = make_data((i) => ({
-  id: `${i}`,
-  name: `项目 ${i}`,
-}));
+function makeEmpDailies(name: string) {
+  return {
+    id: name,
+    dailies: R.range(1, 10).map(i => makeDailies(`2020120${i}`))
+  }
+}
 
-const lastReportOfDay = {
-  projs: [
-    {
-      projId: '0',
-      timeConsuming: 4,
-      contentOfWork: '测试一下0',
-    },
-    {
-      projId: '7',
-      timeConsuming: 9,
-      contentOfWork: '测试一下9',
-    },
-    {
-      projId: 'not exist',
-      timeConsuming: 10,
-      contentOfWork: '测试一下',
-    },
-  ],
-};
-
-const makeRadomReportOfDay = () => {
-  const randomNumber = (s: number) => Math.floor(Math.random() * 10) % s;
-  const random0to9 = () => randomNumber(10);
-
-  return R.range(0, 10).map((i) => {
-    const projId = i.toString();
-    const timeConsuming = random0to9();
-    const contentOfWork = timeConsuming ? `test ${projId}` : undefined;
+function makeSimpleProjs() {
+  return R.range(1, 11).map(i => {
     return {
-      projId,
-      projName: `项目 ${projId}`,
-      timeConsuming,
-      contentOfWork,
-    };
-  });
-};
+      id: `proj_${i}`,
+      name: `proj_${i}`,
+      isAssignMe: i < 6
+    }
+  })
+}
+
+let simpleProjs = makeSimpleProjs()
+let myDailies = makeEmpDailies('0001')
+
+const root = {
+  me: () => ({id: '0001', name: 'user1', access: ['admin']}),
+  myDailies: () => myDailies,
+  myProjs: () => simpleProjs,
+  pushDaily: (args: {date: string, projDailies: {projId: string, timeConsuming: number, content: string}[]}) => {
+    const newDaily = {
+      date: args.date,
+      projs: args.projDailies
+    }
+
+    type TDaily = typeof newDaily
+    const lp = R.lensProp('dailies')
+    const p = R.prop('date')
+    
+    const change = R.pipe<TDaily[], TDaily[], TDaily[], TDaily[]>(
+      R.filter<TDaily>(R.compose(R.not, R.equals(args.date), p)),
+      args.projDailies.length ? R.append(newDaily) : R.identity,
+      R.sortBy(p)
+    )
+    myDailies = R.over(lp, change)(myDailies) 
+    return 'user1'
+  },
+  addTodo: (args:any) => args.type
+}
 
 export default {
-  'GET /api/simple_users': make_users(10),
-  'GET /api/self/projs': make_projs(10),
-  'GET /api/self/report/latest': lastReportOfDay,
-  'PUT /api/self/report/:date': (req: Request, res: Response) => {
-    res.sendStatus(200);
-  },
-  'GET /api/self/report/days': R.range(1, 10).map((i) => `2020120${i}`),
-  'GET /api/self/report/:date': (req: Request, res: Response) => {
-    const date = req.params['date'];
-    const testDate = R.range(1, 10).map((i) => `2020120${i}`);
-    if (testDate.includes(date)) {
-      res.send({ date: '20201208', projs: makeRadomReportOfDay() });
-    } else {
-      res.sendStatus(404);
-    }
-  },
   'POST /api/graphql': (req: Request, res: Response) => {
     const data = req.body
     if('query' in data) {
-      graphql(schema, data.query, root).then(r => res.send(r))
+      graphql(schema, data.query, root, undefined, data.variables).then(d => res.send(d))
     } else {
       res.send('ok')
     }

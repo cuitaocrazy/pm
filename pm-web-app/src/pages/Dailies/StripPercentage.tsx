@@ -1,12 +1,14 @@
 import React from 'react';
 import { geekblue, grey } from '@ant-design/colors';
-import { ProjectReportData } from './def';
+import { ProjDaily } from '@/apollo';
 
 const colorSet = geekblue;
-function StripPercentage(props: { data: ProjectReportData[]; gotoAnchor: (id: string) => void }) {
-  const total = props.data.reduce((s, e) => s + e.hours, 0);
+function StripPercentage(props: { data: ProjDaily[]; gotoAnchor: (id: number) => void }) {
+  const total = props.data.reduce((s, e) => s + e.timeConsuming, 0);
   const percentage =
-    total === 0 ? [] : props.data.map((d) => ({ id: d.id, percent: (d.hours / total) * 100 }));
+    total === 0
+      ? []
+      : props.data.map((d) => ({ id: d.projId, percent: (d.timeConsuming / total) * 100 }));
 
   const list = () =>
     percentage.map((d, i) => (
@@ -15,7 +17,7 @@ function StripPercentage(props: { data: ProjectReportData[]; gotoAnchor: (id: st
       <a
         key={d.id}
         // href={`#${d.id}`}
-        onClick={() => props.gotoAnchor(d.id)}
+        onClick={() => props.gotoAnchor(i)}
         style={{
           backgroundColor: colorSet[i % colorSet.length],
           width: `${d.percent}%`,

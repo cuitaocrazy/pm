@@ -1,16 +1,16 @@
+import { ProjDaily } from '@/apollo';
 import { Pie } from '@ant-design/charts';
 import { Card } from 'antd';
 import React from 'react';
-import { ProjectReportData } from './def';
 
 interface ProjPieProps {
-  data: ProjectReportData[];
+  data: (ProjDaily & { projName?: string })[];
 }
 
 export default (props: ProjPieProps) => {
   const data = props.data
-    .filter((p) => p.hours !== 0)
-    .map((p) => ({ type: p.name, value: p.hours }));
+    .filter((p) => p.timeConsuming !== 0)
+    .map((p) => ({ type: p.projName || p.projId, value: p.timeConsuming }));
 
   const config = {
     appendPadding: 10,

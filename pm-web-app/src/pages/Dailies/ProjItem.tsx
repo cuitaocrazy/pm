@@ -1,15 +1,17 @@
 import { Card, Col, Collapse, Input, Row, Slider } from 'antd';
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import * as R from 'ramda';
-import { ProjectReportData } from './def';
 
 const maxH = 10;
 
 interface ProjItemProps {
-  data: ProjectReportData;
+  projId: string;
+  projName?: string;
+  hours: number;
+  content?: string | null | undefined;
   onHoursChange: (hours: number) => void;
   onContentOfWorkChange: (content: string) => void;
-  visible: boolean;
+  visibleFilter: string;
 }
 
 const marks = ((vs) =>
@@ -24,7 +26,7 @@ export type ProjItemHandle = {
 };
 const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = (props, ref) => {
   const divRef = useRef<HTMLDivElement>(null);
-
+  const visible = (props.projName || '').indexOf(props.visibleFilter) !== -1;
   /* eslint-disable react/no-this-in-sfc */
   /* eslint-disable no-cond-assign */
   useImperativeHandle(ref, () => ({
@@ -42,7 +44,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
   }));
 
   return (
-    <Card title={props.data.name} id={props.data.id} hidden={!props.visible}>
+    <Card title={props.projName || props.projId} id={props.projId} hidden={!visible}>
       {/* 设置一个暗锚, 本身Card是可以支持ref的, 但是antd定义的Type没有这个属性, 避免一些dev的报错, 假如一手工锚点 */}
       <div ref={divRef} />
       <Row gutter={[0, 16]}>
@@ -53,7 +55,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
             max={maxH}
             style={{ whiteSpace: 'nowrap' }}
             onChange={props.onHoursChange}
-            value={props.data.hours}
+            value={props.hours}
           />
         </Col>
         <Col span={24}>
@@ -62,7 +64,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
               <Input.TextArea
                 autoSize
                 onChange={(e) => props.onContentOfWorkChange(e.currentTarget.value)}
-                value={props.data.contentOfWork}
+                value={props.content || ''}
               />
             </Collapse.Panel>
           </Collapse>

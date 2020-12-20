@@ -37,7 +37,7 @@ type Project {
   leader: String!
   budget: Int!
   createDate: String!
-  status: ProjectStatus!
+  stage: ProjectStage!
   participants: [String!]!
   contacts: [Contact!]!
 }
@@ -48,8 +48,8 @@ type Contact {
   phone: String
 }
 
-enum ProjectStatus {
-  create
+enum ProjectStage {
+  requirement
   dev
   test
   acceptance
@@ -71,9 +71,24 @@ input DailyInput {
   content: String
 }
 
+input ProjectInput {
+  id: ID!
+  name: String!
+  budget: Int!
+  stage: ProjectStage!
+  participants: [String!]!
+  contacts: [ContactInput!]!
+}
+
+input ContactInput {
+  name: String!
+  duties: String
+  phone: String
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
-  addTodo(type: String): String 
+  pushProject(proj: ProjectInput!): ID!
 }
 `)
 
@@ -112,14 +127,41 @@ function makeSimpleProjs() {
   })
 }
 
+function makeProjects() {
+  return R.range(1, 11).map(i => {
+    return {
+      id: `proj_${i}`,
+      name: `项目 ${i}`,
+      leader: `0001`,
+      budget: 50_0000,
+      createDate: '20201201',
+      stage: 'requirement',
+      participants: ['0001'],
+      contacts: [
+        {
+          name: 'test contact1',
+          duties: 'manager',
+          phone: '13800000001'
+        },
+        {
+          name: 'test contact2',
+          duties: 'manager',
+          phone: '13800000002'
+        }
+      ]
+    }
+  })
+}
+
 let simpleProjs = makeSimpleProjs()
 let myDailies = makeEmpDailies('0001')
+let projs = makeProjects()
 
 const root = {
-  me: () => ({id: '0001', name: 'user1', access: ['admin']}),
+  me: () => ({ id: '0001', name: 'user1', access: ['admin'] }),
   myDailies: () => myDailies,
   myProjs: () => simpleProjs,
-  pushDaily: (args: {date: string, projDailies: {projId: string, timeConsuming: number, content: string}[]}) => {
+  pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {
     const newDaily = {
       date: args.date,
       projs: args.projDailies
@@ -128,22 +170,33 @@ const root = {
     type TDaily = typeof newDaily
     const lp = R.lensProp('dailies')
     const p = R.prop('date')
-    
+
     const change = R.pipe<TDaily[], TDaily[], TDaily[], TDaily[]>(
       R.filter<TDaily>(R.compose(R.not, R.equals(args.date), p)),
       args.projDailies.length ? R.append(newDaily) : R.identity,
       R.sortBy(p)
     )
-    myDailies = R.over(lp, change)(myDailies) 
+    myDailies = R.over(lp, change)(myDailies)
     return 'user1'
   },
-  addTodo: (args:any) => args.type
+  iLeaderProjs: () => projs,
+  subordinates: () => [{id: '0001', name: 'user1'}, {id: '0002', name: 'user2'}, {id: '0003', name: 'user3'}, {id: '0004', name: 'user4'}],
+  pushProject: (args: any) => {
+    const index = projs.findIndex(p => p.id === args.proj.id)
+    if( index === -1) {
+      projs = R.append({...args.proj, createDate: '20201219', leader: '0001'}, projs)
+    } else {
+      projs[index] = {...projs[index], ...args.proj}
+    }
+    console.log(index)
+    return args.proj.id
+  },
 }
 
 export default {
   'POST /api/graphql': (req: Request, res: Response) => {
     const data = req.body
-    if('query' in data) {
+    if ('query' in data) {
       graphql(schema, data.query, root, undefined, data.variables).then(d => res.send(d))
     } else {
       res.send('ok')

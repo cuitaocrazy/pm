@@ -15,6 +15,11 @@
     component: './Dailies'
   },
   {
+    path: '/projects',
+    name: 'projects',
+    component: './Proj'
+  },
+  {
     component: './404',
   },
 ];

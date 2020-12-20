@@ -71,7 +71,7 @@ export type Project = {
   leader: Scalars['String'];
   budget: Scalars['Int'];
   createDate: Scalars['String'];
-  status: ProjectStatus;
+  stage: ProjectStage;
   participants: Array<Scalars['String']>;
   contacts: Array<Contact>;
 };
@@ -83,8 +83,8 @@ export type Contact = {
   phone?: Maybe<Scalars['String']>;
 };
 
-export enum ProjectStatus {
-  Create = 'create',
+export enum ProjectStage {
+  Requirement = 'requirement',
   Dev = 'dev',
   Test = 'test',
   Acceptance = 'acceptance',
@@ -111,12 +111,32 @@ export type DailyInput = {
   content?: Maybe<Scalars['String']>;
 };
 
+export type ProjectInput = {
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  budget: Scalars['Int'];
+  stage: ProjectStage;
+  participants: Array<Scalars['String']>;
+  contacts: Array<ContactInput>;
+};
+
+export type ContactInput = {
+  name: Scalars['String'];
+  duties?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   pushDaily: Scalars['ID'];
+  pushProject: Scalars['ID'];
 };
 
 export type MutationPushDailyArgs = {
   date: Scalars['String'];
   projDailies: Array<DailyInput>;
+};
+
+export type MutationPushProjectArgs = {
+  proj: ProjectInput;
 };

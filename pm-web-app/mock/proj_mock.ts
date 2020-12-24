@@ -37,7 +37,7 @@ type Project {
   leader: String!
   budget: Int!
   createDate: String!
-  stage: ProjectStage!
+  type: ProjectType!
   participants: [String!]!
   contacts: [Contact!]!
 }
@@ -48,12 +48,10 @@ type Contact {
   phone: String
 }
 
-enum ProjectStage {
-  requirement
-  dev
-  test
-  acceptance
-  complete
+enum ProjectType {
+  preSale
+  onSale
+  aflterSale
 }
 
 type Query {
@@ -75,7 +73,7 @@ input ProjectInput {
   id: ID!
   name: String!
   budget: Int!
-  stage: ProjectStage!
+  type: ProjectType!
   participants: [String!]!
   contacts: [ContactInput!]!
 }
@@ -135,7 +133,7 @@ function makeProjects() {
       leader: `0001`,
       budget: 50_0000,
       createDate: '20201201',
-      stage: 'requirement',
+      type: 'onSale',
       participants: ['0001'],
       contacts: [
         {
@@ -180,13 +178,13 @@ const root = {
     return 'user1'
   },
   iLeaderProjs: () => projs,
-  subordinates: () => [{id: '0001', name: 'user1'}, {id: '0002', name: 'user2'}, {id: '0003', name: 'user3'}, {id: '0004', name: 'user4'}],
+  subordinates: () => [{ id: '0001', name: 'user1' }, { id: '0002', name: 'user2' }, { id: '0003', name: 'user3' }, { id: '0004', name: 'user4' }],
   pushProject: (args: any) => {
     const index = projs.findIndex(p => p.id === args.proj.id)
-    if( index === -1) {
-      projs = R.append({...args.proj, createDate: '20201219', leader: '0001'}, projs)
+    if (index === -1) {
+      projs = R.append({ ...args.proj, createDate: '20201219', leader: '0001' }, projs)
     } else {
-      projs[index] = {...projs[index], ...args.proj}
+      projs[index] = { ...projs[index], ...args.proj }
     }
     console.log(index)
     return args.proj.id

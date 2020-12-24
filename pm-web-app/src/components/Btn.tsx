@@ -1,4 +1,5 @@
-import Button, { ButtonProps } from 'antd/lib/button';
+import type { ButtonProps } from 'antd/lib/button';
+import Button from 'antd/lib/button';
 import React, { useState } from 'react';
 
 type ButtonPropsWithOutOnClick = Pick<ButtonProps, Exclude<keyof ButtonProps, 'onClick'>>;

@@ -1,27 +1,27 @@
 // import { request } from 'umi';
 import axios from 'axios';
 
-export interface Project {
+export type Project = {
   id: string;
   name: string;
-}
+};
 
-export interface SimpleUser {
+export type SimpleUser = {
   id: string;
   name: string;
-}
+};
 
-export interface ReportContent {
+export type ReportContent = {
   projId: string;
   projName: string;
   timeConsuming: number;
   contentOfWork: string;
-}
+};
 
-export interface ReportData {
+export type ReportData = {
   date: string;
   projs: ReportContent[];
-}
+};
 
 export async function getAllSimpleUsers() {
   return axios.get<SimpleUser[]>('/api/simple_users').then((r) => r.data);

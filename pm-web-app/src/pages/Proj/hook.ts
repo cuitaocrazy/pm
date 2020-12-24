@@ -1,4 +1,4 @@
-import { Mutation, MutationPushProjectArgs, Project, Query } from '@/apollo';
+import type { Mutation, MutationPushProjectArgs, Project, Query } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useEffect, useState } from 'react';
 

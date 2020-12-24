@@ -4,7 +4,7 @@ import React from 'react';
 import classNames from 'classnames';
 import styles from './NoticeList.less';
 
-export interface NoticeIconTabProps {
+export type NoticeIconTabProps = {
   count?: number;
   showClear?: boolean;
   showViewMore?: boolean;
@@ -18,7 +18,7 @@ export interface NoticeIconTabProps {
   viewMoreText?: string;
   list: API.NoticeIconData[];
   onViewMore?: (e: any) => void;
-}
+};
 const NoticeList: React.FC<NoticeIconTabProps> = ({
   list = [],
   onClick,

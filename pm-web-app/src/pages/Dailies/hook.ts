@@ -1,10 +1,11 @@
 import { createRef, useEffect, useRef, useState } from 'react';
-import { gql, MutationFunctionOptions, useLazyQuery, useMutation } from '@apollo/client';
+import type { MutationFunctionOptions } from '@apollo/client';
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
-import { Daily, Mutation, MutationPushDailyArgs, ProjDaily, Query } from '@/apollo';
+import type { Daily, Mutation, MutationPushDailyArgs, ProjDaily, Query } from '@/apollo';
 import * as R from 'ramda';
 import { message } from 'antd';
-import { ProjItemHandle } from './ProjItem';
+import type { ProjItemHandle } from './ProjItem';
 
 const myQuery = gql`
   {

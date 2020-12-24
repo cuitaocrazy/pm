@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Modal, InputNumber, Select, Button } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Project, Query } from '@/apollo';
+import type { Project, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { projStage } from './utils';
 
@@ -13,12 +13,12 @@ const userQuery = gql`
     }
   }
 `;
-interface ProjFormProps {
+type ProjFormProps = {
   proj?: Project;
   visible: boolean;
   onCancel: () => void;
   onSubmit: (proj: Promise<Project>) => void;
-}
+};
 
 function ProjForm(props: ProjFormProps) {
   const [from] = Form.useForm<Project>();

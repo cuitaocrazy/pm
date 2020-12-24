@@ -4,7 +4,7 @@ import * as R from 'ramda';
 
 const maxH = 10;
 
-interface ProjItemProps {
+type ProjItemProps = {
   projId: string;
   projName?: string;
   hours: number;
@@ -12,7 +12,7 @@ interface ProjItemProps {
   onHoursChange: (hours: number) => void;
   onContentOfWorkChange: (content: string) => void;
   visibleFilter: string;
-}
+};
 
 const marks = ((vs) =>
   R.zipObj(

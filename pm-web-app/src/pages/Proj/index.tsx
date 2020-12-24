@@ -1,7 +1,8 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React from 'react';
 import { Table } from 'antd';
-import { client, Project as Proj } from '@/apollo';
+import type { Project as Proj } from '@/apollo';
+import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
 import { useProjStatus } from './hook';

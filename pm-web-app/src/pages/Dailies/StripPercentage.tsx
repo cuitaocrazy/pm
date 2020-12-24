@@ -1,6 +1,6 @@
 import React from 'react';
 import { geekblue, grey } from '@ant-design/colors';
-import { ProjDaily } from '@/apollo';
+import type { ProjDaily } from '@/apollo';
 
 const colorSet = geekblue;
 function StripPercentage(props: { data: ProjDaily[]; gotoAnchor: (id: number) => void }) {

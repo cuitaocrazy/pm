@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React from 'react';
-import { Table } from 'antd';
+import { Button, Table } from 'antd';
 import type { Project as Proj } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -56,7 +56,14 @@ function Project() {
     showModal(proj);
   });
   return (
-    <PageContainer loading={loading}>
+    <PageContainer
+      loading={loading}
+      extra={[
+        <Button key="create" type="primary" onClick={() => showModal()}>
+          创建项目
+        </Button>,
+      ]}
+    >
       <Table rowKey={(record) => record.id} columns={columns} dataSource={projs} />
       <ProjForm visible={visible} onCancel={closeModal} onSubmit={submitProj} proj={currentProj} />
     </PageContainer>

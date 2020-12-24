@@ -1,5 +1,6 @@
 import type { Mutation, MutationPushProjectArgs, Project, Query } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
+import { message } from 'antd';
 import { useEffect, useState } from 'react';
 
 const projsQuery = gql`
@@ -49,20 +50,18 @@ export function useProjStatus() {
     setVisible(false);
   };
 
-  const submitProj = (proj: Promise<Project>) => {
-    proj
-      .then((p) => {
-        const { leader, createDate, ...projArgs } = p;
-        return pushProject({
-          variables: {
-            proj: projArgs,
-          },
-        });
-      })
+  const submitProj = (proj: Project) => {
+    const { leader, createDate, ...projArgs } = proj;
+    pushProject({
+      variables: {
+        proj: projArgs,
+      },
+    })
       .then(() => {
         setVisible(false);
         refresh();
-      });
+      })
+      .catch((e) => message.error(e.toString()));
   };
 
   return {

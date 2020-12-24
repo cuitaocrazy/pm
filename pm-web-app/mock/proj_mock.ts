@@ -74,8 +74,8 @@ input ProjectInput {
   name: String!
   budget: Int!
   type: ProjectType!
-  participants: [String!]!
-  contacts: [ContactInput!]!
+  participants: [String!]
+  contacts: [ContactInput!]
 }
 
 input ContactInput {
@@ -116,13 +116,11 @@ function makeEmpDailies(name: string) {
 }
 
 function makeSimpleProjs() {
-  return R.range(1, 11).map(i => {
-    return {
-      id: `proj_${i}`,
-      name: `proj_${i}`,
-      isAssignMe: i < 6
-    }
-  })
+  return projs || makeProjects().map((p, i) => ({
+    id: p.id,
+    name: p.name,
+    isAssignMe: i < 6,
+  }))
 }
 
 function makeProjects() {
@@ -151,9 +149,9 @@ function makeProjects() {
   })
 }
 
+let projs = makeProjects()
 let simpleProjs = makeSimpleProjs()
 let myDailies = makeEmpDailies('0001')
-let projs = makeProjects()
 
 const root = {
   me: () => ({ id: '0001', name: 'user1', access: ['admin'] }),
@@ -180,12 +178,16 @@ const root = {
   iLeaderProjs: () => projs,
   subordinates: () => [{ id: '0001', name: 'user1' }, { id: '0002', name: 'user2' }, { id: '0003', name: 'user3' }, { id: '0004', name: 'user4' }],
   pushProject: (args: any) => {
+    args.proj.participants || (args.proj.participants = ['0001'])
+    args.proj.contacts || (args.proj.contacts = [])
+    console.log(args)
     const index = projs.findIndex(p => p.id === args.proj.id)
     if (index === -1) {
       projs = R.append({ ...args.proj, createDate: '20201219', leader: '0001' }, projs)
     } else {
       projs[index] = { ...projs[index], ...args.proj }
     }
+    console.log(projs)
     return args.proj.id
   },
 }

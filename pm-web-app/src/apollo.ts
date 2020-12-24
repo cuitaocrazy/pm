@@ -114,8 +114,8 @@ export type ProjectInput = {
   name: Scalars['String'];
   budget: Scalars['Int'];
   type: ProjectType;
-  participants: Scalars['String'][];
-  contacts: ContactInput[];
+  participants?: Maybe<Scalars['String'][]>;
+  contacts?: Maybe<ContactInput[]>;
 };
 
 export type ContactInput = {

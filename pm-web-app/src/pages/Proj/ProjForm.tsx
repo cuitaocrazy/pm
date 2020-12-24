@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Modal, InputNumber, Select, Button } from 'antd';
+import { Form, Input, Modal, InputNumber, Select, Button, Divider } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { Project, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
@@ -11,21 +11,45 @@ const userQuery = gql`
       id
       name
     }
+    myProjs {
+      id
+    }
   }
 `;
+
+const layout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+};
+
 type ProjFormProps = {
   proj?: Project;
   visible: boolean;
   onCancel: () => void;
-  onSubmit: (proj: Promise<Project>) => void;
+  onSubmit: (proj: Project) => void;
 };
 
 function ProjForm(props: ProjFormProps) {
   const [from] = Form.useForm<Project>();
   const { loading, data } = useQuery<Query>(userQuery);
-  const handleSubmit = () => {
-    props.onSubmit(from.validateFields());
+  const handleSubmit = async () => {
+    let fieldValues;
+    try {
+      fieldValues = await from.validateFields();
+    } catch (e) {
+      // 也发生错误，Form也已接管
+      return undefined;
+    }
+
+    return props.onSubmit(fieldValues);
   };
+
+  const isNew = !props.proj;
+
+  const validator = (rule: any, value: string) =>
+    data?.myProjs.find((sp) => sp.id === value)
+      ? Promise.reject(Error('id已存在'))
+      : Promise.resolve();
 
   return (
     <Modal
@@ -35,17 +59,17 @@ function ProjForm(props: ProjFormProps) {
       onCancel={props.onCancel}
       onOk={handleSubmit}
     >
-      <Form form={from} initialValues={props.proj}>
-        <Form.Item label="ID" name="id">
-          <Input disabled={!!props.proj} />
+      <Form {...layout} form={from} initialValues={props.proj}>
+        <Form.Item label="ID" name="id" rules={[{ required: true }, { validator }]}>
+          <Input disabled={!isNew} />
         </Form.Item>
-        <Form.Item label="名称" name="name">
+        <Form.Item label="名称" name="name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item label="预算" name="budget">
+        <Form.Item label="预算" name="budget" rules={[{ required: true }]}>
           <InputNumber min={0} />
         </Form.Item>
-        <Form.Item label="类型" name="type">
+        <Form.Item label="类型" name="type" rules={[{ required: true }]}>
           <Select loading={loading}>
             {projType.map((s) => (
               <Select.Option key={s[0]} value={s[0]}>
@@ -68,8 +92,14 @@ function ProjForm(props: ProjFormProps) {
           {(fields, { add, remove }) => (
             <>
               {fields.map((field, i) => (
-                <Form.Item key={field.key}>
-                  <Form.Item key="name" label="联系人" name={[field.name, 'name']}>
+                <div key={field.key} style={{ textAlign: 'center' }}>
+                  <Divider>联系人 {i + 1}</Divider>
+                  <Form.Item
+                    key="name"
+                    label="联系人"
+                    name={[field.name, 'name']}
+                    rules={[{ required: true }]}
+                  >
                     <Input />
                   </Form.Item>
                   <Form.Item key="duties" label="职务" name={[field.name, 'duties']}>
@@ -82,7 +112,7 @@ function ProjForm(props: ProjFormProps) {
                     className="dynamic-delete-button"
                     onClick={() => remove(i)}
                   />
-                </Form.Item>
+                </div>
               ))}
               <Form.Item>
                 <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>

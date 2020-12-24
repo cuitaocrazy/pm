@@ -9,7 +9,7 @@ const projsQuery = gql`
       name
       budget
       createDate
-      stage
+      type
       participants
       contacts {
         name
@@ -38,7 +38,7 @@ export function useProjStatus() {
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
   const showModal = (proj?: Project) => {
     setCurrentProj(proj);

@@ -1,12 +1,10 @@
-export const projStage: [string, string][] = [
-  ['requirement', '需求'],
-  ['dev', '开发'],
-  ['test', '测试'],
-  ['acceptance', '验收'],
-  ['complete', '结项'],
+export const projType: [string, string][] = [
+  ['preSale', '售前'],
+  ['onSale', '售中'],
+  ['afterSale', '售后'],
 ];
 
-export const getStageDisplayName = (stage: string) => {
-  const st = projStage.find((s) => s[0] === stage);
+export const getTypeDisplayName = (stage: string) => {
+  const st = projType.find((s) => s[0] === stage);
   return st ? st[1] : stage;
 };

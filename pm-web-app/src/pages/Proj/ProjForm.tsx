@@ -3,7 +3,7 @@ import { Form, Input, Modal, InputNumber, Select, Button } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { Project, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
-import { projStage } from './utils';
+import { projType } from './utils';
 
 const userQuery = gql`
   {
@@ -45,9 +45,9 @@ function ProjForm(props: ProjFormProps) {
         <Form.Item label="预算" name="budget">
           <InputNumber min={0} />
         </Form.Item>
-        <Form.Item label="阶段" name="stage">
+        <Form.Item label="类型" name="type">
           <Select loading={loading}>
-            {projStage.map((s) => (
+            {projType.map((s) => (
               <Select.Option key={s[0]} value={s[0]}>
                 {s[1]}
               </Select.Option>

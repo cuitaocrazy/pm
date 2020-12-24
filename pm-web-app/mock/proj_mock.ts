@@ -51,7 +51,7 @@ type Contact {
 enum ProjectType {
   preSale
   onSale
-  aflterSale
+  afterSale
 }
 
 type Query {
@@ -186,7 +186,6 @@ const root = {
     } else {
       projs[index] = { ...projs[index], ...args.proj }
     }
-    console.log(index)
     return args.proj.id
   },
 }

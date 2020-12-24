@@ -12,8 +12,6 @@ function StripPercentage(props: { data: ProjDaily[]; gotoAnchor: (id: number) =>
 
   const list = () =>
     percentage.map((d, i) => (
-      /* eslint-disable jsx-a11y/control-has-associated-label */
-      /* eslint-disable jsx-a11y/anchor-has-content */
       <a
         key={d.id}
         // href={`#${d.id}`}

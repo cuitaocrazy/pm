@@ -1,4 +1,4 @@
-import { createRef, useEffect, useRef, useState } from 'react';
+import { createRef, useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import type { MutationFunctionOptions } from '@apollo/client';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
@@ -45,8 +45,8 @@ export function useDailiesStatus(date?: string) {
   );
   const [currentDaily, setCurrentDaily] = useState<Daily>({ date: currentDate, projs: [] });
   const [filter, setFilter] = useState('');
-  const dailies = data?.myDailies?.dailies || [];
-  const projs = data?.myProjs || [];
+  const dailies = useMemo(() => data?.myDailies?.dailies || [], [data]);
+  const projs = useMemo(() => data?.myProjs || [], [data]);
   const completedDailiesDates = dailies?.map((d) => d.date) || [];
   const refs = useRef<React.RefObject<ProjItemHandle>[]>([]);
 
@@ -54,31 +54,34 @@ export function useDailiesStatus(date?: string) {
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
-  const mySetCurrentDaily = (c: Daily | undefined) => {
-    if (c) {
-      const existProjs = c.projs.map((p) => p.projId);
-      const allProjs = projs.filter((p) => p.isAssignMe).map((p) => p.id);
-      const notExistProjs = R.difference(allProjs, existProjs);
-      const newProjs = notExistProjs.map((id) => ({ projId: id, timeConsuming: 0, content: '' }));
-      setCurrentDaily(R.over(R.lensProp('projs'), (p: ProjDaily[]) => [...p, ...newProjs], c));
-    } else
-      setCurrentDaily({
-        date: currentDate,
-        projs:
-          projs
-            ?.filter((p) => p.isAssignMe)
-            .map((p) => ({ projId: p.id, timeConsuming: 0, content: '' })) || [],
-      });
-  };
+  const mySetCurrentDaily = useCallback(
+    (c: Daily | undefined) => {
+      if (c) {
+        const existProjs = c.projs.map((p) => p.projId);
+        const allProjs = projs.filter((p) => p.isAssignMe).map((p) => p.id);
+        const notExistProjs = R.difference(allProjs, existProjs);
+        const newProjs = notExistProjs.map((id) => ({ projId: id, timeConsuming: 0, content: '' }));
+        setCurrentDaily(R.over(R.lensProp('projs'), (p: ProjDaily[]) => [...p, ...newProjs], c));
+      } else
+        setCurrentDaily({
+          date: currentDate,
+          projs:
+            projs
+              ?.filter((p) => p.isAssignMe)
+              .map((p) => ({ projId: p.id, timeConsuming: 0, content: '' })) || [],
+        });
+    },
+    [currentDate, projs],
+  );
 
   useEffect(() => {
     if (data !== undefined) {
       const c = dailies?.find((d) => d.date === currentDate);
       mySetCurrentDaily(c);
     }
-  }, [data, currentDate]);
+  }, [data, currentDate, dailies, mySetCurrentDaily]);
 
   useEffect(() => {
     if (refs.current.length < projs.length) {

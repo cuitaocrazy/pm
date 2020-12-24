@@ -7,7 +7,7 @@ import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';
-import { getStageDisplayName, projStage } from './utils';
+import { getTypeDisplayName, projType } from './utils';
 
 function getColumns(showModal: (proj: Proj) => void) {
   return [
@@ -32,13 +32,13 @@ function getColumns(showModal: (proj: Proj) => void) {
       },
     },
     {
-      title: '阶段',
-      dataIndex: 'stage',
-      key: 'stage',
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
       width: '120px',
-      render: (stage: string) => getStageDisplayName(stage),
-      filters: projStage.map((s) => ({ text: s[1], value: s[0] })),
-      onFilter: (value: string | number | boolean, record: Proj) => record.stage === value,
+      render: (type: string) => getTypeDisplayName(type),
+      filters: projType.map((s) => ({ text: s[1], value: s[0] })),
+      onFilter: (value: string | number | boolean, record: Proj) => record.type === value,
     },
   ];
 }

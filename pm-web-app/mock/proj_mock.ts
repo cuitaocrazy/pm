@@ -180,14 +180,12 @@ const root = {
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])
     args.proj.contacts || (args.proj.contacts = [])
-    console.log(args)
     const index = projs.findIndex(p => p.id === args.proj.id)
     if (index === -1) {
       projs = R.append({ ...args.proj, createDate: '20201219', leader: '0001' }, projs)
     } else {
       projs[index] = { ...projs[index], ...args.proj }
     }
-    console.log(projs)
     return args.proj.id
   },
 }

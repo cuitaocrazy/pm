@@ -10,7 +10,7 @@ declare namespace API {
       label: string;
     }[];
     userid?: string;
-    access?: 'user' | 'guest' | 'admin';
+    access?: string[];
     unreadCount?: number;
   };
 

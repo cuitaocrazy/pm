@@ -12,12 +12,14 @@
   {
     path: '/dailies',
     name: 'dailies',
-    component: './Dailies'
+    component: './Dailies',
+    access: 'canDaily'
   },
   {
     path: '/projects',
     name: 'projects',
-    component: './Proj'
+    component: './Proj',
+    access: 'canProj'
   },
   {
     component: './404',

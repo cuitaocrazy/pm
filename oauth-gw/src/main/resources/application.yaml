@@ -1,0 +1,33 @@
+server.port: 8090
+#logging.level:
+#  root: TRACE
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: https://keycloak.yadadev.com/auth/realms/pm
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: pm-app
+            client-secret: 9617531c-3cd2-4a35-95ca-761ee7fd1451
+            scope: openid
+  cloud:
+    gateway:
+      routes:
+        - id: test-api
+          uri: http://localhost:3000
+          predicates:
+            - Path=/api/**
+          filters:
+            - OAuthApi
+        - id: test-web
+          uri: http://localhost:8000
+          predicates:
+            - Path=/**
+          filters:
+            - name: OAuth
+              args:
+                staticPaths: /*.js,/*.css

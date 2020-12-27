@@ -41,8 +41,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     }) => {
       const { key } = event;
       if (key === 'logout' && initialState) {
-        setInitialState({ ...initialState, currentUser: undefined });
-        loginOut();
+        // setInitialState({ ...initialState, currentUser: undefined });
+        // loginOut();
+        const logoutURL = new URL('/logout-oidc', window.location.href);
+        logoutURL.searchParams.set('redirect_uri', window.location.href);
+        window.location.href = logoutURL.href;
         return;
       }
       history.push(`/account/${key}`);

@@ -60,17 +60,14 @@ export function useDailiesStatus(date?: string) {
     (c: Daily | undefined) => {
       if (c) {
         const existProjs = c.projs.map((p) => p.projId);
-        const allProjs = projs.filter((p) => p.isAssignMe).map((p) => p.id);
+        const allProjs = projs.map((p) => p.id);
         const notExistProjs = R.difference(allProjs, existProjs);
         const newProjs = notExistProjs.map((id) => ({ projId: id, timeConsuming: 0, content: '' }));
         setCurrentDaily(R.over(R.lensProp('projs'), (p: ProjDaily[]) => [...p, ...newProjs], c));
       } else
         setCurrentDaily({
           date: currentDate,
-          projs:
-            projs
-              ?.filter((p) => p.isAssignMe)
-              .map((p) => ({ projId: p.id, timeConsuming: 0, content: '' })) || [],
+          projs: projs?.map((p) => ({ projId: p.id, timeConsuming: 0, content: '' })) || [],
         });
     },
     [currentDate, projs],

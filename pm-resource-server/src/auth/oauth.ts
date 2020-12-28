@@ -84,7 +84,8 @@ export function authMiddleware (req: AuthRequest, res: Response, next: NextFunct
 export function getGroupUsers (user: UserInfo) {
   const keycloakReqConfig = { headers: { Authorization: `Bearer ${user.token}` } }
   const groups = user.groups || []
-  const keycloakAdminUrl = config.issuerBaseURL.replace('auth', 'auth/admin')
+  const { origin, pathname } = new URL(config.issuerBaseURL)
+  const keycloakAdminUrl = origin + pathname.replace('auth', 'auth/admin')
   const inst = axios.create(keycloakReqConfig)
   const groupUrl = keycloakAdminUrl + '/groups'
   const getGroupIds: (roots: string[], gs: KeycloakGroup[]) => string[] = (roots: string[], gs: KeycloakGroup[]) => unnest(gs.map(g => {

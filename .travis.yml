@@ -20,7 +20,7 @@ matix:
       script:
         - cd pm-resource-server
         - npm i
-        - npx tsc
+        - npm run build
         - npm run build-docker
         - echo "$DOCKERHUB_PWD" | docker login -u cuitaocrazy --password-stdin
         - docker push cuitaocrazy/pm-resource-server:latest
@@ -30,7 +30,7 @@ matix:
       script:
         - cd pm-web-app
         - npm i
-        - npx tsc
+        - npm run build
         - npm run build-docker
         - echo "$DOCKERHUB_PWD" | docker login -u cuitaocrazy --password-stdin
         - docker push cuitaocrazy/pm-web-app:latest

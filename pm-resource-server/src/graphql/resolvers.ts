@@ -49,7 +49,6 @@ const resolvers = {
       if (!proj.participants.includes(context.user!.id)) {
         proj.participants = proj.participants.concat(context.user!.id)
       }
-      console.log(proj)
       return Project.replaceOne({ _id: proj.id }, id2dbid(proj), { upsert: true }).then(() => proj.id)
     },
   },

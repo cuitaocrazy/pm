@@ -10,10 +10,11 @@ matix:
         - openjdk11
       script:
         - cd oauth-gw
-        - gradle build
+        - ./gradlew build
     - language: node_js
       node_js:
         - '14'
       script:
         - cd pm-resource-server
         - npm i
+        - tsc

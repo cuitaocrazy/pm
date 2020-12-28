@@ -72,7 +72,6 @@ export function authMiddleware (req: AuthRequest, res: Response, next: NextFunct
         ? true
         : pipe(map(includes(__, user.roles)), filter(identity), length, lt(0))(roles)
 
-      getGroupUsers({ ...user, ...req.auth, hasPower })
       req.user = { ...user, ...req.auth, hasPower }
     }
     next(err)

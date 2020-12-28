@@ -1,0 +1,19 @@
+sudo: required
+
+services:
+  - docker
+
+matix:
+  include:
+    - language: java
+      jdk:
+        - openjdk11
+      script:
+        - cd oauth-gw
+        - gradle build
+    - language: node_js
+      node_js:
+        - '14'
+      script:
+        - cd pm-resource-server
+        - npm i

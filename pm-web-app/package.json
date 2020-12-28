@@ -30,7 +30,8 @@
     "test": "umi test",
     "test:all": "node ./tests/run-tests.js",
     "test:component": "umi test ./src/components",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "build-docker": "docker build . -t cuitaocrazy/pm-web-app:latest"
   },
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",

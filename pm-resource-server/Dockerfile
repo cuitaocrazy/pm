@@ -9,3 +9,5 @@ RUN npm i --production
 COPY ./dist /app
 
 CMD ["node", "server.js"]
+
+EXPOSE 3000

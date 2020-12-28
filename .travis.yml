@@ -11,8 +11,8 @@ matix:
       script:
         - cd oauth-gw
         - ./gradlew build
-        - echo "$DOCKERHUB_PWD" | docker login -u cuitaocrazy --password-stdin
         - ./build-docker.sh
+        - echo "$DOCKERHUB_PWD" | docker login -u cuitaocrazy --password-stdin
         - docker push cuitaocrazy/oauth-gw:latest
     - language: node_js
       node_js:
@@ -22,6 +22,7 @@ matix:
         - npm i
         - npx tsc
         - npm run build-docker
+        - echo "$DOCKERHUB_PWD" | docker login -u cuitaocrazy --password-stdin
         - docker push cuitaocrazy/pm-resource-server:latest
     - language: node_js
       node_js:
@@ -31,4 +32,5 @@ matix:
         - npm i
         - npx tsc
         - npm run build-docker
+        - echo "$DOCKERHUB_PWD" | docker login -u cuitaocrazy --password-stdin
         - docker push cuitaocrazy/pm-web-app:latest

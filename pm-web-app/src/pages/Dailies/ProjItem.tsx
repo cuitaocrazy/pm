@@ -26,7 +26,8 @@ export type ProjItemHandle = {
 };
 const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = (props, ref) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const visible = (props.projName || '').indexOf(props.visibleFilter) !== -1;
+  const visible =
+    (props.projName || '').toLowerCase().indexOf(props.visibleFilter.toLowerCase()) !== -1;
   /* eslint-disable react/no-this-in-sfc */
   /* eslint-disable no-cond-assign */
   useImperativeHandle(ref, () => ({

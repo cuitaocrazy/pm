@@ -50,7 +50,6 @@ function ProjForm(props: ProjFormProps) {
     isNew && data?.myProjs.find((sp) => sp.id === value)
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
-
   return (
     <Modal
       destroyOnClose
@@ -66,8 +65,8 @@ function ProjForm(props: ProjFormProps) {
         <Form.Item label="名称" name="name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item label="预算" name="budget" rules={[{ required: true }]}>
-          <InputNumber min={0} /> 元
+        <Form.Item label="预算（元）" name="budget" rules={[{ required: true }]}>
+          <InputNumber min={0} />
         </Form.Item>
         <Form.Item label="类型" name="type" rules={[{ required: true }]}>
           <Select loading={loading}>

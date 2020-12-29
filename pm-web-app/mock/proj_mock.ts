@@ -52,6 +52,7 @@ enum ProjectType {
   preSale
   onSale
   afterSale
+  research
 }
 
 type Query {
@@ -154,7 +155,7 @@ let simpleProjs = makeSimpleProjs()
 let myDailies = makeEmpDailies('0001')
 
 const root = {
-  me: () => ({ id: '0001', name: 'user1', access: ['admin'] }),
+  me: () => ({ id: '0001', name: 'user1', access: ['realm:project_manager'] }),
   myDailies: () => myDailies,
   myProjs: () => simpleProjs,
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {

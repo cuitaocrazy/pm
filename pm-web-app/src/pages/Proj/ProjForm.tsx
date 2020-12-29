@@ -47,7 +47,7 @@ function ProjForm(props: ProjFormProps) {
   const isNew = !props.proj;
 
   const validator = (rule: any, value: string) =>
-    data?.myProjs.find((sp) => sp.id === value)
+    isNew && data?.myProjs.find((sp) => sp.id === value)
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
 

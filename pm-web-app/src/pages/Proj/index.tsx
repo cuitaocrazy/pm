@@ -19,7 +19,7 @@ function getColumns(showModal: (proj: Proj) => void) {
       width: '50%',
     },
     {
-      title: '预算',
+      title: '预算(元)',
       dataIndex: 'budget',
       key: 'budget',
     },

@@ -67,7 +67,7 @@ function ProjForm(props: ProjFormProps) {
           <Input />
         </Form.Item>
         <Form.Item label="预算" name="budget" rules={[{ required: true }]}>
-          <InputNumber min={0} />
+          <InputNumber min={0} /> 元
         </Form.Item>
         <Form.Item label="类型" name="type" rules={[{ required: true }]}>
           <Select loading={loading}>

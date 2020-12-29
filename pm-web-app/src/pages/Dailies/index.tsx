@@ -108,7 +108,7 @@ function Dailies(prop: { date?: string }) {
           disabled={!R.any((e) => e.timeConsuming !== 0, hookStatus.currentDaily.projs)}
           loading={hookStatus.loading}
         >
-          {hookStatus.isNew ? '创建' : '更新'}
+          提交
         </Button>,
       ]}
       fixedHeader

@@ -15,7 +15,7 @@ type SimpleProj {
 
 type EmployeeDaily {
   id: ID!
-  dailies: [Daily!]!
+  dailies(date: String): [Daily!]!
 }
 
 type Daily {
@@ -50,13 +50,14 @@ enum ProjectType {
   preSale
   onSale
   afterSale
+  research
 }
 
 type Query {
-  me: User! @hasRole
+  me: User!
   subordinates: [User!]!
-  myDailies(date: String): EmployeeDaily
-  myProjs: [SimpleProj!]! @hasRole
+  myDailies: EmployeeDaily
+  myProjs: [SimpleProj!]!
   iLeaderProjs: [Project!]!
   iLeaderProj(projId: String!): Project!
 }

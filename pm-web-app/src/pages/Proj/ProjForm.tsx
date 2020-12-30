@@ -78,7 +78,12 @@ function ProjForm(props: ProjFormProps) {
           </Select>
         </Form.Item>
         <Form.Item label="参与人员" name="participants">
-          <Select mode="multiple">
+          <Select
+            mode="multiple"
+            filterOption={(input, option) =>
+              option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
             {data?.subordinates.map((u) => (
               <Select.Option key={u.id} value={u.id}>
                 {u.name}

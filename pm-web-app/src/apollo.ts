@@ -15,7 +15,7 @@ export const client = new ApolloClient({
 
 // gen code by https://graphql-code-generator.com/
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type Exact<T extends Record<string, unknown>> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
@@ -30,8 +30,14 @@ export type Scalars = {
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-  access: Array<Scalars['String']>;
+  name: Scalars['String'];
+  access: Scalars['String'][];
+};
+
+export type SimpleUser = {
+  __typename?: 'SimpleUser';
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type SimpleProj = {
@@ -44,7 +50,7 @@ export type SimpleProj = {
 export type EmployeeDaily = {
   __typename?: 'EmployeeDaily';
   id: Scalars['ID'];
-  dailies: Array<Daily>;
+  dailies: Daily[];
 };
 
 export type EmployeeDailyDailiesArgs = {
@@ -54,7 +60,7 @@ export type EmployeeDailyDailiesArgs = {
 export type Daily = {
   __typename?: 'Daily';
   date: Scalars['String'];
-  projs: Array<ProjDaily>;
+  projs: ProjDaily[];
 };
 
 export type ProjDaily = {
@@ -72,8 +78,8 @@ export type Project = {
   budget: Scalars['Int'];
   createDate: Scalars['String'];
   type: ProjectType;
-  participants: Array<Scalars['String']>;
-  contacts: Array<Contact>;
+  participants: Scalars['String'][];
+  contacts: Contact[];
 };
 
 export type Contact = {
@@ -90,14 +96,32 @@ export enum ProjectType {
   Research = 'research',
 }
 
+export type ProjCostAllocationScale = {
+  __typename?: 'ProjCostAllocationScale';
+  proj: SimpleProj;
+  scale: Scalars['Int'];
+};
+
+export type Cost = {
+  __typename?: 'Cost';
+  id: Scalars['ID'];
+  assignee: Scalars['String'];
+  participants: SimpleUser[];
+  projs: ProjCostAllocationScale[];
+  amount: Scalars['Float'];
+  description?: Maybe<Scalars['String']>;
+  createDate: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
-  subordinates: Array<User>;
+  subordinates: User[];
   myDailies?: Maybe<EmployeeDaily>;
-  myProjs: Array<SimpleProj>;
-  iLeaderProjs: Array<Project>;
+  myProjs: SimpleProj[];
+  iLeaderProjs: Project[];
   iLeaderProj: Project;
+  costs: Cost[];
 };
 
 export type QueryILeaderProjArgs = {
@@ -115,8 +139,8 @@ export type ProjectInput = {
   name: Scalars['String'];
   budget: Scalars['Int'];
   type: ProjectType;
-  participants?: Maybe<Array<Scalars['String']>>;
-  contacts?: Maybe<Array<ContactInput>>;
+  participants?: Maybe<Scalars['String'][]>;
+  contacts?: Maybe<ContactInput[]>;
 };
 
 export type ContactInput = {
@@ -125,17 +149,40 @@ export type ContactInput = {
   phone?: Maybe<Scalars['String']>;
 };
 
+export type ProjScaleInput = {
+  id: Scalars['ID'];
+  scale: Scalars['Int'];
+};
+
+export type CostInput = {
+  id?: Maybe<Scalars['ID']>;
+  participants: Scalars['String'][];
+  projs: ProjScaleInput[];
+  amount: Scalars['Float'];
+  description?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   pushDaily: Scalars['ID'];
   pushProject: Scalars['ID'];
+  pushCost: Scalars['ID'];
+  deleteCost: Scalars['ID'];
 };
 
 export type MutationPushDailyArgs = {
   date: Scalars['String'];
-  projDailies: Array<DailyInput>;
+  projDailies: DailyInput[];
 };
 
 export type MutationPushProjectArgs = {
   proj: ProjectInput;
+};
+
+export type MutationPushCostArgs = {
+  cost: CostInput;
+};
+
+export type MutationDeleteCostArgs = {
+  id: Scalars['ID'];
 };

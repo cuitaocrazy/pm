@@ -5,8 +5,13 @@ import { buildSchema, graphql } from 'graphql'
 const schema = buildSchema(`
 type User {
   id: ID!
-  name: String
+  name: String!
   access: [String!]!
+}
+
+type SimpleUser {
+  id: ID!
+  name: String!
 }
 
 type SimpleProj {
@@ -55,6 +60,21 @@ enum ProjectType {
   research
 }
 
+type ProjCostAllocationScale {
+  proj: SimpleProj!
+  scale: Int!
+}
+
+type Cost {
+  id: ID!
+  assignee: String!
+  participants: [SimpleUser!]!
+  projs: [ProjCostAllocationScale!]!
+  amount: Float!
+  description: String
+  createDate: String!
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -62,6 +82,7 @@ type Query {
   myProjs: [SimpleProj!]!
   iLeaderProjs: [Project!]!
   iLeaderProj(projId: String!): Project!
+  costs: [Cost!]!
 }
 
 input DailyInput {
@@ -85,9 +106,24 @@ input ContactInput {
   phone: String
 }
 
+input ProjScaleInput {
+  id: ID!
+  scale: Int!
+}
+
+input CostInput {
+  id: ID
+  participants: [String!]!
+  projs: [ProjScaleInput!]!
+  amount: Float!
+  description: String
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
+  pushCost(cost: CostInput!): ID!
+  deleteCost(id: ID!): ID!
 }
 `)
 
@@ -145,17 +181,54 @@ function makeProjects() {
           duties: 'manager',
           phone: '13800000002'
         }
-      ]
+      ],
     }
   })
+}
+
+function makeCosts() {
+  return R.range(0, 5).map(i => ({
+    id: `cost_${i}`,
+    assignee: '0001',
+    participants: [
+      {
+        id: '0002',
+        name: 'user2'
+      },
+      {
+        id: '0003',
+        name: 'user3'
+      }
+    ],
+    projs: [
+      {
+        proj: {
+          id: 'proj_1',
+          name: 'proj 1',
+        },
+        scale: 1
+      },
+      {
+        proj: {
+          id: 'proj_2',
+          name: 'proj 2',
+        },
+        scale: 1
+      }
+    ],
+    createDate: '20201212',
+    amount: 1000,
+    description: '费用测试'
+  }))
 }
 
 let projs = makeProjects()
 let simpleProjs = makeSimpleProjs()
 let myDailies = makeEmpDailies('0001')
+let costs = makeCosts()
 
 const root = {
-  me: () => ({ id: '0001', name: 'user1', access: ['realm:project_manager'] }),
+  me: () => ({ id: '0001', name: 'user1', access: ['realm:project_manager', 'realm:assistant'] }),
   myDailies: () => myDailies,
   myProjs: () => simpleProjs,
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {
@@ -177,6 +250,7 @@ const root = {
     return 'user1'
   },
   iLeaderProjs: () => projs,
+  costs: (args: any) => costs,
   subordinates: () => [{ id: '0001', name: 'user1' }, { id: '0002', name: 'user2' }, { id: '0003', name: 'user3' }, { id: '0004', name: 'user4' }],
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])
@@ -189,6 +263,39 @@ const root = {
     }
     return args.proj.id
   },
+  pushCost: (args: any) => {
+    const index = costs.findIndex((c: any) => c.id === args.cost.id)
+
+    const genCost = (data: any, id: string, createDate: string, assignee: string) => {
+      return {
+        id: id,
+        assignee: assignee,
+        participants: data.participants.map((p: any) => ({ id: p, name: p })),
+        projs: data.projs.map((p: any) => ({ proj: { id: p.id, name: p.id }, scale: p.scale })),
+        createDate: createDate,
+        description: data.description,
+        amount: data.amount
+      }
+    }
+
+    let id: string
+
+    if (index === -1) {
+      id = `cost_${costs.length}`
+      const cost = genCost(args.cost, id, '20121212', '0001')
+      costs = R.append(cost)(costs)
+    } else {
+      id = costs[index].id
+      const cost = genCost(args.cost, costs[index].id, costs[index].createDate, costs[index].assignee)
+      costs = R.update(index, cost, costs)
+    }
+
+    return id
+  },
+  deleteCost: (args: any) => {
+    costs = costs.filter(c => c.id !== args.id)
+    return args.id
+  }
 }
 
 export default {

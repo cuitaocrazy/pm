@@ -22,6 +22,12 @@
     access: 'canProj'
   },
   {
+    path: '/costs',
+    name: 'costs',
+    component: './Cost',
+    access: 'canCost'
+  },
+  {
     component: './404',
   },
 ];

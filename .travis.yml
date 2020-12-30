@@ -34,3 +34,5 @@ matix:
         - npm run build-docker
         - echo "$DOCKERHUB_PWD" | docker login -u cuitaocrazy --password-stdin
         - docker push cuitaocrazy/pm-web-app:latest
+notifications:
+  slack: yada-group:JEFsd2aNJz0M3uvn3Ris1c6C

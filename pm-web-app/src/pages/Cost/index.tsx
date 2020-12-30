@@ -87,7 +87,7 @@ const Cost = () => {
         rowKey={(record) => record.id}
       />
 
-      <DialogForm submitHandle={(v: CostInput) => Promise.resolve()} ref={ref} title="费用编辑">
+      <DialogForm submitHandle={(v: CostInput) => state.pushCost(v)} ref={ref} title="费用编辑">
         {CostForm}
       </DialogForm>
     </PageContainer>

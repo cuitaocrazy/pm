@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class OAuthGwApplication
 
 fun main(args: Array<String>) {
-	runApplication<OAuthGwApplication>(*args)
+    runApplication<OAuthGwApplication>(*args)
 }

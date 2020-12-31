@@ -122,6 +122,7 @@ input CostInput {
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
+  deleteProject(id: ID!): ID!
   pushCost(cost: CostInput!): ID!
   deleteCost(id: ID!): ID!
 }
@@ -263,6 +264,10 @@ const root = {
       projs[index] = { ...projs[index], ...args.proj }
     }
     return args.proj.id
+  },
+  deleteProject: (args: any) => {
+    projs = projs.filter(p => p.id !== args.id)
+    return args.id
   },
   pushCost: (args: any) => {
     const index = costs.findIndex((c: any) => c.id === args.cost.id)

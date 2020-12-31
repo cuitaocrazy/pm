@@ -166,6 +166,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   pushDaily: Scalars['ID'];
   pushProject: Scalars['ID'];
+  deleteProject: Scalars['ID'];
   pushCost: Scalars['ID'];
   deleteCost: Scalars['ID'];
 };
@@ -177,6 +178,10 @@ export type MutationPushDailyArgs = {
 
 export type MutationPushProjectArgs = {
   proj: ProjectInput;
+};
+
+export type MutationDeleteProjectArgs = {
+  id: Scalars['ID'];
 };
 
 export type MutationPushCostArgs = {

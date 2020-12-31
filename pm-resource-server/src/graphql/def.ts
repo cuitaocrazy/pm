@@ -120,6 +120,7 @@ input CostInput {
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
+  deleteProject(id: ID!): ID!
   pushCost(cost: CostInput!): ID!
   deleteCost(id: ID!): ID!
 }

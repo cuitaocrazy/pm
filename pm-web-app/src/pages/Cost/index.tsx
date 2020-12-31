@@ -69,7 +69,7 @@ const Cost = () => {
       loading={state.loading}
       extra={[
         <Button key="create" type="primary" onClick={() => ref.current!.showDialog()}>
-          创建费用
+          新建
         </Button>,
       ]}
     >

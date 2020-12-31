@@ -68,6 +68,9 @@ const resolvers = {
       }
       return Project.replaceOne({ _id: proj.id }, id2dbid(proj), { upsert: true }).then(() => proj.id)
     },
+    deleteProject: (_: any, args: any, context: AuthContext) => {
+      return Project.deleteOne({ _id: args.id, leader: context.user!.id }).then(() => args.id)
+    },
     pushCost: (_: any, args: any, context: AuthContext) => {
       const { id, ...cost } = args.cost
 

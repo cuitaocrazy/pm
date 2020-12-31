@@ -14,6 +14,8 @@ class SecurityConfig {
         http: ServerHttpSecurity,
         handler: OAuthLogoutSuccessHandler
     ): SecurityWebFilterChain {
+        // 当api有post请求时，无法项form页面一样先有页面（页面带csrf token）在去做post，因此CSRF的WebFilter就认为api的post无效
+        // 因此禁用csrf
         http.csrf().disable()
         http.authorizeExchange().pathMatchers(HttpMethod.GET, "/logout-oidc").authenticated()
         // 认证和授权不由这里发起，将交给下游gateway的filter

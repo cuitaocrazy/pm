@@ -1,9 +1,14 @@
-import type { Mutation, MutationPushProjectArgs, Project, Query } from '@/apollo';
+import type {
+  Mutation,
+  MutationDeleteProjectArgs,
+  MutationPushProjectArgs,
+  ProjectInput,
+  Query,
+} from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
-import { message } from 'antd';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
-const projsQuery = gql`
+const queryGql = gql`
   {
     iLeaderProjs {
       id
@@ -21,57 +26,58 @@ const projsQuery = gql`
   }
 `;
 
-const pushProj = gql`
+const pushProjGql = gql`
   mutation($proj: ProjectInput!) {
     pushProject(proj: $proj)
   }
 `;
 
+const deleteProjGql = gql`
+  mutation($id: ID!) {
+    deleteProject(id: $id)
+  }
+`;
+
 export function useProjStatus() {
-  const [refresh, { loading, data }] = useLazyQuery<Query>(projsQuery, {
+  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(queryGql, {
     fetchPolicy: 'no-cache',
   });
-  const [currentProj, setCurrentProj] = useState<Project | undefined>(undefined);
-  const [visible, setVisible] = useState<boolean>(false);
-  const [pushProject] = useMutation<Mutation, MutationPushProjectArgs>(pushProj);
+  const [deleteProjHandle, { loading: deleteLoading }] = useMutation<
+    Mutation,
+    MutationDeleteProjectArgs
+  >(deleteProjGql);
+  const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
+    pushProjGql,
+  );
 
-  const projs = data?.iLeaderProjs || [];
+  useEffect(() => refresh(), [refresh]);
+  const projs = queryData?.iLeaderProjs || [];
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  const deleteProj = useCallback(
+    async (id: string) => {
+      await deleteProjHandle({ variables: { id } });
+      refresh();
+    },
+    [deleteProjHandle, refresh],
+  );
 
-  const showModal = (proj?: Project) => {
-    setCurrentProj(proj);
-    setVisible(true);
-  };
-
-  const closeModal = () => {
-    setVisible(false);
-  };
-
-  const submitProj = (proj: Project) => {
-    const { leader, createDate, ...projArgs } = proj;
-    pushProject({
-      variables: {
-        proj: projArgs,
-      },
-    })
-      .then(() => {
-        setVisible(false);
-        refresh();
-      })
-      .catch((e) => message.error(e.toString()));
-  };
+  const pushProj = useCallback(
+    async (proj: ProjectInput) => {
+      await pushCostHandle({
+        variables: {
+          proj,
+        },
+      });
+      refresh();
+    },
+    [pushCostHandle, refresh],
+  );
 
   return {
-    loading,
-    refresh,
+    loading: queryLoading || deleteLoading || pushLoading,
     projs,
-    currentProj,
-    visible,
-    showModal,
-    closeModal,
-    submitProj,
+    refresh,
+    deleteProj,
+    pushProj,
   };
 }

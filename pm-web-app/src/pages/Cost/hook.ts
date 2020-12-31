@@ -50,7 +50,7 @@ export function useCostState() {
     Mutation,
     MutationDeleteCostArgs
   >(deleteGql);
-  const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushCostArgs>(
+  const [pushProjHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushCostArgs>(
     pushCostGql,
   );
 
@@ -67,20 +67,19 @@ export function useCostState() {
 
   const pushCost = useCallback(
     async (cost: CostInput) => {
-      await pushCostHandle({
+      await pushProjHandle({
         variables: {
           cost,
         },
       });
       refresh();
     },
-    [pushCostHandle, refresh],
+    [pushProjHandle, refresh],
   );
 
   return {
     loading: queryLoading || deleteLoading || pushLoading,
     costs,
-    refresh,
     deleteCost,
     pushCost,
   };

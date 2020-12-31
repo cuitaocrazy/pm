@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb'
+import { MongoClient, ObjectId } from 'mongodb'
 import config from '../config/mongodb'
 import pluralize from '../util/pluralize'
 
@@ -90,15 +90,17 @@ export const SettledDaily = client.db().collection<ISettledDaily>(pluralize('Set
 /**
  * 开支
  */
-export interface IExpenditure {
-  _id: string
-  createDate: Date
-  descript?: string
-  items: [{
-    projId: string
-    amt: number
-    descript?: string
-  }]
+export interface ICost {
+  _id: ObjectId
+  assignee: string
+  amount: number
+  createDate: string
+  description?: string
+  participants: string[]
+  projs: {
+    id: string
+    scale: number
+  }[]
 }
 
-export const Expenditure = client.db().collection<IExpenditure>(pluralize('Expenditure'))
+export const Cost = client.db().collection<ICost>(pluralize('Cost'))

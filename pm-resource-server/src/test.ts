@@ -1,4 +1,10 @@
-import moment from 'moment'
+import { MongoClient } from 'mongodb'
 
-console.log(moment().utc().utcOffset(8 * 60))
-console.log(process.env)
+const client = new MongoClient('mongodb://localhost/pm', { useNewUrlParser: true, useUnifiedTopology: true })
+
+const test = async () => {
+  await client.connect()
+  console.log('123')
+}
+
+test().catch(console.log)

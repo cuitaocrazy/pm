@@ -14,6 +14,7 @@ class SecurityConfig {
         http: ServerHttpSecurity,
         handler: OAuthLogoutSuccessHandler
     ): SecurityWebFilterChain {
+        http.csrf().disable()
         http.authorizeExchange().pathMatchers(HttpMethod.GET, "/logout-oidc").authenticated()
         // 认证和授权不由这里发起，将交给下游gateway的filter
         http.authorizeExchange().anyExchange().permitAll()

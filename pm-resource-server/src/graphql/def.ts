@@ -3,8 +3,13 @@ import { gql } from 'apollo-server-express'
 const dataTypeDef = gql`
 type User {
   id: ID!
-  name: String
+  name: String!
   access: [String!]!
+}
+
+type SimpleUser {
+  id: ID!
+  name: String!
 }
 
 type SimpleProj {
@@ -53,6 +58,21 @@ enum ProjectType {
   research
 }
 
+type ProjCostAllocationScale {
+  proj: SimpleProj!
+  scale: Int!
+}
+
+type Cost {
+  id: ID!
+  assignee: String!
+  participants: [SimpleUser!]!
+  projs: [ProjCostAllocationScale!]!
+  amount: Float!
+  description: String
+  createDate: String!
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -60,6 +80,7 @@ type Query {
   myProjs: [SimpleProj!]!
   iLeaderProjs: [Project!]!
   iLeaderProj(projId: String!): Project!
+  costs: [Cost!]!
 }
 
 input DailyInput {
@@ -83,9 +104,24 @@ input ContactInput {
   phone: String
 }
 
+input ProjScaleInput {
+  id: ID!
+  scale: Int!
+}
+
+input CostInput {
+  id: ID
+  participants: [String!]!
+  projs: [ProjScaleInput!]!
+  amount: Float!
+  description: String
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
+  pushCost(cost: CostInput!): ID!
+  deleteCost(id: ID!): ID!
 }
 `
 

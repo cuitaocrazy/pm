@@ -37,6 +37,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: build
         run: |
+          cd pm-web-app
           npm i
           npm run build
           

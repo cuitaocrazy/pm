@@ -19,6 +19,7 @@ jobs:
   build-web-app:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - env:
           CUITAO: ${{ secrets.DOCKER_HUB_USERNAMEE }}
           LFH: ${{ secrets.DOCKER_HUB_SECRET }}

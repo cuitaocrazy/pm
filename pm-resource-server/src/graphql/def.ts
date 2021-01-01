@@ -5,11 +5,7 @@ type User {
   id: ID!
   name: String!
   access: [String!]!
-}
-
-type SimpleUser {
-  id: ID!
-  name: String!
+  group: [String!]!
 }
 
 type SimpleProj {
@@ -66,7 +62,7 @@ type ProjCostAllocationScale {
 type Cost {
   id: ID!
   assignee: String!
-  participants: [SimpleUser!]!
+  participants: [User!]!
   projs: [ProjCostAllocationScale!]!
   amount: Float!
   description: String

@@ -7,11 +7,7 @@ type User {
   id: ID!
   name: String!
   access: [String!]!
-}
-
-type SimpleUser {
-  id: ID!
-  name: String!
+  group: [String!]!
 }
 
 type SimpleProj {
@@ -68,7 +64,7 @@ type ProjCostAllocationScale {
 type Cost {
   id: ID!
   assignee: String!
-  participants: [SimpleUser!]!
+  participants: [User!]!
   projs: [ProjCostAllocationScale!]!
   amount: Float!
   description: String
@@ -227,10 +223,35 @@ let projs = makeProjects()
 let simpleProjs = makeSimpleProjs()
 let myDailies = makeEmpDailies('0001')
 let costs = makeCosts()
-let users = [{ id: '0001', name: 'user1' }, { id: '0002', name: 'user2' }, { id: '0003', name: 'user3' }, { id: '0004', name: 'user4' }]
+let users = [
+  {
+    id: '0001',
+    name: 'user1',
+    access: ['realm:project_manager', 'realm:assistant'],
+    group: ['/a']
+  },
+  {
+    id: '0002',
+    name: 'user2',
+    access: ['realm:project_manager', 'realm:assistant'],
+    group: ['/a']
+  },
+  {
+    id: '0003',
+    name: 'user3',
+    access: ['realm:project_manager', 'realm:assistant'],
+    group: ['/a']
+  },
+  {
+    id: '0004',
+    name: 'user4',
+    access: ['realm:project_manager', 'realm:assistant'],
+    group: ['/a']
+  }
+]
 
 const root = {
-  me: () => ({ id: '0001', name: 'user1', access: ['realm:project_manager', 'realm:assistant'] }),
+  me: () => users[0],
   myDailies: () => myDailies,
   myProjs: () => simpleProjs,
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {

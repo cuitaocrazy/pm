@@ -1,9 +1,10 @@
 declare namespace API {
   export type CurrentUser = {
+    id?: string;
     avatar?: string;
     name?: string;
     title?: string;
-    group?: string;
+    group?: string[];
     signature?: string;
     tags?: {
       key: string;

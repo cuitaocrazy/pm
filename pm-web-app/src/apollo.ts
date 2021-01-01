@@ -32,12 +32,7 @@ export type User = {
   id: Scalars['ID'];
   name: Scalars['String'];
   access: Scalars['String'][];
-};
-
-export type SimpleUser = {
-  __typename?: 'SimpleUser';
-  id: Scalars['ID'];
-  name: Scalars['String'];
+  group: Scalars['String'];
 };
 
 export type SimpleProj = {
@@ -106,7 +101,7 @@ export type Cost = {
   __typename?: 'Cost';
   id: Scalars['ID'];
   assignee: Scalars['String'];
-  participants: SimpleUser[];
+  participants: User[];
   projs: ProjCostAllocationScale[];
   amount: Scalars['Float'];
   description?: Maybe<Scalars['String']>;

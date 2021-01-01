@@ -20,8 +20,10 @@ export async function getCurrentUser() {
       query: gql`
         {
           me {
+            id
             name
             access
+            group
           }
         }
       `,

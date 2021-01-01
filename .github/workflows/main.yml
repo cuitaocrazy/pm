@@ -22,10 +22,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - env:
+      - name: build
+        env:
           CUITAO: ${{ secrets.DOCKER_HUB_USERNAMEE }}
           LFH: ${{ secrets.DOCKER_HUB_SECRET }}
-      - name: build
         run: |
           echo $CUIATO
           echo $LFH

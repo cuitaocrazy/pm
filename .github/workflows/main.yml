@@ -38,4 +38,4 @@ jobs:
       - uses: docker/build-push-action@v2.2.1
         with:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/oauth-gw:latest
-          file: ./oauth-gw/Dockerfile
+          context: ./oauth-gw

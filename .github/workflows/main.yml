@@ -22,6 +22,7 @@ jobs:
       - env:
           CUITAO: ${{ secrets.DOCKER_HUB_USERNAMEE }}
           LFH: ${{ secrets.DOCKER_HUB_SECRET }}
-      - run: |
+      - name: hello
+        run: |
           echo $CUITAO
           echo $LFH

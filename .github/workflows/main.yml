@@ -23,6 +23,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         if: always()
@@ -57,6 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
       - uses: actions/checkout@v2
@@ -89,6 +93,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
       - uses: actions/checkout@v2

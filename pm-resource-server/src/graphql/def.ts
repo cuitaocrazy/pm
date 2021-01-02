@@ -8,12 +8,6 @@ type User {
   group: [String!]!
 }
 
-type SimpleProj {
-  id: ID!
-  name: String!
-  isAssignMe: Boolean
-}
-
 type EmployeeDaily {
   id: ID!
   dailies(date: String): [Daily!]!
@@ -55,7 +49,7 @@ enum ProjectType {
 }
 
 type ProjCostAllocationScale {
-  proj: SimpleProj!
+  proj: Project!
   scale: Int!
 }
 
@@ -73,9 +67,8 @@ type Query {
   me: User!
   subordinates: [User!]!
   myDailies: EmployeeDaily
-  myProjs: [SimpleProj!]!
-  iLeaderProjs: [Project!]!
-  iLeaderProj(projId: String!): Project!
+  projs: [Project!]!
+  iLeadProjs: [Project!]!
   costs: [Cost!]!
 }
 

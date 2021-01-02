@@ -5,12 +5,12 @@ import { dbid2id, id2dbid } from '../../util/utils'
 
 export default {
   Query: {
-    myProjs: (_: any, __: any, context: AuthContext) => Project
+    projs: (_: any, __: any, context: AuthContext) => Project
       .find()
-      .map(data => ({ id: data._id, name: data.name, isAssignMe: data.participants.includes(context.user!.id) }))
       .sort({ name: -1 })
-      .toArray().then(datas => datas.sort(data => data.isAssignMe ? -1 : 1)),
-    iLeaderProjs: (_: any, __: any, context: AuthContext) => Project
+      .map(dbid2id)
+      .toArray(),
+    iLeadProjs: (_: any, __: any, context: AuthContext) => Project
       .find({ leader: context.user!.id }).map(dbid2id).toArray(),
   },
   Mutation: {

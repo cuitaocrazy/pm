@@ -10,7 +10,7 @@ import { useCallback, useEffect } from 'react';
 
 const queryGql = gql`
   {
-    iLeaderProjs {
+    iLeadProjs {
       id
       name
       budget
@@ -51,7 +51,7 @@ export function useProjStatus() {
   );
 
   useEffect(() => refresh(), [refresh]);
-  const projs = queryData?.iLeaderProjs || [];
+  const projs = queryData?.iLeadProjs || [];
 
   const deleteProj = useCallback(
     async (id: string) => {

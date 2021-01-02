@@ -21,10 +21,10 @@ const myQuery = gql`
       }
     }
 
-    myProjs {
+    projs {
       id
       name
-      isAssignMe
+      participants
     }
   }
 `;
@@ -46,7 +46,7 @@ export function useDailiesStatus(date?: string) {
   const [currentDaily, setCurrentDaily] = useState<Daily>({ date: currentDate, projs: [] });
   const [filter, setFilter] = useState('');
   const dailies = useMemo(() => data?.myDailies?.dailies || [], [data]);
-  const projs = useMemo(() => data?.myProjs || [], [data]);
+  const projs = useMemo(() => data?.projs || [], [data]);
   const completedDailiesDates = dailies?.map((d) => d.date) || [];
   const refs = useRef<React.RefObject<ProjItemHandle>[]>([]);
 

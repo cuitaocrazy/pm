@@ -17,7 +17,7 @@ const userQuery = gql`
       name
     }
 
-    myProjs {
+    projs {
       id
       name
     }
@@ -78,7 +78,7 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
                       option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {resData?.myProjs
+                    {resData?.projs
                       .filter(
                         (p) =>
                           !form

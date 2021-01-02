@@ -12,7 +12,7 @@ const userQuery = gql`
       id
       name
     }
-    myProjs {
+    projs {
       id
     }
   }
@@ -26,7 +26,7 @@ const layout = {
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { loading, data: resData } = useQuery<Query>(userQuery);
   const validator = (rule: any, value: string) =>
-    !data?.id && resData!.myProjs.find((sp) => sp.id === value)
+    !data?.id && resData!.projs.find((sp) => sp.id === value)
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
   return (

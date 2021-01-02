@@ -32,14 +32,7 @@ export type User = {
   id: Scalars['ID'];
   name: Scalars['String'];
   access: Scalars['String'][];
-  group: Scalars['String'];
-};
-
-export type SimpleProj = {
-  __typename?: 'SimpleProj';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  isAssignMe?: Maybe<Scalars['Boolean']>;
+  group: Scalars['String'][];
 };
 
 export type EmployeeDaily = {
@@ -93,7 +86,7 @@ export enum ProjectType {
 
 export type ProjCostAllocationScale = {
   __typename?: 'ProjCostAllocationScale';
-  proj: SimpleProj;
+  proj: Project;
   scale: Scalars['Int'];
 };
 
@@ -113,14 +106,9 @@ export type Query = {
   me: User;
   subordinates: User[];
   myDailies?: Maybe<EmployeeDaily>;
-  myProjs: SimpleProj[];
-  iLeaderProjs: Project[];
-  iLeaderProj: Project;
+  projs: Project[];
+  iLeadProjs: Project[];
   costs: Cost[];
-};
-
-export type QueryILeaderProjArgs = {
-  projId: Scalars['String'];
 };
 
 export type DailyInput = {

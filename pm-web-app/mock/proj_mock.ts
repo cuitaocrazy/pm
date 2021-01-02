@@ -10,12 +10,6 @@ type User {
   group: [String!]!
 }
 
-type SimpleProj {
-  id: ID!
-  name: String!
-  isAssignMe: Boolean
-}
-
 type EmployeeDaily {
   id: ID!
   dailies(date: String): [Daily!]!
@@ -57,7 +51,7 @@ enum ProjectType {
 }
 
 type ProjCostAllocationScale {
-  proj: SimpleProj!
+  proj: Project!
   scale: Int!
 }
 
@@ -75,9 +69,8 @@ type Query {
   me: User!
   subordinates: [User!]!
   myDailies: EmployeeDaily
-  myProjs: [SimpleProj!]!
-  iLeaderProjs: [Project!]!
-  iLeaderProj(projId: String!): Project!
+  projs: [Project!]!
+  iLeadProjs: [Project!]!
   costs: [Cost!]!
 }
 
@@ -138,7 +131,7 @@ function makeProjectDailies(projId: string) {
 function makeDailies(date: string) {
   return {
     date,
-    projs: simpleProjs.map(p => makeProjectDailies(p.id)).filter(d => d.timeConsuming !== 0)
+    projs: projs.map(p => makeProjectDailies(p.id)).filter(d => d.timeConsuming !== 0)
   }
 }
 
@@ -147,14 +140,6 @@ function makeEmpDailies(name: string) {
     id: name,
     dailies: R.range(1, 10).map(i => makeDailies(`2020120${i}`))
   }
-}
-
-function makeSimpleProjs() {
-  return projs || makeProjects().map((p, i) => ({
-    id: p.id,
-    name: p.name,
-    isAssignMe: i < 6,
-  }))
 }
 
 function makeProjects() {
@@ -220,7 +205,6 @@ function makeCosts() {
 }
 
 let projs = makeProjects()
-let simpleProjs = makeSimpleProjs()
 let myDailies = makeEmpDailies('0001')
 let costs = makeCosts()
 let users = [
@@ -253,7 +237,7 @@ let users = [
 const root = {
   me: () => users[0],
   myDailies: () => myDailies,
-  myProjs: () => simpleProjs,
+  projs: () => projs,
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {
     const newDaily = {
       date: args.date,
@@ -272,7 +256,7 @@ const root = {
     myDailies = R.over(lp, change)(myDailies)
     return 'user1'
   },
-  iLeaderProjs: () => projs,
+  iLeadProjs: () => projs,
   costs: (args: any) => costs,
   subordinates: () => users,
   pushProject: (args: any) => {

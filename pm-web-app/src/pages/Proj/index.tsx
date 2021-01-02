@@ -69,14 +69,18 @@ function Project() {
   }, deleteProj);
   return (
     <PageContainer
-      loading={loading}
       extra={[
         <Button key="create" type="primary" onClick={() => ref.current?.showDialog()}>
           新建
         </Button>,
       ]}
     >
-      <Table rowKey={(record) => record.id} columns={columns} dataSource={projs} />
+      <Table
+        loading={loading}
+        rowKey={(record) => record.id}
+        columns={columns}
+        dataSource={projs}
+      />
       <DialogForm submitHandle={(v: ProjectInput) => pushProj(v)} ref={ref} title="编辑项目">
         {ProjForm}
       </DialogForm>

@@ -66,7 +66,6 @@ const Cost = () => {
   const ref = useRef<FormDialogHandle<CostInput>>(null);
   return (
     <PageContainer
-      loading={state.loading}
       extra={[
         <Button key="create" type="primary" onClick={() => ref.current!.showDialog()}>
           新建
@@ -74,6 +73,7 @@ const Cost = () => {
       ]}
     >
       <Table
+        loading={state.loading}
         columns={getColumns((c: CostType) => {
           ref.current!.showDialog({
             id: c.id,

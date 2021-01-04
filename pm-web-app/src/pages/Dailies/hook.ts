@@ -94,7 +94,7 @@ export function useDailiesStatus(date?: string) {
 
   const sortProjs = useCallback(() => {
     if (initialState?.currentUser !== undefined) {
-      return projs.sort((p) => (p.participants.includes(p.id) ? -1 : 1));
+      return projs.sort((p) => (p.participants.includes(initialState.currentUser!.id!) ? -1 : 1));
     }
     return projs;
   }, [projs, initialState]);

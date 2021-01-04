@@ -6,6 +6,7 @@ import type { Daily, Mutation, MutationPushDailyArgs, ProjDaily, Query } from '@
 import * as R from 'ramda';
 import { message } from 'antd';
 import type { ProjItemHandle } from './ProjItem';
+import { useModel } from 'umi';
 
 const myQuery = gql`
   {
@@ -45,6 +46,7 @@ export function useDailiesStatus(date?: string) {
   );
   const [currentDaily, setCurrentDaily] = useState<Daily>({ date: currentDate, projs: [] });
   const [filter, setFilter] = useState('');
+  const { initialState } = useModel('@@initialState');
   const dailies = useMemo(() => data?.myDailies?.dailies || [], [data]);
   const projs = useMemo(() => data?.projs || [], [data]);
   const completedDailiesDates = dailies?.map((d) => d.date) || [];
@@ -90,6 +92,13 @@ export function useDailiesStatus(date?: string) {
     }
   }, [projs]);
 
+  const sortProjs = useCallback(() => {
+    if (initialState?.currentUser !== undefined) {
+      return projs.sort((p) => (p.participants.includes(p.id) ? -1 : 1));
+    }
+    return projs;
+  }, [projs, initialState]);
+
   const oPushDaily = (
     options?: MutationFunctionOptions<Mutation, MutationPushDailyArgs> | undefined,
   ) =>
@@ -102,7 +111,7 @@ export function useDailiesStatus(date?: string) {
 
   return {
     loading: queryLoading || mutationLoading,
-    projs,
+    projs: sortProjs(),
     currentDate,
     filter,
     completedDailiesDates,

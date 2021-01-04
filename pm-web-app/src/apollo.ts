@@ -82,6 +82,7 @@ export enum ProjectType {
   OnSale = 'onSale',
   AfterSale = 'afterSale',
   Research = 'research',
+  Comprehensive = 'comprehensive',
 }
 
 export type ProjCostAllocationScale = {

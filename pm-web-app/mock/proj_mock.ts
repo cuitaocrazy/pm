@@ -48,6 +48,7 @@ enum ProjectType {
   onSale
   afterSale
   research
+  comprehensive
 }
 
 type ProjCostAllocationScale {

@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import { auth } from 'express-oauth2-bearer'
-import { filter, map, pipe, prop, toPairs, length, includes, assoc, unnest, pluck, xprod, slice, tail, join, applySpec, __, identity, lt, uniq, uniqBy, sortBy } from 'ramda'
-import axios from 'axios'
+import { filter, map, pipe, prop, toPairs, length, includes, assoc, unnest, pluck, xprod, slice, tail, join, applySpec, __, identity, lt, uniq, uniqBy, concat, pick, groupBy, append, last, reduce, mergeDeepWithKey } from 'ramda'
+import axios, { AxiosInstance } from 'axios'
 import config from '../config/auth'
+import cache from '../cache'
 
 export type Auth = {
   token: string
@@ -81,20 +82,77 @@ export function authMiddleware (req: AuthRequest, res: Response, next: NextFunct
 }
 
 export function getGroupUsers (user: UserInfo) {
-  const keycloakReqConfig = { headers: { Authorization: `Bearer ${user.token}` } }
-  const groups = user.groups || []
   const { origin, pathname } = new URL(config.issuerBaseURL)
   const keycloakAdminUrl = origin + pathname.replace('auth', 'auth/admin')
+  const keycloakReqConfig = { headers: { Authorization: `Bearer ${user.token}` }, baseURL: keycloakAdminUrl }
+  console.log(keycloakReqConfig)
+  const groups = user.groups || []
+
   const inst = axios.create(keycloakReqConfig)
-  const groupUrl = keycloakAdminUrl + '/groups'
-  const getGroupIds: (roots: string[], gs: KeycloakGroup[]) => string[] = (roots: string[], gs: KeycloakGroup[]) => unnest(gs.map(g => {
-    if (roots.filter(r => g.path.startsWith(r)).length > 0) { return [g.id, ...getGroupIds(roots, g.subGroups!)] } else { return [] }
-  }))
-  const getName = (d: any) => ((d.lastName || '') + (d.firstName || '')) || d.username
+
   // eslint-disable-next-line no-useless-escape
-  return inst.get(groupUrl).then(res => getGroupIds(uniq(groups.map(g => g.match(/^\/[^\/]+/)![0])), res.data).map(id => groupUrl + `/${id}/members`))
-    .then(urls => Promise.all(urls.map(url => inst.get(url).then(res => res.data.map(d => ({ id: d.username, name: getName(d) }))))))
-    .then(unnest)
-    .then(uniqBy(prop('id')))
-    .then(sortBy(prop('name'))) as Promise<{id: string, name: string}[]>
+  const roots = uniq(groups.map(g => g.match(/^\/[^\/]+/)![0]))
+  return getUserByRootGroups(roots, inst)
+}
+
+type UserWithGroup = {
+  id: string
+  name: string
+  groups: string[]
+  email: string
+}
+
+async function getUserByRootGroups (roots:string[], fetch: AxiosInstance) {
+  const users = await Promise.all(roots.map(root => getUserByRootGroup(root, fetch)))
+  const concatGroups = (k: any, l: any, r: any) => k === 'groups' ? concat(r, l) : r
+  return pipe<any, any, any, any, any, any>(
+    unnest,
+    groupBy<any>(prop('id')),
+    toPairs,
+    map(last),
+    map(reduce(mergeDeepWithKey(concatGroups), { groups: [] })),
+  )(users) as any[] as UserWithGroup[]
+}
+
+async function getUserByRootGroup (root: string, fetch: AxiosInstance) {
+  let us = cache.get<UserWithGroup[]>(root)
+
+  if (us === undefined) {
+    const groupList = await getGroupList(root, fetch)
+    const usersPromise = groupList.map(g => getUserByGroup(g.id, fetch).then(users => users.map(u => ({ id: u.id, name: u.name, email: u.email, groups: g.path }))))
+    const users = unnest(await Promise.all(usersPromise))
+    const concatGroups = (k: any, l: any, r: any) => k === 'groups' ? append(r, l) : r
+    const proc = pipe(
+      groupBy<any>(prop('id')),
+      toPairs,
+      map<any, any>(last),
+      map(reduce(mergeDeepWithKey(concatGroups), { groups: [] })),
+    )
+    us = proc(users) as any[] as UserWithGroup[]
+    cache.set(root, us)
+  }
+
+  return us || []
+}
+
+async function getGroupList (root: string, fetch: AxiosInstance) {
+  function rGroupList (gs: KeycloakGroup[]): Pick<KeycloakGroup, 'id' | 'path'>[] {
+    if (gs.length === 0) {
+      return []
+    }
+    return concat(gs.map(pick(['id', 'path'])), rGroupList(unnest(gs.map(g => g.subGroups!))))
+  }
+
+  const groups = await fetch.get('/groups').then(res => res.data)
+  return uniqBy(prop('id'), rGroupList(groups)).filter(g => g.path.startsWith(root))
+}
+
+async function getUserByGroup (groupId: string, fetch: AxiosInstance) {
+  const getName = (d: any) => ((d.lastName || '') + (d.firstName || '')) || d.username
+  const users = await fetch.get(`/groups/${groupId}/members`).then(res => res.data as any[])
+  return users.map(u => ({
+    id: u.username,
+    name: getName(u),
+    email: u.email,
+  }))
 }

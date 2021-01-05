@@ -59,6 +59,7 @@ function Dailies(prop: { date?: string }) {
       loading={hookStatus.projs.length === 0}
       extra={[
         <DatePicker
+          inputReadOnly
           key="date"
           value={moment(hookStatus.currentDate, dateFormat)}
           onChange={(d) => d && hookStatus.setCurrentDate(d.format(dateFormat))}

@@ -1,5 +1,7 @@
-import { Card, Col, Collapse, Input, Row, Slider } from 'antd';
-import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useImperativeHandle, useState, useRef } from 'react';
+import { Card, Row, Col, Divider, Input, Slider } from 'antd';
+import { Collapse } from 'react-collapse';
+import { DoubleLeftOutlined } from '@ant-design/icons';
 import * as R from 'ramda';
 
 const maxH = 10;
@@ -25,6 +27,9 @@ export type ProjItemHandle = {
   getOffset: () => number;
 };
 const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = (props, ref) => {
+
+  const [isOpened, setIsOpened] = useState(false);
+
   const divRef = useRef<HTMLDivElement>(null);
   const visible =
     (props.projName || '').toLowerCase().indexOf(props.visibleFilter.toLowerCase()) !== -1;
@@ -45,10 +50,10 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
   }));
 
   return (
-    <Card title={props.projName || props.projId} id={props.projId} hidden={!visible}>
+    <Card title={props.projName || props.projId} id={props.projId} hidden={!visible} size="small" style={{ marginBottom: 16 }}>
       {/* 设置一个暗锚, 本身Card是可以支持ref的, 但是antd定义的Type没有这个属性, 避免一些dev的报错, 假如一手工锚点 */}
       <div ref={divRef} />
-      <Row gutter={[0, 16]}>
+      <Row>
         <Col span={24}>
           <Slider
             marks={marks}
@@ -60,18 +65,22 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
           />
         </Col>
         <Col span={24}>
-          <Collapse>
-            <Collapse.Panel header="工作内容" key="1">
-              <Input.TextArea
-                autoSize
-                onChange={(e) => props.onContentOfWorkChange(e.currentTarget.value)}
-                value={props.content || ''}
-              />
-            </Collapse.Panel>
+          <Collapse isOpened={isOpened} checkTimeout={1}>
+            <br />
+            <Input.TextArea
+              autoSize
+              onChange={(e) => props.onContentOfWorkChange(e.currentTarget.value)}
+              value={props.content || ''}
+            />
           </Collapse>
+          <div onClick={() => setIsOpened(!isOpened)}>
+            <Divider plain style={{ marginBottom: 0 }}>
+              <DoubleLeftOutlined rotate={isOpened ? 90 : 270} />
+            </Divider>
+          </div>
         </Col>
       </Row>
-    </Card>
+    </Card >
   );
 };
 

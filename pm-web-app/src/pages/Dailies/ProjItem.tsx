@@ -65,7 +65,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
           />
         </Col>
         <Col span={24}>
-          <Collapse isOpened={isOpened} checkTimeout={1}>
+          <Collapse isOpened={isOpened}>
             <br />
             <Input.TextArea
               autoSize

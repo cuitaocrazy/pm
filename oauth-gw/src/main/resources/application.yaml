@@ -23,6 +23,13 @@ spring:
             - Path=/api/**
           filters:
             - OAuthApi
+        - id: redirect-web-app
+          uri: http://localhost:8000
+          predicates:
+            - Path=/redirect/{anchor}
+          filters:
+            - OAuth
+            - RedirectWithAnchor=/#/{anchor}
         - id: test-web
           uri: http://localhost:8000
           predicates:

@@ -24,7 +24,7 @@ const layout = {
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  const { loading, data: resData } = useQuery<Query>(userQuery);
+  const { loading, data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
   const validator = (rule: any, value: string) =>
     !data?.id && resData!.projs.find((sp) => sp.id === value)
       ? Promise.reject(Error('id已存在'))

@@ -7,7 +7,7 @@ type User {
   id: ID!
   name: String!
   access: [String!]!
-  group: [String!]!
+  groups: [String!]!
 }
 
 type EmployeeDaily {
@@ -73,6 +73,8 @@ type Query {
   projs: [Project!]!
   iLeadProjs: [Project!]!
   costs: [Cost!]!
+  dailyUsers: [User!]!
+  daily(userId: String!): EmployeeDaily
 }
 
 input DailyInput {
@@ -213,25 +215,25 @@ let users = [
     id: '0001',
     name: 'user1',
     access: ['realm:project_manager', 'realm:assistant'],
-    group: ['/a']
+    groups: ['/a']
   },
   {
     id: '0002',
     name: 'user2',
     access: ['realm:project_manager', 'realm:assistant'],
-    group: ['/a']
+    groups: ['/a']
   },
   {
     id: '0003',
     name: 'user3',
     access: ['realm:project_manager', 'realm:assistant'],
-    group: ['/a']
+    groups: ['/a']
   },
   {
     id: '0004',
     name: 'user4',
     access: ['realm:project_manager', 'realm:assistant'],
-    group: ['/a']
+    groups: ['/a']
   }
 ]
 

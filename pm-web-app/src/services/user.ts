@@ -23,7 +23,7 @@ export async function getCurrentUser() {
             id
             name
             access
-            group
+            groups
           }
         }
       `,

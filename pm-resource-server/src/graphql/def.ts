@@ -5,7 +5,7 @@ type User {
   id: ID!
   name: String!
   access: [String!]!
-  group: [String!]!
+  groups: [String!]!
 }
 
 type EmployeeDaily {
@@ -71,6 +71,8 @@ type Query {
   projs: [Project!]!
   iLeadProjs: [Project!]!
   costs: [Cost!]!
+  dailyUsers: [User!]!
+  daily(userId: String!): EmployeeDaily
 }
 
 input DailyInput {

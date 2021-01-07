@@ -33,7 +33,7 @@ export type User = {
   id: Scalars['ID'];
   name: Scalars['String'];
   access: Scalars['String'][];
-  group: Scalars['String'][];
+  groups: Scalars['String'][];
 };
 
 export type EmployeeDaily = {
@@ -111,6 +111,12 @@ export type Query = {
   projs: Project[];
   iLeadProjs: Project[];
   costs: Cost[];
+  dailyUsers: User[];
+  daily?: Maybe<EmployeeDaily>;
+};
+
+export type QueryDailyArgs = {
+  userId: Scalars['String'];
 };
 
 export type DailyInput = {

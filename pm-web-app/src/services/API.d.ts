@@ -4,7 +4,7 @@ declare namespace API {
     avatar?: string;
     name?: string;
     title?: string;
-    group?: string[];
+    groups?: string[];
     signature?: string;
     tags?: {
       key: string;

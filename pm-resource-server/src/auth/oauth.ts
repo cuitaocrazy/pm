@@ -51,7 +51,7 @@ export function authMiddleware (req: AuthRequest, res: Response, next: NextFunct
       )(obj)(prop('resource_access')(obj))
       const groups = prop<'group_path', string[]>('group_path')
 
-      const plantRoles = pipe<any, any, any, any, any, any, any, string[]>(
+      const flatRoles = pipe<any, any, any, any, any, any, any, string[]>(
         allRoles,
         pluck('roles'),
         toPairs,
@@ -63,7 +63,7 @@ export function authMiddleware (req: AuthRequest, res: Response, next: NextFunct
       const getUser = applySpec({
         id,
         name,
-        roles: plantRoles,
+        roles: flatRoles,
         groups,
       })
 
@@ -85,7 +85,6 @@ export function getGroupUsers (user: UserInfo) {
   const { origin, pathname } = new URL(config.issuerBaseURL)
   const keycloakAdminUrl = origin + pathname.replace('auth', 'auth/admin')
   const keycloakReqConfig = { headers: { Authorization: `Bearer ${user.token}` }, baseURL: keycloakAdminUrl }
-  console.log(keycloakReqConfig)
   const groups = user.groups || []
 
   const inst = axios.create(keycloakReqConfig)
@@ -95,7 +94,7 @@ export function getGroupUsers (user: UserInfo) {
   return getUserByRootGroups(roots, inst)
 }
 
-type UserWithGroup = {
+export type UserWithGroup = {
   id: string
   name: string
   groups: string[]

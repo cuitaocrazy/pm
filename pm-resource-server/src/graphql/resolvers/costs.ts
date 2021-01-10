@@ -3,21 +3,20 @@ import { ObjectId } from 'mongodb'
 import { AuthContext, getGroupUsers } from '../../auth/oauth'
 import { Cost, Project } from '../../mongodb'
 
+// TODO: 需按graphql进行重构，project应按id去解析器再次进行查询
 export default {
   Query: {
     costs: (_: any, __: any, context: AuthContext) => Cost.find({ assignee: context.user!.id }).toArray().then(async costs => {
       const us = await getGroupUsers(context.user!)
-      const projs = await Project.find().map(p => ({ id: p._id, name: p.name })).toArray()
+      const projs = (await Project.find().project({ id: '$_id', name: 1, _id: 0 }).toArray()) as any as {id: string, name: string}[]
 
       return costs.map(cost => (
         {
           id: cost._id,
           assignee: cost.assignee,
-          amount: cost.amount,
           createDate: cost.createDate,
-          description: cost.description,
-          participants: cost.participants.map(id => ({ id, name: us.find(u => u.id === id)?.name || id })),
-          projs: cost.projs.map(proj => ({ proj: { id: proj.id, name: projs.find(p => p.id === proj.id)?.name }, scale: proj.scale })),
+          participant: us.find(u => u.id === cost.participant),
+          projs: cost.projs.map(proj => ({ ...proj, proj: projs.find(p => p.id === proj.id) })),
         }
       ))
     }),
@@ -38,3 +37,66 @@ export default {
     },
   },
 }
+
+// 可用聚合方法，太长，以后备用。。
+// await client.db().collection('costs').aggregate([{
+//   $lookup: {
+//     from: 'projects',
+//     localField: 'projs.id',
+//     foreignField: '_id',
+//     as: 'projInfos',
+//   },
+// },
+// {
+//   $project: {
+//     _id: 0,
+//     id: '$_id',
+//     assignee: 1,
+//     createDate: 1,
+//     participant: 1,
+//     projs: {
+//       $let: {
+//         vars: {
+//           zipP: {
+//             $zip: {
+//               inputs: ['$projs', '$projInfos'],
+//             },
+//           },
+//         },
+//         in: {
+//           $map: {
+//             input: '$$zipP',
+//             as: 'obj',
+//             in: {
+//               $mergeObjects: [
+//                 {
+//                   $arrayElemAt: ['$$obj', 0],
+//                 },
+//                 {
+//                   proj: {
+//                     $let: {
+//                       vars: {
+//                         proj: {
+//                           $arrayElemAt: ['$$obj', 1],
+//                         },
+//                       },
+//                       in: {
+//                         $mergeObjects: [
+//                           {
+//                             id: '$$proj._id',
+//                           },
+//                           '$$proj',
+//                         ],
+//                       },
+//                     },
+//                   },
+//                 },
+//               ],
+//             },
+//           },
+//         },
+//       },
+//     },
+//   },
+// },
+// ]).toArray()

@@ -86,20 +86,20 @@ export enum ProjectType {
   Comprehensive = 'comprehensive',
 }
 
-export type ProjCostAllocationScale = {
-  __typename?: 'ProjCostAllocationScale';
+export type ProjectCostDetail = {
+  __typename?: 'ProjectCostDetail';
   proj: Project;
-  scale: Scalars['Int'];
+  amount: Scalars['Float'];
+  type: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
 export type Cost = {
   __typename?: 'Cost';
   id: Scalars['ID'];
   assignee: Scalars['String'];
-  participants: User[];
-  projs: ProjCostAllocationScale[];
-  amount: Scalars['Float'];
-  description?: Maybe<Scalars['String']>;
+  participant: User;
+  projs: ProjectCostDetail[];
   createDate: Scalars['String'];
 };
 
@@ -112,7 +112,7 @@ export type Query = {
   iLeadProjs: Project[];
   costs: Cost[];
   dailyUsers: User[];
-  daily?: Maybe<EmployeeDaily>;
+  daily: EmployeeDaily;
 };
 
 export type QueryDailyArgs = {
@@ -140,17 +140,17 @@ export type ContactInput = {
   phone?: Maybe<Scalars['String']>;
 };
 
-export type ProjScaleInput = {
+export type ProjCostInput = {
   id: Scalars['ID'];
-  scale: Scalars['Int'];
+  amount: Scalars['Float'];
+  type: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
 export type CostInput = {
   id?: Maybe<Scalars['ID']>;
-  participants: Scalars['String'][];
-  projs: ProjScaleInput[];
-  amount: Scalars['Float'];
-  description?: Maybe<Scalars['String']>;
+  participant: Scalars['ID'];
+  projs: ProjCostInput[];
 };
 
 export type Mutation = {

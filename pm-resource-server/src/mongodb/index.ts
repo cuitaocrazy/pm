@@ -93,13 +93,13 @@ export const SettledDaily = client.db().collection<ISettledDaily>(pluralize('Set
 export interface ICost {
   _id: ObjectId
   assignee: string
-  amount: number
   createDate: string
-  description?: string
-  participants: string[]
+  participant: string
   projs: {
     id: string
-    scale: number
+    amount: number
+    type: string
+    description?: string
   }[]
 }
 

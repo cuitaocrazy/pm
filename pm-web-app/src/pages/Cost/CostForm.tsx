@@ -31,12 +31,9 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
       <Form.Item label="ID" name="id" hidden>
         <Input />
       </Form.Item>
-      <Form.Item label="金额" name="amount" rules={[{ required: true }]}>
-        <InputNumber min={0} />
-      </Form.Item>
-      <Form.Item label="参与人员" name="participants" rules={[{ required: true }]}>
+      <Form.Item label="参与人员" name="participant" rules={[{ required: true }]}>
         <Select
-          mode="multiple"
+          showSearch
           filterOption={(input, option) =>
             option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
@@ -48,9 +45,6 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
           ))}
           x
         </Select>
-      </Form.Item>
-      <Form.Item label="描述" name="description">
-        <Input.TextArea autoSize />
       </Form.Item>
       <Form.List
         name="projs"
@@ -97,13 +91,15 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
                       ))}
                   </Select>
                 </Form.Item>
-                <Form.Item
-                  key="scale"
-                  name={[field.name, 'scale']}
-                  label="占比"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber min={1} />
+
+                <Form.Item label="金额" name={[field.name, 'amount']} rules={[{ required: true }]}>
+                  <InputNumber min={0} />
+                </Form.Item>
+                <Form.Item label="类型" name={[field.name, 'type']} rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item label="描述" name={[field.name, 'description']}>
+                  <Input.TextArea autoSize />
                 </Form.Item>
                 <div key={field.key} style={{ textAlign: 'center' }}>
                   <MinusCircleOutlined
@@ -114,7 +110,7 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
               </div>
             ))}
             <Form.Item key="action">
-              <Button type="dashed" onClick={() => add({ scale: 1 })} icon={<PlusOutlined />}>
+              <Button type="dashed" onClick={() => add({})} icon={<PlusOutlined />}>
                 添加项目
               </Button>
               <Form.ErrorList errors={errors} />

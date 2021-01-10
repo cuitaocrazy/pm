@@ -13,7 +13,7 @@ const queryGql = gql`
     costs {
       id
       assignee
-      participants {
+      participant {
         id
         name
       }
@@ -22,10 +22,10 @@ const queryGql = gql`
           id
           name
         }
-        scale
+        amount
+        type
+        description
       }
-      amount
-      description
       createDate
     }
   }

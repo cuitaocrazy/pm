@@ -49,18 +49,18 @@ enum ProjectType {
   comprehensive
 }
 
-type ProjCostAllocationScale {
+type ProjectCostDetail {
   proj: Project!
-  scale: Int!
+  amount: Float!
+  type: String!
+  description: String
 }
 
 type Cost {
   id: ID!
   assignee: String!
-  participants: [User!]!
-  projs: [ProjCostAllocationScale!]!
-  amount: Float!
-  description: String
+  participant: User!
+  projs: [ProjectCostDetail!]!
   createDate: String!
 }
 
@@ -72,7 +72,7 @@ type Query {
   iLeadProjs: [Project!]!
   costs: [Cost!]!
   dailyUsers: [User!]!
-  daily(userId: String!): EmployeeDaily
+  daily(userId: String!): EmployeeDaily!
 }
 
 input DailyInput {
@@ -96,17 +96,17 @@ input ContactInput {
   phone: String
 }
 
-input ProjScaleInput {
+input ProjCostInput {
   id: ID!
-  scale: Int!
+  amount: Float!
+  type: String!
+  description: String
 }
 
 input CostInput {
   id: ID
-  participants: [String!]!
-  projs: [ProjScaleInput!]!
-  amount: Float!
-  description: String
+  participant: ID!
+  projs: [ProjCostInput!]!
 }
 
 type Mutation {

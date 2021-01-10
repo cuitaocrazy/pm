@@ -51,18 +51,18 @@ enum ProjectType {
   comprehensive
 }
 
-type ProjCostAllocationScale {
+type ProjectCostDetail {
   proj: Project!
-  scale: Int!
+  amount: Float!
+  type: String!
+  description: String
 }
 
 type Cost {
   id: ID!
   assignee: String!
-  participants: [User!]!
-  projs: [ProjCostAllocationScale!]!
-  amount: Float!
-  description: String
+  participant: User!
+  projs: [ProjectCostDetail!]!
   createDate: String!
 }
 
@@ -74,7 +74,7 @@ type Query {
   iLeadProjs: [Project!]!
   costs: [Cost!]!
   dailyUsers: [User!]!
-  daily(userId: String!): EmployeeDaily
+  daily(userId: String!): EmployeeDaily!
 }
 
 input DailyInput {
@@ -98,17 +98,17 @@ input ContactInput {
   phone: String
 }
 
-input ProjScaleInput {
+input ProjCostInput {
   id: ID!
-  scale: Int!
+  amount: Float!
+  type: String!
+  description: String
 }
 
 input CostInput {
   id: ID
-  participants: [String!]!
-  projs: [ProjScaleInput!]!
-  amount: Float!
-  description: String
+  participant: ID!
+  projs: [ProjCostInput!]!
 }
 
 type Mutation {
@@ -175,35 +175,31 @@ function makeCosts() {
   return R.range(0, 5).map(i => ({
     id: `cost_${i}`,
     assignee: '0001',
-    participants: [
-      {
-        id: '0002',
-        name: 'user2'
-      },
-      {
-        id: '0003',
-        name: 'user3'
-      }
-    ],
+    participant: {
+      id: '0002',
+      name: 'user2'
+    },
     projs: [
       {
         proj: {
           id: 'proj_1',
           name: 'proj 1',
         },
-        scale: 1
+        amount: 100.01,
+        type: '差旅',
+        description: '费用测试1'
       },
       {
         proj: {
           id: 'proj_2',
           name: 'proj 2',
         },
-        scale: 1
+        amount: 200.2,
+        type: '餐费',
+        description: '费用测试2'
       }
     ],
-    createDate: '20201212',
-    amount: 1000,
-    description: '费用测试'
+    createDate: '20201212'
   }))
 }
 
@@ -284,11 +280,9 @@ const root = {
       return {
         id: id,
         assignee: assignee,
-        participants: data.participants.map((p: any) => ({ id: p, name: users.find(u => u.id === p)?.name })),
-        projs: data.projs.map((p: any) => ({ proj: { id: p.id, name: projs.find(proj => proj.id === p.id)?.name }, scale: p.scale })),
-        createDate: createDate,
-        description: data.description,
-        amount: data.amount
+        participant: { id: data.participant, name: users.find(u => u.id === data.participant)?.name || data.participant },
+        projs: data.projs.map((p: any) => ({ proj: { id: p.id, name: projs.find(proj => proj.id === p.id)?.name }, amount: p.amount, description: p.description, type: p.type })),
+        createDate: createDate
       }
     }
 

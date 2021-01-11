@@ -2,11 +2,11 @@ import { any, anyPass, equals, filter, find, head, identity, includes, pipe, pro
 import { AuthContext, getGroupUsers, UserInfo, UserWithGroup } from '../../auth/oauth'
 import { EmployeeDaily, Project } from '../../mongodb'
 
-function getUsersByGroups (groups: string[], users: UserWithGroup[]) {
+function getUsersByGroups(groups: string[], users: UserWithGroup[]) {
   const list = unnest(groups.map(g => getUsersByGroup(g, users)))
   return uniqBy(prop('id'), list)
 }
-function getUsersByGroup (group: string, users: UserWithGroup[]) {
+function getUsersByGroup(group: string, users: UserWithGroup[]) {
   const filterPredicate = pipe<any, any, any>(
     prop('groups'),
     any(startsWith(group)),
@@ -14,11 +14,11 @@ function getUsersByGroup (group: string, users: UserWithGroup[]) {
   return filter(filterPredicate, users)
 }
 
-async function getUserDailies (userId: string) {
+async function getUserDailies(userId: string) {
   return EmployeeDaily.findOne({ _id: userId })
 }
 
-async function getParticipateProjectUsersByLeader (leaderId: string, users: UserWithGroup[]) {
+async function getParticipateProjectUsersByLeader(leaderId: string, users: UserWithGroup[]) {
   const projIds = await Project.find({ leader: leaderId }).map(proj => proj._id).toArray()
   const userIds = without([leaderId], await EmployeeDaily.find({
     dailies: {
@@ -37,7 +37,7 @@ async function getParticipateProjectUsersByLeader (leaderId: string, users: User
   return users.filter(u => userIds.includes(u.id))
 }
 
-async function getParticipateProjectDailiesByLeader (leaderId: string, userId: string) {
+async function getParticipateProjectDailiesByLeader(leaderId: string, userId: string) {
   const projIds = await Project.find({ leader: leaderId }).map(proj => proj._id).toArray()
 
   const d = await EmployeeDaily.aggregate([
@@ -81,6 +81,13 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, userId: s
   return head(d)
 }
 
+function getDeafultDailies(userId: string) {
+  return {
+    id: userId,
+    dailies: []
+  }
+}
+
 const hasRole = (role: string) => pipe<UserInfo, string[], boolean>(prop('roles'), includes(role))
 const isSupervisor = hasRole('realm:supervisor')
 const isGroupLeader = hasRole('realm:supervisor')
@@ -109,15 +116,15 @@ export default {
           if (any(identity, boolList)) {
             return getUserDailies(userId)
           } else {
-            return undefined
+            return getDeafultDailies(userId)
           }
         } else {
-          return undefined
+          return getDeafultDailies(userId)
         }
       } else if (isProjectManager(user)) {
         return getParticipateProjectDailiesByLeader(user.id, userId)
       } else {
-        return undefined
+        return getDeafultDailies(userId)
       }
     },
   },

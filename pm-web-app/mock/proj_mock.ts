@@ -140,8 +140,8 @@ function makeDailies(date: string) {
 
 function makeEmpDailies(name: string) {
   return {
-    id: name,
-    dailies: R.range(1, 10).map(i => makeDailies(`2020120${i}`))
+    id: `${name}`,
+    dailies: R.range(1, 10).map(i => makeDailies(`2021010${i}`))
   }
 }
 
@@ -257,6 +257,8 @@ const root = {
   },
   iLeadProjs: () => projs,
   costs: (args: any) => costs,
+  dailyUsers: users,
+  daily: makeEmpDailies,
   subordinates: () => users,
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])

@@ -28,6 +28,11 @@
     access: 'canCost'
   },
   {
+    path: '/employeeDaily',
+    name: 'employeeDaily',
+    component: './EmployeeDaily'
+  },
+  {
     component: './404',
   },
 ];

@@ -10,5 +10,6 @@ export default function access(initialState: { currentUser?: API.CurrentUser | u
     canDaily: hasPower(['realm:project_manager', 'realm:engineer']),
     canProj: hasPower(['realm:project_manager']),
     canCost: hasPower(['realm:assistant']),
+    canDailiesViewer: hasPower(['realm:project_manager', 'realm:group_leader', 'realm:supervisor']),
   };
 }

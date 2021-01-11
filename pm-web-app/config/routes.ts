@@ -28,9 +28,10 @@
     access: 'canCost'
   },
   {
-    path: '/employeeDaily',
-    name: 'employeeDaily',
-    component: './EmployeeDaily'
+    path: '/dailiesViewer',
+    name: 'dailiesViewer',
+    component: './DailiesViewer',
+    access: 'canDailiesViewer'
   },
   {
     component: './404',

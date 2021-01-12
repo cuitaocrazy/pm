@@ -3,7 +3,7 @@ import { Calendar, DatePicker } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import moment, { Moment } from 'moment';
 import * as R from 'ramda';
-import { Daily } from '@/apollo';
+import { Daily, ProjDaily } from '@/apollo';
 
 interface CalendarProps {
   date: Moment;
@@ -12,9 +12,12 @@ interface CalendarProps {
 }
 
 const getCalendarCell = (date: Moment, dailies: Daily[]) => {
-  const time = R.find((d) => d.date === date.format('YYYYMMDD'), dailies)?.projs
-    .map(proj => proj.timeConsuming)
-    .reduce((a, b) => a + b, 0)
+  const time = R.pipe(
+    R.find((d: Daily) => d.date === date.format('YYYYMMDD')),
+    R.pathOr([], ['projs']),
+    R.map((proj: ProjDaily) => proj.timeConsuming),
+    R.sum
+  )(dailies)
   if (time && time > 0) {
     const color = time > 10 ? 'purple' : 'green'
     return (

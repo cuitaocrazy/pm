@@ -27,7 +27,7 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
               <Card size="small" bordered={false} key={proj.projId}>
                 <Card.Meta 
                   title={`${getProjName(proj.projId, projs)}(${proj.timeConsuming}h)`} 
-                  description={<div style={{ whiteSpace: "pre-wrap" }}>{proj.content}</div>} 
+                  description={<pre>{proj.content}</pre>} 
                 />
               </Card>
             ))}

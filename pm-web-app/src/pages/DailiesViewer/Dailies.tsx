@@ -25,7 +25,10 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
             <h3>{moment(daily.date, 'YYYYMMDD').format('YYYY年MM月DD日')}</h3>
             {daily.projs.map(proj => (
               <Card size="small" bordered={false} key={proj.projId}>
-                <Card.Meta title={`${getProjName(proj.projId, projs)}(${proj.timeConsuming}h)`} description={proj.content} />
+                <Card.Meta 
+                  title={`${getProjName(proj.projId, projs)}(${proj.timeConsuming}h)`} 
+                  description={<div style={{ whiteSpace: "pre-wrap" }}>{proj.content}</div>} 
+                />
               </Card>
             ))}
           </Timeline.Item>

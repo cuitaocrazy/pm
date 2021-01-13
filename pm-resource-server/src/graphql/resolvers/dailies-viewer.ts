@@ -92,7 +92,7 @@ function getDeafultDailies (userId: string) {
 
 const hasRole = (role: string) => pipe<UserInfo, string[], boolean>(prop('roles'), includes(role))
 const isSupervisor = hasRole('realm:supervisor')
-const isGroupLeader = hasRole('realm:supervisor')
+const isGroupLeader = hasRole('realm:group_leader')
 const isProjectManager = hasRole('realm:project_manager')
 
 export default {

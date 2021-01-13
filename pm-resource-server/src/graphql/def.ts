@@ -8,6 +8,22 @@ type User {
   groups: [String!]!
 }
 
+type ProjectDaily {
+  id: ID!
+  dailies(date: String): [UsersDaily!]!
+}
+
+type UsersDaily {
+  date: String!
+  users: [UserDaily!]!
+}
+
+type UserDaily {
+  userId: String!
+  timeConsuming: Int!
+  content: String
+}
+
 type EmployeeDaily {
   id: ID!
   dailies(date: String): [Daily!]!
@@ -73,6 +89,7 @@ type Query {
   costs: [Cost!]!
   dailyUsers: [User!]!
   daily(userId: String!): EmployeeDaily!
+  projDaily(projId: String!): ProjectDaily!
 }
 
 input DailyInput {

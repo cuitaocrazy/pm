@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pm.rs.fullname" . }}
+  labels:
+    {{- include "pm.rs.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "pm.rs.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pm.rs.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "pm.rs.fullname" . }}
+          image: cuitaocrazy/pm-resource-server:{{ .Values.version }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: ISSUER_BASE_URL
+              value: {{ .Values.oauth.config.spring.security.oauth2.client.provider.keycloak.issuerUri }}
+            - name: MONGODB_URL
+              value: {{ .Values.mongoUrl }}

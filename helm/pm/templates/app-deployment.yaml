@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pm.app.fullname" . }}
+  labels:
+    {{- include "pm.app.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "pm.app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pm.app.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "pm.app.fullname" . }}
+          image: cuitaocrazy/pm-web-app:{{ .Values.version }}
+          ports:
+            - containerPort: 80

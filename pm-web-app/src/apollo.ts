@@ -16,7 +16,7 @@ export const client = new ApolloClient({
 
 // gen code by https://graphql-code-generator.com/
 export type Maybe<T> = T | null;
-export type Exact<T extends Record<string, unknown>> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
@@ -32,15 +32,40 @@ export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
   name: Scalars['String'];
-  access: Scalars['String'][];
-  groups: Scalars['String'][];
+  access: Array<Scalars['String']>;
+  groups: Array<Scalars['String']>;
+};
+
+export type ProjectDaily = {
+  __typename?: 'ProjectDaily';
+  id: Scalars['ID'];
+  dailies: Array<UsersDaily>;
+};
+
+
+export type ProjectDailyDailiesArgs = {
+  date?: Maybe<Scalars['String']>;
+};
+
+export type UsersDaily = {
+  __typename?: 'UsersDaily';
+  date: Scalars['String'];
+  users: Array<UserDaily>;
+};
+
+export type UserDaily = {
+  __typename?: 'UserDaily';
+  userId: Scalars['String'];
+  timeConsuming: Scalars['Int'];
+  content?: Maybe<Scalars['String']>;
 };
 
 export type EmployeeDaily = {
   __typename?: 'EmployeeDaily';
   id: Scalars['ID'];
-  dailies: Daily[];
+  dailies: Array<Daily>;
 };
+
 
 export type EmployeeDailyDailiesArgs = {
   date?: Maybe<Scalars['String']>;
@@ -49,7 +74,7 @@ export type EmployeeDailyDailiesArgs = {
 export type Daily = {
   __typename?: 'Daily';
   date: Scalars['String'];
-  projs: ProjDaily[];
+  projs: Array<ProjDaily>;
 };
 
 export type ProjDaily = {
@@ -67,8 +92,8 @@ export type Project = {
   budget: Scalars['Int'];
   createDate: Scalars['String'];
   type: ProjectType;
-  participants: Scalars['String'][];
-  contacts: Contact[];
+  participants: Array<Scalars['String']>;
+  contacts: Array<Contact>;
 };
 
 export type Contact = {
@@ -83,7 +108,7 @@ export enum ProjectType {
   OnSale = 'onSale',
   AfterSale = 'afterSale',
   Research = 'research',
-  Comprehensive = 'comprehensive',
+  Comprehensive = 'comprehensive'
 }
 
 export type ProjectCostDetail = {
@@ -99,24 +124,31 @@ export type Cost = {
   id: Scalars['ID'];
   assignee: Scalars['String'];
   participant: User;
-  projs: ProjectCostDetail[];
+  projs: Array<ProjectCostDetail>;
   createDate: Scalars['String'];
 };
 
 export type Query = {
   __typename?: 'Query';
   me: User;
-  subordinates: User[];
+  subordinates: Array<User>;
   myDailies?: Maybe<EmployeeDaily>;
-  projs: Project[];
-  iLeadProjs: Project[];
-  costs: Cost[];
-  dailyUsers: User[];
+  projs: Array<Project>;
+  iLeadProjs: Array<Project>;
+  costs: Array<Cost>;
+  dailyUsers: Array<User>;
   daily: EmployeeDaily;
+  projDaily: ProjectDaily;
 };
+
 
 export type QueryDailyArgs = {
   userId: Scalars['String'];
+};
+
+
+export type QueryProjDailyArgs = {
+  projId: Scalars['String'];
 };
 
 export type DailyInput = {
@@ -130,8 +162,8 @@ export type ProjectInput = {
   name: Scalars['String'];
   budget: Scalars['Int'];
   type: ProjectType;
-  participants?: Maybe<Scalars['String'][]>;
-  contacts?: Maybe<ContactInput[]>;
+  participants?: Maybe<Array<Scalars['String']>>;
+  contacts?: Maybe<Array<ContactInput>>;
 };
 
 export type ContactInput = {
@@ -150,7 +182,7 @@ export type ProjCostInput = {
 export type CostInput = {
   id?: Maybe<Scalars['ID']>;
   participant: Scalars['ID'];
-  projs: ProjCostInput[];
+  projs: Array<ProjCostInput>;
 };
 
 export type Mutation = {
@@ -162,22 +194,27 @@ export type Mutation = {
   deleteCost: Scalars['ID'];
 };
 
+
 export type MutationPushDailyArgs = {
   date: Scalars['String'];
-  projDailies: DailyInput[];
+  projDailies: Array<DailyInput>;
 };
+
 
 export type MutationPushProjectArgs = {
   proj: ProjectInput;
 };
 
+
 export type MutationDeleteProjectArgs = {
   id: Scalars['ID'];
 };
 
+
 export type MutationPushCostArgs = {
   cost: CostInput;
 };
+
 
 export type MutationDeleteCostArgs = {
   id: Scalars['ID'];

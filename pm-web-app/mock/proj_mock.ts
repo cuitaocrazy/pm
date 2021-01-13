@@ -10,6 +10,22 @@ type User {
   groups: [String!]!
 }
 
+type ProjectDaily {
+  id: ID!
+  dailies(date: String): [UsersDaily!]!
+}
+
+type UsersDaily {
+  date: String!
+  users: [UserDaily!]!
+}
+
+type UserDaily {
+  userId: String!
+  timeConsuming: Int!
+  content: String
+}
+
 type EmployeeDaily {
   id: ID!
   dailies(date: String): [Daily!]!
@@ -75,6 +91,7 @@ type Query {
   costs: [Cost!]!
   dailyUsers: [User!]!
   daily(userId: String!): EmployeeDaily!
+  projDaily(projId: String!): ProjectDaily!
 }
 
 input DailyInput {
@@ -142,6 +159,20 @@ function makeEmpDailies(name: string) {
   return {
     id: `${name}`,
     dailies: R.range(1, 10).map(i => makeDailies(`2021010${i}`))
+  }
+}
+
+function makeProjDailies(name: string) {
+  return {
+    id: `${name}`,
+    dailies: R.range(1, 10).map(i => ({
+      date: `2021010${i}`,
+      users: users.map(user => ({
+        userId: user.id,
+        timeConsuming: randomNum(11),
+        content: `test worke content`,
+      }))
+    }))
   }
 }
 
@@ -259,6 +290,7 @@ const root = {
   costs: (args: any) => costs,
   dailyUsers: users,
   daily: makeEmpDailies,
+  projDaily: makeProjDailies,
   subordinates: () => users,
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])

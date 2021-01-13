@@ -28,10 +28,16 @@
     access: 'canCost'
   },
   {
-    path: '/dailiesViewer',
-    name: 'dailiesViewer',
-    component: './DailiesViewer',
-    access: 'canDailiesViewer'
+    path: '/empDailies',
+    name: 'empDailies',
+    component: './EmpDailies',
+    access: 'canEmpDailies'
+  },
+  {
+    path: '/projDailies',
+    name: 'projDailies',
+    component: './ProjDailies',
+    access: 'canProjDailies'
   },
   {
     component: './404',

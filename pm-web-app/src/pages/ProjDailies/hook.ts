@@ -1,0 +1,79 @@
+import { useState, useEffect } from 'react';
+import { gql, useLazyQuery } from '@apollo/client';
+import type { Query, QueryProjDailyArgs } from '@/apollo';
+
+const QueryProjs = gql`
+  {
+    dailyUsers {
+      id
+      name
+    }
+    iLeadProjs {
+      id
+      name
+    }
+  }
+`;
+
+export function useProjsState() {
+
+  const [queryUsers, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(QueryProjs, {
+    fetchPolicy: 'no-cache',
+  });
+
+  useEffect(() => queryUsers(), [queryUsers]);
+  const users = queryData?.dailyUsers || [];
+  const projs = queryData?.iLeadProjs || [];
+
+  return {
+    loading: queryLoading,
+    users,
+    projs,
+  };
+}
+
+const QueryDaily = gql`
+  query GetDaily($projId: String!) {
+    projDaily(projId: $projId) {
+      id
+      dailies {
+        date
+        users {
+          userId
+          timeConsuming
+          content
+        }
+      }
+    }
+  }
+`;
+
+export function useDailyState() {
+
+  const [projId, setProjId] = useState<string>();
+
+  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryProjDailyArgs>(QueryDaily, {
+    fetchPolicy: 'no-cache',
+  });
+
+  const daily = queryData?.projDaily || {
+    id: '',
+    dailies: [],
+  };
+
+  const queryDaily = (projId: string) => {
+    setProjId(projId);
+    query({
+      variables: {
+        projId
+      }
+    });
+  }
+
+  return {
+    loading: queryLoading,
+    queryDaily,
+    projId,
+    daily,
+  };
+}

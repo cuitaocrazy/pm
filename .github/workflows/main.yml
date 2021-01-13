@@ -15,3 +15,95 @@ jobs:
     steps:
      - name: Run shell
        run: echo ${GITHUB_REF##*/}
+  build-web-app:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 14.x
+      - uses: docker/setup-buildx-action@v1.0.4
+      - uses: actions/cache@v2.1.3
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
+      # Runs a single command using the runners shell
+      - name: build
+        run: |
+          cd pm-web-app
+          npm i
+          npm run build
+      - uses: docker/login-action@v1.8.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_SECRET }}
+      - uses: docker/build-push-action@v2.2.1
+        with:
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-web-app:${GITHUB_REF##*/}
+          context: ./pm-web-app
+          file: ./pm-web-app/Dockerfile
+          push: true
+  build-resource-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 14.x
+      - uses: docker/setup-buildx-action@v1.0.4
+      - uses: actions/cache@v2.1.3
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
+      - name: build
+        run: |
+          cd pm-resource-server
+          npm i
+          npm run build
+      - uses: docker/login-action@v1.8.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_SECRET }}
+      - uses: docker/build-push-action@v2.2.1
+        with:
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-resource-server:${GITHUB_REF##*/}
+          context: ./pm-resource-server
+          file: ./pm-resource-server/Dockerfile
+          push: true
+  build-gw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 11
+      - uses: docker/setup-buildx-action@v1.0.4
+      - uses: actions/cache@v2.1.3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+      - name: build
+        run: |
+          cd oauth-gw
+          ./gradlew build
+      - uses: docker/login-action@v1.8.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_SECRET }}
+      - uses: docker/build-push-action@v2.2.1
+        with:
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/oauth-gw:${GITHUB_REF##*/}
+          context: ./oauth-gw
+          file: ./oauth-gw/Dockerfile
+          push: true

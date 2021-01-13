@@ -6,15 +6,10 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   release:
-    types: [published, created, edited]
+    types: [created, edited]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-     - name: Run shell
-       run: echo ${GITHUB_REF##*/}
   build-web-app:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest

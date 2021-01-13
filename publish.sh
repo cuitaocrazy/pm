@@ -45,6 +45,7 @@ if git diff-index --quiet HEAD --; then
   change_oauth
   change_app
   change_resource_server
+  change_helm
   git add .
   git commit -m 'release '$VERSION
   git tag -a $VERSION -m 'release '$VERSION

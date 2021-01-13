@@ -15,7 +15,6 @@ EOF
 
 change_oauth() {
   cd oauth-gw
-  # cat build.gradle.kts
   sed -i '' 's/^version.*/version = "'$VERSION'"/' build.gradle.kts
   cd ..
 }

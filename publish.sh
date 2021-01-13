@@ -33,6 +33,7 @@ change_resource_server() {
 
 echo $VERSION
 if git diff-index --quiet HEAD --; then
+  git pull
   change_version
   change_oauth
   change_app

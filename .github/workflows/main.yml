@@ -40,13 +40,14 @@ jobs:
           cd pm-web-app
           npm i
           npm run build
+          VERSION=${GITHUB_REF##*/}
       - uses: docker/login-action@v1.8.0
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_SECRET }}
       - uses: docker/build-push-action@v2.2.1
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-web-app:${GITHUB_REF##*/}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-web-app:${{ env.VERSION }}
           context: ./pm-web-app
           file: ./pm-web-app/Dockerfile
           push: true
@@ -70,13 +71,14 @@ jobs:
           cd pm-resource-server
           npm i
           npm run build
+          VERSION=${GITHUB_REF##*/}
       - uses: docker/login-action@v1.8.0
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_SECRET }}
       - uses: docker/build-push-action@v2.2.1
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-resource-server:${GITHUB_REF##*/}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-resource-server:${{ env.VERSION }}
           context: ./pm-resource-server
           file: ./pm-resource-server/Dockerfile
           push: true
@@ -97,13 +99,14 @@ jobs:
         run: |
           cd oauth-gw
           ./gradlew build
+          VERSION=${GITHUB_REF##*/}
       - uses: docker/login-action@v1.8.0
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_SECRET }}
       - uses: docker/build-push-action@v2.2.1
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/oauth-gw:${GITHUB_REF##*/}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/oauth-gw:${{ env.VERSION }}
           context: ./oauth-gw
           file: ./oauth-gw/Dockerfile
           push: true

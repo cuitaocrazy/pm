@@ -36,18 +36,20 @@ jobs:
             ${{ runner.OS }}-
       # Runs a single command using the runners shell
       - name: build
+        id: build
         run: |
           cd pm-web-app
           npm i
           npm run build
-          export VERSION=${GITHUB_REF##*/}
+          VERSION=${GITHUB_REF##*/}
+          echo ::set-output name=version::${VERSION}
       - uses: docker/login-action@v1.8.0
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_SECRET }}
       - uses: docker/build-push-action@v2.2.1
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-web-app:${{ env.VERSION }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-web-app:${{ steps.build.outputs.version }}
           context: ./pm-web-app
           file: ./pm-web-app/Dockerfile
           push: true
@@ -67,18 +69,20 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
       - name: build
+        id: build
         run: |
           cd pm-resource-server
           npm i
           npm run build
-          export VERSION=${GITHUB_REF##*/}
+          VERSION=${GITHUB_REF##*/}
+          echo ::set-output name=version::${VERSION}
       - uses: docker/login-action@v1.8.0
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_SECRET }}
       - uses: docker/build-push-action@v2.2.1
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-resource-server:${{ env.VERSION }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pm-resource-server:${{ steps.build.outputs.version }}
           context: ./pm-resource-server
           file: ./pm-resource-server/Dockerfile
           push: true
@@ -96,17 +100,19 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: build
+        id: build
         run: |
           cd oauth-gw
           ./gradlew build
-          export VERSION=${GITHUB_REF##*/}
+          VERSION=${GITHUB_REF##*/}
+          echo ::set-output name=version::${VERSION}
       - uses: docker/login-action@v1.8.0
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_SECRET }}
       - uses: docker/build-push-action@v2.2.1
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/oauth-gw:${{ env.VERSION }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/oauth-gw:${{ steps.build.outputs.version }}
           context: ./oauth-gw
           file: ./oauth-gw/Dockerfile
           push: true

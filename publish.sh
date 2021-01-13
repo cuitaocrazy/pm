@@ -31,6 +31,13 @@ change_resource_server() {
   cd ..
 }
 
+change_helm() {
+  cd helm/pm
+  sed -i '' 's/^version.*/version: "'$VERSION'"/' values.yaml
+  sed -i '' 's/^version.*/version: "'$VERSION'"/' Chart.yaml
+  cd ../..
+}
+
 echo $VERSION
 if git diff-index --quiet HEAD --; then
   git pull

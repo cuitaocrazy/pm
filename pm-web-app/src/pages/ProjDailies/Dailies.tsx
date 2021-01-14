@@ -1,6 +1,7 @@
 import React from 'react';
 import { Timeline, Card } from 'antd';
 import moment, { Moment } from 'moment';
+import * as R from 'ramda';
 import { UsersDaily, User } from '@/apollo';
 
 interface DailiesProps {
@@ -9,7 +10,10 @@ interface DailiesProps {
   users: User[]
 }
 
-const getUserName = (userId: string, users: User[]) => users.find(u => u.id === userId)?.name;
+const getUserName = (userId: string, users: User[]) => R.pipe(
+  R.find(R.propEq('id', userId)),
+  R.ifElse(R.isNil, R.always(userId), R.propOr(userId, 'name')),
+)(users)
 
 const DailiesPage: React.FC<DailiesProps> = (props) => {
 

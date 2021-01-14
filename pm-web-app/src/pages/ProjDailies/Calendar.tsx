@@ -14,7 +14,7 @@ interface CalendarProps {
 const getCalendarCell = (date: Moment, dailies: UsersDaily[]) => {
   const time = R.pipe(
     R.find((d: UsersDaily) => d.date === date.format('YYYYMMDD')),
-    R.pathOr([], ['users']),
+    R.propOr([], 'users'),
     R.map((d: UserDaily) => d.timeConsuming),
     R.sum
   )(dailies)

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Timeline, Card } from 'antd';
 import moment, { Moment } from 'moment';
+import * as R from 'ramda';
 import { Daily, Project } from '@/apollo';
 
 interface DailiesProps {
@@ -9,7 +10,10 @@ interface DailiesProps {
   projs: Project[]
 }
 
-const getProjName = (projId: string, projs: Project[]) => projs.find((p) => p.id === projId)?.name;
+const getProjName = (projId: string, projs: Project[]) => R.pipe(
+  R.find(R.propEq('id', projId)),
+  R.ifElse(R.isNil, R.always(projId), R.propOr(projId, 'name')),
+)(projs)
 
 const DailiesPage: React.FC<DailiesProps> = (props) => {
 

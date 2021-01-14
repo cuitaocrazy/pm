@@ -10,9 +10,8 @@ interface EmployeeProps {
 
 const genTreeData = (users: User[]) => {
   const groups = R.pipe(
-    R.map((user: User) => user.groups), 
-    R.reduce((acc: string[], item: string[]) => R.concat(acc, item), []), 
-    R.uniq
+    R.map((user: User) => user.groups),
+    R.reduce((acc: string[], item: string[]) => R.union(acc, item), [])
   )(users)
   return R.map((group: string) => ({
     key: group,

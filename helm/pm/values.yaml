@@ -1,4 +1,4 @@
-version: "1.0.12"
+version: "1.0.13"
 oauth:
   issuer: https://auth.lanxinpay.com/auth/realms/pm
   clientId: pm-app

@@ -1,48 +1,10 @@
 version: "1.0.12"
+oauth:
+  issuer: https://auth.lanxinpay.com/auth/realms/pm
+  clientId: pm-app
+  clientSecret: 0711ad1d-9053-4e3a-a6bb-db2b783e8eee
+hostName: pm.lanxinpay.com
 gwService:
   type: NodePort
   nodePort: 32659
 mongoUrl: mongodb://mongodb-arbiter-headless.dbs/pm
-oauth:
-  config:
-    server.port: 8090
-    spring:
-      security:
-        oauth2:
-          client:
-            provider:
-              keycloak:
-                issuerUri: https://auth.lanxinpay.com/auth/realms/pm
-                userNameAttribute: preferred_username
-            registration:
-              keycloak:
-                clientId: pm-app
-                clientSecret: 0711ad1d-9053-4e3a-a6bb-db2b783e8eee
-                scope: openid
-      cloud:
-        gateway:
-          routes:
-            - id: pm-api
-              uri: http://resource-server:3000
-              predicates:
-                - Host=pm.lanxinpay.com
-                - Path=/api/**
-              filters:
-                - OAuthApi
-            - id: pm-app-redirect
-              uri: http://web-app
-              predicates:
-                - Host=pm.lanxinpay.com
-                - Path=/redirect/{anchor}
-              filters:
-                - OAuth
-                - RedirectWithAnchor=/#/{anchor}
-            - id: pm-app
-              uri: http://web-app
-              predicates:
-                - Host=pm.lanxinpay.com
-                - Method=GET
-              filters:
-                - name: OAuth
-                  args:
-                    staticPaths: /*.js,/*.css,/*.icon,/*.svg

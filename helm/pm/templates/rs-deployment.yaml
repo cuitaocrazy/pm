@@ -20,6 +20,6 @@ spec:
             - containerPort: 3000
           env:
             - name: ISSUER_BASE_URL
-              value: {{ .Values.oauth.config.spring.security.oauth2.client.provider.keycloak.issuerUri }}
+              value: {{ .Values.oauth.issuer }}
             - name: MONGODB_URL
               value: {{ .Values.mongoUrl }}

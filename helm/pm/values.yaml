@@ -23,14 +23,14 @@ oauth:
         gateway:
           routes:
             - id: pm-api
-              uri: http://pm-resource-server:3000
+              uri: http://resource-server:3000
               predicates:
                 - Host=pm.lanxinpay.com
                 - Path=/api/**
               filters:
                 - OAuthApi
             - id: pm-app-redirect
-              uri: http://pm-web-app
+              uri: http://web-app
               predicates:
                 - Host=pm.lanxinpay.com
                 - Path=/redirect/{anchor}
@@ -38,7 +38,7 @@ oauth:
                 - OAuth
                 - RedirectWithAnchor=/#/{anchor}
             - id: pm-app
-              uri: http://pm-web-app
+              uri: http://web-app
               predicates:
                 - Host=pm.lanxinpay.com
                 - Method=GET

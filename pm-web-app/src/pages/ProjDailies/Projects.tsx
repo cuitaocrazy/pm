@@ -14,7 +14,7 @@ const genTreeData = R.map((proj: Project) => ({
     isLeaf: true,
   }))
 
-const Employee: React.FC<ProjectsProps> = (props) => {
+const Projects: React.FC<ProjectsProps> = (props) => {
 
   const { projs, handleClick } = props;
   const [search, setSearch] = React.useState<string>("");
@@ -34,4 +34,4 @@ const Employee: React.FC<ProjectsProps> = (props) => {
   )
 }
 
-export default Employee;
+export default Projects;

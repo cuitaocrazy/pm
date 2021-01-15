@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
-import { Divider } from 'antd';
+import { Divider, Row, Col, DatePicker } from 'antd';
 import moment, { Moment } from 'moment';
 import { ApolloProvider } from '@apollo/client';
 import { client } from '@/apollo';
@@ -19,22 +19,35 @@ const EmployeeDailyPage = () => {
 
   return (
     <PageContainer>
-      <ProCard headerBordered split="vertical" title="员工日报"
+      <ProCard headerBordered split="vertical"
         extra={<>
           {users.find(user => user.id === userId)?.name}
           <Divider type="vertical" />
           {`${moment(date).format('YYYY年MM月DD日')}-${moment(date).add(6, 'd').format('YYYY年MM月DD日')}`}
         </>}
       >
-        <ProCard title="员工列表" colSpan={{ xs: 4, sm: 4 }} loading={queryUsersLoading}>
-          <EmployeePage users={users} handleClick={queryDaily} />
-        </ProCard>
-        <ProCard colSpan={{ xs: 0, sm: 10 }}>
-          <CalendarPage date={date} setDate={setDate} dailies={daily.dailies} />
-        </ProCard>
-        <ProCard colSpan={{ xs: 20, sm: 10 }} loading={queryDailyLoading}>
-          <DailiesPage date={date} dailies={daily.dailies} projs={projs} />
-        </ProCard>
+        <Row>
+          <Col xs={24} sm={4}>
+            <ProCard collapsible title="员工列表" loading={queryUsersLoading}>
+              <EmployeePage users={users} handleClick={queryDaily} />
+            </ProCard>
+          </Col>
+          <Col xs={24} sm={10}>
+            <ProCard collapsible bordered extra={
+              <DatePicker picker="month" value={date}
+                disabledDate={date => date.isAfter(moment(), 'd')}
+                onChange={date => setDate(date || moment())}
+              />
+            }>
+              <CalendarPage date={date} setDate={setDate} dailies={daily.dailies} />
+            </ProCard>
+          </Col>
+          <Col xs={24} sm={10}>
+            <ProCard loading={queryDailyLoading}>
+              <DailiesPage date={date} dailies={daily.dailies} projs={projs} />
+            </ProCard>
+          </Col>
+        </Row>
       </ProCard>
     </PageContainer>
   )

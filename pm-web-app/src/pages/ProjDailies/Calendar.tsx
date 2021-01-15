@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, DatePicker } from 'antd';
+import { Calendar } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import moment, { Moment } from 'moment';
 import * as R from 'ramda';
@@ -40,16 +40,7 @@ const CalendarPage: React.FC<CalendarProps> = (props) => {
       disabledDate={date => date.isAfter(moment(), 'd')}
       onSelect={date => setDate(date)}
       dateCellRender={(date) => getCalendarCell(date, dailies)}
-      headerRender={() => {
-        return (
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <DatePicker picker="month" value={date}
-              disabledDate={date => date.isAfter(moment(), 'd')}
-              onChange={date => setDate(date || moment())}
-            />
-          </div>
-        )
-      }}
+      headerRender={() => null}
     />
   )
 }

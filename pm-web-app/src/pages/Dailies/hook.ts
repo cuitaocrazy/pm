@@ -15,7 +15,10 @@ const myQuery = gql`
       dailies {
         date
         projs {
-          projId
+          project {
+            id
+            name
+          }
           timeConsuming
           content
         }
@@ -61,15 +64,19 @@ export function useDailiesStatus(date?: string) {
   const mySetCurrentDaily = useCallback(
     (c: Daily | undefined) => {
       if (c) {
-        const existProjs = c.projs.map((p) => p.projId);
-        const allProjs = projs.map((p) => p.id);
-        const notExistProjs = R.difference(allProjs, existProjs);
-        const newProjs = notExistProjs.map((id) => ({ projId: id, timeConsuming: 0, content: '' }));
+        const existProjs = c.projs.map((p) => p.project);
+        const allProjs = projs;
+        const notExistProjs = R.differenceWith((p1, p2) => p1.id === p2.id, allProjs, existProjs);
+        const newProjs = notExistProjs.map((proj) => ({
+          project: proj,
+          timeConsuming: 0,
+          content: '',
+        }));
         setCurrentDaily(R.over(R.lensProp('projs'), (p: ProjDaily[]) => [...p, ...newProjs], c));
       } else
         setCurrentDaily({
           date: currentDate,
-          projs: projs?.map((p) => ({ projId: p.id, timeConsuming: 0, content: '' })) || [],
+          projs: projs?.map((p) => ({ project: p, timeConsuming: 0, content: '' })) || [],
         });
     },
     [currentDate, projs],
@@ -106,7 +113,6 @@ export function useDailiesStatus(date?: string) {
       .then(() => refresh())
       .then(() => message.success(`提交成功`));
 
-  const getProjName = (projId: string) => projs.find((p) => p.id === projId)?.name;
   const getLastDaily = (lastDate: string) => R.findLast((d) => d.date < lastDate, dailies);
 
   return {
@@ -122,7 +128,6 @@ export function useDailiesStatus(date?: string) {
     setCurrentDaily: mySetCurrentDaily,
     setFilter,
     pushDaily: oPushDaily,
-    getProjName,
     refs: refs.current,
     getOffset: () => refs.current[0].current?.getOffset() || 0,
     getLastDaily,

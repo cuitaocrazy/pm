@@ -27,7 +27,6 @@ export type ProjItemHandle = {
   getOffset: () => number;
 };
 const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = (props, ref) => {
-
   const [isOpened, setIsOpened] = useState(false);
 
   const divRef = useRef<HTMLDivElement>(null);
@@ -50,7 +49,13 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
   }));
 
   return (
-    <Card title={props.projName || props.projId} id={props.projId} hidden={!visible} size="small" style={{ marginBottom: 16 }}>
+    <Card
+      title={props.projName || props.projId}
+      id={props.projId}
+      hidden={!visible}
+      size="small"
+      style={{ marginBottom: 16 }}
+    >
       {/* 设置一个暗锚, 本身Card是可以支持ref的, 但是antd定义的Type没有这个属性, 避免一些dev的报错, 假如一手工锚点 */}
       <div ref={divRef} />
       <Row>
@@ -80,7 +85,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
           </div>
         </Col>
       </Row>
-    </Card >
+    </Card>
   );
 };
 

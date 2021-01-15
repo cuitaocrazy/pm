@@ -29,7 +29,7 @@ const getCalendarCell = (date: Moment, dailies: Daily[]) => {
       </div>
     )
   } else {
-    if (dailies.length > 0 && date.isBefore(moment(), 'd') &&
+    if (dailies.length > 0 && date.isSameOrBefore(moment(), 'd') &&
       ![moment().day("星期六").weekday(), moment().day("星期日").weekday()].includes(date.weekday()))
       return (
         <div style={{ textAlign: 'center' }}>

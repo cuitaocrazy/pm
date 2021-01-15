@@ -15,7 +15,7 @@ const EmployeeDailyPage = () => {
   const { loading: queryUsersLoading, users, projs } = useUsersState();
   const { loading: queryDailyLoading, queryDaily, userId, daily } = useDailyState();
 
-  const [date, setDate] = useState<Moment>(moment().day(0));
+  const [date, setDate] = useState<Moment>(moment().day(1));
 
   return (
     <PageContainer>
@@ -23,7 +23,7 @@ const EmployeeDailyPage = () => {
         extra={<>
           {users.find(user => user.id === userId)?.name}
           <Divider type="vertical" />
-          {`${moment(date).weekday(0).format('YYYY年MM月DD日')}-${moment(date).weekday(6).format('YYYY年MM月DD日')}`}
+          {`${moment(date).format('YYYY年MM月DD日')}-${moment(date).add(6, 'd').format('YYYY年MM月DD日')}`}
         </>}
       >
         <ProCard title="员工列表" colSpan={{ xs: 4, sm: 4 }} loading={queryUsersLoading}>

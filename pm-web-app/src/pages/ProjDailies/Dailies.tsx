@@ -19,24 +19,36 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
 
   const { date, dailies, users } = props;
 
-  return (
+  return R.isEmpty(dailies) ? null : (
     <Timeline style={{ height: 719, overflow: "scroll" }}>
       <br />
-      {dailies
-        .filter(daily => moment(daily.date, 'YYYYMMDD').isSame(date, 'w'))
-        .map(daily => (
-          <Timeline.Item key={daily.date}>
-            <h3>{moment(daily.date, 'YYYYMMDD').format('YYYY年MM月DD日')}</h3>
-            {daily.users.map(ud => (
-              <Card size="small" bordered={false} key={ud.userId}>
-                <Card.Meta
-                  title={`${getUserName(ud.userId, users)}(${ud.timeConsuming}h)`}
-                  description={<div style={{ whiteSpace: "pre-wrap" }}>{ud.content}</div>}
-                />
-              </Card>
-            ))}
-          </Timeline.Item>
-        ))}
+      {R.range(0, 7)
+        .map(i => moment(date).add(i, 'd').format('YYYYMMDD'))
+        .map(d => R.pipe(
+          R.find(R.propEq('date', d)),
+          R.ifElse(
+            R.pipe(R.isNil, R.not),
+            (daily: UsersDaily) => (
+              <Timeline.Item key={daily.date} color="green">
+                <h3>{moment(daily.date, 'YYYYMMDD').format('YYYY年MM月DD日')}</h3>
+                {daily.users.map(ud => (
+                  <Card size="small" bordered={false} key={ud.userId}>
+                    <Card.Meta
+                      title={`${getUserName(ud.userId, users)}(${ud.timeConsuming}h)`}
+                      description={<div style={{ whiteSpace: "pre-wrap" }}>{ud.content}</div>}
+                    />
+                  </Card>
+                ))}
+              </Timeline.Item>
+            ),
+            R.always(
+              <Timeline.Item key={d}>
+                <h3>{moment(d, 'YYYYMMDD').format('YYYY年MM月DD日')}</h3>
+              </Timeline.Item>
+            ),
+          ),
+        )(dailies))
+      }
     </Timeline>
   )
 }

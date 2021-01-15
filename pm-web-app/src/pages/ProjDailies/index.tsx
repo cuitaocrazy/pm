@@ -15,7 +15,7 @@ const ProjectsDailyPage = () => {
   const { loading: queryUsersLoading, projs, users } = useProjsState();
   const { loading: queryDailyLoading, queryDaily, projId, daily } = useDailyState();
 
-  const [date, setDate] = useState<Moment>(moment().day(0));
+  const [date, setDate] = useState<Moment>(moment().day(1));
 
   return (
     <PageContainer>

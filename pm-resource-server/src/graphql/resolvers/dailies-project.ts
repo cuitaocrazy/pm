@@ -1,5 +1,5 @@
-import { anyPass, head, includes, pipe, prop } from 'ramda'
-import { AuthContext, UserInfo } from '../../auth/oauth'
+import { anyPass, head, includes, pipe, prop, find, propEq } from 'ramda'
+import { AuthContext, UserInfo, getGroupUsers } from '../../auth/oauth'
 import { EmployeeDaily, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
 
@@ -110,6 +110,13 @@ export default {
       } else {
         return getDeafultDailies(projId)
       }
+    },
+  },
+  UserDaily: {
+    user: async ({ userId }: any, _: any, context: AuthContext) => {
+      const user = context.user!
+      const users = await getGroupUsers(user)
+      return find(propEq('id', userId), users)
     },
   },
 }

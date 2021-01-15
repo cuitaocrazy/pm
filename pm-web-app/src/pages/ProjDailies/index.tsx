@@ -12,7 +12,7 @@ import { useProjsState, useDailyState } from './hook';
 
 const ProjectsDailyPage = () => {
 
-  const { loading: queryUsersLoading, projs, users } = useProjsState();
+  const { loading: queryUsersLoading, projs } = useProjsState();
   const { loading: queryDailyLoading, queryDaily, projId, daily } = useDailyState();
 
   const [date, setDate] = useState<Moment>(moment().day(1));
@@ -44,7 +44,7 @@ const ProjectsDailyPage = () => {
           </Col>
           <Col xs={24} sm={10}>
             <ProCard loading={queryDailyLoading}>
-              <DailiesPage date={date} dailies={daily.dailies} users={users} />
+              <DailiesPage date={date} dailies={daily.dailies} />
             </ProCard>
           </Col>
         </Row>

@@ -9,10 +9,6 @@ const QueryUsers = gql`
       name
       groups
     }
-    projs {
-      id
-      name
-    }
   }
 `;
 
@@ -24,12 +20,10 @@ export function useUsersState() {
 
   useEffect(() => queryUsers(), [queryUsers]);
   const users = queryData?.dailyUsers || [];
-  const projs = queryData?.projs || [];
 
   return {
     loading: queryLoading,
     users,
-    projs,
   };
 }
 
@@ -40,7 +34,10 @@ const QueryDaily = gql`
       dailies {
         date
         projs {
-          projId
+          project {
+            id
+            name
+          }
           timeConsuming
           content
         }

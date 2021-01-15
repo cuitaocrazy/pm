@@ -55,7 +55,7 @@ export type UsersDaily = {
 
 export type UserDaily = {
   __typename?: 'UserDaily';
-  userId: Scalars['String'];
+  user: User;
   timeConsuming: Scalars['Int'];
   content?: Maybe<Scalars['String']>;
 };
@@ -79,7 +79,7 @@ export type Daily = {
 
 export type ProjDaily = {
   __typename?: 'ProjDaily';
-  projId: Scalars['String'];
+  project: Project;
   timeConsuming: Scalars['Int'];
   content?: Maybe<Scalars['String']>;
 };

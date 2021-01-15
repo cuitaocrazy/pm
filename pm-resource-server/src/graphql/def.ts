@@ -19,7 +19,7 @@ type UsersDaily {
 }
 
 type UserDaily {
-  userId: String!
+  user: User!
   timeConsuming: Int!
   content: String
 }
@@ -35,7 +35,7 @@ type Daily {
 }
 
 type ProjDaily {
-  projId: String!
+  project: Project!
   timeConsuming: Int!
   content: String
 }

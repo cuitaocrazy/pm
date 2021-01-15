@@ -130,4 +130,10 @@ export default {
       }
     },
   },
+  ProjDaily: {
+    project: async ({ projId }: any) => {
+      const project = await Project.findOne({ _id: projId })
+      return dbid2id(project)
+    },
+  },
 }

@@ -51,7 +51,7 @@ export interface IProject {
   /**
    * 项目类型
    */
-  type: 'preSale' | 'onSale' | 'afterSale'
+  type: 'preSale' | 'onSale' | 'afterSale' | 'research' | 'comprehensive'
   /**
    * 参与人员
    */

@@ -1,4 +1,4 @@
-import { anyPass, head, includes, pipe, prop, find, propEq } from 'ramda'
+import { anyPass, head, includes, pipe, prop, find, propEq, isNil } from 'ramda'
 import { AuthContext, UserInfo, getGroupUsers } from '../../auth/oauth'
 import { EmployeeDaily, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
@@ -116,7 +116,14 @@ export default {
     user: async ({ userId }: any, _: any, context: AuthContext) => {
       const user = context.user!
       const users = await getGroupUsers(user)
-      return find(propEq('id', userId), users)
+      const projUser = find(propEq('id', userId), users)
+      // TODO 当日报中对应的用户不存在时的临时处理方案
+      return isNil(projUser)
+        ? ({
+            id: userId,
+            name: userId,
+          })
+        : projUser
     },
   },
 }

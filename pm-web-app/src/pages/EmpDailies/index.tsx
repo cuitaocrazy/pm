@@ -34,7 +34,7 @@ const EmployeeDailyPage = () => {
           </Col>
           <Col xs={24} sm={10}>
             <ProCard collapsible bordered extra={
-              <DatePicker picker="month" value={date}
+              <DatePicker inputReadOnly picker="month" value={date}
                 disabledDate={date => date.isAfter(moment(), 'd')}
                 onChange={date => setDate(date || moment())}
               />

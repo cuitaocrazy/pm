@@ -111,3 +111,12 @@ jobs:
           context: ./oauth-gw
           file: ./oauth-gw/Dockerfile
           push: true
+  webhook:
+    runs-on: ubuntu-latest
+    needs: [build-web-app, build-resource-server, build-gw]
+    steps:
+      - name: webhook
+        run: |
+          wget https://pm.yadadev.com/upgrade -O /dev/null
+          wget https://pm.lanxinpay.com/upgrade -O /dev/null
+

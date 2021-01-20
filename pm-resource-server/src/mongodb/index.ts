@@ -110,7 +110,7 @@ export const Cost = client.db().collection<ICost>(pluralize('Cost'))
  */
 export interface IConfig {
   _id: string
-  data: string[]
+  data: any[]
 }
 
 export const Config = client.db().collection<IConfig>(pluralize('Config'))

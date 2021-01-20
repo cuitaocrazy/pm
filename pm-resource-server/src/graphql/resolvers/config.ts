@@ -1,33 +1,28 @@
 import { isNil, union, difference } from 'ramda'
 import { Config } from '../../mongodb'
-import { dbid2id, id2dbid } from '../../util/utils'
+
+const getConfigData = async (configId: string) => {
+  const config = await Config.findOne({ _id: configId })
+  return isNil(config)
+    ? []
+    : config.data
+}
 
 export default {
   Query: {
-    config: async (_: any, { configId }: any) => {
-      const config = await Config.findOne({ _id: configId })
-      return isNil(config)
-        ? ({
-            id: configId,
-            data: [],
-          })
-        : dbid2id(config)
-    },
+    workCalendar: () => getConfigData('workCalendar'),
+    settleMonth: () => getConfigData('settleMonth'),
   },
   Mutation: {
-    pushConfig: async (_: any, { config }: any) => {
-      const oldConfig = await Config.findOne({ _id: config.id })
-      if (!isNil(oldConfig)) {
-        config.data = union(oldConfig.data, config.data)
-      }
-      return Config.replaceOne({ _id: config.id }, id2dbid(config), { upsert: true }).then(() => config.id)
+    pushWorkCalendar: async (_: any, { data }: any) => {
+      const oldData = await getConfigData('workCalendar')
+      return Config.replaceOne({ _id: 'workCalendar' }, { _id: 'workCalendar', data: union(oldData, data) }, { upsert: true })
+        .then(() => 'workCalendar')
     },
-    deleteConfig: async (_: any, { config }: any) => {
-      const oldConfig = await Config.findOne({ _id: config.id })
-      if (!isNil(oldConfig)) {
-        config.data = difference(oldConfig.data, config.data)
-      }
-      return Config.replaceOne({ _id: config.id }, id2dbid(config), { upsert: true }).then(() => config.id)
+    deleteWorkCalendar: async (_: any, { data }: any) => {
+      const oldData = await getConfigData('workCalendar')
+      return Config.replaceOne({ _id: 'workCalendar' }, { _id: 'workCalendar', data: difference(oldData, data) }, { upsert: true })
+        .then(() => 'workCalendar')
     },
   },
 }

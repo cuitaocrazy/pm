@@ -1,5 +1,5 @@
-import { anyPass, head, includes, pipe, prop, find, propEq, isNil } from 'ramda'
-import { AuthContext, UserInfo, getGroupUsers } from '../../auth/oauth'
+import { head, includes, find, propEq, isNil } from 'ramda'
+import { AuthContext, getGroupUsers } from '../../auth/oauth'
 import { EmployeeDaily, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
 
@@ -96,20 +96,11 @@ function getDeafultDailies (projId: string) {
   }
 }
 
-const hasRole = (role: string) => pipe<UserInfo, string[], boolean>(prop('roles'), includes(role))
-const isSupervisor = hasRole('realm:supervisor')
-const isGroupLeader = hasRole('realm:group_leader')
-const isProjectManager = hasRole('realm:project_manager')
-
 export default {
   Query: {
     projDaily: async (_: any, { projId }: any, context: AuthContext) => {
       const user = context.user!
-      if (anyPass([isSupervisor, isGroupLeader, isProjectManager])(user)) {
-        return getParticipateProjectDailiesByLeader(user.id, projId)
-      } else {
-        return getDeafultDailies(projId)
-      }
+      return getParticipateProjectDailiesByLeader(user.id, projId)
     },
   },
   UserDaily: {

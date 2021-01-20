@@ -92,6 +92,8 @@ type Query {
   dailyUsers: [User!]!
   daily(userId: String!): EmployeeDaily!
   projDaily(projId: String!): ProjectDaily!
+  workCalendar: [String!]!
+  settleMonth: [String!]!
 }
 
 input DailyInput {
@@ -134,6 +136,8 @@ type Mutation {
   deleteProject(id: ID!): ID!
   pushCost(cost: CostInput!): ID!
   deleteCost(id: ID!): ID!
+  pushWorkCalendar(data: [String!]!): ID!
+  deleteWorkCalendar(data: [String!]!): ID!
 }
 `)
 
@@ -264,6 +268,11 @@ let users = [
   }
 ]
 
+let config = {
+  workCalendar: ['20210101', '20210102', '20210103', '20210211', '20210212', '20210213', '20210214', '20210215', '20210216', '20210217'],
+  settleMonth: ['202101'],
+}
+
 const root = {
   me: () => users[0],
   myDailies: () => myDailies,
@@ -292,6 +301,8 @@ const root = {
   daily: makeEmpDailies,
   projDaily: makeProjDailies,
   subordinates: () => users,
+  workCalendar: config.workCalendar,
+  settleMonth: config.settleMonth,
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])
     args.proj.contacts || (args.proj.contacts = [])
@@ -337,6 +348,22 @@ const root = {
   deleteCost: (args: any) => {
     costs = costs.filter(c => c.id !== args.id)
     return args.id
+  },
+  pushWorkCalendar: (args: any) => {
+    config = R.set(
+      R.lensProp('workCalendar'),
+      R.union(config.workCalendar || [], args.data),
+      config
+    )
+    return 'workCalendar'
+  },
+  deleteWorkCalendar: (args: any) => {
+    config = R.set(
+      R.lensProp('workCalendar'),
+      R.difference(config.workCalendar || [], args.data),
+      config
+    )
+    return 'workCalendar'
   }
 }
 

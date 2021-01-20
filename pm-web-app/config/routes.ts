@@ -41,6 +41,12 @@
     access: 'canProjDailies'
   },
   {
+    path: '/workCalendar',
+    name: 'workCalendar',
+    component: './WorkCalendar',
+    access: 'canWorkCalendar'
+  },
+  {
     component: './404',
   },
 ];

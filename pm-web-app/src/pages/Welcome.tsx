@@ -5,10 +5,8 @@ import { Card } from 'antd';
 export default (): React.ReactNode => {
   return (
     <PageContainer>
-      <Card>
-        <div style={{textAlign: 'center'}}>
-          <img src='/main-figure.gif' />
-        </div>
+      <Card style={{ textAlign: 'center' }}>
+        <img src='/main-figure.gif' style={{ width: '50%' }} />
       </Card>
     </PageContainer>
   );

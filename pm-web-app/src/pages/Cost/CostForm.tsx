@@ -72,23 +72,11 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
                       option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {resData?.projs
-                      .filter(
-                        (p) =>
-                          !form
-                            .getFieldValue('projs')
-                            .filter(
-                              (ps: any) =>
-                                ps != null && ps.id !== form.getFieldValue('projs')[i].id,
-                            )
-                            .map((ps: any) => ps.id)
-                            .includes(p.id),
-                      )
-                      .map((u) => (
-                        <Select.Option key={u.id} value={u.id}>
-                          {u.name}
-                        </Select.Option>
-                      ))}
+                    {resData?.projs.map((u) => (
+                      <Select.Option key={u.id} value={u.id}>
+                        {u.name}
+                      </Select.Option>
+                    ))}
                   </Select>
                 </Form.Item>
 

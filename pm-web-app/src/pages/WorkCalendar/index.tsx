@@ -21,7 +21,7 @@ const CalendarPage: React.FC = () => {
   const ref = React.useRef<FormDialogHandle<{}>>(null);
 
   return (
-    <PageContainer extra={<Button type="link" onClick={() => ref.current!.showDialog()}>添加</Button>}>
+    <PageContainer extra={<Button type="link" onClick={() => ref.current!.showDialog()}>批量添加</Button>}>
       <ProCard>
         <Row>
           <Col xs={24} sm={6}>
@@ -48,6 +48,7 @@ const CalendarPage: React.FC = () => {
                 onPanelChange={mode => setHeight(R.equals(mode, 'month') ? 742.5 : 488)}
                 days={days}
                 months={months}
+                handleCreate={(date: string) => pushDays([date])}
                 handleRemove={(date: string) => deleteDays([date])}
               />
             </ProCard>

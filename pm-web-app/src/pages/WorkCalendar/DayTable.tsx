@@ -42,7 +42,7 @@ const DayTable: React.FC<DayTableProps> = (props) => {
       key: 'x',
       render: (text: string) => R.includes(moment(text, 'YYYYMMDD').format('YYYYMM'), months) ?
         <></> :
-        <Button type="link" icon={<DeleteOutlined />} onClick={() => handleRemove(text)} />,
+        <Button danger type="link" icon={<DeleteOutlined />} onClick={() => handleRemove(text)} />,
     }
   ];
 

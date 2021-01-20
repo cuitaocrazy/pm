@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calendar, Badge, Button, Divider } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import * as R from 'ramda';
 import moment, { Moment } from 'moment';
 
@@ -10,6 +10,7 @@ interface DayCalendarProps {
   months: string[]
   onSelect: (date: Moment) => void
   onPanelChange: (mode: string) => void
+  handleCreate: (date: string) => void
   handleRemove: (date: string) => void
 }
 
@@ -20,7 +21,7 @@ const isWeekend = (date: string): boolean => R.includes(
 
 const DayCalendar: React.FC<DayCalendarProps> = (props) => {
 
-  const { value, onSelect, onPanelChange, days, months, handleRemove } = props;
+  const { value, onSelect, onPanelChange, days, months, handleRemove, handleCreate } = props;
 
   return (
     <Calendar
@@ -34,7 +35,7 @@ const DayCalendar: React.FC<DayCalendarProps> = (props) => {
               <br />
               <Badge count="班">
                 {R.includes(moment(date, 'YYYYMMDD').format('YYYYMM'), months) ? null :
-                  <Button type="link" icon={<DeleteOutlined />} onClick={e => {
+                  <Button danger type="link" icon={<DeleteOutlined />} onClick={e => {
                     e.stopPropagation();
                     handleRemove(date.format('YYYYMMDD'));
                   }} />
@@ -47,7 +48,7 @@ const DayCalendar: React.FC<DayCalendarProps> = (props) => {
               <br />
               <Badge count="休" style={{ backgroundColor: '#52c41a' }} >
                 {R.includes(moment(date, 'YYYYMMDD').format('YYYYMM'), months) ? null :
-                  <Button type="link" icon={<DeleteOutlined />} onClick={e => {
+                  <Button danger type="link" icon={<DeleteOutlined />} onClick={e => {
                     e.stopPropagation();
                     handleRemove(date.format('YYYYMMDD'));
                   }} />
@@ -58,13 +59,25 @@ const DayCalendar: React.FC<DayCalendarProps> = (props) => {
           [date => !isWeekend(date), R.always(
             <div style={{ textAlign: 'center' }}>
               <br />
-              <Badge count="班"></Badge>
+              {R.includes(moment(date, 'YYYYMMDD').format('YYYYMM'), months) ? null :
+                <Button type="link" icon={<PlusCircleOutlined />} onClick={e => {
+                  e.stopPropagation();
+                  handleCreate(date.format('YYYYMMDD'));
+                }} />
+              }
             </div>
           )],
           [isWeekend, R.always(
             <div style={{ textAlign: 'center' }}>
               <br />
-              <Badge count="休" style={{ backgroundColor: '#52c41a' }} ></Badge>
+              <Badge count="休" style={{ backgroundColor: '#52c41a' }} >
+                {R.includes(moment(date, 'YYYYMMDD').format('YYYYMM'), months) ? null :
+                  <Button type="link" icon={<PlusCircleOutlined />} onClick={e => {
+                    e.stopPropagation();
+                    handleCreate(date.format('YYYYMMDD'));
+                  }} />
+                }
+              </Badge>
             </div>
           )],
           [R.T, R.always(null)],
@@ -74,7 +87,7 @@ const DayCalendar: React.FC<DayCalendarProps> = (props) => {
         .map(date => (
           <span key={date}>
             <Badge status={isWeekend(date) ? 'error' : 'success'} text={moment(date, 'YYYYMMDD').format('YYYY-MM-DD')} />
-            <Button type="link" icon={<DeleteOutlined />} onClick={e => {
+            <Button danger type="link" icon={<DeleteOutlined />} onClick={e => {
               e.stopPropagation();
               handleRemove(date);
             }} />

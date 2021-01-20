@@ -1,6 +1,7 @@
 import R from 'ramda';
 import { Request, Response } from 'express';
 import { buildSchema, graphql } from 'graphql'
+import moment from 'moment';
 
 const schema = buildSchema(`
 type User {
@@ -301,8 +302,8 @@ const root = {
   daily: makeEmpDailies,
   projDaily: makeProjDailies,
   subordinates: () => users,
-  workCalendar: config.workCalendar,
-  settleMonth: config.settleMonth,
+  workCalendar: () => R.sort((a, b) => R.subtract(moment(a, 'YYYYMMDD').unix(), moment(b, 'YYYYMMDD').unix()), config.workCalendar),
+  settleMonth: () => config.settleMonth,
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])
     args.proj.contacts || (args.proj.contacts = [])

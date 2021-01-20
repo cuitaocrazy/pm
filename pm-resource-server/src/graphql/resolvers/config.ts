@@ -1,4 +1,5 @@
-import { isNil, union, difference } from 'ramda'
+import { isNil, sort, subtract, union, difference } from 'ramda'
+import moment from 'moment'
 import { Config } from '../../mongodb'
 
 const getConfigData = async (configId: string) => {
@@ -10,7 +11,10 @@ const getConfigData = async (configId: string) => {
 
 export default {
   Query: {
-    workCalendar: () => getConfigData('workCalendar'),
+    workCalendar: async () => {
+      const data = await getConfigData('workCalendar')
+      return sort((a, b) => subtract(moment(a, 'YYYYMMDD').unix(), moment(b, 'YYYYMMDD').unix()), data)
+    },
     settleMonth: () => getConfigData('settleMonth'),
   },
   Mutation: {

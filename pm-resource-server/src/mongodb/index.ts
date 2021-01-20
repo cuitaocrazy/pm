@@ -51,7 +51,7 @@ export interface IProject {
   /**
    * 项目类型
    */
-  type: 'preSale' | 'onSale' | 'afterSale'
+  type: 'preSale' | 'onSale' | 'afterSale' | 'research' | 'comprehensive'
   /**
    * 参与人员
    */
@@ -104,3 +104,13 @@ export interface ICost {
 }
 
 export const Cost = client.db().collection<ICost>(pluralize('Cost'))
+
+/**
+ * 配置
+ */
+export interface IConfig {
+  _id: string
+  data: string[]
+}
+
+export const Config = client.db().collection<IConfig>(pluralize('Config'))

@@ -2,22 +2,16 @@ import React from 'react';
 import { Timeline, Card } from 'antd';
 import moment, { Moment } from 'moment';
 import * as R from 'ramda';
-import { UsersDaily, User } from '@/apollo';
+import { UsersDaily } from '@/apollo';
 
 interface DailiesProps {
   date: Moment
   dailies: UsersDaily[]
-  users: User[]
 }
-
-const getUserName = (userId: string, users: User[]) => R.pipe(
-  R.find(R.propEq('id', userId)),
-  R.ifElse(R.isNil, R.always(userId), R.propOr(userId, 'name')),
-)(users)
 
 const DailiesPage: React.FC<DailiesProps> = (props) => {
 
-  const { date, dailies, users } = props;
+  const { date, dailies } = props;
 
   return R.isEmpty(dailies) ? null : (
     <Timeline style={{ height: 719, overflow: "scroll" }}>
@@ -32,9 +26,9 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
               <Timeline.Item key={daily.date} color="green">
                 <h3>{moment(daily.date, 'YYYYMMDD').format('YYYY年MM月DD日')}</h3>
                 {daily.users.map(ud => (
-                  <Card size="small" bordered={false} key={ud.userId}>
+                  <Card size="small" bordered={false} key={ud.user.id}>
                     <Card.Meta
-                      title={`${getUserName(ud.userId, users)}(${ud.timeConsuming}h)`}
+                      title={`${ud.user.name}(${ud.timeConsuming}h)`}
                       description={<div style={{ whiteSpace: "pre-wrap" }}>{ud.content}</div>}
                     />
                   </Card>

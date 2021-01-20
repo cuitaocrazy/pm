@@ -4,10 +4,6 @@ import type { Query, QueryProjDailyArgs } from '@/apollo';
 
 const QueryProjs = gql`
   {
-    dailyUsers {
-      id
-      name
-    }
     iLeadProjs {
       id
       name
@@ -22,12 +18,10 @@ export function useProjsState() {
   });
 
   useEffect(() => queryUsers(), [queryUsers]);
-  const users = queryData?.dailyUsers || [];
   const projs = queryData?.iLeadProjs || [];
 
   return {
     loading: queryLoading,
-    users,
     projs,
   };
 }
@@ -39,7 +33,10 @@ const QueryDaily = gql`
       dailies {
         date
         users {
-          userId
+          user {
+            id
+            name
+          }
           timeConsuming
           content
         }

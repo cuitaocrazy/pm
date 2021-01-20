@@ -2,18 +2,12 @@ import React from 'react';
 import { Timeline, Card } from 'antd';
 import moment, { Moment } from 'moment';
 import * as R from 'ramda';
-import { Daily, Project, ProjDaily } from '@/apollo';
+import { Daily, ProjDaily } from '@/apollo';
 
 interface DailiesProps {
   date: Moment
   dailies: Daily[]
-  projs: Project[]
 }
-
-const getProjName = (projId: string, projs: Project[]) => R.pipe(
-  R.find(R.propEq('id', projId)),
-  R.ifElse(R.isNil, R.always(projId), R.propOr(projId, 'name')),
-)(projs)
 
 const getItemColor = (date: string, projs: ProjDaily[]) => {
   const time = R.reduce((a, b: ProjDaily) => a + b.timeConsuming, 0)(projs)
@@ -29,7 +23,7 @@ const getItemColor = (date: string, projs: ProjDaily[]) => {
 
 const DailiesPage: React.FC<DailiesProps> = (props) => {
 
-  const { date, dailies, projs } = props;
+  const { date, dailies } = props;
 
   return R.isEmpty(dailies) ? null : (
     <Timeline style={{ height: 719, overflow: "scroll" }}>
@@ -44,9 +38,9 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
               <Timeline.Item key={daily.date} color={getItemColor(daily.date, daily.projs)}>
                 <h3>{moment(daily.date, 'YYYYMMDD').format('YYYY年MM月DD日')}</h3>
                 {daily.projs.map(proj => (
-                  <Card size="small" bordered={false} key={proj.projId}>
+                  <Card size="small" bordered={false} key={proj.project.id}>
                     <Card.Meta
-                      title={`${getProjName(proj.projId, projs)}(${proj.timeConsuming}h)`}
+                      title={`${proj.project.name}(${proj.timeConsuming}h)`}
                       description={<div style={{ whiteSpace: "pre-wrap" }}>{proj.content}</div>}
                     />
                   </Card>

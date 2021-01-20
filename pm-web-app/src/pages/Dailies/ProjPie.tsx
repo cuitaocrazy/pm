@@ -4,13 +4,13 @@ import { Card } from 'antd';
 import React from 'react';
 
 type ProjPieProps = {
-  data: (ProjDaily & { projName?: string })[];
+  data: ProjDaily[];
 };
 
 export default (props: ProjPieProps) => {
   const data = props.data
     .filter((p) => p.timeConsuming !== 0)
-    .map((p) => ({ type: p.projName || p.projId, value: p.timeConsuming }));
+    .map((p) => ({ type: p.project.name || p.project.id, value: p.timeConsuming }));
 
   const config = {
     appendPadding: 10,

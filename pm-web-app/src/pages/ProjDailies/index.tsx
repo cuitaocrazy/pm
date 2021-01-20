@@ -12,7 +12,7 @@ import { useProjsState, useDailyState } from './hook';
 
 const ProjectsDailyPage = () => {
 
-  const { loading: queryUsersLoading, projs, users } = useProjsState();
+  const { loading: queryUsersLoading, projs } = useProjsState();
   const { loading: queryDailyLoading, queryDaily, projId, daily } = useDailyState();
 
   const [date, setDate] = useState<Moment>(moment().day(1));
@@ -34,7 +34,7 @@ const ProjectsDailyPage = () => {
           </Col>
           <Col xs={24} sm={10}>
             <ProCard collapsible bordered extra={
-              <DatePicker picker="month" value={date}
+              <DatePicker inputReadOnly picker="month" value={date}
                 disabledDate={date => date.isAfter(moment(), 'd')}
                 onChange={date => setDate(date || moment())}
               />
@@ -44,7 +44,7 @@ const ProjectsDailyPage = () => {
           </Col>
           <Col xs={24} sm={10}>
             <ProCard loading={queryDailyLoading}>
-              <DailiesPage date={date} dailies={daily.dailies} users={users} />
+              <DailiesPage date={date} dailies={daily.dailies} />
             </ProCard>
           </Col>
         </Row>

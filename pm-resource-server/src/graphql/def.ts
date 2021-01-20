@@ -19,7 +19,7 @@ type UsersDaily {
 }
 
 type UserDaily {
-  userId: String!
+  user: User!
   timeConsuming: Int!
   content: String
 }
@@ -35,7 +35,7 @@ type Daily {
 }
 
 type ProjDaily {
-  projId: String!
+  project: Project!
   timeConsuming: Int!
   content: String
 }
@@ -80,6 +80,11 @@ type Cost {
   createDate: String!
 }
 
+type Config {
+  id: ID!
+  data: [String!]!
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -90,6 +95,7 @@ type Query {
   dailyUsers: [User!]!
   daily(userId: String!): EmployeeDaily!
   projDaily(projId: String!): ProjectDaily!
+  config(configId: String!): Config!
 }
 
 input DailyInput {
@@ -126,12 +132,19 @@ input CostInput {
   projs: [ProjCostInput!]!
 }
 
+input ConfigInput { 
+  id: ID!
+  data: [String!]!
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
   deleteProject(id: ID!): ID!
   pushCost(cost: CostInput!): ID!
   deleteCost(id: ID!): ID!
+  pushConfig(config: ConfigInput!): ID!
+  deleteConfig(config: ConfigInput!): ID!
 }
 `
 

@@ -4,6 +4,7 @@
     name: 'welcome',
     icon: 'smile',
     component: './Welcome',
+    hideInMenu: true,
   },
   {
     path: '/',

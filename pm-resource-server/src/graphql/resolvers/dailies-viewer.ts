@@ -1,4 +1,4 @@
-import { any, anyPass, equals, filter, find, head, identity, includes, pipe, prop, startsWith, uniqBy, unnest, without, zip } from 'ramda'
+import { any, anyPass, equals, filter, find, head, identity, includes, pipe, prop, startsWith, uniqBy, unnest, without, zip, isNil } from 'ramda'
 import { AuthContext, getGroupUsers, UserInfo, UserWithGroup } from '../../auth/oauth'
 import { EmployeeDaily, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
@@ -128,6 +128,18 @@ export default {
       } else {
         return getDeafultDailies(userId)
       }
+    },
+  },
+  ProjDaily: {
+    project: async ({ projId }: any) => {
+      const project = await Project.findOne({ _id: projId })
+      // TODO 当日报中对应的项目不存在时的临时处理方案
+      return isNil(project)
+        ? ({
+            id: projId,
+            name: projId,
+          })
+        : dbid2id(project)
     },
   },
 }

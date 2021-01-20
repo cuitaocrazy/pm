@@ -16,5 +16,5 @@ spec:
       port: 80
       targetPort: 8090
     {{- if .Values.gwService.nodePort }}
-      nodePort: 32659
+      nodePort: {{ .Values.gwService.nodePort }}
     {{- end }}

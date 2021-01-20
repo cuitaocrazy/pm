@@ -37,11 +37,11 @@ function Dailies(prop: { date?: string }) {
   const list = () =>
     hookStatus.currentDaily?.projs?.map((d, i) => (
       <ProjItem
-        key={d.projId}
-        projId={d.projId}
+        key={d.project.id}
+        projId={d.project.id}
         hours={d.timeConsuming}
         content={d.content}
-        projName={hookStatus.getProjName(d.projId)}
+        projName={d.project.name}
         onHoursChange={onHoursChange(i)}
         onContentOfWorkChange={onContentOfWorkChange(i)}
         ref={hookStatus.refs[i]}
@@ -102,7 +102,13 @@ function Dailies(prop: { date?: string }) {
             hookStatus.pushDaily({
               variables: {
                 date: hookStatus.currentDate,
-                projDailies: hookStatus.currentDaily.projs.filter((p) => p.timeConsuming !== 0),
+                projDailies: hookStatus.currentDaily.projs
+                  .filter((p) => p.timeConsuming !== 0)
+                  .map((p) => ({
+                    projId: p.project.id,
+                    timeConsuming: p.timeConsuming,
+                    content: p.content,
+                  })),
               },
             })
           }
@@ -115,12 +121,7 @@ function Dailies(prop: { date?: string }) {
       fixedHeader
     >
       {list()}
-      <ProjPie
-        data={hookStatus.currentDaily.projs.map((p) => ({
-          ...p,
-          projName: hookStatus.getProjName(p.projId),
-        }))}
-      />
+      <ProjPie data={hookStatus.currentDaily.projs} />
     </PageContainer>
   );
 }

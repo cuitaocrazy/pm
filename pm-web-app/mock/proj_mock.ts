@@ -21,7 +21,7 @@ type UsersDaily {
 }
 
 type UserDaily {
-  userId: String!
+  user: User!
   timeConsuming: Int!
   content: String
 }
@@ -37,7 +37,7 @@ type Daily {
 }
 
 type ProjDaily {
-  projId: String!
+  project: Project!
   timeConsuming: Int!
   content: String
 }
@@ -140,9 +140,9 @@ type Mutation {
 function randomNum(limit: number) {
   return Math.floor(Math.random() * limit)
 }
-function makeProjectDailies(projId: string) {
+function makeProjectDailies(project: any) {
   return {
-    projId,
+    project,
     timeConsuming: randomNum(11),
     content: `test worke content`,
   }
@@ -151,7 +151,7 @@ function makeProjectDailies(projId: string) {
 function makeDailies(date: string) {
   return {
     date,
-    projs: projs.map(p => makeProjectDailies(p.id)).filter(d => d.timeConsuming !== 0)
+    projs: projs.map(p => makeProjectDailies(p)).filter(d => d.timeConsuming !== 0)
   }
 }
 
@@ -168,7 +168,7 @@ function makeProjDailies(name: string) {
     dailies: R.range(1, 10).map(i => ({
       date: `2021010${i}`,
       users: users.map(user => ({
-        userId: user.id,
+        user: user,
         timeConsuming: randomNum(11),
         content: `test worke content`,
       }))

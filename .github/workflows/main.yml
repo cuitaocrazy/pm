@@ -5,8 +5,8 @@ name: CI
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  release:
-    types: [created, edited]
+  push:
+    tags: ["*"]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -111,3 +111,19 @@ jobs:
           context: ./oauth-gw
           file: ./oauth-gw/Dockerfile
           push: true
+  webhook:
+    runs-on: ubuntu-latest
+    needs: [build-web-app, build-resource-server, build-gw]
+    steps:
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+      - name: webhook
+        run: |
+          wget https://pm.yadadev.com/upgrade -O /dev/null
+          wget https://pm.lanxinpay.com/upgrade -O /dev/null
+

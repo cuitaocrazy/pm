@@ -246,7 +246,7 @@ let users = [
   {
     id: '0001',
     name: 'user1',
-    access: ['realm:project_manager', 'realm:assistant'],
+    access: ['realm:engineer', 'realm:assistant', 'realm:project_manager', 'realm:group_leader', 'realm:supervisor'],
     groups: ['/a']
   },
   {
@@ -271,7 +271,7 @@ let users = [
 
 let config = {
   workCalendar: ['20210101', '20210102', '20210103', '20210211', '20210212', '20210213', '20210214', '20210215', '20210216', '20210217'],
-  settleMonth: ['202101'],
+  settleMonth: ['202012'],
 }
 
 const root = {

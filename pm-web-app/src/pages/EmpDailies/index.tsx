@@ -12,7 +12,7 @@ import { useUsersState, useDailyState } from './hook';
 
 const EmployeeDailyPage = () => {
 
-  const { loading: queryUsersLoading, users } = useUsersState();
+  const { loading: queryUsersLoading, users, workCalendar } = useUsersState();
   const { loading: queryDailyLoading, queryDaily, userId, daily } = useDailyState();
 
   const [date, setDate] = useState<Moment>(moment().day(1));
@@ -39,12 +39,12 @@ const EmployeeDailyPage = () => {
                 onChange={date => setDate(date || moment())}
               />
             }>
-              <CalendarPage date={date} setDate={setDate} dailies={daily.dailies} />
+              <CalendarPage date={date} setDate={setDate} dailies={daily.dailies} workCalendar={workCalendar} />
             </ProCard>
           </Col>
           <Col xs={24} sm={10}>
             <ProCard loading={queryDailyLoading}>
-              <DailiesPage date={date} dailies={daily.dailies} />
+              <DailiesPage date={date} dailies={daily.dailies} workCalendar={workCalendar} />
             </ProCard>
           </Col>
         </Row>

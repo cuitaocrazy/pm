@@ -9,6 +9,7 @@ const QueryUsers = gql`
       name
       groups
     }
+    workCalendar
   }
 `;
 
@@ -20,10 +21,12 @@ export function useUsersState() {
 
   useEffect(() => queryUsers(), [queryUsers]);
   const users = queryData?.dailyUsers || [];
+  const workCalendar = queryData?.workCalendar || [];
 
   return {
     loading: queryLoading,
     users,
+    workCalendar,
   };
 }
 

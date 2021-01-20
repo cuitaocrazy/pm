@@ -4,14 +4,16 @@ import { ClockCircleOutlined } from '@ant-design/icons';
 import moment, { Moment } from 'moment';
 import * as R from 'ramda';
 import { Daily, ProjDaily } from '@/apollo';
+import { isWorkday } from '@/utils/utils';
 
 interface CalendarProps {
-  date: Moment;
-  setDate: (date: Moment) => void;
-  dailies: Daily[];
+  date: Moment
+  setDate: (date: Moment) => void
+  dailies: Daily[]
+  workCalendar: string[]
 }
 
-const getCalendarCell = (date: Moment, dailies: Daily[]) => {
+const getCalendarCell = (date: Moment, dailies: Daily[], workCalendar: string[]) => {
   const time = R.pipe(
     R.find((d: Daily) => d.date === date.format('YYYYMMDD')),
     R.propOr([], 'projs'),
@@ -29,8 +31,10 @@ const getCalendarCell = (date: Moment, dailies: Daily[]) => {
       </div>
     )
   } else {
-    if (dailies.length > 0 && date.isSameOrBefore(moment(), 'd') &&
-      ![moment().day("星期六").weekday(), moment().day("星期日").weekday()].includes(date.weekday()))
+    if (dailies.length > 0 &&
+      date.isSameOrBefore(moment(), 'd') &&
+      isWorkday(date.format('YYYYMMDD'), workCalendar)
+    )
       return (
         <div style={{ textAlign: 'center' }}>
           <ClockCircleOutlined style={{ color: 'red' }} />
@@ -42,13 +46,13 @@ const getCalendarCell = (date: Moment, dailies: Daily[]) => {
 
 const CalendarPage: React.FC<CalendarProps> = (props) => {
 
-  const { date, setDate, dailies } = props;
+  const { date, setDate, dailies, workCalendar } = props;
 
   return (
     <Calendar value={date}
       disabledDate={date => date.isAfter(moment(), 'd')}
       onSelect={date => setDate(date)}
-      dateCellRender={(date) => getCalendarCell(date, dailies)}
+      dateCellRender={(date) => getCalendarCell(date, dailies, workCalendar)}
       headerRender={() => null}
     />
   )

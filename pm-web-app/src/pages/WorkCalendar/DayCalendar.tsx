@@ -3,6 +3,7 @@ import { Calendar, Badge, Button, Divider } from 'antd';
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import * as R from 'ramda';
 import moment, { Moment } from 'moment';
+import { isWeekend } from '@/utils/utils';
 
 interface DayCalendarProps {
   value: Moment
@@ -13,11 +14,6 @@ interface DayCalendarProps {
   handleCreate: (date: string) => void
   handleRemove: (date: string) => void
 }
-
-const isWeekend = (date: string): boolean => R.includes(
-  moment(date, 'YYYYMMDD').weekday(),
-  [moment().day("星期六").weekday(), moment().day("星期日").weekday()]
-)
 
 const DayCalendar: React.FC<DayCalendarProps> = (props) => {
 

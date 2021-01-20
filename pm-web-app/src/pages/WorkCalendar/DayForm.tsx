@@ -5,11 +5,7 @@ import { RangeValue } from 'rc-picker/lib/interface';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import moment, { Moment } from 'moment';
 import * as R from 'ramda';
-
-const isWeekend = (date: string): boolean => R.includes(
-  moment(date, 'YYYYMMDD').weekday(),
-  [moment().day("星期六").weekday(), moment().day("星期日").weekday()]
-)
+import { isWeekend } from '@/utils/utils';
 
 export default (months: string[]) => (form: FormInstance<{ days: string[] }>, data?: { days: string[] }) => {
 

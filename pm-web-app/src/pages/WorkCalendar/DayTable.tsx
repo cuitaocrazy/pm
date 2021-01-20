@@ -3,6 +3,7 @@ import { Table, Badge, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import * as R from 'ramda';
 import moment, { Moment } from 'moment';
+import { isWeekend } from '@/utils/utils';
 
 interface DayTableProps {
   height: number
@@ -14,7 +15,7 @@ interface DayTableProps {
 
 const daysToDate = (days: string[]) => R.map(date => ({
   date,
-  type: R.includes(moment(date, 'YYYYMMDD').weekday(), [moment().day("星期六").weekday(), moment().day("星期日").weekday()]) ? 'w' : 'h',
+  type: isWeekend(date) ? 'w' : 'h',
 }), days)
 
 const DayTable: React.FC<DayTableProps> = (props) => {

@@ -23,6 +23,11 @@ data:
       cloud:
         gateway:
           routes:
+            - id: pm-webhook
+              uri: http://pm-webhook.pm-webhook:3000
+              predicates:
+                - Host={{ .Values.hostName }}
+                - Path=/upgrade
             - id: pm-api
               uri: http://resource-server:3000
               predicates:

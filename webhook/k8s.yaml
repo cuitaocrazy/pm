@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pm-webhook
+spec:
+  selector:
+    app: pm-webhook
+  ports:
+  - port: 3000
+    targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pm-webhook
+spec:
+  selector:
+    matchLabels:
+      app: pm-webhook
+  template:
+    metadata:
+      labels:
+        app: pm-webhook
+    spec:
+      containers:
+      - name: pm-webhook
+        image: cuitaocrazy/pm-webhook:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000

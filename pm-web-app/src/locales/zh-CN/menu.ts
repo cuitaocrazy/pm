@@ -3,6 +3,8 @@ export default {
   'menu.dailies': '日报',
   'menu.projects': '项目',
   'menu.costs': '费用',
+  'menu.empDailies': '员工日报',
+  'menu.projDailies': '项目日报',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',
   'menu.admin': '管理页',

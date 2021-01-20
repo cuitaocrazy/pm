@@ -6,8 +6,9 @@ import dailies from './dailies'
 import projs from './projs'
 import costs from './costs'
 import dailiesViewer from './dailies-viewer'
+import dailiesProject from './dailies-project'
 
 const merge = (...args: IResolvers[]) => {
   return args.reduce(R.mergeDeepRight)
 }
-export default merge(me, misc, dailies, projs, costs, dailiesViewer)
+export default merge(me, misc, dailies, projs, costs, dailiesViewer, dailiesProject)

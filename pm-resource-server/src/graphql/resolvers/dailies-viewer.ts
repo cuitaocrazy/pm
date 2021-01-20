@@ -1,6 +1,7 @@
 import { any, anyPass, equals, filter, find, head, identity, includes, pipe, prop, startsWith, uniqBy, unnest, without, zip } from 'ramda'
 import { AuthContext, getGroupUsers, UserInfo, UserWithGroup } from '../../auth/oauth'
 import { EmployeeDaily, Project } from '../../mongodb'
+import { dbid2id } from '../../util/utils'
 
 function getUsersByGroups (groups: string[], users: UserWithGroup[]) {
   const list = unnest(groups.map(g => getUsersByGroup(g, users)))
@@ -15,7 +16,7 @@ function getUsersByGroup (group: string, users: UserWithGroup[]) {
 }
 
 async function getUserDailies (userId: string) {
-  return EmployeeDaily.findOne({ _id: userId })
+  return dbid2id(await EmployeeDaily.findOne({ _id: userId }))
 }
 
 async function getParticipateProjectUsersByLeader (leaderId: string, users: UserWithGroup[]) {
@@ -53,6 +54,7 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, userId: s
             input: '$dailies',
             as: 'daily',
             in: {
+              date: '$$daily.date',
               projs: {
                 $filter: {
                   input: '$$daily.projs',
@@ -78,12 +80,19 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, userId: s
     },
   ]).toArray()
 
-  return head(d)
+  return dbid2id(head(d))
+}
+
+function getDeafultDailies (userId: string) {
+  return {
+    id: userId,
+    dailies: [],
+  }
 }
 
 const hasRole = (role: string) => pipe<UserInfo, string[], boolean>(prop('roles'), includes(role))
 const isSupervisor = hasRole('realm:supervisor')
-const isGroupLeader = hasRole('realm:supervisor')
+const isGroupLeader = hasRole('realm:group_leader')
 const isProjectManager = hasRole('realm:project_manager')
 
 export default {
@@ -109,15 +118,15 @@ export default {
           if (any(identity, boolList)) {
             return getUserDailies(userId)
           } else {
-            return undefined
+            return getDeafultDailies(userId)
           }
         } else {
-          return undefined
+          return getDeafultDailies(userId)
         }
       } else if (isProjectManager(user)) {
         return getParticipateProjectDailiesByLeader(user.id, userId)
       } else {
-        return undefined
+        return getDeafultDailies(userId)
       }
     },
   },

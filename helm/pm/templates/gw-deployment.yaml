@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pm.gw.fullname" . }}
+  labels:
+    {{- include "pm.gw.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "pm.gw.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pm.gw.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "pm.gw.fullname" . }}
+          image: cuitaocrazy/oauth-gw:{{ .Values.version }}
+          ports:
+            - containerPort: 8090
+          volumeMounts:
+            - name: config
+              mountPath: /app/application.yaml
+              subPath: application.yaml
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "pm.gw.fullname" . }}

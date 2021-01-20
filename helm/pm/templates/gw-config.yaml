@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pm.gw.fullname" . }}
+  labels:
+    {{- include "pm.gw.labels" . | nindent 4 }}
+data:
+  application.yaml: |-
+    server.port: 8090
+    spring:
+      security:
+        oauth2:
+          client:
+            provider:
+              keycloak:
+                issuerUri: {{ .Values.oauth.issuer }}
+                userNameAttribute: preferred_username
+            registration:
+              keycloak:
+                clientId: {{ .Values.oauth.clientId }}
+                clientSecret: {{ .Values.oauth.clientSecret }}
+                scope: openid
+      cloud:
+        gateway:
+          routes:
+            - id: pm-api
+              uri: http://resource-server:3000
+              predicates:
+                - Host={{ .Values.hostName }}
+                - Path=/api/**
+              filters:
+                - OAuthApi
+            - id: pm-app-redirect
+              uri: http://web-app
+              predicates:
+                - Host={{ .Values.hostName }}
+                - Path=/redirect/{anchor}
+              filters:
+                - OAuth
+                - RedirectWithAnchor=/#/{anchor}
+            - id: pm-app
+              uri: http://web-app
+              predicates:
+                - Host={{ .Values.hostName }}
+                - Method=GET
+              filters:
+                - name: OAuth
+                  args:
+                    staticPaths: /*.js,/*.css,/*.icon,/*.svg

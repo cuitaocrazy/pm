@@ -13,11 +13,10 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
 	mavenCentral()
-	maven { url = uri("https://repo.spring.io/snapshot") }
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-extra["springCloudVersion"] = "2020.0.1-SNAPSHOT"
+extra["springCloudVersion"] = "2020.0.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")

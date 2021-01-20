@@ -40,6 +40,7 @@ spec:
       labels:
         app: pm-webhook
     spec:
+      serviceAccountName: internal-kubectl
       containers:
       - name: pm-webhook
         image: cuitaocrazy/pm-webhook:latest

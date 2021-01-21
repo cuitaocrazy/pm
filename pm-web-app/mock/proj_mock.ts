@@ -163,14 +163,14 @@ function makeDailies(date: string) {
 function makeEmpDailies(name: string) {
   return {
     id: `${name}`,
-    dailies: R.range(1, 10).map(i => makeDailies(`2021010${i}`))
+    dailies: R.range(4, 10).map(i => makeDailies(`2021010${i}`))
   }
 }
 
 function makeProjDailies(name: string) {
   return {
     id: `${name}`,
-    dailies: R.range(1, 10).map(i => ({
+    dailies: R.range(4, 10).map(i => ({
       date: `2021010${i}`,
       users: users.map(user => ({
         user: user,
@@ -270,7 +270,7 @@ let users = [
 ]
 
 let config = {
-  workCalendar: ['20210101', '20210102', '20210103', '20210211', '20210212', '20210213', '20210214', '20210215', '20210216', '20210217'],
+  workCalendar: ['20210101', '20210131', '20210207', '20210210', '20210211', '20210212', '20210215', '20210216', '20210217', '20210220'],
   settleMonth: ['202012'],
 }
 

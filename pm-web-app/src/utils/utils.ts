@@ -37,6 +37,6 @@ export const isWeekend = (date: string): boolean => R.includes(
  * @param workCalendar 工作日历
  */
 export const isWorkday = (date: string, workCalendar: string[]): boolean => R.or(
-  R.not(isWeekend(date)),
-  R.and(R.includes(date, workCalendar), isWeekend(date))
+  R.and(isWeekend(date), R.includes(date, workCalendar)),
+  R.and(R.not(isWeekend(date)), R.not(R.includes(date, workCalendar)))
 )

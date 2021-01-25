@@ -23,7 +23,7 @@ const ProjectsDailyPage = () => {
         extra={<>
           {projs.find(proj => proj.id === projId)?.name}
           <Divider type="vertical" />
-          {`${moment(date).weekday(0).format('YYYY年MM月DD日')}-${moment(date).weekday(6).format('YYYY年MM月DD日')}`}
+          {`${moment(date).format('YYYY年MM月DD日')}-${moment(date).add(6, 'd').format('YYYY年MM月DD日')}`}
         </>}
       >
         <Row>

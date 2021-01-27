@@ -12,7 +12,7 @@ const getConfigData = async (configId: string) => {
 export default {
   Query: {
     workCalendar: async () => {
-      const data = await getConfigData('workCalendar')
+      const data: string[] = await getConfigData('workCalendar')
       return sort((a, b) => subtract(moment(a, 'YYYYMMDD').unix(), moment(b, 'YYYYMMDD').unix()), data)
     },
     settleMonth: () => getConfigData('settleMonth'),

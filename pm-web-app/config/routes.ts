@@ -47,6 +47,18 @@
     access: 'canWorkCalendar'
   },
   {
+    path: '/empCosts',
+    name: 'empCosts',
+    component: './EmpCosts',
+    access: 'canEmpCosts'
+  },
+  {
+    path: '/projCosts',
+    name: 'projCosts',
+    component: './ProjCosts',
+    access: 'canProjCosts'
+  },
+  {
     component: './404',
   },
 ];

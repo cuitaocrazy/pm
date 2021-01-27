@@ -6,6 +6,8 @@ export default {
   'menu.empDailies': '员工日报',
   'menu.projDailies': '项目日报',
   'menu.workCalendar': '工作日历',
+  'menu.empCosts': '员工费用',
+  'menu.projCosts': '项目费用',
   'menu.exception.403': '403',
   'menu.exception.404': '404',
   'menu.exception.500': '500',

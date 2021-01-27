@@ -83,6 +83,32 @@ type Cost {
   createDate: String!
 }
 
+type ProjectCost {
+  project: Project!
+  amount: Float!
+  type: String!
+  createDate: String!
+  description: String
+}
+
+type EmployeeCosts {
+  user: User!
+  costs: [ProjectCost!]!
+}
+
+type EmployeeCost {
+  user: User!
+  amount: Float!
+  type: String!
+  createDate: String!
+  description: String
+}
+
+type ProjectCosts {
+  project: Project!
+  costs: [EmployeeCost!]!
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -95,6 +121,8 @@ type Query {
   projDaily(projId: String!): ProjectDaily!
   workCalendar: [String!]!
   settleMonth: [String!]!
+  empCosts(userId: String!): EmployeeCosts!
+  projCosts(projId: String!): ProjectCosts!
 }
 
 input DailyInput {
@@ -235,7 +263,7 @@ function makeCosts() {
         description: '费用测试2'
       }
     ],
-    createDate: '20201212'
+    createDate: `2020121${i}`
   }))
 }
 
@@ -274,6 +302,26 @@ let config = {
   settleMonth: ['202012'],
 }
 
+function makeEmpCosts(userId: string) {
+  return ({
+    user: R.find(R.propEq('id', userId))(users),
+    costs: costs.reduce((a: any[], b: any) =>
+      [...a, ...b.projs.map((p: any) => ({ ...p, project: p.proj, createDate: b.createDate }))],
+      []
+    ),
+  })
+}
+
+function makeProjCosts(projId: string) {
+  return ({
+    project: R.find(R.propEq('id', projId))(makeProjects()),
+    costs: costs.reduce((a: any[], b: any) =>
+      [...a, ...b.projs.map((p: any) => ({ ...p, user: b.participant, createDate: b.createDate }))],
+      []
+    ),
+  })
+}
+
 const root = {
   me: () => users[0],
   myDailies: () => myDailies,
@@ -304,6 +352,8 @@ const root = {
   subordinates: () => users,
   workCalendar: () => R.sort((a, b) => R.subtract(moment(a, 'YYYYMMDD').unix(), moment(b, 'YYYYMMDD').unix()), config.workCalendar),
   settleMonth: () => config.settleMonth,
+  empCosts: ({ userId }: any) => makeEmpCosts(userId),
+  projCosts: ({ projId }: any) => makeProjCosts(projId),
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])
     args.proj.contacts || (args.proj.contacts = [])

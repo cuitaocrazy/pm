@@ -128,6 +128,36 @@ export type Cost = {
   createDate: Scalars['String'];
 };
 
+export type ProjectCost = {
+  __typename?: 'ProjectCost';
+  project: Project;
+  amount: Scalars['Float'];
+  type: Scalars['String'];
+  createDate: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+};
+
+export type EmployeeCosts = {
+  __typename?: 'EmployeeCosts';
+  user: User;
+  costs: Array<ProjectCost>;
+};
+
+export type EmployeeCost = {
+  __typename?: 'EmployeeCost';
+  user: User;
+  amount: Scalars['Float'];
+  type: Scalars['String'];
+  createDate: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+};
+
+export type ProjectCosts = {
+  __typename?: 'ProjectCosts';
+  project: Project;
+  costs: Array<EmployeeCost>;
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
@@ -141,6 +171,8 @@ export type Query = {
   projDaily: ProjectDaily;
   workCalendar: Array<Scalars['String']>;
   settleMonth: Array<Scalars['String']>;
+  empCosts: EmployeeCosts;
+  projCosts: ProjectCosts;
 };
 
 
@@ -150,6 +182,16 @@ export type QueryDailyArgs = {
 
 
 export type QueryProjDailyArgs = {
+  projId: Scalars['String'];
+};
+
+
+export type QueryEmpCostsArgs = {
+  userId: Scalars['String'];
+};
+
+
+export type QueryProjCostsArgs = {
   projId: Scalars['String'];
 };
 

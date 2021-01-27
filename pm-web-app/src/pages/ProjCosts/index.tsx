@@ -23,8 +23,8 @@ const ProjCostPage: React.FC = () => {
             </ProCard>
           </Col>
           <Col xs={24} sm={18}>
-            <ProCard bordered title="费用列表">
-              <Costs costs={projCosts.costs} loading={queryCostsLoading} />
+            <ProCard bordered title="费用详情">
+              <Costs title={projCosts.project.name} costs={projCosts.costs} loading={queryCostsLoading} />
             </ProCard>
           </Col>
         </Row>

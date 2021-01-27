@@ -17,14 +17,14 @@ const ProjCostPage: React.FC = () => {
     <PageContainer>
       <ProCard>
         <Row>
-          <Col xs={24} sm={6}>
+          <Col xs={24} sm={4}>
             <ProCard collapsible title="员工列表" loading={queryProjsLoading}>
               <Employee users={users} handleClick={(userId: string) => queryCosts(userId)} />
             </ProCard>
           </Col>
-          <Col xs={24} sm={18}>
-            <ProCard bordered title="费用列表">
-              <Costs costs={empCosts.costs} loading={queryCostsLoading} />
+          <Col xs={24} sm={20}>
+            <ProCard bordered title="费用详情">
+              <Costs title={empCosts.user.name} costs={empCosts.costs} loading={queryCostsLoading} />
             </ProCard>
           </Col>
         </Row>

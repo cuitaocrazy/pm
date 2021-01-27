@@ -80,6 +80,32 @@ type Cost {
   createDate: String!
 }
 
+type ProjectCost {
+  project: Project!
+  amount: Float!
+  type: String!
+  createDate: String!
+  description: String
+}
+
+type EmployeeCosts {
+  user: User!
+  costs: [ProjectCost!]!
+}
+
+type EmployeeCost {
+  user: User!
+  amount: Float!
+  type: String!
+  createDate: String!
+  description: String
+}
+
+type ProjectCosts {
+  project: Project!
+  costs: [EmployeeCost!]!
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -92,6 +118,8 @@ type Query {
   projDaily(projId: String!): ProjectDaily!
   workCalendar: [String!]!
   settleMonth: [String!]!
+  empCosts(userId: String!): EmployeeCosts!
+  projCosts(projId: String!): ProjectCosts!
 }
 
 input DailyInput {

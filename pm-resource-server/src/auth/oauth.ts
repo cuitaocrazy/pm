@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { auth } from 'express-oauth2-bearer'
 import { filter, map, pipe, prop, toPairs, length, includes, assoc, unnest, pluck, xprod, slice, tail, join, applySpec, __, identity, lt, uniq, uniqBy, concat, pick, groupBy, append, last, reduce, mergeDeepWithKey } from 'ramda'
 import axios, { AxiosInstance } from 'axios'
+import socketio from 'socket.io'
 import config from '../config/auth'
 import cache from '../cache'
 
@@ -37,48 +38,57 @@ export const protect = (...args: string[]) => (req: AuthRequest, res: Response, 
   }
 }
 
+const nextFunction = (req: AuthRequest, next: (err?: any) => void) => (err?: any) => {
+  if (req.auth !== undefined) {
+    const id = prop<'preferred_username', string>('preferred_username')
+    const givenName = prop<'given_name', string>('given_name')
+    const familyName = prop<'family_name', string>('family_name')
+    const name = (o: any) => ((familyName(o) || '') + (givenName(o) || '')) || id(o)
+    const allRoles = (obj: any) => pipe<any, any, any>(
+      prop('realm_access'),
+      assoc('realm'),
+    )(obj)(prop('resource_access')(obj))
+    const groups = prop<'group_path', string[]>('group_path')
+
+    const flatRoles = pipe<any, any, any, any, any, any, any, string[]>(
+      allRoles,
+      pluck('roles'),
+      toPairs,
+      map<any, any>(unnest),
+      map<any, any>(s => xprod(slice<any>(0, 1, s), tail<any>(s))),
+      unnest,
+      map(join(':')),
+    )
+    const getUser = applySpec({
+      id,
+      name,
+      roles: flatRoles,
+      groups,
+    })
+
+    const user = getUser(req.auth.claims)
+
+    const hasPower = (roles: string[] = []) => roles.length === 0
+      ? true
+      : pipe(map(includes(__, user.roles)), filter(identity), length, lt(0))(roles)
+
+    req.user = { ...user, ...req.auth, hasPower }
+  }
+  next(err)
+}
+
 const keycloakMiddleware = auth(config)
 export function authMiddleware (req: AuthRequest, res: Response, next: NextFunction) {
-  const myNext: NextFunction = (err?: any) => {
-    if (req.auth !== undefined) {
-      const id = prop<'preferred_username', string>('preferred_username')
-      const givenName = prop<'given_name', string>('given_name')
-      const familyName = prop<'family_name', string>('family_name')
-      const name = (o: any) => ((familyName(o) || '') + (givenName(o) || '')) || id(o)
-      const allRoles = (obj: any) => pipe<any, any, any>(
-        prop('realm_access'),
-        assoc('realm'),
-      )(obj)(prop('resource_access')(obj))
-      const groups = prop<'group_path', string[]>('group_path')
-
-      const flatRoles = pipe<any, any, any, any, any, any, any, string[]>(
-        allRoles,
-        pluck('roles'),
-        toPairs,
-        map<any, any>(unnest),
-        map<any, any>(s => xprod(slice<any>(0, 1, s), tail<any>(s))),
-        unnest,
-        map(join(':')),
-      )
-      const getUser = applySpec({
-        id,
-        name,
-        roles: flatRoles,
-        groups,
-      })
-
-      const user = getUser(req.auth.claims)
-
-      const hasPower = (roles: string[] = []) => roles.length === 0
-        ? true
-        : pipe(map(includes(__, user.roles)), filter(identity), length, lt(0))(roles)
-
-      req.user = { ...user, ...req.auth, hasPower }
-    }
-    next(err)
-  }
+  const myNext: NextFunction = nextFunction(req, next)
 
   keycloakMiddleware(req, res, myNext)
+}
+
+export function wsAuthMiddleware (socket: socketio.Socket, next: (err?: Error) => void) {
+  const req = socket.request as AuthRequest
+  const myNext: NextFunction = nextFunction(req, next)
+
+  keycloakMiddleware(req, null, myNext)
 }
 
 export function getGroupUsers (user: UserInfo) {

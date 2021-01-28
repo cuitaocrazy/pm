@@ -3,6 +3,7 @@ import { ApolloServer } from 'apollo-server-express'
 import { authMiddleware, protect } from './auth/oauth'
 import def from './graphql'
 import { client as mongoClient } from './mongodb'
+import ws from './ws'
 
 const app = express()
 const server = new ApolloServer({
@@ -18,6 +19,8 @@ app.get('/api', protect('realm:project_manager'), (req, res) => {
   res.send((req as any).auth)
 })
 const s = app.listen(3000, () => console.log('server starting!!!'))
+
+ws(s)
 
 const closeServer = () => {
   s.close()

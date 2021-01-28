@@ -5,6 +5,7 @@ import { Pie } from '@ant-design/charts';
 import { ProjectCost } from '@/apollo';
 import * as R from 'ramda';
 import moment from 'moment';
+import numeral from 'numeral';
 
 interface CostsProps {
   loading: boolean
@@ -30,7 +31,10 @@ const Costs: React.FC<CostsProps> = (props) => {
       radius: 0.8,
       label: {
         type: 'outer',
-        content: '{name} ¥{value}',
+        content: (d: any) => `${d.type} ¥${numeral(d.value).format('0,0.00')}`,
+      },
+      tooltip: {
+        formatter: (d: any) => ({ name: d.type, value: numeral(d.value).format('0,0.00') })
       },
       interactions: [{ type: 'pie-legend-active' }, { type: 'element-active' }],
     })
@@ -50,6 +54,7 @@ const Costs: React.FC<CostsProps> = (props) => {
         compare: (a: ProjectCost, b: ProjectCost) => R.subtract(a.amount, b.amount),
         multiple: 1,
       },
+      render: (text: number) => numeral(text).format('0,0.00'),
     },
     {
       title: '创建日期',
@@ -73,7 +78,7 @@ const Costs: React.FC<CostsProps> = (props) => {
   return (
     <>
       <ProCard.Group bordered>
-        <ProCard layout="center" size="small" colSpan={{ sm: 18 }}>
+        <ProCard size="small" colSpan={{ sm: 18 }}>
           <Pie {...config} />
         </ProCard>
         <ProCard.Divider />

@@ -59,6 +59,11 @@
     access: 'canProjCosts'
   },
   {
+    path: '/settlement',
+    name: 'settlement',
+    component: './Settlement',
+  },
+  {
     component: './404',
   },
 ];

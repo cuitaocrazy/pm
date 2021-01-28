@@ -1,4 +1,4 @@
-import { includes, head, isNil, find, propEq } from 'ramda'
+import { includes, isEmpty, head, isNil, find, propEq } from 'ramda'
 import { AuthContext, getGroupUsers } from '../../auth/oauth'
 import { Cost, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
@@ -54,7 +54,7 @@ async function getParticipateProjectCostByLeader (leaderId: string, projId: stri
       },
     ]).toArray()
 
-    return head(d)
+    return isEmpty(d) ? getDeafultCost(projId) : head(d)
   } else {
     return getDeafultCost(projId)
   }

@@ -1,3 +1,4 @@
+import arg from 'arg'
 import * as R from 'ramda'
 import { Config, EmployeeDaily, IEmployeeDaily, client } from './mongodb'
 import { Users } from './keycloak'
@@ -70,5 +71,7 @@ async function main (year: number) {
   }
 }
 
-const year = 2021
+const args = arg({ '--year': Number })
+const year = args['--year'] || 2021
+
 main(year)

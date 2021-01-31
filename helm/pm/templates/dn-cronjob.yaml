@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "pm.dn.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.dnCronjob.schedule }}
+  schedule: "{{ .Values.dnCronjob.schedule }}"
   jobTemplate:
     spec:
       template:

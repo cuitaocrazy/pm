@@ -100,8 +100,3 @@ daily-notify
 {{ include "pm.labels" . }}
 component: {{ include "pm.dn.fullname" . }}
 {{- end -}}
-
-{{- define "pm.dn.selectorLabels" -}}
-{{ include "pm.selectorLabels" . }}
-component: {{ include "pm.dn.fullname" . }}
-{{- end -}}

@@ -9,9 +9,6 @@ spec:
   jobTemplate:
     spec:
       template:
-        metadata:
-          labels:
-            app: {{- include "pm.dn.selectorLabels" . | nindent 8 }}
         spec:       
           containers:
           - name: {{ include "pm.dn.fullname" . }}

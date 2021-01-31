@@ -11,7 +11,7 @@ gwService:
 mongoUrl: mongodb://mongodb-arbiter-headless.dbs/pm
 pgHost: postgresql-postgresql-ha-pgpool.dbs
 dnCronjob: 
-  schedule: @weekly
+  schedule: "@weekly"
   keycloak: 
     baseUrl: https://auth.lanxinpay.com/auth
     realmName: pm

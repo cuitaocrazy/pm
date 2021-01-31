@@ -1,0 +1,45 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "pm.dn.fullname" . }}
+  labels:
+    {{- include "pm.dn.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.dnCronjob.schedule }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{- include "pm.dn.selectorLabels" . | nindent 8 }}
+        spec:       
+          containers:
+          - name: {{ include "pm.dn.fullname" . }}
+            image: cuitaocrazy/pm-daily-notify:{{ .Values.version }}
+            env: 
+              - name: MONGODB_URL
+                value: {{ .Values.mongoUrl }}
+              - name: KEYCLOAK_BASE_URL
+                value: {{ .Values.dnCronjob.keycloak.baseUrl }}
+              - name: KEYCLOAK_REALM_NAME
+                value: {{ .Values.dnCronjob.keycloak.realmName }}
+              - name: KEYCLOAK_GRANT_TYPE
+                value: {{ .Values.dnCronjob.keycloak.grantType }}
+              - name: KEYCLOAK_USERNAME
+                value: {{ .Values.dnCronjob.keycloak.username }}
+              - name: KEYCLOAK_PASSWORD
+                value: {{ .Values.dnCronjob.keycloak.password }}
+              - name: KEYCLOAK_CLIENT_ID
+                value: {{ .Values.dnCronjob.keycloak.clientId }}
+              - name: KEYCLOAK_CLIENT_SECRET
+                value: {{ .Values.dnCronjob.keycloak.clientSecret }}
+              - name: EMAIL_HOST
+                value: {{ .Values.dnCronjob.email.host }}
+              - name: EMAIL_PORT
+                value: {{ .Values.dnCronjob.email.port }}
+              - name: EMAIL_USER
+                value: {{ .Values.dnCronjob.email.user }}
+              - name: EMAIL_PASS
+                value: {{ .Values.dnCronjob.email.pass }}
+              - name: EMAIL_SUBJECT
+                value: {{ .Values.dnCronjob.email.subject }}

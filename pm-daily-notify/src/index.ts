@@ -1,5 +1,6 @@
 import arg from 'arg'
 import * as R from 'ramda'
+import moment from 'moment'
 import { Config, EmployeeDaily, IEmployeeDaily, client } from './mongodb'
 import { Users } from './keycloak'
 import { getWorkDays } from './util/utils'
@@ -63,15 +64,17 @@ async function main (year: number) {
       sendEmails(mails)
     } else {
       console.error('Verifies SMTP configuration failed!')
+      process.exitCode = 1
     }
   } catch (error) {
     console.error(error)
+    process.exitCode = 1
   } finally {
-    client.close()
+    await client.close()
   }
 }
 
 const args = arg({ '--year': Number })
-const year = args['--year'] || 2021
+const year = args['--year'] || moment().year()
 
 main(year)

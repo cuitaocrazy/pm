@@ -9,7 +9,6 @@ gwService:
   type: NodePort
   nodePort: 32659
 mongoUrl: mongodb://mongodb-arbiter-headless.dbs/pm
-pgHost: postgresql-postgresql-ha-pgpool.dbs
 dnCronjob: 
   schedule: @weekly
   keycloak: 
@@ -23,3 +22,9 @@ dnCronjob:
     user: rjeb_service@bjyada.com
     pass: password
     subject: 日报未提交通知
+prostgres:
+  user: pm
+  password: pm
+  host: postgresql-postgresql-ha-pgpool.dbs
+  db: pm
+  port: 5432

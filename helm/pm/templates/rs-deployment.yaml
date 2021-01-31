@@ -25,4 +25,12 @@ spec:
             - name: MONGODB_URL
               value: {{ .Values.mongoUrl }}
             - name: PGHOST
-              value: {{ .Values.pgHost }}
+              value: {{ .Values.prostgres.host }}
+            - name: PGUSER
+              value: {{ .Values.prostgres.user}}
+            - name: PGPASSWORD
+              value: {{ .Values.prostgres.password }}
+            - name: PGDATABASE
+              value: {{ .Values.prostgres.db }}
+            - name: PGPORT
+              value: {{ .Values. prostgres.port }}

@@ -1,4 +1,5 @@
 import KcAdminClient from 'keycloak-admin'
+import { GrantTypes } from 'keycloak-admin/lib/utils/auth'
 import config from '../config/keycloak'
 
 export const client = new KcAdminClient({
@@ -8,7 +9,7 @@ export const client = new KcAdminClient({
 
 export const Users = async () => {
   await client.auth({
-    grantType: 'password',
+    grantType: config.grantType as GrantTypes,
     username: config.username,
     password: config.password,
     clientId: config.clientId,

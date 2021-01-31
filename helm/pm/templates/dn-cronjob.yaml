@@ -2,10 +2,8 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ include "pm.dn.fullname" . }}
-  labels:
-    {{- include "pm.dn.labels" . | nindent 4 }}
 spec:
-  schedule: "{{ .Values.dnCronjob.schedule }}"
+  schedule: {{ .Values.dnCronjob.schedule | quote }}
   jobTemplate:
     spec:
       template:
@@ -14,30 +12,56 @@ spec:
           - name: {{ include "pm.dn.fullname" . }}
             image: cuitaocrazy/pm-daily-notify:{{ .Values.version }}
             env: 
+              {{- if (.Values.mongoUrl) }}
               - name: MONGODB_URL
                 value: {{ .Values.mongoUrl }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.keycloak.baseUrl) }}
               - name: KEYCLOAK_BASE_URL
                 value: {{ .Values.dnCronjob.keycloak.baseUrl }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.keycloak.realmName) }}
               - name: KEYCLOAK_REALM_NAME
                 value: {{ .Values.dnCronjob.keycloak.realmName }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.keycloak.grantType) }}
               - name: KEYCLOAK_GRANT_TYPE
                 value: {{ .Values.dnCronjob.keycloak.grantType }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.keycloak.username) }}
               - name: KEYCLOAK_USERNAME
                 value: {{ .Values.dnCronjob.keycloak.username }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.keycloak.password) }}
               - name: KEYCLOAK_PASSWORD
                 value: {{ .Values.dnCronjob.keycloak.password }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.keycloak.clientId) }}
               - name: KEYCLOAK_CLIENT_ID
                 value: {{ .Values.dnCronjob.keycloak.clientId }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.keycloak.clientSecret) }}
               - name: KEYCLOAK_CLIENT_SECRET
                 value: {{ .Values.dnCronjob.keycloak.clientSecret }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.email.host) }}
               - name: EMAIL_HOST
                 value: {{ .Values.dnCronjob.email.host }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.email.port) }}
               - name: EMAIL_PORT
-                value: {{ .Values.dnCronjob.email.port }}
+                value: {{ .Values.dnCronjob.email.port | quote }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.email.user) }}
               - name: EMAIL_USER
                 value: {{ .Values.dnCronjob.email.user }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.keycloak.pass) }}
               - name: EMAIL_PASS
                 value: {{ .Values.dnCronjob.email.pass }}
+              {{- end }}
+              {{- if (.Values.dnCronjob.email.subject) }}
               - name: EMAIL_SUBJECT
                 value: {{ .Values.dnCronjob.email.subject }}
+              {{- end }}
           restartPolicy: Never

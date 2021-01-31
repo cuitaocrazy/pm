@@ -1,4 +1,5 @@
 import * as R from 'ramda'
+import moment from 'moment'
 import { createTransport } from 'nodemailer'
 import { MailInfo } from '../data'
 import config from '../config/emailer'
@@ -25,7 +26,10 @@ export const sendEmails = (infos: MailInfo[]) => {
       from: config.user, // Sender address
       to: info.email, // List of recipients
       subject: config.subject, // Subject line
-      text: R.join('|', info.dates),
+      html: genEmailHtml({
+        name: info.name,
+        dates: R.join('', R.map(date => `<li>${moment(date, 'YYYYMMDD').format('YYYY-MM-DD')}</li>`, info.dates)),
+      }),
     }, (err) => {
       if (err) {
         console.log(err, info)
@@ -37,4 +41,20 @@ export const sendEmails = (infos: MailInfo[]) => {
   } else {
     transporter.close()
   }
+}
+
+const template = `<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<body>
+<h3>{{name}}</h3>
+<h3>你在下列工作日中没有提交日报，请尽快去补全提交</h3>
+{{dates}}
+<br>
+<a href="https://pm.lanxinpay.com/redirect/dailies">去补全日报</a>
+</body>
+</html>`
+
+const genEmailHtml = (args: { [key: string]: string }) => {
+  const html = R.keys(args).reduce((temp: string, key) => R.replace(`{{${key}}}`, args[key], temp), template)
+  return html
 }

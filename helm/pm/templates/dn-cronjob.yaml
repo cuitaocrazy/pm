@@ -40,3 +40,4 @@ spec:
                 value: {{ .Values.dnCronjob.email.pass }}
               - name: EMAIL_SUBJECT
                 value: {{ .Values.dnCronjob.email.subject }}
+          restartPolicy: Never

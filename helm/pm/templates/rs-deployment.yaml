@@ -24,3 +24,5 @@ spec:
               value: {{ .Values.oauth.issuer }}
             - name: MONGODB_URL
               value: {{ .Values.mongoUrl }}
+            - name: PGHOST
+              value: {{ .Values.pgHost }}

@@ -33,4 +33,4 @@ spec:
             - name: PGDATABASE
               value: {{ .Values.prostgres.db }}
             - name: PGPORT
-              value: {{ .Values. prostgres.port }}
+              value: {{ .Values.prostgres.port }}

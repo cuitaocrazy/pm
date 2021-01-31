@@ -7,6 +7,10 @@ export const client = new KcAdminClient({
   realmName: config.realmName,
 })
 
+/**
+ * https://www.keycloak.org/docs/latest/server_development/index.html#admin-rest-api
+ * 使用keycloak rest api获取用户列表
+ */
 export const Users = async () => {
   await client.auth({
     grantType: config.grantType as GrantTypes,

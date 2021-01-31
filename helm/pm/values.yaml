@@ -15,8 +15,8 @@ dnCronjob:
   keycloak: 
     baseUrl: https://auth.lanxinpay.com/auth
     realmName: pm
-    username: admin
-    password: pwd
+    clientId: pm-dn
+    clientSecret: 01110e3d-00c6-4145-a650-161a2315d0ef
   email:
     host: smtp.263.net
     port: 465

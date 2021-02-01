@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dn-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dn
+  template:
+    metadata:
+      labels:
+        app: dn
+    spec:
+      containers:
+        - name: dn
+          image: pm-daily-notify:latest
+          imagePullPolicy: IfNotPresent
+          env: 
+            - name: MONGODB_URL
+              value: mongodb://mongodb-arbiter-headless.dbs/pm
+            - name: EMAIL_HOST
+              value: 10.2.53.51
+          command: ["ping"]
+          args: ["kubernetes.docker.internal"]

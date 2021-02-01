@@ -20,7 +20,7 @@ dnCronjob:
     host: smtp.263.net
     port: 465
     user: rjeb_service@bjyada.com
-    pass: password
+    pass: Rjeb84775655!
     subject: 日报未提交通知
 prostgres:
   user: pm

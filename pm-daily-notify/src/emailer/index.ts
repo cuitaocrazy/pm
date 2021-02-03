@@ -11,7 +11,7 @@ export const transporter = createTransport({
   port: config.port as number,
   auth: {
     user: config.user,
-    pass: config.pass,
+    pass: config.password,
   },
 })
 

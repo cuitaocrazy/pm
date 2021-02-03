@@ -56,9 +56,9 @@ spec:
               - name: EMAIL_USER
                 value: {{ .Values.dnCronjob.email.user }}
               {{- end }}
-              {{- if (.Values.dnCronjob.email.pass) }}
-              - name: EMAIL_PASS
-                value: {{ .Values.dnCronjob.email.pass }}
+              {{- if (.Values.dnCronjob.email.password) }}
+              - name: EMAIL_PASSWORD
+                value: {{ .Values.dnCronjob.email.password }}
               {{- end }}
               {{- if (.Values.dnCronjob.email.subject) }}
               - name: EMAIL_SUBJECT

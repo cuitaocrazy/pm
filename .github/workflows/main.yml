@@ -146,7 +146,7 @@ jobs:
           push: true
   webhook:
     runs-on: ubuntu-latest
-    needs: [build-web-app, build-resource-server, build-gw]
+    needs: [build-web-app, build-resource-server, build-daily-notify, build-gw]
     steps:
       - name: Create Release
         uses: actions/create-release@v1

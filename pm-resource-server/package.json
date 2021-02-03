@@ -30,7 +30,7 @@
     "express-oauth2-bearer": "^0.4.1",
     "graphql": "^15.5.0",
     "moment": "^2.29.1",
-    "mongodb": "^3.6.3",
+    "mongodb": "3.6.3",
     "node-cache": "^5.1.2",
     "pg": "^8.5.1",
     "ramda": "^0.27.1",

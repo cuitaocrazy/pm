@@ -56,7 +56,7 @@ spec:
               - name: EMAIL_USER
                 value: {{ .Values.dnCronjob.email.user }}
               {{- end }}
-              {{- if (.Values.dnCronjob.keycloak.pass) }}
+              {{- if (.Values.dnCronjob.email.pass) }}
               - name: EMAIL_PASS
                 value: {{ .Values.dnCronjob.email.pass }}
               {{- end }}

@@ -27,7 +27,7 @@
     "arg": "^5.0.0",
     "keycloak-admin": "^1.14.7",
     "moment": "^2.29.1",
-    "mongodb": "^3.6.3",
+    "mongodb": "3.6.3",
     "nodemailer": "^6.4.17",
     "ramda": "^0.27.1"
   }

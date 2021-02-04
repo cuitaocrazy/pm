@@ -98,12 +98,13 @@ async function getCostDetail (month: string) {
     },
     {
       $project: {
+        _id: 0,
         emp_no: '$participant',
         proj_id: '$projs.id',
         proj_name: '$projectDetail.name',
         proj_type: '$projectDetail.type',
         leader_no: '$projectDetail.leader',
-        cost_date: '$createDate:',
+        cost_date: '$createDate',
         cost_type: '$projs.type',
         cost_description: '$projs.description',
         amount: '$projs.amount',
@@ -112,7 +113,7 @@ async function getCostDetail (month: string) {
   ]).toArray() as Promise<any[]>
 }
 
-export async function getDailySettlementDatas (users: UserWithGroup[], settlementMonth: string, userCosts: {id: string, cost: number}[]) {
+export async function getDailySettlementDatas (users: UserWithGroup[], settlementMonth: string, userCosts: { id: string, cost: number }[]) {
   const getUser = (id: string) => users.find(u => u.id === id)
   const getAmount = (id: string) => userCosts.find(u => u.id === id)?.cost
   const dailies = await getDailyDetail(settlementMonth)
@@ -161,6 +162,7 @@ function expand (rowCount, columnCount, startAt = 1) {
 }
 
 export async function saveDailySettlementDates (datas: any[]) {
+  if (datas.length === 0) return
   const rowCount = datas.length
   const columnCount = 16
   const getRowArray = (o: any) => [
@@ -186,6 +188,7 @@ export async function saveDailySettlementDates (datas: any[]) {
 }
 
 export async function saveCostSettlementDates (datas: any[]) {
+  if (datas.length === 0) return
   const rowCount = datas.length
   const columnCount = 14
   const getRowArray = (o: any) => [

@@ -79,58 +79,63 @@ export default (s: http.Server) => {
       })
 
       socket.on('data', async (data, cb) => {
-        clientLog('接收到数据')
-        if (data.length === 0) {
-          clientLog('接收到的数据不能为空')
-          const msg = '已停止结算'
+        try {
+          clientLog('接收到数据')
+          if (data.length === 0) {
+            clientLog('接收到的数据不能为空')
+            const msg = '已停止结算'
+            cb(msg)
+            return
+          }
+          const settlementMonth = data[0][1]
+          clientLog(`文件结算年月为: ${settlementMonth}`)
+          clientLog('检查人员...')
+          const users = await getGroupUsers(req.user!)
+          let ret = checkUsers(getUsersIdAndNameByData(data), getUserIdAndNameByServer(users))
+          if (!ret.pass) {
+            clientLog(ret.msg)
+            const proceed = await ask(ret.msg + '\n是否继续?')
+            if (!proceed) {
+              const msg = '已停止结算'
+              cb(msg)
+              return
+            }
+          }
+          ret = await checkSettleMonth(settlementMonth)
+
+          if (!ret.pass) {
+            clientLog(ret.msg)
+            const proceed = await ask(ret.msg + '\n是否重新结算?')
+            if (!proceed) {
+              const msg = '已停止结算'
+              cb(msg)
+              return
+            }
+            clientLog(`开始清理${settlementMonth}结算数据`)
+            clearSettledDatas(settlementMonth)
+            clientLog('数据清理完毕')
+          }
+
+          clientLog('更新结算月列表')
+          addSettledMonth(settlementMonth)
+          clientLog('结算日报...')
+          const dailySettlementDatas = await getDailySettlementDatas(users, settlementMonth, data.map(d => ({ id: d[0], cost: d[31] })))
+          clientLog(`共${dailySettlementDatas.length}数据`)
+          clientLog('保存日报结算...')
+          await saveDailySettlementDates(dailySettlementDatas)
+          clientLog('日报结算完毕')
+          clientLog('结算费用...')
+          const costSettlementDatas = await getCostSettlementDatas(users, settlementMonth)
+          console.log(JSON.stringify(costSettlementDatas, null, ' '))
+          clientLog(`共${costSettlementDatas.length}数据`)
+          clientLog('保存费用结算...')
+          await saveCostSettlementDates(costSettlementDatas)
+          clientLog('费用结算完毕')
+          const msg = '结算完毕'
           cb(msg)
-          return
+        } catch (e) {
+          clientLog(e.toString())
         }
-        const settlementMonth = data[0][1]
-        clientLog(`文件结算年月为: ${settlementMonth}`)
-        clientLog('检查人员...')
-        const users = await getGroupUsers(req.user!)
-        let ret = checkUsers(getUsersIdAndNameByData(data), getUserIdAndNameByServer(users))
-        if (!ret.pass) {
-          clientLog(ret.msg)
-          const proceed = await ask(ret.msg + '\n是否继续?')
-          if (!proceed) {
-            const msg = '已停止结算'
-            cb(msg)
-            return
-          }
-        }
-        ret = await checkSettleMonth(settlementMonth)
-
-        if (!ret.pass) {
-          clientLog(ret.msg)
-          const proceed = await ask(ret.msg + '\n是否重新结算?')
-          if (!proceed) {
-            const msg = '已停止结算'
-            cb(msg)
-            return
-          }
-          clientLog(`开始清理${settlementMonth}结算数据`)
-          clearSettledDatas(settlementMonth)
-          clientLog('数据清理完毕')
-        }
-
-        clientLog('更新结算月列表')
-        addSettledMonth(settlementMonth)
-        clientLog('结算日报...')
-        const dailySettlementDatas = await getDailySettlementDatas(users, settlementMonth, data.map(d => ({ id: d[0], cost: d[31] })))
-        clientLog(`共${dailySettlementDatas.length}数据`)
-        clientLog('保存日报结算...')
-        await saveDailySettlementDates(dailySettlementDatas)
-        clientLog('日报结算完毕')
-        clientLog('结算费用...')
-        const costSettlementDatas = await getCostSettlementDatas(users, settlementMonth)
-        clientLog(`共${costSettlementDatas.length}数据`)
-        clientLog('保存费用结算...')
-        await saveCostSettlementDates(costSettlementDatas)
-        clientLog('费用结算完毕')
-        const msg = '结算完毕'
-        cb(msg)
       })
     }
   })

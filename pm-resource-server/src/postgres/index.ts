@@ -1,5 +1,4 @@
-import { Client } from 'pg'
+import { Pool } from 'pg'
 import config from '../config/postgresql'
 
-const client = new Client(config as any)
-client.connect().then(console.log)
+export const pool = new Pool(config as any)

@@ -10,7 +10,7 @@ gwService:
   nodePort: 32659
 mongoUrl: mongodb://mongodb-arbiter-headless.dbs/pm
 dnCronjob: 
-  schedule: "@weekly"
+  schedule: "0 0 * * 1"
   keycloak: 
     baseUrl: https://auth.lanxinpay.com/auth
     realmName: pm

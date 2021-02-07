@@ -1,4 +1,4 @@
-version: "1.0.29"
+version: "1.0.30"
 replicaCount: 2
 oauth:
   issuer: https://auth.lanxinpay.com/auth/realms/pm

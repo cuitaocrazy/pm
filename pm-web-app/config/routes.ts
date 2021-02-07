@@ -62,6 +62,7 @@
     path: '/settlement',
     name: 'settlement',
     component: './Settlement',
+    access: 'canSettlement'
   },
   {
     component: './404',

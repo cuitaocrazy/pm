@@ -57,7 +57,7 @@ async function main (year: number) {
       name: user.name,
       email: user.email,
       dates: getNoDailyDates(getWorkDays(year, workCalendar), R.find(R.propEq('_id', user.id), empDailies)?.dailies || []),
-    }))
+    })).filter(mail => mail.dates.length > 0)
 
     const verify = await transporter.verify()
     if (verify) {

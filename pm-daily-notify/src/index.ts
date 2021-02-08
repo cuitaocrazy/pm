@@ -53,11 +53,14 @@ async function main (year: number) {
     const empDailies = await getEmpDailiesData(`${year}`)
 
     const users = await getUsers()
-    const mails = users.map(user => ({
-      name: user.name,
-      email: user.email,
-      dates: getNoDailyDates(getWorkDays(year, workCalendar), R.find(R.propEq('_id', user.id), empDailies)?.dailies || []),
-    })).filter(mail => mail.dates.length > 0)
+    const mails = users
+      .map(user => ({
+        name: user.name,
+        email: user.email,
+        dates: getNoDailyDates(getWorkDays(year, workCalendar), R.find(R.propEq('_id', user.id), empDailies)?.dailies || []),
+      }))
+      .filter(mail => R.not(R.isNil(mail.email)))
+      .filter(mail => R.not(R.isEmpty(mail.dates)))
 
     const verify = await transporter.verify()
     if (verify) {

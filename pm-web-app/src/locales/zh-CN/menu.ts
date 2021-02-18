@@ -9,6 +9,7 @@ export default {
   'menu.empCosts': '员工费用',
   'menu.projCosts': '项目费用',
   'menu.settlement': '结算',
+  'menu.changePm': '更改项目经理',
   'menu.exception.403': '403',
   'menu.exception.404': '404',
   'menu.exception.500': '500',

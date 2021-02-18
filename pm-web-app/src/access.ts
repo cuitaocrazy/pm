@@ -16,5 +16,6 @@ export default function access(initialState: { currentUser?: API.CurrentUser | u
     canEmpCosts: hasPower(['realm:group_leader', 'realm:supervisor']),
     canProjCosts: hasPower(['realm:project_manager']),
     canSettlement: hasPower(['realm:assistant']),
+    canChangePm: hasPower(['realm:group_leader', 'realm:supervisor']),
   };
 }

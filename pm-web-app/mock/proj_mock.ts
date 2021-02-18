@@ -159,6 +159,11 @@ input CostInput {
   projs: [ProjCostInput!]!
 }
 
+input ChangePmInput{
+  leader: String!,
+  projId : String,
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
@@ -167,6 +172,7 @@ type Mutation {
   deleteCost(id: ID!): ID!
   pushWorkCalendar(data: [String!]!): ID!
   deleteWorkCalendar(data: [String!]!): ID!
+  pushChangePm(changePm:ChangePmInput!): ID!
 }
 `)
 
@@ -415,7 +421,17 @@ const root = {
       config
     )
     return 'workCalendar'
-  }
+  },
+  pushChangePm: (args: any) => {
+    let id: string
+    id='Error';
+    projs.filter(proj=>proj.id===args?.changePm.projIds[0]).map(proj=>
+      { id=proj.id
+        proj.leader=args.changePm.leader
+      }
+    )
+    return [id,id]
+  },
 }
 
 export default {

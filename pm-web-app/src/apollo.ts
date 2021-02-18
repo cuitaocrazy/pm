@@ -229,6 +229,12 @@ export type CostInput = {
   projs: Array<ProjCostInput>;
 };
 
+export type ChangePmInput = {
+  leader: Scalars['String'];
+  projIds: Array<Scalars['String']>;
+  isRemovePart:Scalars['Boolean'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   pushDaily: Scalars['ID'];
@@ -238,6 +244,7 @@ export type Mutation = {
   deleteCost: Scalars['ID'];
   pushWorkCalendar: Scalars['ID'];
   deleteWorkCalendar: Scalars['ID'];
+  pushChangePm: Array<Scalars['ID']>;
 };
 
 
@@ -274,4 +281,8 @@ export type MutationPushWorkCalendarArgs = {
 
 export type MutationDeleteWorkCalendarArgs = {
   data: Array<Scalars['String']>;
+};
+
+export type MutationchangePmArgs = {
+  changePm: ChangePmInput
 };

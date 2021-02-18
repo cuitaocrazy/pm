@@ -65,6 +65,12 @@
     access: 'canSettlement'
   },
   {
+    path: '/changePm',
+    name: 'changePm',
+    component: './ChangePm',
+    access: 'canChangePm'
+  },
+  {
     component: './404',
   },
 ];

@@ -156,6 +156,12 @@ input CostInput {
   projs: [ProjCostInput!]!
 }
 
+input ChangePmInput {
+  leader: String!
+  projIds: [String]
+  isRemovePart:Boolean
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
@@ -164,6 +170,7 @@ type Mutation {
   deleteCost(id: ID!): ID!
   pushWorkCalendar(data: [String!]!): ID!
   deleteWorkCalendar(data: [String!]!): ID!
+  pushChangePm(changePm:ChangePmInput!): [ID]!
 }
 `
 

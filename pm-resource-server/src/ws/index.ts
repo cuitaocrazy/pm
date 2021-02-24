@@ -3,7 +3,7 @@ import http from 'http'
 import { AuthRequest, getGroupUsers, UserWithGroup, wsAuthMiddleware } from '../auth/oauth'
 import { applySpec, differenceWith, map, prop } from 'ramda'
 import '../postgres'
-import { addSettledMonth, clearSettledDatas, existSettledMonth, getCostSettlementDatas, getDailySettlementDatas, saveCostSettlementDates, saveDailySettlementDates } from './settle'
+import { addSettledMonth, clearSettledDatas, existSettledMonth, getCostFromData, getCostSettlementDatas, getDailySettlementDatas, saveCostSettlementDates, saveDailySettlementDates } from './settle'
 
 const checkSettleMonth = async (month: string) => {
   const exist = await existSettledMonth(month)
@@ -119,14 +119,13 @@ export default (s: http.Server) => {
           clientLog('更新结算月列表')
           addSettledMonth(settlementMonth)
           clientLog('结算日报...')
-          const dailySettlementDatas = await getDailySettlementDatas(users, settlementMonth, data.map(d => ({ id: d[0], cost: d[31] })))
+          const dailySettlementDatas = await getDailySettlementDatas(users, settlementMonth, data.map(d => ({ id: d[0], cost: getCostFromData(d) })))
           clientLog(`共${dailySettlementDatas.length}数据`)
           clientLog('保存日报结算...')
           await saveDailySettlementDates(dailySettlementDatas)
           clientLog('日报结算完毕')
           clientLog('结算费用...')
           const costSettlementDatas = await getCostSettlementDatas(users, settlementMonth)
-          console.log(JSON.stringify(costSettlementDatas, null, ' '))
           clientLog(`共${costSettlementDatas.length}数据`)
           clientLog('保存费用结算...')
           await saveCostSettlementDates(costSettlementDatas)

@@ -136,6 +136,9 @@ export async function getCostSettlementDatas (users: UserWithGroup[], settlement
   })
 }
 
+export function getCostFromData (dataRow: any[]) {
+  return dataRow[14] + dataRow[34] + dataRow[35] + dataRow[36] + dataRow[37] + dataRow[38] + dataRow[39] + dataRow[40] + dataRow[41]
+}
 async function getSettledMonths () {
   return (await Config.findOne({ _id: 'settledMonths' }))?.data as string[] || []
 }

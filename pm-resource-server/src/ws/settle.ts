@@ -164,10 +164,17 @@ function expand (rowCount, columnCount, startAt = 1) {
   return Array(rowCount).fill(0).map(v => `(${Array(columnCount).fill(0).map(v => `$${index++}`).join(', ')})`).join(', ')
 }
 
+function getQuarterly (date: string) {
+  const y = date.substring(0, 4)
+  const m = parseInt(date.substring(4, 6)) - 1
+  const q = Math.floor(m / 3) + 1
+  return y + q
+}
+
 export async function saveDailySettlementDates (datas: any[]) {
   if (datas.length === 0) return
   const rowCount = datas.length
-  const columnCount = 16
+  const columnCount = 20
   const getRowArray = (o: any) => [
     o.emp_group,
     o.emp_no,
@@ -185,7 +192,12 @@ export async function saveDailySettlementDates (datas: any[]) {
     o.md,
     o.amount,
     o.work_days_of_month,
+    o.daily_date.substring(0, 4),
+    o.daily_date.substring(0, 6),
+    o.daily_date,
+    getQuarterly(o.daily_date),
   ]
+
   const transalte = pipe(map(getRowArray), unnest)
   await pool.query(`INSERT INTO daily_settlement VALUES ${expand(rowCount, columnCount)}`, transalte(datas))
 }
@@ -193,7 +205,7 @@ export async function saveDailySettlementDates (datas: any[]) {
 export async function saveCostSettlementDates (datas: any[]) {
   if (datas.length === 0) return
   const rowCount = datas.length
-  const columnCount = 14
+  const columnCount = 18
   const getRowArray = (o: any) => [
     o.emp_group,
     o.emp_no,
@@ -209,7 +221,12 @@ export async function saveCostSettlementDates (datas: any[]) {
     o.cost_type,
     o.cost_description,
     o.amount,
+    o.cost_date.substring(0, 4),
+    o.cost_date.substring(0, 6),
+    o.cost_date,
+    getQuarterly(o.cost_date),
   ]
+
   const transalte = pipe(map(getRowArray), unnest)
   await pool.query(`INSERT INTO cost_settlement VALUES ${expand(rowCount, columnCount)}`, transalte(datas))
 }

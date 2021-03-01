@@ -2,24 +2,28 @@ import React from 'react';
 import { Table, Badge, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import * as R from 'ramda';
-import moment, { Moment } from 'moment';
+import type { Moment } from 'moment';
+import moment from 'moment';
 import { isWeekend } from '@/utils/utils';
 
-interface DayTableProps {
-  height: number
-  days: string[]
-  months: string[]
-  setDate: (date: Moment) => void
-  handleRemove: (date: string) => void
-}
+type DayTableProps = {
+  height: number;
+  days: string[];
+  months: string[];
+  setDate: (date: Moment) => void;
+  handleRemove: (date: string) => void;
+};
 
-const daysToDate = (days: string[]) => R.map(date => ({
-  date,
-  type: isWeekend(date) ? 'w' : 'h',
-}), days)
+const daysToDate = (days: string[]) =>
+  R.map(
+    (date) => ({
+      date,
+      type: isWeekend(date) ? 'w' : 'h',
+    }),
+    days,
+  );
 
 const DayTable: React.FC<DayTableProps> = (props) => {
-
   const { height, days, months, setDate, handleRemove } = props;
 
   const columns = [
@@ -33,33 +37,39 @@ const DayTable: React.FC<DayTableProps> = (props) => {
       title: '类型',
       dataIndex: 'type',
       key: 'type',
-      render: (text: string) => R.equals(text, 'w') ?
-        <Badge count="班" /> :
-        <Badge count="休" style={{ backgroundColor: '#52c41a' }} />,
+      render: (text: string) =>
+        R.equals(text, 'w') ? (
+          <Badge count="班" />
+        ) : (
+          <Badge count="休" style={{ backgroundColor: '#52c41a' }} />
+        ),
     },
     {
       title: '操作',
       dataIndex: 'date',
       key: 'x',
-      render: (text: string) => R.includes(moment(text, 'YYYYMMDD').format('YYYYMM'), months) ?
-        <></> :
-        <Button danger type="link" icon={<DeleteOutlined />} onClick={() => handleRemove(text)} />,
-    }
+      render: (text: string) =>
+        R.includes(moment(text, 'YYYYMMDD').format('YYYYMM'), months) ? (
+          <></>
+        ) : (
+          <Button danger type="link" icon={<DeleteOutlined />} onClick={() => handleRemove(text)} />
+        ),
+    },
   ];
 
   return (
-    <div style={{ height, overflow: "scroll" }}>
+    <div style={{ height, overflow: 'scroll' }}>
       <Table
         pagination={false}
-        rowKey={record => record.date}
+        rowKey={(record) => record.date}
         columns={columns}
         dataSource={daysToDate(days)}
-        onRow={record => ({
-          onClick: () => setDate(moment(record.date, 'YYYYMMDD'))
+        onRow={(record) => ({
+          onClick: () => setDate(moment(record.date, 'YYYYMMDD')),
         })}
       />
     </div>
-  )
-}
+  );
+};
 
 export default DayTable;

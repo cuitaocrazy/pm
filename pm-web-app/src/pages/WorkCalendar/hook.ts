@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
-import {
+import type {
   Mutation,
   MutationPushWorkCalendarArgs,
   MutationDeleteWorkCalendarArgs,
@@ -30,12 +30,14 @@ export function useDaysStatus() {
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(queryGql, {
     fetchPolicy: 'no-cache',
   });
-  const [deleteDaysHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteWorkCalendarArgs>(
-    deleteDaysGql
-  );
-  const [pushDaysHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushWorkCalendarArgs>(
-    pushDaysGql,
-  );
+  const [deleteDaysHandle, { loading: deleteLoading }] = useMutation<
+    Mutation,
+    MutationDeleteWorkCalendarArgs
+  >(deleteDaysGql);
+  const [pushDaysHandle, { loading: pushLoading }] = useMutation<
+    Mutation,
+    MutationPushWorkCalendarArgs
+  >(pushDaysGql);
 
   useEffect(() => refresh(), [refresh]);
   const days = queryData?.workCalendar || [];
@@ -46,7 +48,7 @@ export function useDaysStatus() {
       await deleteDaysHandle({
         variables: {
           data,
-        }
+        },
       });
       refresh();
     },

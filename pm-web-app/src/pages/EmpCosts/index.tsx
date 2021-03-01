@@ -9,7 +9,6 @@ import Employee from './Employee';
 import Costs from './Costs';
 
 const ProjCostPage: React.FC = () => {
-
   const { loading: queryProjsLoading, users } = useUsersState();
   const { loading: queryCostsLoading, queryCosts, empCosts } = useCostsState();
 
@@ -24,14 +23,18 @@ const ProjCostPage: React.FC = () => {
           </Col>
           <Col xs={24} sm={20}>
             <ProCard bordered title="费用详情">
-              <Costs title={empCosts.user.name} costs={empCosts.costs} loading={queryCostsLoading} />
+              <Costs
+                title={empCosts.user.name}
+                costs={empCosts.costs}
+                loading={queryCostsLoading}
+              />
             </ProCard>
           </Col>
         </Row>
       </ProCard>
     </PageContainer>
-  )
-}
+  );
+};
 
 export default () => (
   <ApolloProvider client={client}>

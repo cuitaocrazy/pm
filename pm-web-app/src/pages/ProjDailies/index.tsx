@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { Divider, Row, Col, DatePicker } from 'antd';
-import moment, { Moment } from 'moment';
+import type { Moment } from 'moment';
+import moment from 'moment';
 import { ApolloProvider } from '@apollo/client';
 import { client } from '@/apollo';
 import ProjectsPage from './Projects';
@@ -11,7 +12,6 @@ import DailiesPage from './Dailies';
 import { useProjsState, useDailyState } from './hook';
 
 const ProjectsDailyPage = () => {
-
   const { loading: queryUsersLoading, projs } = useProjsState();
   const { loading: queryDailyLoading, queryDaily, projId, daily } = useDailyState();
 
@@ -19,12 +19,18 @@ const ProjectsDailyPage = () => {
 
   return (
     <PageContainer>
-      <ProCard headerBordered split="vertical"
-        extra={<>
-          {projs.find(proj => proj.id === projId)?.name}
-          <Divider type="vertical" />
-          {`${moment(date).format('YYYY年MM月DD日')}-${moment(date).add(6, 'd').format('YYYY年MM月DD日')}`}
-        </>}
+      <ProCard
+        headerBordered
+        split="vertical"
+        extra={
+          <>
+            {projs.find((proj) => proj.id === projId)?.name}
+            <Divider type="vertical" />
+            {`${moment(date).format('YYYY年MM月DD日')}-${moment(date)
+              .add(6, 'd')
+              .format('YYYY年MM月DD日')}`}
+          </>
+        }
       >
         <Row>
           <Col xs={24} sm={4}>
@@ -33,12 +39,19 @@ const ProjectsDailyPage = () => {
             </ProCard>
           </Col>
           <Col xs={24} sm={10}>
-            <ProCard collapsible bordered extra={
-              <DatePicker inputReadOnly picker="month" value={date}
-                disabledDate={date => date.isAfter(moment(), 'd')}
-                onChange={date => setDate(date || moment())}
-              />
-            }>
+            <ProCard
+              collapsible
+              bordered
+              extra={
+                <DatePicker
+                  inputReadOnly
+                  picker="month"
+                  value={date}
+                  disabledDate={(d) => d.isAfter(moment(), 'd')}
+                  onChange={(d) => setDate(d || moment())}
+                />
+              }
+            >
               <CalendarPage date={date} setDate={setDate} dailies={daily.dailies} />
             </ProCard>
           </Col>
@@ -50,8 +63,8 @@ const ProjectsDailyPage = () => {
         </Row>
       </ProCard>
     </PageContainer>
-  )
-}
+  );
+};
 
 export default () => (
   <ApolloProvider client={client}>

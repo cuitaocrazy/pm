@@ -1,48 +1,48 @@
 import React from 'react';
 import { Calendar } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import moment, { Moment } from 'moment';
+import type { Moment } from 'moment';
+import moment from 'moment';
 import * as R from 'ramda';
-import { UsersDaily, UserDaily } from '@/apollo';
+import type { UsersDaily, UserDaily } from '@/apollo';
 
-interface CalendarProps {
+type CalendarProps = {
   date: Moment;
   setDate: (date: Moment) => void;
   dailies: UsersDaily[];
-}
+};
 
 const getCalendarCell = (date: Moment, dailies: UsersDaily[]) => {
   const time = R.pipe(
     R.find((d: UsersDaily) => d.date === date.format('YYYYMMDD')),
     R.propOr([], 'users'),
     R.map((d: UserDaily) => d.timeConsuming),
-    R.sum
-  )(dailies)
+    R.sum,
+  )(dailies);
   if (time && time > 0) {
-    const color = 'green'
+    const color = 'green';
     return (
       <div style={{ textAlign: 'center' }}>
         <ClockCircleOutlined style={{ color }} />
-        <p>
-          {`${time}h`}
-        </p>
+        <p>{`${time}h`}</p>
       </div>
-    )
-  } else return null
-}
+    );
+  }
+  return null;
+};
 
 const CalendarPage: React.FC<CalendarProps> = (props) => {
-
   const { date, setDate, dailies } = props;
 
   return (
-    <Calendar value={date}
-      disabledDate={date => date.isAfter(moment(), 'd')}
-      onSelect={date => setDate(date)}
-      dateCellRender={(date) => getCalendarCell(date, dailies)}
+    <Calendar
+      value={date}
+      disabledDate={(d) => d.isAfter(moment(), 'd')}
+      onSelect={(d) => setDate(d)}
+      dateCellRender={(d) => getCalendarCell(d, dailies)}
       headerRender={() => null}
     />
-  )
-}
+  );
+};
 
 export default CalendarPage;

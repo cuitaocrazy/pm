@@ -5,6 +5,7 @@ import type { ProjectInput, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { projType } from './utils';
 import type { FormInstance } from 'antd/lib/form';
+import ProjIdComponent from './ProjIdComponent';
 
 const userQuery = gql`
   {
@@ -25,14 +26,47 @@ const layout = {
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { loading, data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
-  const validator = (rule: any, value: string) =>
-    !data?.id && resData!.projs.find((sp) => sp.id === value)
+  const validator = (rule: any, value: string) => {
+    const result = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/.exec(
+      value,
+    );
+    if (result === null) {
+      return Promise.reject(Error('id格式不正确'));
+    }
+
+    if (!result.groups?.org) {
+      return Promise.reject(Error('请选择机构'));
+    }
+
+    if (!result.groups?.zone) {
+      return Promise.reject(Error('请选择区域'));
+    }
+
+    if (!result.groups?.projType) {
+      return Promise.reject(Error('请选择项目类型'));
+    }
+
+    if (!result.groups?.simpleName) {
+      return Promise.reject(Error('项目缩写不能为空'));
+    }
+
+    if (!/^\d{4}$/.exec(result.groups?.dateCode)) {
+      return Promise.reject(Error('日期编码为4位数字'));
+    }
+
+    return !data?.id && resData!.projs.find((sp) => sp.id === value)
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
+  };
+
   return (
     <Form {...layout} form={form} initialValues={data}>
+      {/* <Form.Item label="Hehe">
+        <ProjIdComponent value={data?.id} />
+      </Form.Item> */}
       <Form.Item label="ID" name="id" rules={[{ required: true }, { validator }]}>
-        <Input disabled={!!data?.id} />
+        {/* <Input disabled={!!data?.id} /> */}
+        <ProjIdComponent disabled={!!data?.id} />
       </Form.Item>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />

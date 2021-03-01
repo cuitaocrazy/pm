@@ -218,8 +218,8 @@ function makeProjDailies(name: string) {
 function makeProjects() {
   return R.range(1, 11).map(i => {
     return {
-      id: `proj_${i}`,
-      name: `项目 ${i}`,
+      id: `BOC-BJ-YF-${i}-2101`,
+      name: `项目${i}`,
       leader: `0001`,
       budget: 50_0000,
       createDate: '20201201',
@@ -252,7 +252,7 @@ function makeCosts() {
     projs: [
       {
         proj: {
-          id: 'proj_1',
+          id: 'BOC-BJ-YF-1-2101',
           name: 'proj 1',
         },
         amount: 100.01,
@@ -261,7 +261,7 @@ function makeCosts() {
       },
       {
         proj: {
-          id: 'proj_2',
+          id: 'BOC-BJ-YF-2-2101',
           name: 'proj 2',
         },
         amount: 200.2,

@@ -10,6 +10,7 @@ import ProjForm from './ProjForm';
 import { getTypeDisplayName, projType } from './utils';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
+import { buildProjName } from '../utils';
 
 function getColumns(editHandle: (proj: Proj) => void, deleteHandle: (id: string) => void) {
   return [
@@ -17,7 +18,9 @@ function getColumns(editHandle: (proj: Proj) => void, deleteHandle: (id: string)
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: Proj) => <a onClick={() => editHandle(record)}>{text}</a>,
+      render: (text: string, record: Proj) => (
+        <a onClick={() => editHandle(record)}>{buildProjName(record.id, text)}</a>
+      ),
       width: '50%',
     },
     {

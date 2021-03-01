@@ -8,10 +8,10 @@ const ChangePmInput = async (projIds: string[], leader:string, isRemovePart:bool
     if (projs.length === 1) {
       if (isRemovePart) {
         const oldleader = projs[0].leader
-        projs[0].participants = projs[0].participants.filter(part => part != oldleader)
+        projs[0].participants = projs[0].participants.filter(part => part !== oldleader)
       }
       projs[0].leader = leader
-      projs[0].participants = projs[0].participants.filter(part => part != leader)
+      projs[0].participants = projs[0].participants.filter(part => part !== leader)
       projs[0].participants.push(leader)
     }
     const result = await Project.updateOne({ _id: projId }, { $set: projs[0] }, { upsert: true }).then(() => projs[0].name)

@@ -16,4 +16,4 @@ const merge = (...args: IResolvers[]) => {
   return args.reduce(R.mergeDeepRight)
 }
 
-export default merge(me, misc, dailies, projs, costs, dailiesViewer, dailiesProject, config, costsProject, costsEmployee,changePm)
+export default merge(me, misc, dailies, projs, costs, dailiesViewer, dailiesProject, config, costsProject, costsEmployee, changePm)

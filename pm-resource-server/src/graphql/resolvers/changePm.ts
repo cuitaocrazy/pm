@@ -1,8 +1,9 @@
 
+import { BulkWriteUpdateOneOperation } from 'mongodb'
 import { Project } from '../../mongodb'
 
 const ChangePmInput = async (projIds: string[], leader:string, isRemovePart:boolean) => {
-  const results:string[] = []
+  const bulkWriteArgs : Array<BulkWriteUpdateOneOperation<any>> = []
   for (const projId of projIds) {
     const projs = await Project.find({ _id: projId }).toArray()
     if (projs.length === 1) {
@@ -14,11 +15,11 @@ const ChangePmInput = async (projIds: string[], leader:string, isRemovePart:bool
       projs[0].participants = projs[0].participants.filter(part => part !== leader)
       projs[0].participants.push(leader)
     }
-    const result = await Project.updateOne({ _id: projId }, { $set: projs[0] }, { upsert: true }).then(() => projs[0].name)
-    results.push(result)
-  }
 
-  return results
+    bulkWriteArgs.push({ updateOne: { filter: { _id: projId }, update: { $set: projs[0] }, upsert: true } })
+  }
+  const result = await Project.bulkWrite(bulkWriteArgs)
+  return result.modifiedCount
 }
 
 export default {

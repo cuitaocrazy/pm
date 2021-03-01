@@ -46,9 +46,7 @@ export function useChangePmState() {
 
       refresh();
       if (result?.data?.pushChangePm) {
-        result.data.pushChangePm.forEach((projName) => {
-          message.success(`${projName}修改项目经理成功`);
-        });
+        message.success(`${result.data.pushChangePm}个项目修改项目经理成功`);
       }
     },
     [pushChangePmHandle, refresh],

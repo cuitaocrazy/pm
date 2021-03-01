@@ -238,7 +238,7 @@ export type Mutation = {
   deleteCost: Scalars['ID'];
   pushWorkCalendar: Scalars['ID'];
   deleteWorkCalendar: Scalars['ID'];
-  pushChangePm: Scalars['ID'][];
+  pushChangePm: Scalars['ID'];
 };
 
 export type MutationPushDailyArgs = {

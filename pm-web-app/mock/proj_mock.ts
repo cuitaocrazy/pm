@@ -172,7 +172,7 @@ type Mutation {
   deleteCost(id: ID!): ID!
   pushWorkCalendar(data: [String!]!): ID!
   deleteWorkCalendar(data: [String!]!): ID!
-  pushChangePm(changePm:ChangePmInput!): [ID!]
+  pushChangePm(changePm:ChangePmInput!): ID!
 }
 `)
 
@@ -430,7 +430,7 @@ const root = {
         proj.leader=args.changePm.leader
       }
     )
-    return [id]
+    return args?.changePm.projIds.length
   },
 }
 

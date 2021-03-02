@@ -4,7 +4,7 @@ import type { CostInput, Query } from '@/apollo';
 import { Form, Input, InputNumber, Select, Button, Divider } from 'antd';
 import { gql, useQuery } from '@apollo/client';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { buildProjName } from '../utils';
+import { buildProjName } from '@/pages/utils';
 
 const layout = {
   labelCol: { span: 8 },

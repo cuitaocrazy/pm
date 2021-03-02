@@ -4,6 +4,7 @@ import type { CostInput, Query } from '@/apollo';
 import { Form, Input, InputNumber, Select, Button, Divider } from 'antd';
 import { gql, useQuery } from '@apollo/client';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { buildProjName } from '../utils';
 
 const layout = {
   labelCol: { span: 8 },
@@ -26,6 +27,8 @@ const userQuery = gql`
 
 export default (form: FormInstance<CostInput>, data?: CostInput) => {
   const { data: resData } = useQuery<Query>(userQuery);
+  const changeResdata =
+    resData?.projs?.map((v) => ({ ...v, name: buildProjName(v.id, v.name) })) || [];
   return (
     <Form {...layout} form={form} initialValues={data}>
       <Form.Item label="ID" name="id" hidden>
@@ -72,7 +75,7 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
                       option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {resData?.projs.map((u) => (
+                    {changeResdata.map((u) => (
                       <Select.Option key={u.id} value={u.id}>
                         {u.name}
                       </Select.Option>

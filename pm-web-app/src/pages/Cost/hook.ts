@@ -7,6 +7,7 @@ import type {
   MutationPushCostArgs,
   Query,
 } from '@/apollo';
+import { buildProjName } from '../utils';
 
 const queryGql = gql`
   {
@@ -55,7 +56,14 @@ export function useCostState() {
   );
 
   useEffect(() => refresh(), [refresh]);
-  const costs = queryData?.costs || [];
+  const costs =
+    queryData?.costs.map((cost) => ({
+      ...cost,
+      projs: cost.projs.map((pd) => ({
+        ...pd,
+        proj: { ...pd.proj, id: pd.proj.id, name: buildProjName(pd.proj.id, pd.proj.name) },
+      })),
+    })) || [];
 
   const deleteCost = useCallback(
     async (id: string) => {

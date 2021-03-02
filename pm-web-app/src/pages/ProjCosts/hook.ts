@@ -23,7 +23,7 @@ export function useProjsState() {
 
   return {
     loading: queryLoading,
-    projs,
+    projs: projs.map((p) => ({ ...p, name: buildProjName(p.id, p.name) })),
   };
 }
 

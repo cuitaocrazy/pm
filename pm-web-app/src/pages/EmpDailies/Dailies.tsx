@@ -5,6 +5,7 @@ import moment from 'moment';
 import * as R from 'ramda';
 import type { Daily, ProjDaily } from '@/apollo';
 import { isWorkday } from '@/utils/utils';
+import { buildProjName } from '@/pages/utils';
 
 type DailiesProps = {
   date: Moment;
@@ -21,7 +22,7 @@ const getItem = (date: string, projs: ProjDaily[], workCalendar: string[]) => {
         {projs.map((proj) => (
           <Card size="small" bordered={false} key={proj.project.id}>
             <Card.Meta
-              title={`${proj.project.name}(${proj.timeConsuming}h)`}
+              title={`${buildProjName(proj.project.id, proj.project.name)}(${proj.timeConsuming}h)`}
               description={<div style={{ whiteSpace: 'pre-wrap' }}>{proj.content}</div>}
             />
           </Card>
@@ -33,7 +34,7 @@ const getItem = (date: string, projs: ProjDaily[], workCalendar: string[]) => {
         {projs.map((proj) => (
           <Card size="small" bordered={false} key={proj.project.id}>
             <Card.Meta
-              title={`${proj.project.name}(${proj.timeConsuming}h)`}
+              title={`${buildProjName(proj.project.id, proj.project.name)}(${proj.timeConsuming}h)`}
               description={<div style={{ whiteSpace: 'pre-wrap' }}>{proj.content}</div>}
             />
           </Card>

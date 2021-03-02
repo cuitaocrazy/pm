@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { gql, useLazyQuery } from '@apollo/client';
 import type { Query, QueryProjDailyArgs } from '@/apollo';
-import { buildProjName } from '@/pages/utils';
 
 const QueryProjs = gql`
   {
@@ -22,7 +21,7 @@ export function useProjsState() {
 
   return {
     loading: queryLoading,
-    projs: projs.map((p) => ({ ...p, name: buildProjName(p.id, p.name) })),
+    projs,
   };
 }
 

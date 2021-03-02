@@ -2,6 +2,7 @@ import React from 'react';
 import { Input, Menu } from 'antd';
 import type { Project } from '@/apollo';
 import * as R from 'ramda';
+import { buildProjName } from '@/pages/utils';
 
 type ProjectsProps = {
   projs: Project[];
@@ -16,8 +17,10 @@ const Projects: React.FC<ProjectsProps> = (props) => {
     <div>
       <Input.Search placeholder="检索项目" onChange={(e) => setSearch(e.target.value)} />
       <Menu onSelect={(e: any) => handleClick(e.key)}>
-        {R.filter((proj: Project) => R.includes(search, proj.name))(projs).map((proj) => (
-          <Menu.Item key={proj.id}>{proj.name}</Menu.Item>
+        {R.filter((proj: Project) => R.includes(search, buildProjName(proj.id, proj.name)))(
+          projs,
+        ).map((proj) => (
+          <Menu.Item key={proj.id}>{buildProjName(proj.id, proj.name)}</Menu.Item>
         ))}
       </Menu>
     </div>

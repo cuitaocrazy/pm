@@ -2,6 +2,7 @@ import type { ProjDaily } from '@/apollo';
 import { Pie } from '@ant-design/charts';
 import { Card } from 'antd';
 import React from 'react';
+import { buildProjName } from '@/pages/utils';
 
 type ProjPieProps = {
   data: ProjDaily[];
@@ -10,7 +11,10 @@ type ProjPieProps = {
 export default (props: ProjPieProps) => {
   const data = props.data
     .filter((p) => p.timeConsuming !== 0)
-    .map((p) => ({ type: p.project.name || p.project.id, value: p.timeConsuming }));
+    .map((p) => ({
+      type: buildProjName(p.project.id, p.project.name) || p.project.id,
+      value: p.timeConsuming,
+    }));
 
   const config = {
     appendPadding: 10,

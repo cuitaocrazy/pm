@@ -8,7 +8,7 @@ function StripPercentage(props: { data: ProjDaily[]; gotoAnchor: (id: number) =>
   const percentage =
     total === 0
       ? []
-      : props.data.map((d) => ({ id: d.projId, percent: (d.timeConsuming / total) * 100 }));
+      : props.data.map((d) => ({ id: d.project.id, percent: (d.timeConsuming / total) * 100 }));
 
   const list = () =>
     percentage.map((d, i) => (

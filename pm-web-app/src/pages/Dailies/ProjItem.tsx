@@ -3,6 +3,7 @@ import { Card, Row, Col, Divider, Input, Slider } from 'antd';
 import { Collapse } from 'react-collapse';
 import { DoubleLeftOutlined } from '@ant-design/icons';
 import * as R from 'ramda';
+import { buildProjName } from '@/pages/utils';
 
 const maxH = 10;
 
@@ -50,7 +51,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
 
   return (
     <Card
-      title={props.projName || props.projId}
+      title={buildProjName(props.projId, props.projName || props.projId)}
       id={props.projId}
       hidden={!visible}
       size="small"

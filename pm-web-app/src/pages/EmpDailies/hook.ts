@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { gql, useLazyQuery } from '@apollo/client';
-import type { Query, QueryDailyArgs } from '@/apollo';
+import type { Query, QueryDailyArgs, EmployeeDaily } from '@/apollo';
+import { buildProjName } from '@/pages/utils';
 
 const QueryUsers = gql`
   {
@@ -48,6 +49,20 @@ const QueryDaily = gql`
   }
 `;
 
+const buildDaily = (daily: EmployeeDaily) => ({
+  ...daily,
+  dailies: daily.dailies.map((d) => ({
+    ...d,
+    projs: d.projs.map((p) => ({
+      ...p,
+      project: {
+        ...p.project,
+        name: buildProjName(p.project.id, p.project.name),
+      },
+    })),
+  })),
+});
+
 export function useDailyState() {
   const [userId, setUserId] = useState<string>();
 
@@ -76,6 +91,6 @@ export function useDailyState() {
     loading: queryLoading,
     queryDaily,
     userId,
-    daily,
+    daily: buildDaily(daily),
   };
 }

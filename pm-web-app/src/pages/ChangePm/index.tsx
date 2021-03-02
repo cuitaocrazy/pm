@@ -8,6 +8,8 @@ import type { ChangePmInput } from '@/apollo';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { useChangePmState } from './hook';
+import type { Project } from '@/apollo';
+import { buildProjName } from '@/pages/utils';
 
 const ChangePm: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ChangePmInput>>(null);
@@ -36,6 +38,9 @@ const ChangePm: React.FC<any> = () => {
     {
       title: '项目名称',
       dataIndex: 'name',
+      render: (name: string, record: Project) => {
+        return buildProjName(record.id, name);
+      },
     },
     {
       title: '当前项目经理',

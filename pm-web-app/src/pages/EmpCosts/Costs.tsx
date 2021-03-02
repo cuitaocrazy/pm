@@ -2,10 +2,11 @@ import React from 'react';
 import { Statistic, Divider, Table } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { Pie } from '@ant-design/charts';
-import type { ProjectCost } from '@/apollo';
+import type { Project, ProjectCost } from '@/apollo';
 import * as R from 'ramda';
 import moment from 'moment';
 import numeral from 'numeral';
+import { buildProjName } from '@/pages/utils';
 
 type CostsProps = {
   loading: boolean;
@@ -17,7 +18,16 @@ const Costs: React.FC<CostsProps> = (props) => {
   const { loading, title, costs } = props;
 
   const config = React.useMemo(() => {
-    const group = R.groupBy(R.pathOr('', ['project', 'name']), costs);
+    const group = R.groupBy(
+      R.pathOr('', ['project', 'name']),
+      costs.map((c) => ({
+        ...c,
+        project: {
+          ...c.project,
+          name: buildProjName(c.project.id, c.project.name),
+        },
+      })),
+    );
     const data = R.keys(group).map((key) => ({
       type: key,
       value: R.sum(group[key].map((v) => v.amount)),
@@ -43,12 +53,13 @@ const Costs: React.FC<CostsProps> = (props) => {
     () => [
       {
         title: '项目',
-        dataIndex: ['project', 'name'],
+        dataIndex: 'project',
         filters: R.uniq(
           R.map((cost) => ({ text: cost.project.name, value: cost.project.id }), costs),
         ),
         onFilter: (value: string | number | boolean, record: ProjectCost) =>
           R.equals(value, record.project.id),
+        render: (pro: Project) => buildProjName(pro.id, pro.name),
       },
       {
         title: '金额(元)',

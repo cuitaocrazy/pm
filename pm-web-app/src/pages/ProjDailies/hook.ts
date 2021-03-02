@@ -12,7 +12,6 @@ const QueryProjs = gql`
 `;
 
 export function useProjsState() {
-
   const [queryUsers, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(QueryProjs, {
     fetchPolicy: 'no-cache',
   });
@@ -46,10 +45,12 @@ const QueryDaily = gql`
 `;
 
 export function useDailyState() {
-
   const [projId, setProjId] = useState<string>();
 
-  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryProjDailyArgs>(QueryDaily, {
+  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<
+    Query,
+    QueryProjDailyArgs
+  >(QueryDaily, {
     fetchPolicy: 'no-cache',
   });
 
@@ -58,14 +59,14 @@ export function useDailyState() {
     dailies: [],
   };
 
-  const queryDaily = (projId: string) => {
-    setProjId(projId);
+  const queryDaily = (id: string) => {
+    setProjId(id);
     query({
       variables: {
-        projId
-      }
+        projId: id,
+      },
     });
-  }
+  };
 
   return {
     loading: queryLoading,

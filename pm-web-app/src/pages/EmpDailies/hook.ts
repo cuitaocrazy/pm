@@ -14,7 +14,6 @@ const QueryUsers = gql`
 `;
 
 export function useUsersState() {
-
   const [queryUsers, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(QueryUsers, {
     fetchPolicy: 'no-cache',
   });
@@ -50,26 +49,28 @@ const QueryDaily = gql`
 `;
 
 export function useDailyState() {
-
   const [userId, setUserId] = useState<string>();
 
-  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryDailyArgs>(QueryDaily, {
-    fetchPolicy: 'no-cache',
-  });
+  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryDailyArgs>(
+    QueryDaily,
+    {
+      fetchPolicy: 'no-cache',
+    },
+  );
 
   const daily = queryData?.daily || {
     id: '',
     dailies: [],
   };
 
-  const queryDaily = (userId: string) => {
-    setUserId(userId);
+  const queryDaily = (id: string) => {
+    setUserId(id);
     query({
       variables: {
-        userId
-      }
+        userId: id,
+      },
     });
-  }
+  };
 
   return {
     loading: queryLoading,

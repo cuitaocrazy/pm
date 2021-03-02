@@ -12,7 +12,6 @@ const QueryProjs = gql`
 `;
 
 export function useProjsState() {
-
   const [queryUsers, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(QueryProjs, {
     fetchPolicy: 'no-cache',
   });
@@ -48,10 +47,12 @@ const QueryCosts = gql`
 `;
 
 export function useCostsState() {
-
   const [projId, setProjId] = useState<string>();
 
-  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryProjCostsArgs>(QueryCosts, {
+  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<
+    Query,
+    QueryProjCostsArgs
+  >(QueryCosts, {
     fetchPolicy: 'no-cache',
   });
 
@@ -63,14 +64,14 @@ export function useCostsState() {
     costs: [],
   };
 
-  const queryCosts  = (projId: string) => {
-    setProjId(projId);
+  const queryCosts = (id: string) => {
+    setProjId(id);
     query({
       variables: {
-        projId
-      }
+        projId: id,
+      },
     });
-  }
+  };
 
   return {
     loading: queryLoading,

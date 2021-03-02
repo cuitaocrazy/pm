@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import * as R from 'ramda';
 import { gql, useLazyQuery } from '@apollo/client';
 import type { Query, QueryDailyArgs, EmployeeDaily } from '@/apollo';
 import { buildProjName } from '@/pages/utils';
@@ -73,10 +74,12 @@ export function useDailyState() {
     },
   );
 
-  const daily = queryData?.daily || {
-    id: '',
-    dailies: [],
-  };
+  const daily = R.isNil(queryData)
+    ? {
+        id: '',
+        dailies: [],
+      }
+    : buildDaily(queryData.daily);
 
   const queryDaily = (id: string) => {
     setUserId(id);
@@ -91,6 +94,6 @@ export function useDailyState() {
     loading: queryLoading,
     queryDaily,
     userId,
-    daily: buildDaily(daily),
+    daily,
   };
 }

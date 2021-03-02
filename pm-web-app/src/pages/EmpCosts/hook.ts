@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import * as R from 'ramda';
 import { gql, useLazyQuery } from '@apollo/client';
-import type { Query, QueryEmpCostsArgs } from '@/apollo';
+import type { Query, QueryEmpCostsArgs, EmployeeCosts } from '@/apollo';
+import { buildProjName } from '@/pages/utils';
 
 const QueryUsers = gql`
   {
@@ -47,6 +49,17 @@ const QueryCosts = gql`
   }
 `;
 
+const buildEmpCosts = (empCosts: EmployeeCosts) => ({
+  ...empCosts,
+  costs: empCosts.costs.map((c) => ({
+    ...c,
+    project: {
+      ...c.project,
+      name: buildProjName(c.project.id, c.project.name),
+    },
+  })),
+});
+
 export function useCostsState() {
   const [userId, setUserId] = useState<string>();
 
@@ -57,13 +70,15 @@ export function useCostsState() {
     fetchPolicy: 'no-cache',
   });
 
-  const empCosts = queryData?.empCosts || {
-    user: {
-      id: userId,
-      name: userId,
-    },
-    costs: [],
-  };
+  const empCosts = R.isNil(queryData)
+    ? {
+        user: {
+          id: userId,
+          name: userId,
+        },
+        costs: [],
+      }
+    : buildEmpCosts(queryData.empCosts);
 
   const queryCosts = (id: string) => {
     setUserId(id);

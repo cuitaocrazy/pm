@@ -1,14 +1,12 @@
 import { useCallback, useEffect } from 'react';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import type {
-  Cost,
   CostInput,
   Mutation,
   MutationDeleteCostArgs,
   MutationPushCostArgs,
   Query,
 } from '@/apollo';
-import { buildProjName } from '@/pages/utils';
 
 const queryGql = gql`
   {
@@ -58,15 +56,7 @@ export function useCostState() {
 
   useEffect(() => refresh(), [refresh]);
 
-  const buildCosts = (c: Cost[]) =>
-    c.map((cost) => ({
-      ...cost,
-      projs: cost.projs.map((pd) => ({
-        ...pd,
-        proj: { ...pd.proj, name: buildProjName(pd.proj.id, pd.proj.name) },
-      })),
-    })) || [];
-  const costs = buildCosts(undefined === queryData?.costs ? [] : queryData?.costs);
+  const costs = queryData?.costs || [];
 
   const deleteCost = useCallback(
     async (id: string) => {

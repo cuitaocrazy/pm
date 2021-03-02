@@ -11,6 +11,7 @@ import DialogForm from '@/components/DialogForm';
 import CostForm from './CostForm';
 import { Button } from 'antd';
 import { append, last, unnest, zip } from 'ramda';
+import { buildProjName } from '@/pages/utils';
 
 type CostRowType = {
   id: string;
@@ -109,7 +110,7 @@ const Cost = () => {
       cost.projs.map((p) => ({
         id: cost.id,
         participant: cost.participant.name,
-        proj: p.proj.name,
+        proj: buildProjName(p.proj.id, p.proj.name),
         amount: p.amount,
         type: p.type,
         description: p.description || undefined,

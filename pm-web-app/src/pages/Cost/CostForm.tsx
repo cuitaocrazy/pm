@@ -27,8 +27,6 @@ const userQuery = gql`
 
 export default (form: FormInstance<CostInput>, data?: CostInput) => {
   const { data: resData } = useQuery<Query>(userQuery);
-  const changeResdata =
-    resData?.projs?.map((v) => ({ ...v, name: buildProjName(v.id, v.name) })) || [];
   return (
     <Form {...layout} form={form} initialValues={data}>
       <Form.Item label="ID" name="id" hidden>
@@ -75,9 +73,9 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
                       option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {changeResdata.map((u) => (
+                    {resData?.projs.map((u) => (
                       <Select.Option key={u.id} value={u.id}>
-                        {u.name}
+                        {buildProjName(u.id, u.name)}
                       </Select.Option>
                     ))}
                   </Select>

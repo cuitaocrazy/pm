@@ -1,9 +1,10 @@
 type Dic = Record<string, string>;
+
 export const orgCode: Dic = {
   BOC: '中行',
   YADA: '亚大',
   SL: '首旅',
-};
+}
 
 export const zoneCode: Dic = {
   AH: '安徽',
@@ -47,7 +48,7 @@ export const zoneCode: Dic = {
   HK: '香港',
   TW: '台湾',
   SG: '新加坡',
-};
+}
 
 export const projType: Dic = {
   SQ: '售前',
@@ -55,43 +56,39 @@ export const projType: Dic = {
   SH: '售后',
   YF: '研发',
   ZH: '综合',
-};
+}
 
-function getCodeName(code: string, codeDic: Dic, errMsgFn: () => string) {
-  const name = codeDic[code];
+function getCodeName (code: string, codeDic: Dic, errMsgFn: () => string) {
+  const name = codeDic[code]
 
   if (name === undefined) {
     // eslint-disable-next-line no-console
-    console.warn(errMsgFn());
-    return code;
+    console.warn(errMsgFn())
+    return code
     // throw Error(errMsgFn());
   }
 
-  return name;
+  return name
 }
 
-function getOrgName(org: string) {
-  return getCodeName(org, orgCode, () => `没有找到机构代码${org}`);
+function getOrgName (org: string) {
+  return getCodeName(org, orgCode, () => `没有找到机构代码${org}`)
 }
 
-function getZoneName(zone: string) {
-  return getCodeName(zone, zoneCode, () => `没有找到区域代码${zone}`);
+function getZoneName (zone: string) {
+  return getCodeName(zone, zoneCode, () => `没有找到区域代码${zone}`)
 }
 
-function getProjTypeName(type: string) {
-  return getCodeName(type, projType, () => `没有找到项目类型代码${type}`);
+function getProjTypeName (type: string) {
+  return getCodeName(type, projType, () => `没有找到项目类型代码${type}`)
 }
 
-export function buildProjName(id: string, name: string) {
-  const reg = /^(?<org>\w+)-(?<zone>\w+)-(?<type>\w+)-(?<name>\w+)-(?<date>\d+)$/;
-  const regExpExec = reg.exec(id);
-  if (regExpExec === null) {
-    // eslint-disable-next-line no-console
-    console.warn(`id: ${id} 格式错误`);
-    return name;
-  }
-
-  return `${getOrgName(regExpExec.groups!.org!)}-${getZoneName(
-    regExpExec.groups!.zone!,
-  )}-${getProjTypeName(regExpExec.groups!.type!)}-${name}-${regExpExec.groups!.date!}`;
+export function parseIdInfo (id: string) {
+  const reg = /^(?<org>\w+)-(?<zone>\w+)-(?<type>\w+)-(?<name>\w+)-(?<date>\d+)$/
+  const regExpExec = reg.exec(id)!
+  return [
+    getOrgName(regExpExec.groups!.org),
+    getZoneName(regExpExec.groups!.zone),
+    getProjTypeName(regExpExec.groups!.type),
+  ]
 }

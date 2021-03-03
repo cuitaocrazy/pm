@@ -5,18 +5,17 @@ import { Project } from '../../mongodb'
 const ChangePmInput = async (projIds: string[], leader:string, isRemovePart:boolean) => {
   const bulkWriteArgs : Array<BulkWriteUpdateOneOperation<any>> = []
   for (const projId of projIds) {
-    const projs = await Project.find({ _id: projId }).toArray()
-    if (projs.length === 1) {
+    const proj = await Project.findOne({ _id: projId })
+    if (proj) {
       if (isRemovePart) {
-        const oldleader = projs[0].leader
-        projs[0].participants = projs[0].participants.filter(part => part !== oldleader)
+        const oldleader = proj.leader
+        proj.participants = proj.participants.filter(part => part !== oldleader)
       }
-      projs[0].leader = leader
-      projs[0].participants = projs[0].participants.filter(part => part !== leader)
-      projs[0].participants.push(leader)
+      proj.leader = leader
+      proj.participants = proj.participants.filter(part => part !== leader)
+      proj.participants.push(leader)
+      bulkWriteArgs.push({ updateOne: { filter: { _id: projId }, update: { $set: proj }, upsert: true } })
     }
-
-    bulkWriteArgs.push({ updateOne: { filter: { _id: projId }, update: { $set: projs[0] }, upsert: true } })
   }
   const result = await Project.bulkWrite(bulkWriteArgs)
   return result.modifiedCount

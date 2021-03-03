@@ -1,5 +1,5 @@
 import React from 'react';
-import { Timeline, Card } from 'antd';
+import { Empty, Timeline, Card } from 'antd';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import * as R from 'ramda';
@@ -36,7 +36,9 @@ const getItem = (date: string, users: UserDaily[]) => {
 const DailiesPage: React.FC<DailiesProps> = (props) => {
   const { date, dailies } = props;
 
-  return R.isEmpty(dailies) ? null : (
+  return R.isEmpty(dailies) ? (
+    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+  ) : (
     <Timeline style={{ height: 719, overflow: 'scroll' }}>
       <br />
       {R.range(0, 7)

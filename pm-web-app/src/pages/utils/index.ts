@@ -61,7 +61,6 @@ function getCodeName(code: string, codeDic: Dic, errMsgFn: () => string) {
   const name = codeDic[code];
 
   if (name === undefined) {
-    // TODO: id更新后启用抛出异常
     // eslint-disable-next-line no-console
     console.warn(errMsgFn());
     return code;
@@ -87,8 +86,6 @@ export function buildProjName(id: string, name: string) {
   const reg = /^(?<org>\w+)-(?<zone>\w+)-(?<type>\w+)-(?<name>\w+)-(?<date>\d+)$/;
   const regExpExec = reg.exec(id);
   if (regExpExec === null) {
-    // throw Error(`id: ${id} 格式错误`);
-    // TODO: id更新后启用抛出异常
     // eslint-disable-next-line no-console
     console.warn(`id: ${id} 格式错误`);
     return name;

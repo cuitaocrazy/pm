@@ -2,6 +2,7 @@ import { append, map, pipe, uniq, unnest } from 'ramda'
 import { UserWithGroup } from '../auth/oauth'
 import { Config, Cost, EmployeeDaily } from '../mongodb'
 import { pool } from '../postgres'
+import { parseIdInfo } from './def'
 
 async function getDailyDetail (month: string) {
   return EmployeeDaily.aggregate([
@@ -180,6 +181,7 @@ export async function saveDailySettlementDates (datas: any[]) {
     o.emp_no,
     o.emp_name,
     o.proj_id,
+    ...parseIdInfo(o.proj_id),
     o.proj_name,
     o.proj_type,
     o.leader_group,
@@ -211,6 +213,7 @@ export async function saveCostSettlementDates (datas: any[]) {
     o.emp_no,
     o.emp_name,
     o.proj_id,
+    ...parseIdInfo(o.proj_id),
     o.proj_name,
     o.proj_type,
     o.leader_group,

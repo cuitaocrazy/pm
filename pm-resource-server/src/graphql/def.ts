@@ -46,7 +46,7 @@ type Project {
   leader: String!
   budget: Int!
   createDate: String!
-  type: ProjectType!
+  status: ProjectStatus!
   participants: [String!]!
   contacts: [Contact!]!
 }
@@ -57,12 +57,9 @@ type Contact {
   phone: String
 }
 
-enum ProjectType {
-  preSale
-  onSale
-  afterSale
-  research
-  comprehensive
+enum ProjectStatus {
+  endProj
+  onProj
 }
 
 type ProjectCostDetail {
@@ -132,7 +129,7 @@ input ProjectInput {
   id: ID!
   name: String!
   budget: Int!
-  type: ProjectType!
+  type: ProjectStatus!
   participants: [String!]
   contacts: [ContactInput!]
 }

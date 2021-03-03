@@ -89,7 +89,7 @@ export type Project = {
   leader: Scalars['String'];
   budget: Scalars['Int'];
   createDate: Scalars['String'];
-  type: ProjectType;
+  status: ProjectStatus;
   participants: Scalars['String'][];
   contacts: Contact[];
 };
@@ -101,12 +101,9 @@ export type Contact = {
   phone?: Maybe<Scalars['String']>;
 };
 
-export enum ProjectType {
-  PreSale = 'preSale',
-  OnSale = 'onSale',
-  AfterSale = 'afterSale',
-  Research = 'research',
-  Comprehensive = 'comprehensive',
+export enum ProjectStatus {
+  EndProj = 'endProj',
+  OnProj = 'onProj',
 }
 
 export type ProjectCostDetail = {
@@ -199,7 +196,7 @@ export type ProjectInput = {
   id: Scalars['ID'];
   name: Scalars['String'];
   budget: Scalars['Int'];
-  type: ProjectType;
+  status: ProjectStatus;
   participants?: Maybe<Scalars['String'][]>;
   contacts?: Maybe<ContactInput[]>;
 };

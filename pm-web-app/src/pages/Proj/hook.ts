@@ -15,7 +15,7 @@ const queryGql = gql`
       name
       budget
       createDate
-      type
+      status
       participants
       contacts {
         name

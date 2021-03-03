@@ -7,7 +7,7 @@ import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';
-import { getTypeDisplayName, projType } from './utils';
+import { getStatusDisplayName, projStatus } from './utils';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { buildProjName } from '../utils';
@@ -37,13 +37,13 @@ function getColumns(editHandle: (proj: Proj) => void, deleteHandle: (id: string)
       },
     },
     {
-      title: '类型',
-      dataIndex: 'type',
-      key: 'type',
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
       width: '120px',
-      render: (type: string) => getTypeDisplayName(type),
-      filters: projType.map((s) => ({ text: s[1], value: s[0] })),
-      onFilter: (value: string | number | boolean, record: Proj) => record.type === value,
+      render: (status: string) => getStatusDisplayName(status),
+      filters: projStatus.map((s) => ({ text: s[1], value: s[0] })),
+      onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
     },
     {
       title: '操作',
@@ -65,7 +65,7 @@ function Project() {
       id: proj.id,
       name: proj.name,
       budget: proj.budget,
-      type: proj.type,
+      status: proj.status,
       participants: proj.participants,
       contacts: proj.contacts,
     });

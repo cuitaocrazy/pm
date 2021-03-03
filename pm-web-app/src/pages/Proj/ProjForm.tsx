@@ -3,7 +3,7 @@ import { Form, Input, InputNumber, Select, Button, Divider } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ProjectInput, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
-import { projType } from './utils';
+import { projStatus } from './utils';
 import type { FormInstance } from 'antd/lib/form';
 import ProjIdComponent from './ProjIdComponent';
 
@@ -74,9 +74,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Form.Item label="预算（元）" name="budget" rules={[{ required: true }]}>
         <InputNumber min={0} />
       </Form.Item>
-      <Form.Item label="类型" name="type" rules={[{ required: true }]}>
+      <Form.Item label="状态" name="type" rules={[{ required: true }]}>
         <Select loading={loading}>
-          {projType.map((s) => (
+          {projStatus.map((s) => (
             <Select.Option key={s[0]} value={s[0]}>
               {s[1]}
             </Select.Option>

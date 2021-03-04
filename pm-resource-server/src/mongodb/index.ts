@@ -49,9 +49,9 @@ export interface IProject {
    */
   createDate: Date
   /**
-   * 项目类型
+   * 项目状态
    */
-  type: 'preSale' | 'onSale' | 'afterSale' | 'research' | 'comprehensive'
+  status: 'onProj' | 'endProj'
   /**
    * 参与人员
    */

@@ -129,7 +129,7 @@ input ProjectInput {
   id: ID!
   name: String!
   budget: Int!
-  type: ProjectStatus!
+  status: ProjectStatus!
   participants: [String!]
   contacts: [ContactInput!]
 }

@@ -175,7 +175,7 @@ function getQuarterly (date: string) {
 export async function saveDailySettlementDates (datas: any[]) {
   if (datas.length === 0) return
   const rowCount = datas.length
-  const columnCount = 20
+  const columnCount = 23
   const getRowArray = (o: any) => [
     o.emp_group,
     o.emp_no,
@@ -207,7 +207,7 @@ export async function saveDailySettlementDates (datas: any[]) {
 export async function saveCostSettlementDates (datas: any[]) {
   if (datas.length === 0) return
   const rowCount = datas.length
-  const columnCount = 18
+  const columnCount = 21
   const getRowArray = (o: any) => [
     o.emp_group,
     o.emp_no,

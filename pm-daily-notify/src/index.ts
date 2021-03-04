@@ -39,7 +39,7 @@ const getEmpDailiesData = async (year: string): Promise<IEmployeeDaily[]> => {
 export const getUsers = async (): Promise<UserInfo[]> => {
   const users = await Users()
     .then(users => users.find())
-    .then(R.map((u: any) => ({ id: u.username, name: u.lastName + u.firstName, email: u.email })))
+    .then(R.map((u: any) => ({ id: u.username, name: u.lastName + u.firstName, email: u.email, createdTimestamp: u.createdTimestamp })))
     .then(R.filter((u: any) => R.not(R.isNil(u.email))))
   return users
 }
@@ -57,7 +57,8 @@ async function main (year: number) {
       .map(user => ({
         name: user.name,
         email: user.email,
-        dates: getNoDailyDates(getWorkDays(year, workCalendar), R.find(R.propEq('_id', user.id), empDailies)?.dailies || []),
+        dates: getNoDailyDates(getWorkDays(year, workCalendar), R.find(R.propEq('_id', user.id), empDailies)?.dailies || [])
+          .filter(date => R.isNil(user.createdTimestamp) || moment(date, 'YYYYMMDD').isAfter(moment(user.createdTimestamp))),
       }))
       .filter(mail => R.not(R.isNil(mail.email)))
       .filter(mail => R.not(R.isEmpty(mail.dates)))

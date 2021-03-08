@@ -106,6 +106,20 @@ type ProjectCosts {
   costs: [EmployeeCost!]!
 }
 
+type ChartKeyValue {
+  key: String!
+  value: Float!
+}
+
+type Charts {
+  monthAmounts: [ChartKeyValue!]!
+  monthCosts: [ChartKeyValue!]!
+  monthMds: [ChartKeyValue!]!
+  projCosts: [ChartKeyValue!]!
+  empCosts: [ChartKeyValue!]!
+  groupCosts: [ChartKeyValue!]!
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -120,6 +134,7 @@ type Query {
   settleMonth: [String!]!
   empCosts(userId: String!): EmployeeCosts!
   projCosts(projId: String!): ProjectCosts!
+  charts(year: String!): Charts!
 }
 
 input DailyInput {
@@ -156,9 +171,10 @@ input CostInput {
   projs: [ProjCostInput!]!
 }
 
-input ChangePmInput{
-  leader: String!,
-  projIds : [String!],
+input ChangePmInput {
+  leader: String!
+  projIds: [String]
+  isRemovePart:Boolean
 }
 
 type Mutation {
@@ -283,7 +299,7 @@ let users = [
   {
     id: '0002',
     name: 'user2',
-    access: ['realm:project_manager', 'realm:assistant'],
+    access: ['realm:project_manager', 'realm:group_leader'],
     groups: ['/a']
   },
   {
@@ -295,7 +311,7 @@ let users = [
   {
     id: '0004',
     name: 'user4',
-    access: ['realm:project_manager', 'realm:assistant'],
+    access: ['realm:engineer', 'realm:assistant'],
     groups: ['/a']
   }
 ]
@@ -325,8 +341,91 @@ function makeProjCosts(projId: string) {
   })
 }
 
+function makeCharts (year: string) {
+  return ({
+    monthAmounts: [
+      {
+        key: '202101',
+        value: 320254,
+      },
+    ],
+    monthCosts: [
+      {
+        key: '202101',
+        value: 31305,
+      },
+    ],
+    projCosts: [
+      {
+        key: '亚大-北京-测试-项目名称-2101',
+        value: 2389.93,
+      },
+      {
+        key: '亚大-北京-测试-项目名称-2102',
+        value: 5389.93,
+      },
+      {
+        key: '亚大-北京-测试-项目名称-2103',
+        value: 6655.97,
+      },
+      {
+        key: '亚大-北京-测试-项目名称-2104',
+        value: 1208.1,
+      },
+    ],
+    empCosts: [
+      {
+        key: '人员一',
+        value: 0,
+      },
+      {
+        key: '人员二',
+        value: 152389.93,
+      },
+      {
+        key: '人员三',
+        value: 136655.97,
+      },
+      {
+        key: '人员四',
+        value: 31208.1,
+      },
+      {
+        key: '人员五',
+        value: 31208.1,
+      },
+      {
+        key: '人员六',
+        value: 31208.1,
+      },
+      {
+        key: '人员七',
+        value: 31208.1,
+      },
+    ],
+    groupCosts: [
+      {
+        key: '/项目二部',
+        value: 0,
+      },
+      {
+        key: '/项目二部/创新组',
+        value: 152389.93,
+      },
+      {
+        key: '/项目二部/特色组',
+        value: 136655.97,
+      },
+      {
+        key: '/项目二部/苏州组',
+        value: 31208.1,
+      },
+    ],
+  })
+}
+
 const root = {
-  me: () => users[0],
+  me: () => users[3],
   myDailies: () => myDailies,
   projs: () => projs,
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {
@@ -357,6 +456,7 @@ const root = {
   settleMonth: () => config.settleMonth,
   empCosts: ({ userId }: any) => makeEmpCosts(userId),
   projCosts: ({ projId }: any) => makeProjCosts(projId),
+  charts: ({ year }: any) => makeCharts(year),
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])
     args.proj.contacts || (args.proj.contacts = [])
@@ -420,8 +520,7 @@ const root = {
     return 'workCalendar'
   },
   pushChangePm: (args: any) => {
-    let id: string
-    id='Error';
+    let id: string = 'Error';
     projs.filter(proj=>proj.id===args?.changePm.projIds[0]).map(proj=>
       { id=proj.id
         proj.leader=args.changePm.leader

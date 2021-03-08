@@ -11,9 +11,10 @@ import config from './config'
 import costsProject from './costs-project'
 import costsEmployee from './costs-employee'
 import changePm from './changePm'
+import charts from './charts'
 
 const merge = (...args: IResolvers[]) => {
   return args.reduce(R.mergeDeepRight)
 }
 
-export default merge(me, misc, dailies, projs, costs, dailiesViewer, dailiesProject, config, costsProject, costsEmployee, changePm)
+export default merge(me, misc, dailies, projs, costs, dailiesViewer, dailiesProject, config, costsProject, costsEmployee, changePm, charts)

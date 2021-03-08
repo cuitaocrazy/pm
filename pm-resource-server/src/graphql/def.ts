@@ -103,6 +103,20 @@ type ProjectCosts {
   costs: [EmployeeCost!]!
 }
 
+type ChartKeyValue {
+  key: String!
+  value: Float!
+}
+
+type Charts {
+  monthAmounts: [ChartKeyValue!]!
+  monthCosts: [ChartKeyValue!]!
+  monthMds: [ChartKeyValue!]!
+  projCosts: [ChartKeyValue!]!
+  empCosts: [ChartKeyValue!]!
+  groupCosts: [ChartKeyValue!]!
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -117,6 +131,7 @@ type Query {
   settleMonth: [String!]!
   empCosts(userId: String!): EmployeeCosts!
   projCosts(projId: String!): ProjectCosts!
+  charts(year: String!): Charts!
 }
 
 input DailyInput {

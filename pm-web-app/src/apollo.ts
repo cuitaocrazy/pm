@@ -153,6 +153,22 @@ export type ProjectCosts = {
   costs: EmployeeCost[];
 };
 
+export type ChartKeyValue = {
+  __typename?: 'ChartKeyValue';
+  key: Scalars['String'];
+  value: Scalars['Float'];
+};
+
+export type Charts = {
+  __typename?: 'Charts';
+  monthAmounts: ChartKeyValue[];
+  monthCosts: ChartKeyValue[];
+  monthMds: ChartKeyValue[];
+  projCosts: ChartKeyValue[];
+  empCosts: ChartKeyValue[];
+  groupCosts: ChartKeyValue[];
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
@@ -168,6 +184,7 @@ export type Query = {
   settleMonth: Scalars['String'][];
   empCosts: EmployeeCosts;
   projCosts: ProjectCosts;
+  charts: Charts;
 };
 
 export type QueryDailyArgs = {
@@ -184,6 +201,10 @@ export type QueryEmpCostsArgs = {
 
 export type QueryProjCostsArgs = {
   projId: Scalars['String'];
+};
+
+export type QueryChartsArgs = {
+  year: Scalars['String'];
 };
 
 export type DailyInput = {
@@ -222,8 +243,8 @@ export type CostInput = {
 
 export type ChangePmInput = {
   leader: Scalars['String'];
-  projIds: Scalars['String'][];
-  isRemovePart: Scalars['Boolean'];
+  projIds?: Maybe<Maybe<Scalars['String']>[]>;
+  isRemovePart?: Maybe<Scalars['Boolean']>;
 };
 
 export type Mutation = {
@@ -267,6 +288,6 @@ export type MutationDeleteWorkCalendarArgs = {
   data: Scalars['String'][];
 };
 
-export type MutationchangePmArgs = {
+export type MutationPushChangePmArgs = {
   changePm: ChangePmInput;
 };

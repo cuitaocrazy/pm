@@ -425,7 +425,7 @@ function makeCharts (year: string) {
 }
 
 const root = {
-  me: () => users[3],
+  me: () => users[0],
   myDailies: () => myDailies,
   projs: () => projs,
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {

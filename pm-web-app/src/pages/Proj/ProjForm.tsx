@@ -75,7 +75,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         <InputNumber min={0} />
       </Form.Item>
       <Form.Item label="状态" name="status" rules={[{ required: true }]}>
-        <Select loading={loading} defaultValue={'onProj'}>
+        <Select loading={loading}>
           {projStatus.map((s) => (
             <Select.Option key={s[0]} value={s[0]}>
               {s[1]}

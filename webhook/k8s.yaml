@@ -52,11 +52,10 @@ spec:
         - containerPort: 3000
         volumeMounts:
         - name: config
-          mountPath: /app/values.yaml
-          subPath: values.yaml
+          mountPath: /app/config
         env: 
         - name: HELM_ARGS
-          value: upgrade pm -n pm -i --create-namespace . --values ../../../values.yaml
+          value: upgrade pm -n pm -i --create-namespace . --values /app/config/values.yaml
       volumes:
       - name: config
         configMap:

@@ -16,7 +16,7 @@ type ProjIdComponentProps = {
 
 const styles = {
   select: {
-    minWidth: 90,
+    minWidth: 100,
   },
 };
 
@@ -91,6 +91,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
           onChange={(e) => changeZone(e.toString())}
           value={info.zone || undefined}
           disabled={disabled}
+          style={styles.select}
         >
           {Object.keys(zoneCode).map((k) => (
             <Option key={k} value={k}>
@@ -104,6 +105,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
           onChange={(e) => changeProjType(e.toString())}
           value={info.projType || undefined}
           disabled={disabled}
+          style={styles.select}
         >
           {Object.keys(projType).map((k) => (
             <Option key={k} value={k}>

@@ -28,7 +28,7 @@ export type ProjItemHandle = {
   getOffset: () => number;
 };
 const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = (props, ref) => {
-  const [isOpened, setIsOpened] = useState(false);
+  const [isOpened, setIsOpened] = useState(true);
 
   const divRef = useRef<HTMLDivElement>(null);
   const visible =

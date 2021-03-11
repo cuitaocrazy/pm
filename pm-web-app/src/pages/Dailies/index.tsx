@@ -112,7 +112,7 @@ function Dailies(prop: { date?: string }) {
               },
             })
           }
-          disabled={!R.any((e) => e.timeConsuming !== 0, hookStatus.currentDaily.projs)}
+          // disabled={!R.any((e) => e.timeConsuming !== 0, hookStatus.currentDaily.projs)}
           loading={hookStatus.loading}
         >
           提交

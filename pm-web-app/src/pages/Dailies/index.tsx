@@ -56,7 +56,7 @@ function Dailies(prop: { date?: string }) {
 
   return (
     <PageContainer
-      loading={hookStatus.projs.length === 0}
+      loading={hookStatus.loading}
       extra={[
         <DatePicker
           inputReadOnly

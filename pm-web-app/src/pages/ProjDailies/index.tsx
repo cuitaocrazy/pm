@@ -33,12 +33,12 @@ const ProjectsDailyPage = () => {
         }
       >
         <Row>
-          <Col xs={24} sm={6} style={{ minWidth: 300 }}>
+          <Col md={24} lg={10} xl={8} xxl={6}>
             <ProCard collapsible title="项目列表" loading={queryUsersLoading}>
               <ProjectsPage projs={projs} handleClick={queryDaily} />
             </ProCard>
           </Col>
-          <Col xs={24} sm={9}>
+          <Col md={24} lg={14} xl={9} xxl={9}>
             <ProCard
               collapsible
               bordered
@@ -55,7 +55,7 @@ const ProjectsDailyPage = () => {
               <CalendarPage date={date} setDate={setDate} dailies={daily.dailies} />
             </ProCard>
           </Col>
-          <Col xs={24} sm={9}>
+          <Col md={24} xl={7} xxl={9}>
             <ProCard loading={queryDailyLoading}>
               <DailiesPage date={date} dailies={daily.dailies} />
             </ProCard>

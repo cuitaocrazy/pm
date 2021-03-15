@@ -4,15 +4,15 @@ import { Collapse } from 'react-collapse';
 import { DoubleLeftOutlined } from '@ant-design/icons';
 import * as R from 'ramda';
 import { buildProjName } from '@/pages/utils';
-import { green, red } from '@ant-design/colors';
+import color from './colorDef';
 
 const maxH = 10;
 
 type ProjItemProps = {
   projId: string;
   projName?: string;
-  isMyProj: boolean;
-  isEndProj: boolean;
+  involvedProj: boolean;
+  endedProj: boolean;
   hours: number;
   content?: string | null | undefined;
   onHoursChange: (hours: number) => void;
@@ -26,9 +26,9 @@ const marks = ((vs) =>
     vs.map((v) => `${v} h`),
   ))(R.range(0, maxH + 1));
 
-const getCardStyle = (isMyProj: boolean, isEndProj: boolean) => {
-  if (isEndProj) return { headStyle: { backgroundColor: red[5] } };
-  if (isMyProj) return { headStyle: { backgroundColor: green[3] } };
+const getCardStyle = (involved: boolean, ended: boolean) => {
+  if (ended) return { headStyle: { backgroundColor: color.ended } };
+  if (involved) return { headStyle: { backgroundColor: color.involved } };
   return {};
 };
 
@@ -66,7 +66,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
       hidden={!visible}
       size="small"
       style={{ marginBottom: 16 }}
-      {...getCardStyle(props.isMyProj, props.isEndProj)}
+      {...getCardStyle(props.involvedProj, props.endedProj)}
     >
       {/* 设置一个暗锚, 本身Card是可以支持ref的, 但是antd定义的Type没有这个属性, 避免一些dev的报错, 假如一手工锚点 */}
       <div ref={divRef} />

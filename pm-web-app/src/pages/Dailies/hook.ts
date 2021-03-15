@@ -111,8 +111,8 @@ export function useDailiesStatus(date?: string) {
           projGroup.writedAndExcludeAndOnProj || [],
           projGroup.writedAndExcludeAndEndProj || [],
           projGroup.notWritedAndInvolvedAndOnProj || [],
-          projGroup.notWritedAndInvolvedAndEndProj || [],
           projGroup.notWritedAndExcludeAndOnProj || [],
+          projGroup.notWritedAndInvolvedAndEndProj || [],
           projGroup.notWritedAndExcludeAndEndProj || [],
         ],
       );

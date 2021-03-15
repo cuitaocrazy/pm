@@ -10,6 +10,7 @@ import ProjItem from './ProjItem';
 import ProjPie from './ProjPie';
 import StripPercentage from './StripPercentage';
 import { useDailiesStatus } from './hook';
+import Description from './Description';
 
 const dateFormat = 'YYYYMMDD';
 
@@ -46,8 +47,8 @@ function Dailies(prop: { date?: string }) {
         onContentOfWorkChange={onContentOfWorkChange(i)}
         ref={hookStatus.refs[i]}
         visibleFilter={hookStatus.filter}
-        isMyProj={d.project.participants.includes(hookStatus.userId || '')}
-        isEndProj={d.project.status === 'endProj'}
+        involvedProj={d.project.participants.includes(hookStatus.userId || '')}
+        endedProj={d.project.status === 'endProj'}
       />
     ));
 
@@ -88,6 +89,7 @@ function Dailies(prop: { date?: string }) {
       ]}
       content={
         <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -16 }}>
+          <Description />
           <StripPercentage
             data={hookStatus.currentDaily.projs}
             gotoAnchor={(i) => hookStatus.refs[i].current!.gotoAnchor(hookStatus.getOffset())}

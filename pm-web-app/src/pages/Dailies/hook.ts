@@ -17,7 +17,6 @@ const myQuery = gql`
         projs {
           project {
             id
-            name
           }
           timeConsuming
           content
@@ -107,8 +106,8 @@ export function useDailiesStatus(date?: string) {
         [],
         [
           projGroup.writedAndInvolvedAndOnProj || [],
-          projGroup.writedAndInvolvedAndEndProj || [],
           projGroup.writedAndExcludeAndOnProj || [],
+          projGroup.writedAndInvolvedAndEndProj || [],
           projGroup.writedAndExcludeAndEndProj || [],
           projGroup.notWritedAndInvolvedAndOnProj || [],
           projGroup.notWritedAndExcludeAndOnProj || [],
@@ -116,14 +115,17 @@ export function useDailiesStatus(date?: string) {
           projGroup.notWritedAndExcludeAndEndProj || [],
         ],
       );
-      const dailyListOfItems = sortedProjs.map(
-        (p) =>
-          c?.projs.find((dp) => dp.project.id === p.id) || {
-            project: p,
-            timeConsuming: 0,
-            content: '',
-          },
-      );
+      const dailyListOfItems = sortedProjs.map((p) => {
+        const currentDailyProj = c?.projs.find((dp) => dp.project.id === p.id);
+        if (currentDailyProj) {
+          return { ...currentDailyProj, project: p };
+        }
+        return {
+          project: p,
+          timeConsuming: 0,
+          content: '',
+        };
+      });
       setCurrentDaily({ date: currentDate, projs: dailyListOfItems });
     },
     [currentDate, projs, initialState],

@@ -46,6 +46,8 @@ function Dailies(prop: { date?: string }) {
         onContentOfWorkChange={onContentOfWorkChange(i)}
         ref={hookStatus.refs[i]}
         visibleFilter={hookStatus.filter}
+        isMyProj={d.project.participants.includes(hookStatus.userId || '')}
+        isEndProj={d.project.status === 'endProj'}
       />
     ));
 

@@ -29,6 +29,7 @@ const myQuery = gql`
       id
       name
       participants
+      status
     }
   }
 `;
@@ -63,24 +64,56 @@ export function useDailiesStatus(date?: string) {
 
   const buildCurrentDaily = useCallback(
     (c: Daily | undefined) => {
-      const involvedGrouping = R.groupBy<Project>((p) =>
-        p.participants.includes(initialState!.currentUser!.id!) ? 'involved' : 'exclude',
-      );
-      const writedGrouping = R.groupBy<Project>((p) =>
-        c?.projs.map((dp) => dp.project.id).includes(p.id) ? 'writed' : 'notWrite',
-      );
-      const writedGroup = writedGrouping(projs);
-      const writedAndInvolvedGroup = involvedGrouping(writedGroup.writed || []);
-      const notWriteAndInvolvedGroup = involvedGrouping(writedGroup.notWrite || []);
+      const projGrouping = R.groupBy<Project>((p) => {
+        const writed = c?.projs.map((dp) => dp.project.id).includes(p.id);
+        const onProj = p.status === 'onProj';
+        const involved = p.participants.includes(initialState!.currentUser!.id!);
+
+        if (writed && involved && onProj) {
+          return 'writedAndInvolvedAndOnProj';
+        }
+
+        if (writed && involved && !onProj) {
+          return 'writedAndInvolvedAndEndProj';
+        }
+
+        if (writed && !involved && onProj) {
+          return 'writedAndExcludeAndOnProj';
+        }
+
+        if (writed && !involved && !onProj) {
+          return 'writedAndExcludeAndEndProj';
+        }
+
+        if (!writed && involved && onProj) {
+          return 'notWritedAndInvolvedAndOnProj';
+        }
+
+        if (!writed && involved && !onProj) {
+          return 'notWritedAndInvolvedAndEndProj';
+        }
+
+        if (!writed && !involved && onProj) {
+          return 'notWritedAndExcludeAndOnProj';
+        }
+
+        return 'notWritedAndExcludeAndEndProj';
+      });
+
+      const projGroup = projGrouping(projs);
 
       const sortedProjs = R.reduce<Project[], Project[]>(
         R.concat,
         [],
         [
-          writedAndInvolvedGroup.involved || [],
-          writedAndInvolvedGroup.exclude || [],
-          notWriteAndInvolvedGroup.involved || [],
-          notWriteAndInvolvedGroup.exclude || [],
+          projGroup.writedAndInvolvedAndOnProj || [],
+          projGroup.writedAndInvolvedAndEndProj || [],
+          projGroup.writedAndExcludeAndOnProj || [],
+          projGroup.writedAndExcludeAndEndProj || [],
+          projGroup.notWritedAndInvolvedAndOnProj || [],
+          projGroup.notWritedAndInvolvedAndEndProj || [],
+          projGroup.notWritedAndExcludeAndOnProj || [],
+          projGroup.notWritedAndExcludeAndEndProj || [],
         ],
       );
       const dailyListOfItems = sortedProjs.map(
@@ -92,26 +125,6 @@ export function useDailiesStatus(date?: string) {
           },
       );
       setCurrentDaily({ date: currentDate, projs: dailyListOfItems });
-
-      // if (c) {
-      //   const writeDailyProjs = c.projs.map((p) => p.project);
-      //   const allProjs = projs;
-      //   const notWriteDailyProjs = R.differenceWith(
-      //     (p1, p2) => p1.id === p2.id,
-      //     allProjs,
-      //     writeDailyProjs,
-      //   );
-      //   const newProjs = notWriteDailyProjs.map((proj) => ({
-      //     project: proj,
-      //     timeConsuming: 0,
-      //     content: '',
-      //   }));
-      //   setCurrentDaily(R.over(R.lensProp('projs'), (p: ProjDaily[]) => [...p, ...newProjs], c));
-      // } else
-      //   setCurrentDaily({
-      //     date: currentDate,
-      //     projs: projs?.map((p) => ({ project: p, timeConsuming: 0, content: '' })) || [],
-      //   });
     },
     [currentDate, projs, initialState],
   );
@@ -157,5 +170,6 @@ export function useDailiesStatus(date?: string) {
     refs: refs.current,
     getOffset: () => refs.current[0].current?.getOffset() || 0,
     getLastDaily,
+    userId: initialState?.currentUser?.id,
   };
 }

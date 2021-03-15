@@ -2,11 +2,11 @@ import { createRef, useEffect, useRef, useState, useMemo, useCallback } from 're
 import type { MutationFunctionOptions } from '@apollo/client';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
-import type { Daily, Mutation, MutationPushDailyArgs, ProjDaily, Query } from '@/apollo';
+import type { Daily, Mutation, MutationPushDailyArgs, Project, Query } from '@/apollo';
 import * as R from 'ramda';
 import { message } from 'antd';
 import type { ProjItemHandle } from './ProjItem';
-// import { useModel } from 'umi';
+import { useModel } from 'umi';
 
 const myQuery = gql`
   {
@@ -49,7 +49,7 @@ export function useDailiesStatus(date?: string) {
   );
   const [currentDaily, setCurrentDaily] = useState<Daily>({ date: currentDate, projs: [] });
   const [filter, setFilter] = useState('');
-  // const { initialState } = useModel('@@initialState');
+  const { initialState } = useModel('@@initialState');
   const dailies = useMemo(() => data?.myDailies?.dailies || [], [data]);
   const projs = useMemo(() => data?.projs || [], [data]);
   const completedDailiesDates = dailies?.map((d) => d.date) || [];
@@ -61,33 +61,67 @@ export function useDailiesStatus(date?: string) {
     refresh();
   }, [refresh]);
 
-  const mySetCurrentDaily = useCallback(
+  const buildCurrentDaily = useCallback(
     (c: Daily | undefined) => {
-      if (c) {
-        const existProjs = c.projs.map((p) => p.project);
-        const allProjs = projs;
-        const notExistProjs = R.differenceWith((p1, p2) => p1.id === p2.id, allProjs, existProjs);
-        const newProjs = notExistProjs.map((proj) => ({
-          project: proj,
-          timeConsuming: 0,
-          content: '',
-        }));
-        setCurrentDaily(R.over(R.lensProp('projs'), (p: ProjDaily[]) => [...p, ...newProjs], c));
-      } else
-        setCurrentDaily({
-          date: currentDate,
-          projs: projs?.map((p) => ({ project: p, timeConsuming: 0, content: '' })) || [],
-        });
+      const involvedGrouping = R.groupBy<Project>((p) =>
+        p.participants.includes(initialState!.currentUser!.id!) ? 'involved' : 'exclude',
+      );
+      const writedGrouping = R.groupBy<Project>((p) =>
+        c?.projs.map((dp) => dp.project.id).includes(p.id) ? 'writed' : 'notWrite',
+      );
+      const writedGroup = writedGrouping(projs);
+      const writedAndInvolvedGroup = involvedGrouping(writedGroup.writed || []);
+      const notWriteAndInvolvedGroup = involvedGrouping(writedGroup.notWrite || []);
+
+      const sortedProjs = R.reduce<Project[], Project[]>(
+        R.concat,
+        [],
+        [
+          writedAndInvolvedGroup.involved || [],
+          writedAndInvolvedGroup.exclude || [],
+          notWriteAndInvolvedGroup.involved || [],
+          notWriteAndInvolvedGroup.exclude || [],
+        ],
+      );
+      const dailyListOfItems = sortedProjs.map(
+        (p) =>
+          c?.projs.find((dp) => dp.project.id === p.id) || {
+            project: p,
+            timeConsuming: 0,
+            content: '',
+          },
+      );
+      setCurrentDaily({ date: currentDate, projs: dailyListOfItems });
+
+      // if (c) {
+      //   const writeDailyProjs = c.projs.map((p) => p.project);
+      //   const allProjs = projs;
+      //   const notWriteDailyProjs = R.differenceWith(
+      //     (p1, p2) => p1.id === p2.id,
+      //     allProjs,
+      //     writeDailyProjs,
+      //   );
+      //   const newProjs = notWriteDailyProjs.map((proj) => ({
+      //     project: proj,
+      //     timeConsuming: 0,
+      //     content: '',
+      //   }));
+      //   setCurrentDaily(R.over(R.lensProp('projs'), (p: ProjDaily[]) => [...p, ...newProjs], c));
+      // } else
+      //   setCurrentDaily({
+      //     date: currentDate,
+      //     projs: projs?.map((p) => ({ project: p, timeConsuming: 0, content: '' })) || [],
+      //   });
     },
-    [currentDate, projs],
+    [currentDate, projs, initialState],
   );
 
   useEffect(() => {
     if (data !== undefined) {
       const c = dailies?.find((d) => d.date === currentDate);
-      mySetCurrentDaily(c);
+      buildCurrentDaily(c);
     }
-  }, [data, currentDate, dailies, mySetCurrentDaily]);
+  }, [data, currentDate, dailies, buildCurrentDaily]);
 
   useEffect(() => {
     if (refs.current.length < projs.length) {
@@ -117,7 +151,7 @@ export function useDailiesStatus(date?: string) {
     isNew,
     refresh,
     setCurrentDate,
-    setCurrentDaily: mySetCurrentDaily,
+    setCurrentDaily: buildCurrentDaily,
     setFilter,
     pushDaily: oPushDaily,
     refs: refs.current,

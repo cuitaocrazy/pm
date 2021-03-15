@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
-import type { ChangePmInput, Mutation, Query, MutationchangePmArgs } from '@/apollo';
+import type { ChangePmInput, Mutation, Query, MutationPushChangePmArgs } from '@/apollo';
 import { message } from 'antd';
 
 const QueryChangePmGql = gql`
@@ -33,8 +33,7 @@ export function useChangePmState() {
     return users.filter((user) => user.id === userId).length > 0;
   };
   const projs = queryData?.projs.filter((proj) => isMember(proj.leader)) || [];
-  // .map((proj) => RevertProjectName(proj)) || [];
-  const [pushChangePmHandle] = useMutation<Mutation, MutationchangePmArgs>(pushChangePmGql);
+  const [pushChangePmHandle] = useMutation<Mutation, MutationPushChangePmArgs>(pushChangePmGql);
   const pushChangePm = useCallback(
     async (changePm: ChangePmInput) => {
       const result = await pushChangePmHandle({

@@ -23,6 +23,14 @@ const ChangePm: React.FC<any> = () => {
   const users = state?.users || [];
   const projs = state?.projs || [];
 
+  const revertProjs: any = projs.map((proj) => {
+    return { ...proj, filters: '', onFilter: '' };
+  });
+
+  const userFilter = users.map((user) => {
+    return { text: user.name, value: user.id };
+  });
+
   const columns = [
     {
       title: 'id',
@@ -45,6 +53,10 @@ const ChangePm: React.FC<any> = () => {
     {
       title: '当前项目经理',
       dataIndex: 'leader',
+      filters: userFilter,
+      onFilter: (value: string | number | boolean, record: Project) => {
+        return record.leader === value;
+      },
       render: (leader: string) => {
         return users.filter((user) => user.id === leader)[0].name;
       },
@@ -74,7 +86,13 @@ const ChangePm: React.FC<any> = () => {
         </Button>,
       ]}
     >
-      <Table dataSource={projs} columns={columns} rowKey="id" rowSelection={rowSelection} />
+      <Table
+        dataSource={revertProjs}
+        pagination={false}
+        columns={columns}
+        rowKey="id"
+        rowSelection={rowSelection}
+      />
       <DialogForm submitHandle={onFinish} ref={ref} title="选择新的项目经理">
         {ChangePmForm(users, isRemovePart, setReomvePart)}
       </DialogForm>

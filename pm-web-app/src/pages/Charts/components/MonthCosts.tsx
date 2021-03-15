@@ -39,6 +39,10 @@ const MonthCosts: React.FC<MonthCostsProps> = (props) => {
         type: '人员成本',
         value: getValueByKey(month, monthAmounts),
       })),
+      ...months.map((month) => ({
+        key: month,
+        type: '总成本',
+      })),
     ];
   }, [year, monthAmounts, monthCosts]);
 
@@ -48,14 +52,43 @@ const MonthCosts: React.FC<MonthCostsProps> = (props) => {
     xField: 'key',
     yField: 'value',
     seriesField: 'type',
+    legend: {
+      items: [
+        {
+          id: 'legend1',
+          name: '项目费用',
+          value: '项目费用',
+        },
+        {
+          id: 'legend2',
+          name: '人员成本',
+          value: '人员成本',
+          marker: {
+            style: { fill: '#6cdcb3' },
+          },
+        },
+      ],
+    },
+    tooltip: {
+      formatter: (result: any) => {
+        const totalvalue =
+          (getValueByKey(result.key, monthAmounts) || 0) +
+          (getValueByKey(result.key, monthCosts) || 0);
+        return {
+          name: result.type,
+          value: result.value ? `${result.value}元` : `${totalvalue}元`,
+        };
+      },
+    },
   };
 
+  const column = <Column {...config} />;
   return (
     <ProCard title={title} style={{ height }} headerBordered>
       {R.and(R.isEmpty(monthAmounts), R.isEmpty(monthCosts)) ? (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
       ) : (
-        <Column {...config} />
+        column
       )}
     </ProCard>
   );

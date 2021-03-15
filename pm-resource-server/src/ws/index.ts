@@ -37,7 +37,7 @@ const checkUsers = (usersFromData: UserIDAndName[], usersFromServer: UserIDAndNa
 
   err = check(usersFromServer, usersFromData)
   if (!err.pass) {
-    errMsg.push('服务端端的数据多出' + formatData(err.data))
+    errMsg.push('服务端的数据多出' + formatData(err.data))
   }
 
   return { pass: errMsg.length === 0, msg: errMsg.join('\n') }

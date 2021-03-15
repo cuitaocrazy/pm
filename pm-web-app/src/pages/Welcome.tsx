@@ -6,7 +6,7 @@ export default (): React.ReactNode => {
   return (
     <PageContainer>
       <Card style={{ textAlign: 'center' }}>
-        <img src='/main-figure.gif' style={{ width: '50%' }} />
+        <img src="/main-figure.png" style={{ width: '50%' }} />
       </Card>
     </PageContainer>
   );

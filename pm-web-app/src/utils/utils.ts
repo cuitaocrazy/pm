@@ -26,17 +26,19 @@ export const isAntDesignProOrDev = (): boolean => {
  * 判断是否是周末
  * @param date 格式为YYYYMMDD的字符串
  */
-export const isWeekend = (date: string): boolean => R.includes(
-  moment(date, 'YYYYMMDD').weekday(),
-  [moment().day("星期六").weekday(), moment().day("星期日").weekday()]
-)
+export const isWeekend = (date: string): boolean =>
+  R.includes(moment(date, 'YYYYMMDD').weekday(), [
+    moment().day('星期六').weekday(),
+    moment().day('星期日').weekday(),
+  ]);
 
 /**
  * 判断是否是工作日
  * @param date 格式为YYYYMMDD的字符串
  * @param workCalendar 工作日历
  */
-export const isWorkday = (date: string, workCalendar: string[]): boolean => R.or(
-  R.and(isWeekend(date), R.includes(date, workCalendar)),
-  R.and(R.not(isWeekend(date)), R.not(R.includes(date, workCalendar)))
-)
+export const isWorkday = (date: string, workCalendar: string[]): boolean =>
+  R.or(
+    R.and(isWeekend(date), R.includes(date, workCalendar)),
+    R.and(R.not(isWeekend(date)), R.not(R.includes(date, workCalendar))),
+  );

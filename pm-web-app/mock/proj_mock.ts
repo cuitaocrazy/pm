@@ -341,7 +341,7 @@ function makeProjCosts(projId: string) {
   })
 }
 
-function makeCharts (year: string) {
+function makeCharts(year: string) {
   return ({
     monthAmounts: [
       {
@@ -431,7 +431,7 @@ const root = {
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {
     const newDaily = {
       date: args.date,
-      projs: args.projDailies
+      projs: args.projDailies.map(pd => ({ project: projs.find(p => p.id === pd.projId), timeConsuming: pd.timeConsuming, content: pd.content }))
     }
 
     type TDaily = typeof newDaily
@@ -521,10 +521,10 @@ const root = {
   },
   pushChangePm: (args: any) => {
     let id: string = 'Error';
-    projs.filter(proj=>proj.id===args?.changePm.projIds[0]).map(proj=>
-      { id=proj.id
-        proj.leader=args.changePm.leader
-      }
+    projs.filter(proj => proj.id === args?.changePm.projIds[0]).map(proj => {
+      id = proj.id
+      proj.leader = args.changePm.leader
+    }
     )
     return args?.changePm.projIds.length
   },

@@ -34,13 +34,15 @@ export function useChangePmState() {
   const users: User[] = queryData?.dailyUsers || [];
   const { initialState } = useModel('@@initialState');
   if (initialState?.currentUser) {
-    const currentUser: User = {
-      id: initialState?.currentUser.id || '',
-      name: initialState.currentUser.name || '',
-      access: initialState.currentUser.access || [],
-      groups: initialState.currentUser.groups || [],
-    };
-    users.push(currentUser);
+    if (users.filter((user) => user.id === initialState?.currentUser?.id).length === 0) {
+      const currentUser: User = {
+        id: initialState?.currentUser.id || '',
+        name: initialState.currentUser.name || '',
+        access: initialState.currentUser.access || [],
+        groups: initialState.currentUser.groups || [],
+      };
+      users.push(currentUser);
+    }
   }
   const isMember = (userId: string) => {
     return users.filter((user) => user.id === userId).length > 0;
@@ -60,6 +62,7 @@ export function useChangePmState() {
     },
     [pushChangePmHandle, refresh],
   );
+
   return {
     pushChangePm,
     users,

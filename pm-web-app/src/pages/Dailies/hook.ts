@@ -133,10 +133,8 @@ export function useDailiesStatus(date?: string) {
   }, [refresh]);
 
   useEffect(() => {
-    if (data !== undefined) {
-      setCurrentDaily(initSheetForCurrentDaily);
-    }
-  }, [data, initSheetForCurrentDaily]);
+    setCurrentDaily(initSheetForCurrentDaily);
+  }, [initSheetForCurrentDaily]);
 
   useEffect(() => {
     if (refs.current.length < projs.length) {

@@ -121,7 +121,7 @@ const Costs: React.FC<CostsProps> = (props) => {
         loading={loading}
         columns={columns}
         dataSource={costs.map((c, index) => ({ ...c, index }))}
-        pagination={{ pageSize: 5 }}
+        pagination={false}
       />
     </>
   );

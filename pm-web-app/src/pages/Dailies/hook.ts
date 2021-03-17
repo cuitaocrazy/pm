@@ -52,77 +52,85 @@ export function useDailiesStatus(date?: string) {
   const { initialState } = useModel('@@initialState');
   const dailies = useMemo(() => data?.myDailies?.dailies || [], [data]);
   const projs = useMemo(() => data?.projs || [], [data]);
-  const initSheetForCurrentDaily: Daily = useMemo(() => {
-    const rawCurrentDaily = dailies.find((d) => d.date === currentDate) || {
-      date: currentDate,
-      projs: [],
-    };
-    const projIdsForCurrentDaily = rawCurrentDaily.projs.map((p) => p.project.id) || [];
-    const projGrouping = R.groupBy<Project>((p) => {
-      const writed = projIdsForCurrentDaily.includes(p.id);
-      const onProj = p.status === 'onProj';
-      const involved = p.participants.includes(initialState!.currentUser!.id!);
+  const getSheetForDate = useCallback(
+    (
+      rawDaily: Daily = {
+        date: currentDate,
+        projs: [],
+      },
+    ) => {
+      const projIdsForCurrentDaily = rawDaily.projs.map((p) => p.project.id) || [];
+      const projGrouping = R.groupBy<Project>((p) => {
+        const writed = projIdsForCurrentDaily.includes(p.id);
+        const onProj = p.status === 'onProj';
+        const involved = p.participants.includes(initialState!.currentUser!.id!);
 
-      if (writed && involved && onProj) {
-        return 'writedAndInvolvedAndOnProj';
-      }
+        if (writed && involved && onProj) {
+          return 'writedAndInvolvedAndOnProj';
+        }
 
-      if (writed && involved && !onProj) {
-        return 'writedAndInvolvedAndEndProj';
-      }
+        if (writed && involved && !onProj) {
+          return 'writedAndInvolvedAndEndProj';
+        }
 
-      if (writed && !involved && onProj) {
-        return 'writedAndExcludeAndOnProj';
-      }
+        if (writed && !involved && onProj) {
+          return 'writedAndExcludeAndOnProj';
+        }
 
-      if (writed && !involved && !onProj) {
-        return 'writedAndExcludeAndEndProj';
-      }
+        if (writed && !involved && !onProj) {
+          return 'writedAndExcludeAndEndProj';
+        }
 
-      if (!writed && involved && onProj) {
-        return 'notWritedAndInvolvedAndOnProj';
-      }
+        if (!writed && involved && onProj) {
+          return 'notWritedAndInvolvedAndOnProj';
+        }
 
-      if (!writed && involved && !onProj) {
-        return 'notWritedAndInvolvedAndEndProj';
-      }
+        if (!writed && involved && !onProj) {
+          return 'notWritedAndInvolvedAndEndProj';
+        }
 
-      if (!writed && !involved && onProj) {
-        return 'notWritedAndExcludeAndOnProj';
-      }
+        if (!writed && !involved && onProj) {
+          return 'notWritedAndExcludeAndOnProj';
+        }
 
-      return 'notWritedAndExcludeAndEndProj';
-    });
+        return 'notWritedAndExcludeAndEndProj';
+      });
 
-    const projGroup = projGrouping(projs);
+      const projGroup = projGrouping(projs);
 
-    const sortedProjs = R.reduce<Project[], Project[]>(
-      R.concat,
-      [],
-      [
-        projGroup.writedAndInvolvedAndOnProj || [],
-        projGroup.writedAndExcludeAndOnProj || [],
-        projGroup.writedAndInvolvedAndEndProj || [],
-        projGroup.writedAndExcludeAndEndProj || [],
-        projGroup.notWritedAndInvolvedAndOnProj || [],
-        projGroup.notWritedAndExcludeAndOnProj || [],
-        projGroup.notWritedAndInvolvedAndEndProj || [],
-        projGroup.notWritedAndExcludeAndEndProj || [],
-      ],
-    );
-    const dailyListOfItems = sortedProjs.map((p) => {
-      const currentDailyProj = rawCurrentDaily.projs.find((dp) => dp.project.id === p.id);
-      if (currentDailyProj) {
-        return { ...currentDailyProj, project: p };
-      }
-      return {
-        project: p,
-        timeConsuming: 0,
-        content: '',
-      };
-    });
-    return { date: currentDate, projs: dailyListOfItems };
-  }, [projs, dailies, initialState, currentDate]);
+      const sortedProjs = R.reduce<Project[], Project[]>(
+        R.concat,
+        [],
+        [
+          projGroup.writedAndInvolvedAndOnProj || [],
+          projGroup.writedAndExcludeAndOnProj || [],
+          projGroup.writedAndInvolvedAndEndProj || [],
+          projGroup.writedAndExcludeAndEndProj || [],
+          projGroup.notWritedAndInvolvedAndOnProj || [],
+          projGroup.notWritedAndExcludeAndOnProj || [],
+          projGroup.notWritedAndInvolvedAndEndProj || [],
+          projGroup.notWritedAndExcludeAndEndProj || [],
+        ],
+      );
+      const dailyListOfItems = sortedProjs.map((p) => {
+        const currentDailyProj = rawDaily.projs.find((dp) => dp.project.id === p.id);
+        if (currentDailyProj) {
+          return { ...currentDailyProj, project: p };
+        }
+        return {
+          project: p,
+          timeConsuming: 0,
+          content: '',
+        };
+      });
+      return { date: currentDate, projs: dailyListOfItems };
+    },
+    [projs, initialState, currentDate],
+  );
+  const initSheetForCurrentDaily: Daily = useMemo(
+    () => getSheetForDate(dailies.find((d) => d.date === currentDate)),
+    [getSheetForDate, currentDate, dailies],
+  );
   const completedDailiesDates = dailies?.map((d) => d.date) || [];
   const refs = useRef<React.RefObject<ProjItemHandle>[]>([]);
 
@@ -153,7 +161,8 @@ export function useDailiesStatus(date?: string) {
       .then(() => refresh())
       .then(() => message.success(`提交成功`));
 
-  const getLastDaily = (lastDate: string) => R.findLast((d) => d.date < lastDate, dailies);
+  const getLastDaily = (lastDate: string) =>
+    getSheetForDate(R.findLast((d) => d.date < lastDate, dailies));
 
   return {
     loading: queryLoading || mutationLoading,

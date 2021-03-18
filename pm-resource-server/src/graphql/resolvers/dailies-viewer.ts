@@ -16,7 +16,14 @@ function getUsersByGroup (group: string, users: UserWithGroup[]) {
 }
 
 async function getUserDailies (userId: string) {
-  return dbid2id(await EmployeeDaily.findOne({ _id: userId }))
+  const data = dbid2id(await EmployeeDaily.findOne({ _id: userId }))
+  return ({
+    userId: data.id,
+    dailies: data.dailies.map(d => ({
+      date: d.date,
+      dailyItems: d.projs,
+    })),
+  })
 }
 
 async function getParticipateProjectUsersByLeader (leaderId: string, users: UserWithGroup[]) {
@@ -55,7 +62,7 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, userId: s
             as: 'daily',
             in: {
               date: '$$daily.date',
-              projs: {
+              dailyItems: {
                 $filter: {
                   input: '$$daily.projs',
                   as: 'p',
@@ -73,19 +80,22 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, userId: s
           $filter: {
             input: '$dailies',
             as: 'd',
-            cond: { $ne: [{ $size: '$$d.projs' }, 0] },
+            cond: { $ne: [{ $size: '$$d.dailyItems' }, 0] },
           },
         },
       },
     },
   ]).toArray()
-
-  return dbid2id(head(d))
+  console.log(JSON.stringify(d))
+  return ({
+    ...dbid2id(head(d)),
+    userId,
+  })
 }
 
 function getDeafultDailies (userId: string) {
   return {
-    id: userId,
+    userId,
     dailies: [],
   }
 }

@@ -1,25 +1,49 @@
+import { find, propEq, isNil } from 'ramda'
 import moment from 'moment'
 import { ObjectId } from 'mongodb'
 import { AuthContext, getGroupUsers } from '../../auth/oauth'
 import { Cost, Project } from '../../mongodb'
+import { dbid2id } from '../../util/utils'
 
-// TODO: 需按graphql进行重构，project应按id去解析器再次进行查询
 export default {
   Query: {
-    expenses: (_: any, __: any, context: AuthContext) => Cost.find({ assignee: context.user!.id }).toArray().then(async costs => {
-      const us = await getGroupUsers(context.user!)
-      const projs = (await Project.find().project({ id: '$_id', name: 1, _id: 0 }).toArray()) as any as {id: string, name: string}[]
-
-      return costs.map(cost => (
-        {
-          id: cost._id,
-          assignee: cost.assignee,
-          createDate: cost.createDate,
-          participant: us.find(u => u.id === cost.participant),
-          items: cost.projs.map(proj => ({ ...proj, project: projs.find(p => p.id === proj.id) })),
-        }
-      ))
-    }),
+    expenses: (_: any, __: any, context: AuthContext) =>
+      Cost.find({ assignee: context.user!.id }).toArray()
+        .then(async costs => costs.map(cost =>
+          ({
+            id: cost._id,
+            assignee: cost.assignee,
+            createDate: cost.createDate,
+            userId: cost.participant,
+            items: cost.projs.map(proj => ({ ...proj, projId: proj.id })),
+          }),
+        )),
+  },
+  EmployeeOfExpenses: {
+    participant: async ({ userId }: any, _: any, context: AuthContext) => {
+      const user = context.user!
+      const users = await getGroupUsers(user)
+      const participant = find(propEq('id', userId), users)
+      // TODO 当日报中对应的用户不存在时的临时处理方案
+      return isNil(participant)
+        ? ({
+            id: userId,
+            name: userId,
+          })
+        : participant
+    },
+  },
+  EmployeeOfExpensesItem: {
+    project: async ({ projId }: any) => {
+      const project = await Project.findOne({ _id: projId })
+      // TODO 当费用中对应的项目不存在时的临时处理方案
+      return isNil(project)
+        ? ({
+            id: projId,
+            name: projId,
+          })
+        : dbid2id(project)
+    },
   },
   Mutation: {
     pushCost: (_: any, args: any, context: AuthContext) => {

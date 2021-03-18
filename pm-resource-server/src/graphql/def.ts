@@ -62,18 +62,31 @@ enum ProjectStatus {
   onProj
 }
 
-type EmployeeOfExpenses {
+type Expense {
   id: ID!
   assignee: String!
   participant: User!
-  items: [EmployeeOfExpensesItem!]!
   createDate: String!
+  items: [ExpenseItem!]!
+}
+
+type ExpenseItem {
+  project: Project!
+  amount: Float!
+  type: String!
+  description: String
+}
+
+type EmployeeOfExpenses {
+  employee: User!
+  items: [EmployeeOfExpensesItem!]!
 }
 
 type EmployeeOfExpensesItem {
   project: Project!
   amount: Float!
   type: String!
+  createDate: String!
   description: String
 }
 
@@ -110,7 +123,7 @@ type Query {
   myDailies: EmployeeOfDailies
   projs: [Project!]!
   iLeadProjs: [Project!]!
-  expenses: [EmployeeOfExpenses!]!
+  expenses: [Expense!]!
   dailyUsers: [User!]!
   empDaily(userId: String!): EmployeeOfDailies!
   projDaily(projId: String!): ProjectOfDailies!

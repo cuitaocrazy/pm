@@ -19,7 +19,7 @@ export default {
           }),
         )),
   },
-  EmployeeOfExpenses: {
+  Expense: {
     participant: async ({ userId }: any, _: any, context: AuthContext) => {
       const user = context.user!
       const users = await getGroupUsers(user)
@@ -33,7 +33,7 @@ export default {
         : participant
     },
   },
-  EmployeeOfExpensesItem: {
+  ExpenseItem: {
     project: async ({ projId }: any) => {
       const project = await Project.findOne({ _id: projId })
       // TODO 当费用中对应的项目不存在时的临时处理方案

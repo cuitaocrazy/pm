@@ -1,6 +1,7 @@
-import { any, anyPass, equals, find, identity, pipe, prop, startsWith, zip, isEmpty, includes, unnest } from 'ramda'
+import { propEq, isNil, any, anyPass, equals, find, identity, pipe, prop, startsWith, zip, isEmpty, includes, unnest } from 'ramda'
 import { AuthContext, getGroupUsers, UserInfo, UserWithGroup } from '../../auth/oauth'
-import { Cost } from '../../mongodb'
+import { Cost, Project } from '../../mongodb'
+import { dbid2id } from '../../util/utils'
 
 async function getUserCosts (userId: string) {
   const data = await Cost.find({ participant: userId }).toArray()
@@ -18,19 +19,13 @@ async function getUserCosts (userId: string) {
     return getDeafultCosts(userId)
   }
   return ({
-    id: '',
-    assignee: '',
-    createDate: '',
     userId,
-    items: unnest(data.map(d => d.items)),
+    items: unnest(data.map(d => d.items.map(item => ({ ...item, createDate: d.createDate })))),
   })
 }
 
 function getDeafultCosts (userId: string) {
   return {
-    id: '',
-    assignee: '',
-    createDate: '',
     userId,
     items: [],
   }
@@ -60,6 +55,32 @@ export default {
       } else {
         return getDeafultCosts(userId)
       }
+    },
+  },
+  EmployeeOfExpenses: {
+    employee: async ({ userId }: any, _: any, context: AuthContext) => {
+      const user = context.user!
+      const users = await getGroupUsers(user)
+      const employee = find(propEq('id', userId), users)
+      // TODO 当日报中对应的用户不存在时的临时处理方案
+      return isNil(employee)
+        ? ({
+            id: userId,
+            name: userId,
+          })
+        : employee
+    },
+  },
+  EmployeeOfExpensesItem: {
+    project: async ({ projId }: any) => {
+      const project = await Project.findOne({ _id: projId })
+      // TODO 当费用中对应的项目不存在时的临时处理方案
+      return isNil(project)
+        ? ({
+            id: projId,
+            name: projId,
+          })
+        : dbid2id(project)
     },
   },
 }

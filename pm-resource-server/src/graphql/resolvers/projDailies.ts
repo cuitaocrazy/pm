@@ -22,7 +22,7 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, projId: s
               as: 'daily',
               in: {
                 date: '$$daily.date',
-                projs: {
+                dailyItems: {
                   $filter: {
                     input: '$$daily.projs',
                     as: 'p',
@@ -41,14 +41,14 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, projId: s
             $filter: {
               input: '$dailies',
               as: 'd',
-              cond: { $ne: [{ $size: '$$d.projs' }, 0] },
+              cond: { $ne: [{ $size: '$$d.dailyItems' }, 0] },
             },
           },
         },
       },
       // 转换成平坦对象
       { $unwind: '$dailies' },
-      { $unwind: '$dailies.projs' },
+      { $unwind: '$dailies.dailyItems' },
       {
         $sort: { _id: 1 },
       },
@@ -56,13 +56,13 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, projId: s
         $group: {
           _id: {
             date: '$dailies.date',
-            projId: '$dailies.projs.projId',
+            projId: '$dailies.dailyItems.projId',
           },
-          users: {
+          dailies: {
             $push: {
               userId: '$_id',
-              timeConsuming: '$dailies.projs.timeConsuming',
-              content: '$dailies.projs.content',
+              timeConsuming: '$dailies.dailyItems.timeConsuming',
+              content: '$dailies.dailyItems.content',
             },
           },
         },
@@ -76,7 +76,7 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, projId: s
           dailies: {
             $push: {
               date: '$_id.date',
-              users: '$users',
+              dailyItems: '$dailies',
             },
           },
         },

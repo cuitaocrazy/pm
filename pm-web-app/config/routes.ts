@@ -3,7 +3,7 @@
     path: '/welcome',
     name: 'welcome',
     icon: 'smile',
-    component: './Charts',
+    component: './Chart',
     hideInMenu: true,
   },
   {
@@ -13,31 +13,31 @@
   {
     path: '/dailies',
     name: 'dailies',
-    component: './Dailies',
+    component: './Daily/Write',
     access: 'canDaily'
   },
   {
     path: '/projects',
     name: 'projects',
-    component: './Proj',
+    component: './Project/Edit',
     access: 'canProj'
   },
   {
     path: '/costs',
     name: 'costs',
-    component: './Cost',
+    component: './Expense',
     access: 'canCost'
   },
   {
     path: '/empDailies',
     name: 'empDailies',
-    component: './EmpDailies',
+    component: './Daily/View/Emp',
     access: 'canEmpDailies'
   },
   {
     path: '/projDailies',
     name: 'projDailies',
-    component: './ProjDailies',
+    component: './Daily/View/Proj',
     access: 'canProjDailies'
   },
   {
@@ -49,13 +49,13 @@
   {
     path: '/empCosts',
     name: 'empCosts',
-    component: './EmpCosts',
+    component: './EmpExpense',
     access: 'canEmpCosts'
   },
   {
     path: '/projCosts',
     name: 'projCosts',
-    component: './ProjCosts',
+    component: './ProjExpense',
     access: 'canProjCosts'
   },
   {
@@ -67,7 +67,7 @@
   {
     path: '/changePm',
     name: 'changePm',
-    component: './ChangePm',
+    component: './Project/ChangeLeader',
     access: 'canChangePm'
   },
   {

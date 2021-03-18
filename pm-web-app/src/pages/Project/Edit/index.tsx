@@ -10,7 +10,7 @@ import ProjForm from './ProjForm';
 import { getStatusDisplayName, projStatus } from './utils';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
-import { buildProjName } from '../utils';
+import { buildProjName } from '../../utils';
 
 function getColumns(editHandle: (proj: Proj) => void, deleteHandle: (id: string) => void) {
   return [

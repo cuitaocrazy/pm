@@ -1,7 +1,7 @@
 import { Input, Form, Select } from 'antd';
 import type { FC } from 'react';
 import React from 'react';
-import { orgCode, projType, zoneCode } from '../utils';
+import { orgCode, projType, zoneCode } from '../../utils';
 
 const { Option } = Select;
 

@@ -6,7 +6,7 @@ import { ApolloProvider } from '@apollo/client';
 import { client } from '@/apollo';
 import { useProjsState, useCostsState } from './hook';
 import Projects from './Projects';
-import Costs from './Costs';
+import Expense from './Expense';
 
 const ProjCostPage: React.FC = () => {
   const { loading: queryProjsLoading, projs } = useProjsState();
@@ -23,7 +23,7 @@ const ProjCostPage: React.FC = () => {
           </Col>
           <Col sm={24} md={14} xl={16} xxl={18}>
             <ProCard bordered title="费用详情">
-              <Costs
+              <Expense
                 title={projCosts.project.name}
                 costs={projCosts.costs}
                 loading={queryCostsLoading}

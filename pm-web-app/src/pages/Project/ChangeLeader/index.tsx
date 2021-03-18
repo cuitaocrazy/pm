@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import ChangePmForm from './ChangePmForm';
+import ChangeLeaderForm from './ChangeLeaderForm';
 import { ApolloProvider } from '@apollo/client';
 import { client } from '@/apollo';
 import { Button, Table, message, Input, Space } from 'antd';
@@ -188,7 +188,7 @@ const ChangePm: React.FC<any> = () => {
         rowSelection={rowSelection}
       />
       <DialogForm submitHandle={onFinish} ref={ref} title="选择新的项目经理">
-        {ChangePmForm(users, localState.isRemovePart, setReomvePart)}
+        {ChangeLeaderForm(users, localState.isRemovePart, setReomvePart)}
       </DialogForm>
     </PageContainer>
   );

@@ -8,7 +8,7 @@ import React, { useRef } from 'react';
 import { useCostState } from './hook';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
-import CostForm from './CostForm';
+import Expense from './ExpenseForm';
 import { Button } from 'antd';
 import { append, last, unnest, zip } from 'ramda';
 import { buildProjName } from '@/pages/utils';
@@ -154,7 +154,7 @@ const Cost = () => {
       />
 
       <DialogForm submitHandle={(v: CostInput) => state.pushCost(v)} ref={ref} title="费用编辑">
-        {CostForm}
+        {Expense}
       </DialogForm>
     </PageContainer>
   );

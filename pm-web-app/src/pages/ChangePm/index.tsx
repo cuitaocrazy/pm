@@ -16,37 +16,47 @@ import type { FilterDropdownProps } from 'antd/lib/table/interface';
 const ChangePm: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ChangePmInput>>(null);
   const state = useChangePmState();
-
   const users = state?.users || [];
-  const [isRemovePart, setReomvePart] = useState<boolean>(true);
-  const [selectProject, setSelectProject] = useState<string[]>([]);
-  const [searchState, setSearchState] = useState<{ search: string }>({
-    search: '',
-  });
+  const [localState, setLocalState] = useState<{
+    isRemovePart: boolean;
+    selectProject: string[];
+    search: string;
+  }>({ isRemovePart: true, selectProject: [], search: '' });
 
   const onFinish = (value: ChangePmInput) => {
-    return state.pushChangePm({ ...value, ...{ isRemovePart, projIds: selectProject } });
+    return state.pushChangePm({
+      ...value,
+      ...{ isRemovePart: localState.isRemovePart, projIds: localState.selectProject },
+    });
   };
 
   const handleSearch = (selectedKeys: any[], confirm: () => void) => {
     confirm();
 
-    setSearchState({
-      search: selectedKeys[0],
+    setLocalState({
+      ...localState,
+      ...{
+        search: selectedKeys[0],
+      },
     });
   };
 
   const handleReset = (clearFilters: () => void) => {
     clearFilters();
-    setSearchState({ search: '' });
+    setLocalState({
+      ...localState,
+      ...{
+        search: '',
+      },
+    });
   };
 
   const getShowProject = () => {
     return state?.projs.filter((proj) => {
-      if (searchState.search === '' || searchState.search === undefined) {
+      if (localState.search === '' || localState.search === undefined) {
         return true;
       }
-      return buildProjName(proj.id, proj.name).indexOf(searchState.search) > -1;
+      return buildProjName(proj.id, proj.name).indexOf(localState.search) > -1;
     });
   };
 
@@ -140,11 +150,18 @@ const ChangePm: React.FC<any> = () => {
   ];
 
   const rowSelection = {
-    selectedRowKeys: selectProject,
     onChange: (selectedRowKeys: any[]) => {
-      setSelectProject(selectedRowKeys);
+      setLocalState({
+        ...localState,
+        ...{ selectProject: selectedRowKeys },
+      });
     },
   };
+
+  const setReomvePart = (isRemovePart: boolean) => {
+    setLocalState({ ...localState, ...{ isRemovePart } });
+  };
+
   return (
     <PageContainer
       extra={[
@@ -152,7 +169,7 @@ const ChangePm: React.FC<any> = () => {
           key="modify"
           type="primary"
           onClick={() => {
-            if (selectProject.length === 0) {
+            if (localState.selectProject.length === 0) {
               message.success('修改项目经理需要选择项目');
             } else {
               ref.current!.showDialog();
@@ -171,7 +188,7 @@ const ChangePm: React.FC<any> = () => {
         rowSelection={rowSelection}
       />
       <DialogForm submitHandle={onFinish} ref={ref} title="选择新的项目经理">
-        {ChangePmForm(users, isRemovePart, setReomvePart)}
+        {ChangePmForm(users, localState.isRemovePart, setReomvePart)}
       </DialogForm>
     </PageContainer>
   );

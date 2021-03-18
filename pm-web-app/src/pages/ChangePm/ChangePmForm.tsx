@@ -11,7 +11,7 @@ const layout = {
 export default (
   users: User[],
   isRemovePart: boolean,
-  setReomvePart: React.Dispatch<React.SetStateAction<boolean>>,
+  setReomvePart: (isRemovePart: boolean) => void,
 ) => (form: FormInstance<ChangePmInput>, data?: ChangePmInput) => {
   return (
     <Form {...layout} form={form} initialValues={data}>

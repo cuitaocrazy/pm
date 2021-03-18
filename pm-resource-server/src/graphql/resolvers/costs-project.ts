@@ -49,7 +49,7 @@ async function getParticipateProjectCostByLeader (leaderId: string, projId: stri
       {
         $project: {
           projId: '$_id',
-          costs: '$costs',
+          items: '$costs',
         },
       },
     ]).toArray()
@@ -63,7 +63,7 @@ async function getParticipateProjectCostByLeader (leaderId: string, projId: stri
 function getDeafultCost (projId: string) {
   return {
     projId,
-    costs: [],
+    items: [],
   }
 }
 
@@ -74,7 +74,7 @@ export default {
       return getParticipateProjectCostByLeader(user.id, projId)
     },
   },
-  ProjectCosts: {
+  ProjectOfExpenses: {
     project: async ({ projId }: any) => {
       const project = await Project.findOne({ _id: projId })
       // TODO 当费用中对应的项目不存在时的临时处理方案
@@ -86,8 +86,8 @@ export default {
         : dbid2id(project)
     },
   },
-  EmployeeCost: {
-    user: async ({ userId }: any, _: any, context: AuthContext) => {
+  ProjectOfExpensesItem: {
+    employee: async ({ userId }: any, _: any, context: AuthContext) => {
       const user = context.user!
       const users = await getGroupUsers(user)
       const costUser = find(propEq('id', userId), users)

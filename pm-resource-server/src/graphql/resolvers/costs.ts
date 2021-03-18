@@ -6,7 +6,7 @@ import { Cost, Project } from '../../mongodb'
 // TODO: 需按graphql进行重构，project应按id去解析器再次进行查询
 export default {
   Query: {
-    costs: (_: any, __: any, context: AuthContext) => Cost.find({ assignee: context.user!.id }).toArray().then(async costs => {
+    expenses: (_: any, __: any, context: AuthContext) => Cost.find({ assignee: context.user!.id }).toArray().then(async costs => {
       const us = await getGroupUsers(context.user!)
       const projs = (await Project.find().project({ id: '$_id', name: 1, _id: 0 }).toArray()) as any as {id: string, name: string}[]
 
@@ -16,7 +16,7 @@ export default {
           assignee: cost.assignee,
           createDate: cost.createDate,
           participant: us.find(u => u.id === cost.participant),
-          projs: cost.projs.map(proj => ({ ...proj, proj: projs.find(p => p.id === proj.id) })),
+          items: cost.projs.map(proj => ({ ...proj, project: projs.find(p => p.id === proj.id) })),
         }
       ))
     }),

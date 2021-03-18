@@ -8,33 +8,33 @@ type User {
   groups: [String!]!
 }
 
-type ProjectDaily {
-  id: ID!
-  dailies(date: String): [UsersDaily!]!
+type ProjectOfDailies {
+  project: Project!
+  dailies(date: String): [ProjectOfDaily!]!
 }
 
-type UsersDaily {
+type ProjectOfDaily {
   date: String!
-  users: [UserDaily!]!
+  dailyItems: [ProjectOfDailyItem!]!
 }
 
-type UserDaily {
-  user: User!
+type ProjectOfDailyItem {
+  employee: User!
   timeConsuming: Int!
   content: String
 }
 
-type EmployeeDaily {
-  id: ID!
-  dailies(date: String): [Daily!]!
+type EmployeeOfDailies {
+  employee: User!
+  dailies(date: String): [EmployeeOfDaily!]!
 }
 
-type Daily {
+type EmployeeOfDaily {
   date: String!
-  projs: [ProjDaily!]!
+  dailyItems: [EmployeeOfDailyItem!]!
 }
 
-type ProjDaily {
+type EmployeeOfDailyItem {
   project: Project!
   timeConsuming: Int!
   content: String
@@ -62,45 +62,32 @@ enum ProjectStatus {
   onProj
 }
 
-type ProjectCostDetail {
-  proj: Project!
-  amount: Float!
-  type: String!
-  description: String
-}
-
-type Cost {
+type EmployeeOfExpenses {
   id: ID!
   assignee: String!
   participant: User!
-  projs: [ProjectCostDetail!]!
+  items: [EmployeeOfExpensesItem!]!
   createDate: String!
 }
 
-type ProjectCost {
+type EmployeeOfExpensesItem {
   project: Project!
+  amount: Float!
+  type: String!
+  description: String
+}
+
+type ProjectOfExpenses {
+  project: Project!
+  items: [ProjectOfExpensesItem!]!
+}
+
+type ProjectOfExpensesItem {
+  employee: User!
   amount: Float!
   type: String!
   createDate: String!
   description: String
-}
-
-type EmployeeCosts {
-  user: User!
-  costs: [ProjectCost!]!
-}
-
-type EmployeeCost {
-  user: User!
-  amount: Float!
-  type: String!
-  createDate: String!
-  description: String
-}
-
-type ProjectCosts {
-  project: Project!
-  costs: [EmployeeCost!]!
 }
 
 type ChartKeyValue {
@@ -109,28 +96,28 @@ type ChartKeyValue {
 }
 
 type Charts {
-  monthAmounts: [ChartKeyValue!]!
-  monthCosts: [ChartKeyValue!]!
-  monthMds: [ChartKeyValue!]!
-  projCosts: [ChartKeyValue!]!
-  empCosts: [ChartKeyValue!]!
-  groupCosts: [ChartKeyValue!]!
+  costOfMonths: [ChartKeyValue!]!
+  expenseOfMonths: [ChartKeyValue!]!
+  mdOfMonths: [ChartKeyValue!]!
+  costOfProjs: [ChartKeyValue!]!
+  costOfEmps: [ChartKeyValue!]!
+  costOfGroups: [ChartKeyValue!]!
 }
 
 type Query {
   me: User!
   subordinates: [User!]!
-  myDailies: EmployeeDaily
+  myDailies: EmployeeOfDailies
   projs: [Project!]!
   iLeadProjs: [Project!]!
-  costs: [Cost!]!
+  expenses: [EmployeeOfExpenses!]!
   dailyUsers: [User!]!
-  daily(userId: String!): EmployeeDaily!
-  projDaily(projId: String!): ProjectDaily!
+  empDaily(userId: String!): EmployeeOfDailies!
+  projDaily(projId: String!): ProjectOfDailies!
   workCalendar: [String!]!
   settleMonth: [String!]!
-  empCosts(userId: String!): EmployeeCosts!
-  projCosts(projId: String!): ProjectCosts!
+  empCosts(userId: String!): EmployeeOfExpenses!
+  projCosts(projId: String!): ProjectOfExpenses!
   charts(year: String!): Charts!
 }
 
@@ -185,9 +172,7 @@ type Mutation {
   pushChangePm(changePm:ChangePmInput!): ID!
 }
 `
-
 const directivesDef = gql`
 directive @hasRole(role: [String]) on FIELD | FIELD_DEFINITION
 `
-
 export const typeDef = [directivesDef, dataTypeDef]

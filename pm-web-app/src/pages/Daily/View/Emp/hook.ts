@@ -32,11 +32,13 @@ export function useUsersState() {
 
 const QueryDaily = gql`
   query GetDaily($userId: String!) {
-    daily(userId: $userId) {
-      id
+    empDaily(userId: $userId) {
+      employee {
+        id
+      }
       dailies {
         date
-        projs {
+        dailyItems {
           project {
             id
             name
@@ -61,11 +63,10 @@ export function useDailyState() {
 
   const daily = R.isNil(queryData)
     ? {
-        id: '',
+        employee: { id: '' },
         dailies: [],
       }
-    : queryData.daily;
-
+    : queryData.empDaily;
   const queryDaily = (id: string) => {
     setUserId(id);
     query({

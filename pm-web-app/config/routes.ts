@@ -25,7 +25,7 @@
   {
     path: '/costs',
     name: 'costs',
-    component: './Expense',
+    component: './Expense/Edit',
     access: 'canCost'
   },
   {
@@ -49,13 +49,13 @@
   {
     path: '/empCosts',
     name: 'empCosts',
-    component: './EmpExpense',
+    component: './Expense/View/ByEmp',
     access: 'canEmpCosts'
   },
   {
     path: '/projCosts',
     name: 'projCosts',
-    component: './ProjExpense',
+    component: './Expense/View/ByProj',
     access: 'canProjCosts'
   },
   {

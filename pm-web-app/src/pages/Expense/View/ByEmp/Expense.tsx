@@ -2,22 +2,32 @@ import React from 'react';
 import { Statistic, Divider, Table } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { Pie } from '@ant-design/charts';
-import type { EmployeeCost } from '@/apollo';
+import type { Project, EmployeeOfExpensesItem } from '@/apollo';
 import * as R from 'ramda';
 import moment from 'moment';
 import numeral from 'numeral';
+import { buildProjName } from '@/pages/utils';
 
 type CostsProps = {
   loading: boolean;
   title: string | undefined;
-  costs: EmployeeCost[];
+  costs: EmployeeOfExpensesItem[];
 };
 
 const Costs: React.FC<CostsProps> = (props) => {
   const { loading, title, costs } = props;
 
   const config = React.useMemo(() => {
-    const group = R.groupBy(R.pathOr('', ['user', 'name']), costs);
+    const group = R.groupBy(
+      R.pathOr('', ['project', 'name']),
+      costs.map((c) => ({
+        ...c,
+        project: {
+          ...c.project,
+          name: buildProjName(c.project.id, c.project.name),
+        },
+      })),
+    );
     const data = R.keys(group).map((key) => ({
       type: key,
       value: R.sum(group[key].map((v) => v.amount)),
@@ -42,17 +52,21 @@ const Costs: React.FC<CostsProps> = (props) => {
   const columns = React.useMemo(
     () => [
       {
-        title: '人员',
-        dataIndex: ['user', 'name'],
-        filters: R.uniq(R.map((cost) => ({ text: cost.user.name, value: cost.user.id }), costs)),
-        onFilter: (value: string | number | boolean, record: EmployeeCost) =>
-          R.equals(value, record.user.id),
+        title: '项目',
+        dataIndex: 'project',
+        filters: R.uniq(
+          R.map((cost) => ({ text: cost.project.name, value: cost.project.id }), costs),
+        ),
+        onFilter: (value: string | number | boolean, record: EmployeeOfExpensesItem) =>
+          R.equals(value, record.project.id),
+        render: (pro: Project) => buildProjName(pro.id, pro.name),
       },
       {
         title: '金额(元)',
         dataIndex: 'amount',
         sorter: {
-          compare: (a: EmployeeCost, b: EmployeeCost) => R.subtract(a.amount, b.amount),
+          compare: (a: EmployeeOfExpensesItem, b: EmployeeOfExpensesItem) =>
+            R.subtract(a.amount, b.amount),
           multiple: 1,
         },
         render: (text: number) => numeral(text).format('0,0.00'),
@@ -61,7 +75,7 @@ const Costs: React.FC<CostsProps> = (props) => {
         title: '创建日期',
         dataIndex: 'createDate',
         sorter: {
-          compare: (a: EmployeeCost, b: EmployeeCost) =>
+          compare: (a: EmployeeOfExpensesItem, b: EmployeeOfExpensesItem) =>
             R.subtract(
               moment(a.createDate, 'YYYYMMDD').unix(),
               moment(b.createDate, 'YYYYMMDD').unix(),
@@ -90,7 +104,10 @@ const Costs: React.FC<CostsProps> = (props) => {
         </ProCard>
         <ProCard.Divider />
         <ProCard title={title} colSpan={{ sm: 6 }}>
-          <Statistic title="人员个数" value={R.length(R.uniq(costs.map((cost) => cost.user.id)))} />
+          <Statistic
+            title="项目个数"
+            value={R.length(R.uniq(costs.map((cost) => cost.project.id)))}
+          />
           <Divider />
           <Statistic
             title="合计金额(元)"

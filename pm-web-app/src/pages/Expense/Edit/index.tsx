@@ -1,4 +1,4 @@
-import type { Cost as CostType, CostInput } from '@/apollo';
+import type { Expense as CostType, CostInput } from '@/apollo';
 import { client } from '@/apollo';
 import { PageContainer } from '@ant-design/pro-layout';
 import { ApolloProvider } from '@apollo/client';
@@ -107,10 +107,10 @@ const Cost = () => {
   const state = useCostState();
   const rows = unnest(
     state.costs.map((cost) =>
-      cost.projs.map((p) => ({
+      cost.items.map((p) => ({
         id: cost.id,
         participant: cost.participant.name,
-        proj: buildProjName(p.proj.id, p.proj.name),
+        proj: buildProjName(p.project.id, p.project.name),
         amount: p.amount,
         type: p.type,
         description: p.description || undefined,
@@ -119,7 +119,7 @@ const Cost = () => {
       })),
     ),
   ).map((r, index) => ({ key: r.id + index, ...r }));
-  const costProjCountList = state.costs.map((c) => c.projs.length);
+  const costProjCountList = state.costs.map((c) => c.items.length);
   const firstIndexByCost = costProjCountList.reduce((s, e) => append(e + last(s)!, s), [0]);
   const visibleIndex = zip(firstIndexByCost, costProjCountList);
   const ref = useRef<FormDialogHandle<CostInput>>(null);
@@ -138,8 +138,8 @@ const Cost = () => {
             ref.current!.showDialog({
               id: raw.id,
               participant: raw.participant.id,
-              projs: raw.projs.map((p) => ({
-                id: p.proj.id,
+              projs: raw.items.map((p) => ({
+                id: p.project.id,
                 amount: p.amount,
                 type: p.type,
                 description: p.description,

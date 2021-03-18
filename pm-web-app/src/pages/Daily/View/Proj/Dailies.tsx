@@ -3,22 +3,22 @@ import { Empty, Timeline, Card } from 'antd';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import * as R from 'ramda';
-import type { UsersDaily, UserDaily } from '@/apollo';
+import type { ProjectOfDaily, ProjectOfDailyItem } from '@/apollo';
 
 type DailiesProps = {
   date: Moment;
-  dailies: UsersDaily[];
+  dailies: ProjectOfDaily[];
 };
 
-const getItem = (date: string, users: UserDaily[]) => {
+const getItem = (date: string, users: ProjectOfDailyItem[]) => {
   if (R.not(R.isEmpty(users))) {
     return (
       <Timeline.Item key={date} color="green">
         <h3>{moment(date, 'YYYYMMDD').format('YYYY年MM月DD日')}</h3>
         {users.map((ud) => (
-          <Card size="small" bordered={false} key={ud.user.id}>
+          <Card size="small" bordered={false} key={ud.employee.id}>
             <Card.Meta
-              title={`${ud.user.name}(${ud.timeConsuming}h)`}
+              title={`${ud.employee.name}(${ud.timeConsuming}h)`}
               description={<div style={{ whiteSpace: 'pre-wrap' }}>{ud.content}</div>}
             />
           </Card>
@@ -43,7 +43,7 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
       <br />
       {R.range(0, 7)
         .map((i) => moment(date).add(i, 'd').format('YYYYMMDD'))
-        .map((d) => getItem(d, R.find(R.propEq('date', d), dailies)?.users || []))}
+        .map((d) => getItem(d, R.find(R.propEq('date', d), dailies)?.dailyItems || []))}
     </Timeline>
   );
 };

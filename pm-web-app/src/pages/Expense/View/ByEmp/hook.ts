@@ -1,40 +1,41 @@
 import { useState, useEffect } from 'react';
 import * as R from 'ramda';
 import { gql, useLazyQuery } from '@apollo/client';
-import type { Query, QueryProjCostsArgs } from '@/apollo';
+import type { Query, QueryEmpCostsArgs } from '@/apollo';
 
-const QueryProjs = gql`
+const QueryUsers = gql`
   {
-    iLeadProjs {
+    dailyUsers {
       id
       name
+      groups
     }
   }
 `;
 
-export function useProjsState() {
-  const [queryUsers, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(QueryProjs, {
+export function useUsersState() {
+  const [queryUsers, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(QueryUsers, {
     fetchPolicy: 'no-cache',
   });
 
   useEffect(() => queryUsers(), [queryUsers]);
-  const projs = queryData?.iLeadProjs || [];
+  const users = queryData?.dailyUsers || [];
 
   return {
     loading: queryLoading,
-    projs,
+    users,
   };
 }
 
 const QueryCosts = gql`
-  query($projId: String!) {
-    projCosts(projId: $projId) {
-      project {
+  query($userId: String!) {
+    empCosts(userId: $userId) {
+      employee {
         id
         name
       }
-      costs {
-        user {
+      items {
+        project {
           id
           name
         }
@@ -48,30 +49,30 @@ const QueryCosts = gql`
 `;
 
 export function useCostsState() {
-  const [projId, setProjId] = useState<string>();
+  const [userId, setUserId] = useState<string>();
 
   const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<
     Query,
-    QueryProjCostsArgs
+    QueryEmpCostsArgs
   >(QueryCosts, {
     fetchPolicy: 'no-cache',
   });
 
-  const projCosts = R.isNil(queryData)
+  const empCosts = R.isNil(queryData)
     ? {
-        project: {
-          id: projId,
-          name: projId,
+        employee: {
+          id: userId,
+          name: userId,
         },
-        costs: [],
+        items: [],
       }
-    : queryData.projCosts;
+    : queryData.empCosts;
 
   const queryCosts = (id: string) => {
-    setProjId(id);
+    setUserId(id);
     query({
       variables: {
-        projId: id,
+        userId: id,
       },
     });
   };
@@ -79,7 +80,7 @@ export function useCostsState() {
   return {
     loading: queryLoading,
     queryCosts,
-    projId,
-    projCosts,
+    userId,
+    empCosts,
   };
 }

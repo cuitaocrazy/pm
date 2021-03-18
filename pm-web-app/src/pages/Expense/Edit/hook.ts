@@ -10,15 +10,15 @@ import type {
 
 const queryGql = gql`
   {
-    costs {
+    expenses {
       id
       assignee
       participant {
         id
         name
       }
-      projs {
-        proj {
+      items {
+        project {
           id
           name
         }
@@ -56,7 +56,7 @@ export function useCostState() {
 
   useEffect(() => refresh(), [refresh]);
 
-  const costs = queryData?.costs || [];
+  const costs = queryData?.expenses || [];
 
   const deleteCost = useCallback(
     async (id: string) => {

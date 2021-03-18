@@ -4,21 +4,21 @@ import { ClockCircleOutlined } from '@ant-design/icons';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import * as R from 'ramda';
-import type { Daily, ProjDaily } from '@/apollo';
+import type { EmployeeOfDaily, EmployeeOfDailyItem } from '@/apollo';
 import { isWorkday } from '@/utils/utils';
 
 type CalendarProps = {
   date: Moment;
   setDate: (date: Moment) => void;
-  dailies: Daily[];
+  dailies: EmployeeOfDaily[];
   workCalendar: string[];
 };
 
-const getCalendarCell = (date: Moment, dailies: Daily[], workCalendar: string[]) => {
+const getCalendarCell = (date: Moment, dailies: EmployeeOfDaily[], workCalendar: string[]) => {
   const time = R.pipe(
-    R.find((d: Daily) => d.date === date.format('YYYYMMDD')),
+    R.find((d: EmployeeOfDaily) => d.date === date.format('YYYYMMDD')),
     R.propOr([], 'projs'),
-    R.map((proj: ProjDaily) => proj.timeConsuming),
+    R.map((proj: EmployeeOfDailyItem) => proj.timeConsuming),
     R.sum,
   )(dailies);
   if (time && time > 0) {

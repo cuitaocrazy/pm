@@ -36,47 +36,48 @@ export type User = {
   groups: Scalars['String'][];
 };
 
-export type ProjectDaily = {
-  __typename?: 'ProjectDaily';
-  id: Scalars['ID'];
-  dailies: UsersDaily[];
+export type ProjectOfDailies = {
+  __typename?: 'ProjectOfDailies';
+  // employee: User;
+  project: Project;
+  dailies: ProjectOfDaily[];
 };
 
 export type ProjectDailyDailiesArgs = {
   date?: Maybe<Scalars['String']>;
 };
 
-export type UsersDaily = {
-  __typename?: 'UsersDaily';
+export type ProjectOfDaily = {
+  __typename?: 'ProjectOfDaily';
   date: Scalars['String'];
-  users: UserDaily[];
+  dailyItems: ProjectOfDailyItem[];
 };
 
-export type UserDaily = {
-  __typename?: 'UserDaily';
-  user: User;
+export type ProjectOfDailyItem = {
+  __typename?: 'ProjectOfDailyItem';
+  employee: User;
   timeConsuming: Scalars['Int'];
   content?: Maybe<Scalars['String']>;
 };
 
-export type EmployeeDaily = {
-  __typename?: 'EmployeeDaily';
-  id: Scalars['ID'];
-  dailies: Daily[];
+export type EmployeeOfDailies = {
+  __typename?: 'EmployeeOfDailies';
+  employee: User;
+  dailies: EmployeeOfDaily[];
 };
 
 export type EmployeeDailyDailiesArgs = {
   date?: Maybe<Scalars['String']>;
 };
 
-export type Daily = {
-  __typename?: 'Daily';
+export type EmployeeOfDaily = {
+  __typename?: 'EmployeeOfDaily';
   date: Scalars['String'];
-  projs: ProjDaily[];
+  dailyItems: EmployeeOfDailyItem[];
 };
 
-export type ProjDaily = {
-  __typename?: 'ProjDaily';
+export type EmployeeOfDailyItem = {
+  __typename?: 'EmployeeOfDailyItem';
   project: Project;
   timeConsuming: Scalars['Int'];
   content?: Maybe<Scalars['String']>;
@@ -108,49 +109,49 @@ export enum ProjectStatus {
 
 export type ProjectCostDetail = {
   __typename?: 'ProjectCostDetail';
-  proj: Project;
+  project: Project;
   amount: Scalars['Float'];
   type: Scalars['String'];
   description?: Maybe<Scalars['String']>;
 };
 
-export type Cost = {
+export type Expense = {
   __typename?: 'Cost';
   id: Scalars['ID'];
   assignee: Scalars['String'];
   participant: User;
-  projs: ProjectCostDetail[];
+  items: ProjectCostDetail[];
   createDate: Scalars['String'];
 };
 
-export type ProjectCost = {
-  __typename?: 'ProjectCost';
+export type EmployeeOfExpensesItem = {
+  __typename?: 'EmployeeOfExpensesItem';
   project: Project;
   amount: Scalars['Float'];
   type: Scalars['String'];
-  createDate: Scalars['String'];
+  createDate?: Scalars['String'];
   description?: Maybe<Scalars['String']>;
 };
 
-export type EmployeeCosts = {
+export type EmployeeOfExpenses = {
   __typename?: 'EmployeeCosts';
-  user: User;
-  costs: ProjectCost[];
+  employee: User;
+  items: EmployeeOfExpensesItem[];
 };
 
-export type EmployeeCost = {
+export type ProjectOfExpensesItem = {
   __typename?: 'EmployeeCost';
-  user: User;
+  employee: User;
   amount: Scalars['Float'];
   type: Scalars['String'];
   createDate: Scalars['String'];
   description?: Maybe<Scalars['String']>;
 };
 
-export type ProjectCosts = {
-  __typename?: 'ProjectCosts';
+export type ProjectOfExpenses = {
+  __typename?: 'ProjectOfExpenses';
   project: Project;
-  costs: EmployeeCost[];
+  items: ProjectOfExpensesItem[];
 };
 
 export type ChartKeyValue = {
@@ -173,17 +174,17 @@ export type Query = {
   __typename?: 'Query';
   me: User;
   subordinates: User[];
-  myDailies?: Maybe<EmployeeDaily>;
+  myDailies?: Maybe<EmployeeOfDailies>;
   projs: Project[];
   iLeadProjs: Project[];
-  costs: Cost[];
+  expenses: Expense[];
   dailyUsers: User[];
-  daily: EmployeeDaily;
-  projDaily: ProjectDaily;
+  empDaily: EmployeeOfDailies;
+  projDaily: ProjectOfDailies;
   workCalendar: Scalars['String'][];
   settleMonth: Scalars['String'][];
-  empCosts: EmployeeCosts;
-  projCosts: ProjectCosts;
+  empCosts: EmployeeOfExpenses;
+  projCosts: ProjectOfExpenses;
   charts: Charts;
 };
 

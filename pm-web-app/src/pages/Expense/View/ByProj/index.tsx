@@ -4,28 +4,28 @@ import ProCard from '@ant-design/pro-card';
 import { Row, Col } from 'antd';
 import { ApolloProvider } from '@apollo/client';
 import { client } from '@/apollo';
-import { useUsersState, useCostsState } from './hook';
-import Employee from './Employee';
+import { useProjsState, useCostsState } from './hook';
+import Projects from './Projects';
 import Expense from './Expense';
 
 const ProjCostPage: React.FC = () => {
-  const { loading: queryProjsLoading, users } = useUsersState();
-  const { loading: queryCostsLoading, queryCosts, empCosts } = useCostsState();
+  const { loading: queryProjsLoading, projs } = useProjsState();
+  const { loading: queryCostsLoading, queryCosts, projCosts } = useCostsState();
 
   return (
     <PageContainer>
       <ProCard>
         <Row>
-          <Col xs={24} sm={4}>
-            <ProCard collapsible title="员工列表" loading={queryProjsLoading}>
-              <Employee users={users} handleClick={(userId: string) => queryCosts(userId)} />
+          <Col sm={24} md={10} xl={8} xxl={6}>
+            <ProCard collapsible title="项目列表" loading={queryProjsLoading}>
+              <Projects projs={projs} handleClick={(projId: string) => queryCosts(projId)} />
             </ProCard>
           </Col>
-          <Col xs={24} sm={20}>
+          <Col sm={24} md={14} xl={16} xxl={18}>
             <ProCard bordered title="费用详情">
               <Expense
-                title={empCosts.user.name}
-                costs={empCosts.costs}
+                title={projCosts.project.name}
+                costs={projCosts.items}
                 loading={queryCostsLoading}
               />
             </ProCard>

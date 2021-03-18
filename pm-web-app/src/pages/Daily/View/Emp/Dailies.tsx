@@ -3,18 +3,18 @@ import { Timeline, Card } from 'antd';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import * as R from 'ramda';
-import type { Daily, ProjDaily } from '@/apollo';
+import type { EmployeeOfDaily, EmployeeOfDailyItem } from '@/apollo';
 import { isWorkday } from '@/utils/utils';
 import { buildProjName } from '@/pages/utils';
 
 type DailiesProps = {
   date: Moment;
-  dailies: Daily[];
+  dailies: EmployeeOfDaily[];
   workCalendar: string[];
 };
 
-const getItem = (date: string, projs: ProjDaily[], workCalendar: string[]) => {
-  const time = R.reduce((a, b: ProjDaily) => a + b.timeConsuming, 0)(projs);
+const getItem = (date: string, projs: EmployeeOfDailyItem[], workCalendar: string[]) => {
+  const time = R.reduce((a, b: EmployeeOfDailyItem) => a + b.timeConsuming, 0)(projs);
   if (time && time > 0) {
     return time > 10 ? (
       <Timeline.Item key={date} color="purple">
@@ -60,7 +60,9 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
       {R.range(0, 7)
         .map((i) => moment(date).add(i, 'd').format('YYYYMMDD'))
         .filter((d) => moment(d, 'YYYYMMDD').isSameOrBefore(moment(), 'd'))
-        .map((d) => getItem(d, R.find(R.propEq('date', d), dailies)?.projs || [], workCalendar))}
+        .map((d) =>
+          getItem(d, R.find(R.propEq('date', d), dailies)?.dailyItems || [], workCalendar),
+        )}
     </Timeline>
   );
 };

@@ -6,23 +6,23 @@ import moment from 'moment';
 const QueryCharts = gql`
   query GetCharts($year: String!) {
     charts(year: $year) {
-      monthAmounts {
+      costOfMonths {
         key
         value
       }
-      monthCosts {
+      expenseOfMonths {
         key
         value
       }
-      projCosts {
+      costOfProjs {
         key
         value
       }
-      empCosts {
+      costOfEmps {
         key
         value
       }
-      groupCosts {
+      costOfGroups {
         key
         value
       }

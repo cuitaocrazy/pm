@@ -1,9 +1,9 @@
 import React from 'react';
 import { geekblue, grey } from '@ant-design/colors';
-import type { ProjDaily } from '@/apollo';
+import type { EmployeeOfDailyItem } from '@/apollo';
 
 const colorSet = geekblue;
-function StripPercentage(props: { data: ProjDaily[]; gotoAnchor: (id: number) => void }) {
+function StripPercentage(props: { data: EmployeeOfDailyItem[]; gotoAnchor: (id: number) => void }) {
   const total = props.data.reduce((s, e) => s + e.timeConsuming, 0);
   const percentage =
     total === 0

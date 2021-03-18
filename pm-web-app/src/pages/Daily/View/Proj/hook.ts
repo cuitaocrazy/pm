@@ -28,11 +28,13 @@ export function useProjsState() {
 const QueryDaily = gql`
   query GetDaily($projId: String!) {
     projDaily(projId: $projId) {
-      id
+      project {
+        id
+      }
       dailies {
         date
-        users {
-          user {
+        dailyItems {
+          employee {
             id
             name
           }

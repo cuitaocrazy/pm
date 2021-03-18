@@ -1,11 +1,11 @@
-import type { ProjDaily } from '@/apollo';
+import type { EmployeeOfDailyItem } from '@/apollo';
 import { Pie } from '@ant-design/charts';
 import { Card } from 'antd';
 import React from 'react';
 import { buildProjName } from '@/pages/utils';
 
 type ProjPieProps = {
-  data: ProjDaily[];
+  data: EmployeeOfDailyItem[];
 };
 
 export default (props: ProjPieProps) => {

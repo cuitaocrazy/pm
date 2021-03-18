@@ -4,7 +4,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import * as R from 'ramda';
 import moment from 'moment';
 import { ApolloProvider } from '@apollo/client';
-import type { ProjDaily } from '@/apollo';
+import type { EmployeeOfDailyItem } from '@/apollo';
 import { client } from '@/apollo';
 import ProjItem from './ProjItem';
 import ProjPie from './ProjPie';
@@ -20,8 +20,8 @@ function Dailies(prop: { date?: string }) {
   const onHoursChange = (i: number) => (h: number) => {
     hookStatus.setCurrentDaily(
       R.over(
-        R.lensPath(['projs', i]),
-        (pd: ProjDaily) => ({ ...pd, timeConsuming: h }),
+        R.lensPath(['dailyItems', i]),
+        (pd: EmployeeOfDailyItem) => ({ ...pd, timeConsuming: h }),
         hookStatus.currentDaily,
       ),
     );
@@ -29,14 +29,14 @@ function Dailies(prop: { date?: string }) {
   const onContentOfWorkChange = (i: number) => (c: string) =>
     hookStatus.setCurrentDaily(
       R.over(
-        R.lensPath(['projs', i]),
-        (pd: ProjDaily) => ({ ...pd, content: c }),
+        R.lensPath(['dailyItems', i]),
+        (pd: EmployeeOfDailyItem) => ({ ...pd, content: c }),
         hookStatus.currentDaily,
       ),
     );
 
   const list = () =>
-    hookStatus.currentDaily?.projs?.map((d, i) => (
+    hookStatus.currentDaily?.dailyItems?.map((d, i) => (
       <ProjItem
         key={d.project.id}
         projId={d.project.id}
@@ -91,7 +91,7 @@ function Dailies(prop: { date?: string }) {
         <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -16 }}>
           <Description />
           <StripPercentage
-            data={hookStatus.currentDaily.projs}
+            data={hookStatus.currentDaily.dailyItems}
             gotoAnchor={(i) => hookStatus.refs[i].current!.gotoAnchor(hookStatus.getOffset())}
           />
         </div>
@@ -106,7 +106,7 @@ function Dailies(prop: { date?: string }) {
             hookStatus.pushDaily({
               variables: {
                 date: hookStatus.currentDate,
-                projDailies: hookStatus.currentDaily.projs
+                projDailies: hookStatus.currentDaily.dailyItems
                   .filter((p) => p.timeConsuming !== 0)
                   .map((p) => ({
                     projId: p.project.id,
@@ -125,7 +125,7 @@ function Dailies(prop: { date?: string }) {
       fixedHeader
     >
       {list()}
-      <ProjPie data={hookStatus.currentDaily.projs} />
+      <ProjPie data={hookStatus.currentDaily.dailyItems} />
     </PageContainer>
   );
 }

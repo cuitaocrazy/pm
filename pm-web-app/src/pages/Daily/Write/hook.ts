@@ -2,7 +2,7 @@ import { createRef, useEffect, useRef, useState, useMemo, useCallback } from 're
 import type { MutationFunctionOptions } from '@apollo/client';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
-import type { Daily, Mutation, MutationPushDailyArgs, Project, Query } from '@/apollo';
+import type { EmployeeOfDaily, Mutation, MutationPushDailyArgs, Project, Query } from '@/apollo';
 import * as R from 'ramda';
 import { message } from 'antd';
 import type { ProjItemHandle } from './ProjItem';
@@ -11,10 +11,12 @@ import { useModel } from 'umi';
 const myQuery = gql`
   {
     myDailies {
-      id
+      employee {
+        id
+      }
       dailies {
         date
-        projs {
+        dailyItems {
           project {
             id
           }
@@ -47,19 +49,22 @@ export function useDailiesStatus(date?: string) {
   const [pushDaily, { loading: mutationLoading }] = useMutation<Mutation, MutationPushDailyArgs>(
     PushDaily,
   );
-  const [currentDaily, setCurrentDaily] = useState<Daily>({ date: currentDate, projs: [] });
+  const [currentDaily, setCurrentDaily] = useState<EmployeeOfDaily>({
+    date: currentDate,
+    dailyItems: [],
+  });
   const [filter, setFilter] = useState('');
   const { initialState } = useModel('@@initialState');
   const dailies = useMemo(() => data?.myDailies?.dailies || [], [data]);
   const projs = useMemo(() => data?.projs || [], [data]);
   const getSheetForDate = useCallback(
     (
-      rawDaily: Daily = {
+      rawDaily: EmployeeOfDaily = {
         date: currentDate,
-        projs: [],
+        dailyItems: [],
       },
     ) => {
-      const projIdsForCurrentDaily = rawDaily.projs.map((p) => p.project.id) || [];
+      const projIdsForCurrentDaily = rawDaily.dailyItems.map((p) => p.project.id) || [];
       const projGrouping = R.groupBy<Project>((p) => {
         const writed = projIdsForCurrentDaily.includes(p.id);
         const onProj = p.status === 'onProj';
@@ -113,7 +118,7 @@ export function useDailiesStatus(date?: string) {
         ],
       );
       const dailyListOfItems = sortedProjs.map((p) => {
-        const currentDailyProj = rawDaily.projs.find((dp) => dp.project.id === p.id);
+        const currentDailyProj = rawDaily.dailyItems.find((dp) => dp.project.id === p.id);
         if (currentDailyProj) {
           return { ...currentDailyProj, project: p };
         }
@@ -123,11 +128,11 @@ export function useDailiesStatus(date?: string) {
           content: '',
         };
       });
-      return { date: currentDate, projs: dailyListOfItems };
+      return { date: currentDate, dailyItems: dailyListOfItems };
     },
     [projs, initialState, currentDate],
   );
-  const initSheetForCurrentDaily: Daily = useMemo(
+  const initSheetForCurrentDaily: EmployeeOfDaily = useMemo(
     () => getSheetForDate(dailies.find((d) => d.date === currentDate)),
     [getSheetForDate, currentDate, dailies],
   );

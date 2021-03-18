@@ -1,4 +1,4 @@
-import { any, anyPass, equals, find, identity, pipe, prop, startsWith, zip, isEmpty, includes } from 'ramda'
+import { any, anyPass, equals, find, identity, pipe, prop, startsWith, zip, isEmpty, includes, unnest } from 'ramda'
 import { AuthContext, getGroupUsers, UserInfo, UserWithGroup } from '../../auth/oauth'
 import { Cost } from '../../mongodb'
 
@@ -17,7 +17,13 @@ async function getUserCosts (userId: string) {
   if (isEmpty(data)) {
     return getDeafultCosts(userId)
   }
-  return data
+  return ({
+    id: '',
+    assignee: '',
+    createDate: '',
+    userId,
+    items: unnest(data.map(d => d.items)),
+  })
 }
 
 function getDeafultCosts (userId: string) {

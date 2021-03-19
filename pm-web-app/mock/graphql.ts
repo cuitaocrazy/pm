@@ -11,33 +11,33 @@ type User {
   groups: [String!]!
 }
 
-type ProjectDaily {
-  id: ID!
-  dailies(date: String): [UsersDaily!]!
+type ProjectOfDailies {
+  project: Project!
+  dailies(date: String): [ProjectOfDaily!]!
 }
 
-type UsersDaily {
+type ProjectOfDaily {
   date: String!
-  users: [UserDaily!]!
+  dailyItems: [ProjectOfDailyItem!]!
 }
 
-type UserDaily {
-  user: User!
+type ProjectOfDailyItem {
+  employee: User!
   timeConsuming: Int!
   content: String
 }
 
-type EmployeeDaily {
-  id: ID!
-  dailies(date: String): [Daily!]!
+type EmployeeOfDailies {
+  employee: User!
+  dailies(date: String): [EmployeeOfDaily!]!
 }
 
-type Daily {
+type EmployeeOfDaily {
   date: String!
-  projs: [ProjDaily!]!
+  dailyItems: [EmployeeOfDailyItem!]!
 }
 
-type ProjDaily {
+type EmployeeOfDailyItem {
   project: Project!
   timeConsuming: Int!
   content: String
@@ -65,22 +65,27 @@ enum ProjectStatus {
   onProj
 }
 
-type ProjectCostDetail {
-  proj: Project!
-  amount: Float!
-  type: String!
-  description: String
-}
-
-type Cost {
+type Expense {
   id: ID!
   assignee: String!
   participant: User!
-  projs: [ProjectCostDetail!]!
   createDate: String!
+  items: [ExpenseItem!]!
 }
 
-type ProjectCost {
+type ExpenseItem {
+  project: Project!
+  amount: Float!
+  type: String!
+  description: String
+}
+
+type EmployeeOfExpenses {
+  employee: User!
+  items: [EmployeeOfExpensesItem!]!
+}
+
+type EmployeeOfExpensesItem {
   project: Project!
   amount: Float!
   type: String!
@@ -88,22 +93,17 @@ type ProjectCost {
   description: String
 }
 
-type EmployeeCosts {
-  user: User!
-  costs: [ProjectCost!]!
+type ProjectOfExpenses {
+  project: Project!
+  items: [ProjectOfExpensesItem!]!
 }
 
-type EmployeeCost {
-  user: User!
+type ProjectOfExpensesItem {
+  employee: User!
   amount: Float!
   type: String!
   createDate: String!
   description: String
-}
-
-type ProjectCosts {
-  project: Project!
-  costs: [EmployeeCost!]!
 }
 
 type ChartKeyValue {
@@ -112,28 +112,28 @@ type ChartKeyValue {
 }
 
 type Charts {
-  monthAmounts: [ChartKeyValue!]!
-  monthCosts: [ChartKeyValue!]!
-  monthMds: [ChartKeyValue!]!
-  projCosts: [ChartKeyValue!]!
-  empCosts: [ChartKeyValue!]!
-  groupCosts: [ChartKeyValue!]!
+  costOfMonths: [ChartKeyValue!]!
+  expenseOfMonths: [ChartKeyValue!]!
+  mdOfMonths: [ChartKeyValue!]!
+  costOfProjs: [ChartKeyValue!]!
+  costOfEmps: [ChartKeyValue!]!
+  costOfGroups: [ChartKeyValue!]!
 }
 
 type Query {
   me: User!
   subordinates: [User!]!
-  myDailies: EmployeeDaily
+  myDailies: EmployeeOfDailies
   projs: [Project!]!
   iLeadProjs: [Project!]!
-  costs: [Cost!]!
+  expenses: [Expense!]!
   dailyUsers: [User!]!
-  daily(userId: String!): EmployeeDaily!
-  projDaily(projId: String!): ProjectDaily!
+  empDaily(userId: String!): EmployeeOfDailies!
+  projDaily(projId: String!): ProjectOfDailies!
   workCalendar: [String!]!
   settleMonth: [String!]!
-  empCosts(userId: String!): EmployeeCosts!
-  projCosts(projId: String!): ProjectCosts!
+  empCosts(userId: String!): EmployeeOfExpenses!
+  projCosts(projId: String!): ProjectOfExpenses!
   charts(year: String!): Charts!
 }
 
@@ -192,41 +192,6 @@ type Mutation {
 function randomNum(limit: number) {
   return Math.floor(Math.random() * limit)
 }
-function makeProjectDailies(project: any) {
-  return {
-    project,
-    timeConsuming: randomNum(11),
-    content: `test worke content`,
-  }
-}
-
-function makeDailies(date: string) {
-  return {
-    date,
-    projs: projs.map(p => makeProjectDailies(p)).filter(d => d.timeConsuming !== 0)
-  }
-}
-
-function makeEmpDailies(name: string) {
-  return {
-    id: `${name}`,
-    dailies: R.range(4, 10).map(i => makeDailies(`2021010${i}`))
-  }
-}
-
-function makeProjDailies(name: string) {
-  return {
-    id: `${name}`,
-    dailies: R.range(4, 10).map(i => ({
-      date: `2021010${i}`,
-      users: users.map(user => ({
-        user: user,
-        timeConsuming: randomNum(11),
-        content: `test worke content`,
-      }))
-    }))
-  }
-}
 
 function makeProjects() {
   return R.range(1, 11).map(i => {
@@ -235,7 +200,7 @@ function makeProjects() {
       name: `项目${i}`,
       leader: `0001`,
       budget: 50_0000,
-      createDate: '20201201',
+      createDate: '20210301',
       status: 'onProj',
       participants: ['0001'],
       contacts: [
@@ -254,15 +219,15 @@ function makeProjects() {
   })
 }
 
-function makeCosts() {
-  return R.range(0, 5).map(i => ({
-    id: `cost_${i}`,
+function makeExpenses() {
+  return R.range(0, 10).map(i => ({
+    id: `expense_${i}`,
     assignee: '0001',
     participant: {
       id: '0002',
-      name: 'user2'
+      name: '组长'
     },
-    projs: [
+    items: [
       {
         proj: {
           id: 'BOC-BJ-YF-1-2101',
@@ -282,80 +247,82 @@ function makeCosts() {
         description: '费用测试2'
       }
     ],
-    createDate: `2020121${i}`
+    createDate: `2021031${i}`
   }))
 }
 
-let projs = makeProjects()
-let myDailies = makeEmpDailies('0001')
-let costs = makeCosts()
-let users = [
-  {
-    id: '0001',
-    name: 'user1',
-    access: ['realm:engineer', 'realm:assistant', 'realm:project_manager', 'realm:group_leader', 'realm:supervisor'],
-    groups: ['/a']
-  },
-  {
-    id: '0002',
-    name: 'user2',
-    access: ['realm:project_manager', 'realm:group_leader'],
-    groups: ['/a']
-  },
-  {
-    id: '0003',
-    name: 'user3',
-    access: ['realm:project_manager', 'realm:assistant'],
-    groups: ['/a']
-  },
-  {
-    id: '0004',
-    name: 'user4',
-    access: ['realm:engineer', 'realm:assistant'],
-    groups: ['/a']
+function makeEmployeeOfDailyItem(project: any) {
+  return {
+    project,
+    timeConsuming: randomNum(11),
+    content: `test worke content`,
   }
-]
-
-let config = {
-  workCalendar: ['20210101', '20210131', '20210207', '20210210', '20210211', '20210212', '20210215', '20210216', '20210217', '20210220'],
-  settleMonth: ['202012'],
 }
 
-function makeEmpCosts(userId: string) {
+function makeEmployeeOfDaily(date: string) {
+  return {
+    date,
+    dailyItems: projs.map(p => makeEmployeeOfDailyItem(p)).filter(d => d.timeConsuming !== 0)
+  }
+}
+
+function makeEmployeeOfDailies(userId: string) {
+  return {
+    employee: R.find(R.propEq('id', userId))(users),
+    dailies: R.range(4, 10).map(i => makeEmployeeOfDaily(`2021030${i}`))
+  }
+}
+
+function makeProjectOfDailies(projId: string) {
+  return {
+    project: R.find(R.propEq('id', projId))(projs),
+    dailies: R.range(4, 10).map(i => ({
+      date: `2021030${i}`,
+      dailyItems: users.map(user => ({
+        employee: user,
+        timeConsuming: randomNum(11),
+        content: `test worke content`,
+      }))
+    }))
+  }
+}
+
+function makeEmployeeOfExpenses(userId: string) {
   return ({
-    user: R.find(R.propEq('id', userId))(users),
-    costs: costs.reduce((a: any[], b: any) =>
+    employee: R.find(R.propEq('id', userId))(users),
+    items: expenses.reduce((a: any[], b: any) =>
       [...a, ...b.projs.map((p: any) => ({ ...p, project: p.proj, createDate: b.createDate }))],
       []
     ),
   })
 }
 
-function makeProjCosts(projId: string) {
+function makeProjectOfExpenses(projId: string) {
   return ({
     project: R.find(R.propEq('id', projId))(makeProjects()),
-    costs: costs.reduce((a: any[], b: any) =>
-      [...a, ...b.projs.map((p: any) => ({ ...p, user: b.participant, createDate: b.createDate }))],
+    items: expenses.reduce((a: any[], b: any) =>
+      [...a, ...b.projs.map((p: any) => ({ ...p, employee: R.find(R.propEq('id', b.participant))(users), createDate: b.createDate }))],
       []
     ),
   })
 }
 
-function makeCharts(year: string) {
+function makeCharts(_year: string) {
   return ({
-    monthAmounts: [
+    costOfMonths: [
       {
         key: '202101',
         value: 320254,
       },
     ],
-    monthCosts: [
+    expenseOfMonths: [
       {
         key: '202101',
         value: 31305,
       },
     ],
-    projCosts: [
+    mdOfMonths: [],
+    costOfProjs: [
       {
         key: '亚大-北京-测试-项目名称-2101',
         value: 2389.93,
@@ -373,7 +340,7 @@ function makeCharts(year: string) {
         value: 1208.1,
       },
     ],
-    empCosts: [
+    costOfEmps: [
       {
         key: '人员一',
         value: 0,
@@ -403,7 +370,7 @@ function makeCharts(year: string) {
         value: 31208.1,
       },
     ],
-    groupCosts: [
+    costOfGroups: [
       {
         key: '/项目二部',
         value: 0,
@@ -424,10 +391,64 @@ function makeCharts(year: string) {
   })
 }
 
+let users = [
+  {
+    id: '0001',
+    name: '主管',
+    access: ['realm:engineer', 'realm:assistant', 'realm:project_manager', 'realm:group_leader', 'realm:supervisor'],
+    groups: ['/a']
+  },
+  {
+    id: '0002',
+    name: '组长',
+    access: ['realm:group_leader', 'realm:project_manager', 'realm:engineer'],
+    groups: ['/a/b']
+  },
+  {
+    id: '0003',
+    name: '经理',
+    access: ['realm:project_manager', 'realm:engineer'],
+    groups: ['/a/b']
+  },
+  {
+    id: '0004',
+    name: '员工',
+    access: ['realm:engineer'],
+    groups: ['/a/b']
+  },
+  {
+    id: '0005',
+    name: '助理',
+    access: ['realm:engineer', 'realm:assistant'],
+    groups: ['/a']
+  }
+]
+
+let projs = makeProjects()
+let myDailies = makeEmployeeOfDailies('0001')
+let expenses = makeExpenses()
+let config = {
+  workCalendar: ['20210101', '20210131', '20210207', '20210210', '20210211', '20210212', '20210215', '20210216', '20210217', '20210220'],
+  settleMonth: ['202012'],
+}
+
 const root = {
+  // Query
   me: () => users[0],
+  subordinates: () => users,
   myDailies: () => myDailies,
   projs: () => projs,
+  iLeadProjs: () => projs,
+  expenses: (args: any) => expenses,
+  dailyUsers: users,
+  empDaily: makeEmployeeOfDailies,
+  projDaily: makeProjectOfDailies,
+  workCalendar: () => R.sort((a, b) => R.subtract(moment(a, 'YYYYMMDD').unix(), moment(b, 'YYYYMMDD').unix()), config.workCalendar),
+  settleMonth: () => config.settleMonth,
+  empCosts: ({ userId }: any) => makeEmployeeOfExpenses(userId),
+  projCosts: ({ projId }: any) => makeProjectOfExpenses(projId),
+  charts: ({ year }: any) => makeCharts(year),
+  // Mutation
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {
     const newDaily = {
       date: args.date,
@@ -446,17 +467,6 @@ const root = {
     myDailies = R.over(lp, change)(myDailies)
     return 'user1'
   },
-  iLeadProjs: () => projs,
-  costs: (args: any) => costs,
-  dailyUsers: users,
-  daily: makeEmpDailies,
-  projDaily: makeProjDailies,
-  subordinates: () => users,
-  workCalendar: () => R.sort((a, b) => R.subtract(moment(a, 'YYYYMMDD').unix(), moment(b, 'YYYYMMDD').unix()), config.workCalendar),
-  settleMonth: () => config.settleMonth,
-  empCosts: ({ userId }: any) => makeEmpCosts(userId),
-  projCosts: ({ projId }: any) => makeProjCosts(projId),
-  charts: ({ year }: any) => makeCharts(year),
   pushProject: (args: any) => {
     args.proj.participants || (args.proj.participants = ['0001'])
     args.proj.contacts || (args.proj.contacts = [])
@@ -473,14 +483,14 @@ const root = {
     return args.id
   },
   pushCost: (args: any) => {
-    const index = costs.findIndex((c: any) => c.id === args.cost.id)
+    const index = expenses.findIndex((c: any) => c.id === args.cost.id)
 
     const genCost = (data: any, id: string, createDate: string, assignee: string) => {
       return {
         id: id,
         assignee: assignee,
         participant: { id: data.participant, name: users.find(u => u.id === data.participant)?.name || data.participant },
-        projs: data.projs.map((p: any) => ({ proj: { id: p.id, name: projs.find(proj => proj.id === p.id)?.name }, amount: p.amount, description: p.description, type: p.type })),
+        items: data.items.map((p: any) => ({ project: { id: p.id, name: projs.find(proj => proj.id === p.id)?.name }, amount: p.amount, description: p.description, type: p.type })),
         createDate: createDate
       }
     }
@@ -488,19 +498,19 @@ const root = {
     let id: string
 
     if (index === -1) {
-      id = `cost_${costs.length}`
-      const cost = genCost(args.cost, id, '20121212', '0001')
-      costs = R.append(cost)(costs)
+      id = `expense_${expenses.length}`
+      const cost = genCost(args.cost, id, '20210312', '0001')
+      expenses = R.append(cost)(expenses)
     } else {
-      id = costs[index].id
-      const cost = genCost(args.cost, costs[index].id, costs[index].createDate, costs[index].assignee)
-      costs = R.update(index, cost, costs)
+      id = expenses[index].id
+      const expense = genCost(args.cost, expenses[index].id, expenses[index].createDate, expenses[index].assignee)
+      expenses = R.update(index, expense, expenses)
     }
 
     return id
   },
   deleteCost: (args: any) => {
-    costs = costs.filter(c => c.id !== args.id)
+    expenses = expenses.filter((c: any) => c.id !== args.id)
     return args.id
   },
   pushWorkCalendar: (args: any) => {
@@ -520,12 +530,11 @@ const root = {
     return 'workCalendar'
   },
   pushChangePm: (args: any) => {
-    let id: string = 'Error';
-    projs.filter(proj => proj.id === args?.changePm.projIds[0]).map(proj => {
-      id = proj.id
-      proj.leader = args.changePm.leader
-    }
-    )
+    projs
+      .filter(proj => proj.id === args?.changePm.projIds[0])
+      .map(proj => {
+        proj.leader = args.changePm.leader
+      })
     return args?.changePm.projIds.length
   },
 }

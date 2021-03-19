@@ -51,12 +51,12 @@ export function useChartsState() {
   );
 
   const charts = queryData?.charts || {
-    monthAmounts: [],
-    monthCosts: [],
-    monthMds: [],
-    projCosts: [],
-    empCosts: [],
-    groupCosts: [],
+    costOfMonths: [],
+    expenseOfMonths: [],
+    mdOfMonths: [],
+    costOfProjs: [],
+    costOfEmps: [],
+    costOfGroups: [],
   };
 
   return {

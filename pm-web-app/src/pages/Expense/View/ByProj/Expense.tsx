@@ -17,7 +17,7 @@ const Costs: React.FC<CostsProps> = (props) => {
   const { loading, title, costs } = props;
 
   const config = React.useMemo(() => {
-    const group = R.groupBy(R.pathOr('', ['user', 'name']), costs);
+    const group = R.groupBy(R.pathOr('', ['employee', 'name']), costs);
     const data = R.keys(group).map((key) => ({
       type: key,
       value: R.sum(group[key].map((v) => v.amount)),
@@ -43,7 +43,7 @@ const Costs: React.FC<CostsProps> = (props) => {
     () => [
       {
         title: '人员',
-        dataIndex: ['user', 'name'],
+        dataIndex: ['employee', 'name'],
         filters: R.uniq(
           R.map((cost) => ({ text: cost.employee.name, value: cost.employee.id }), costs),
         ),

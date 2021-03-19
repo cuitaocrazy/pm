@@ -31,20 +31,20 @@ const Supervisor = () => {
             title="全年费用汇总"
             height={330}
             year={year}
-            totalAmoumt={R.sum(charts.monthAmounts.map((ma) => ma.value))}
-            totalCost={R.sum(charts.monthCosts.map((ma) => ma.value))}
+            totalAmoumt={R.sum(charts.costOfMonths.map((ma) => ma.value))}
+            totalCost={R.sum(charts.expenseOfMonths.map((ma) => ma.value))}
           />
         </Col>
         <Col span={12}>
-          <PieCosts title="全年组成本占比" height={330} year={year} data={charts.groupCosts} />
+          <PieCosts title="全年组成本占比" height={330} year={year} data={charts.costOfGroups} />
         </Col>
         <Col span={24}>
           <MonthCosts
             title="每月费用统计"
             height={330}
             year={year}
-            monthAmounts={charts.monthAmounts}
-            monthCosts={charts.monthCosts}
+            monthAmounts={charts.costOfMonths}
+            monthCosts={charts.expenseOfMonths}
           />
         </Col>
       </Row>

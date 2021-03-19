@@ -452,7 +452,7 @@ const root = {
   pushDaily: (args: { date: string, projDailies: { projId: string, timeConsuming: number, content: string }[] }) => {
     const newDaily = {
       date: args.date,
-      projs: args.projDailies.map(pd => ({ project: projs.find(p => p.id === pd.projId), timeConsuming: pd.timeConsuming, content: pd.content }))
+      dailyItems: args.projDailies.map(pd => ({ project: projs.find(p => p.id === pd.projId), timeConsuming: pd.timeConsuming, content: pd.content }))
     }
 
     type TDaily = typeof newDaily

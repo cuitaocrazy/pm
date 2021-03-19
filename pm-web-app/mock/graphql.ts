@@ -229,7 +229,7 @@ function makeExpenses() {
     },
     items: [
       {
-        proj: {
+        project: {
           id: 'BOC-BJ-YF-1-2101',
           name: 'proj 1',
         },
@@ -238,7 +238,7 @@ function makeExpenses() {
         description: '费用测试1'
       },
       {
-        proj: {
+        project: {
           id: 'BOC-BJ-YF-2-2101',
           name: 'proj 2',
         },
@@ -291,7 +291,7 @@ function makeEmployeeOfExpenses(userId: string) {
   return ({
     employee: R.find(R.propEq('id', userId))(users),
     items: expenses.reduce((a: any[], b: any) =>
-      [...a, ...b.projs.map((p: any) => ({ ...p, project: p.proj, createDate: b.createDate }))],
+      [...a, ...b.items.map((p: any) => ({ ...p, createDate: b.createDate }))],
       []
     ),
   })
@@ -299,9 +299,9 @@ function makeEmployeeOfExpenses(userId: string) {
 
 function makeProjectOfExpenses(projId: string) {
   return ({
-    project: R.find(R.propEq('id', projId))(makeProjects()),
+    project: R.find(R.propEq('id', projId))(projs),
     items: expenses.reduce((a: any[], b: any) =>
-      [...a, ...b.projs.map((p: any) => ({ ...p, employee: R.find(R.propEq('id', b.participant))(users), createDate: b.createDate }))],
+      [...a, ...b.items.map((p: any) => ({ ...p, employee: b.participant, createDate: b.createDate }))],
       []
     ),
   })
@@ -441,8 +441,8 @@ const root = {
   iLeadProjs: () => projs,
   expenses: (args: any) => expenses,
   dailyUsers: users,
-  empDaily: makeEmployeeOfDailies,
-  projDaily: makeProjectOfDailies,
+  empDaily: ({ userId }: any) => makeEmployeeOfDailies(userId),
+  projDaily: ({ projId }: any) => makeProjectOfDailies(projId),
   workCalendar: () => R.sort((a, b) => R.subtract(moment(a, 'YYYYMMDD').unix(), moment(b, 'YYYYMMDD').unix()), config.workCalendar),
   settleMonth: () => config.settleMonth,
   empCosts: ({ userId }: any) => makeEmployeeOfExpenses(userId),

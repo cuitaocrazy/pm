@@ -17,29 +17,64 @@
     access: 'canDaily'
   },
   {
-    path: '/projects',
-    name: 'projects',
-    component: './Project/Edit',
-    access: 'canProj'
+    path: '/employee',
+    name: 'employee',
+    access: 'canEmployee',
+    routes:[
+      {
+        path: '/employee/empDailies',
+        name: 'empDailies',
+        component: './Daily/View/ByEmp',
+        access: 'canEmpDailies'
+      },
+      {
+        path: '/employee/empExpense',
+        name: 'empExpense',
+        component: './Expense/View/ByEmp',
+        access: 'canEmpExpense'
+      },
+    ]
   },
   {
-    path: '/costs',
-    name: 'costs',
+    path: '/project',
+    name: 'project',
+    access: 'canProj',//todo
+    routes:[
+      {
+        path: '/project/edit',
+        name: 'edit',
+        component: './Project/Edit',
+        access: 'canProjEdit'
+      },
+      {
+        path: '/project/changeLeader',
+        name: 'changeLeader',
+        component: './Project/ChangeLeader',
+        access: 'canChangeLeader' 
+      },
+      {
+        path: '/project/projDailies',
+        name: 'projDailies',
+        component: './Daily/View/ByProj',
+        access: 'canProjDailies'
+      },
+      {
+        path: '/project/projExpense',
+        name: 'projExpense',
+        component: './Expense/View/ByProj',
+        access: 'canProjExpense'
+      },
+    ]
+  },
+
+  {
+    path: '/expense',
+    name: 'expense',
     component: './Expense/Edit',
-    access: 'canCost'
+    access: 'canExpense'
   },
-  {
-    path: '/empDailies',
-    name: 'empDailies',
-    component: './Daily/View/Emp',
-    access: 'canEmpDailies'
-  },
-  {
-    path: '/projDailies',
-    name: 'projDailies',
-    component: './Daily/View/Proj',
-    access: 'canProjDailies'
-  },
+
+
   {
     path: '/workCalendar',
     name: 'workCalendar',
@@ -47,29 +82,12 @@
     access: 'canWorkCalendar'
   },
   {
-    path: '/empCosts',
-    name: 'empCosts',
-    component: './Expense/View/ByEmp',
-    access: 'canEmpCosts'
-  },
-  {
-    path: '/projCosts',
-    name: 'projCosts',
-    component: './Expense/View/ByProj',
-    access: 'canProjCosts'
-  },
-  {
     path: '/settlement',
     name: 'settlement',
     component: './Settlement',
     access: 'canSettlement'
   },
-  {
-    path: '/changePm',
-    name: 'changePm',
-    component: './Project/ChangeLeader',
-    access: 'canChangePm'
-  },
+
   {
     component: './404',
   },

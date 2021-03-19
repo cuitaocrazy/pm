@@ -10,6 +10,10 @@ import type {
 
 const queryGql = gql`
   {
+    subordinates {
+      id
+      name
+    }
     expenses {
       id
       assignee
@@ -58,6 +62,8 @@ export function useCostState() {
 
   const costs = queryData?.expenses || [];
 
+  const subordinates = queryData?.subordinates || [];
+
   const deleteCost = useCallback(
     async (id: string) => {
       await deleteCostHandle({ variables: { id } });
@@ -81,6 +87,7 @@ export function useCostState() {
   return {
     loading: queryLoading || deleteLoading || pushLoading,
     costs,
+    subordinates,
     deleteCost,
     pushCost,
   };

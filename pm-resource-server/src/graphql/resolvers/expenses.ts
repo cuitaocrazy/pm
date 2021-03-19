@@ -48,7 +48,8 @@ export default {
   Mutation: {
     pushCost: (_: any, args: any, context: AuthContext) => {
       const { id, ...cost } = args.cost
-
+      console.log(id)
+      console.log(cost)
       if (!id) {
         cost.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
         cost.assignee = context.user!.id

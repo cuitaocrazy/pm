@@ -1,17 +1,19 @@
-import type { Expense as CostType, CostInput } from '@/apollo';
+import type { Expense as CostType, CostInput, User } from '@/apollo';
 import { client } from '@/apollo';
 import { PageContainer } from '@ant-design/pro-layout';
 import { ApolloProvider } from '@apollo/client';
-import { Space, Table } from 'antd';
+import { Space, Table, Input } from 'antd';
 import moment from 'moment';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useCostState } from './hook';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
-import Expense from './ExpenseForm';
+import ExpenseForm from './ExpenseForm';
 import { Button } from 'antd';
 import { append, last, unnest, zip } from 'ramda';
 import { buildProjName } from '@/pages/utils';
+import { SearchOutlined } from '@ant-design/icons';
+import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
 type CostRowType = {
   id: string;
@@ -29,6 +31,8 @@ function getColumns(
   editHandle: (cost: CostRowType) => void,
   deleteHandle: (id: string) => void,
   visibleIndex: number[][],
+  subordinates: User[],
+  search: (filterDropdownProps: FilterDropdownProps) => any,
 ) {
   const makeGroupProps = (children: any, row: CostRowType, index: number) => {
     const obj = {
@@ -47,17 +51,26 @@ function getColumns(
     return makeGroupProps(value, row, index);
   };
 
+  const userFilter = subordinates.map((user) => {
+    return { text: user.name, value: user.id };
+  });
+
   return [
     {
       title: '人员',
       dataIndex: 'participant',
       key: 'participant',
+      filters: userFilter,
+      onFilter: (value: string | number | boolean, record: { raw: CostType }) => {
+        return record.raw.participant.id === value;
+      },
       render: makeGroupRender,
     },
     {
       title: '项目',
       dataIndex: 'proj',
       key: 'proj',
+      filterDropdown: search,
     },
     {
       title: '金额(元)',
@@ -123,6 +136,85 @@ const Cost = () => {
   const firstIndexByCost = costProjCountList.reduce((s, e) => append(e + last(s)!, s), [0]);
   const visibleIndex = zip(firstIndexByCost, costProjCountList);
   const ref = useRef<FormDialogHandle<CostInput>>(null);
+  const [localState, setLocalState] = useState<{
+    search: string;
+  }>({ search: '' });
+  const handleSearch = (selectedKeys: any[], confirm: () => void) => {
+    confirm();
+    setLocalState({
+      ...localState,
+      ...{
+        search: selectedKeys[0],
+      },
+    });
+  };
+
+  const handleReset = (clearFilters: () => void) => {
+    clearFilters();
+    setLocalState({
+      ...localState,
+      ...{
+        search: '',
+      },
+    });
+  };
+
+  const search = (filterDropdownProps: FilterDropdownProps) => (
+    <div style={{ padding: 8 }}>
+      <Input
+        value={filterDropdownProps.selectedKeys[0]}
+        onChange={(e) =>
+          filterDropdownProps.setSelectedKeys(e.target.value ? [e.target.value] : [])
+        }
+        onPressEnter={() =>
+          handleSearch(filterDropdownProps.selectedKeys, filterDropdownProps.confirm)
+        }
+        style={{ width: 188, marginBottom: 8, display: 'block' }}
+      />
+      <Space>
+        <Button
+          type="primary"
+          onClick={() =>
+            handleSearch(filterDropdownProps.selectedKeys, filterDropdownProps.confirm)
+          }
+          icon={<SearchOutlined />}
+          size="small"
+          style={{ width: 90 }}
+        >
+          搜索
+        </Button>
+        <Button
+          onClick={() => {
+            if (filterDropdownProps.clearFilters) {
+              return handleReset(filterDropdownProps.clearFilters);
+            }
+            return '';
+          }}
+          size="small"
+          style={{ width: 90 }}
+        >
+          重置
+        </Button>
+      </Space>
+    </div>
+  );
+
+  const getShowCost = (costRows: CostRowType[]) => {
+    return costRows.filter((costRow) => {
+      if (localState.search === '' || localState.search === undefined) {
+        return true;
+      }
+      if (costRow.raw.items[0]) {
+        return (
+          buildProjName(costRow.raw.items[0].project.id, costRow.raw.items[0].project.name).indexOf(
+            localState.search,
+          ) > -1
+        );
+      }
+      return false;
+    });
+  };
+
   return (
     <PageContainer
       extra={[
@@ -148,13 +240,15 @@ const Cost = () => {
           },
           state.deleteCost,
           visibleIndex,
+          state?.subordinates,
+          search,
         )}
-        dataSource={rows}
-        rowKey={(record) => record.key}
+        dataSource={getShowCost(rows)}
+        rowKey={(record) => record.id}
       />
 
       <DialogForm submitHandle={(v: CostInput) => state.pushCost(v)} ref={ref} title="费用编辑">
-        {Expense}
+        {ExpenseForm}
       </DialogForm>
     </PageContainer>
   );

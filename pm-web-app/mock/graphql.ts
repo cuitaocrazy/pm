@@ -490,7 +490,7 @@ const root = {
         id: id,
         assignee: assignee,
         participant: { id: data.participant, name: users.find(u => u.id === data.participant)?.name || data.participant },
-        items: data.items.map((p: any) => ({ project: { id: p.id, name: projs.find(proj => proj.id === p.id)?.name }, amount: p.amount, description: p.description, type: p.type })),
+        items: data.projs.map((p: any) => ({ project: { id: p.id, name: projs.find(proj => proj.id === p.id)?.name }, amount: p.amount, description: p.description, type: p.type })),
         createDate: createDate
       }
     }
@@ -499,7 +499,7 @@ const root = {
 
     if (index === -1) {
       id = `expense_${expenses.length}`
-      const cost = genCost(args.cost, id, '20210312', '0001')
+      const cost = genCost(args.cost, id, moment().format('YYYYMMDD'), '0001')
       expenses = R.append(cost)(expenses)
     } else {
       id = expenses[index].id

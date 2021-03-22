@@ -7,7 +7,6 @@ import { ApolloProvider } from '@apollo/client';
 import type { EmployeeOfDailyItem } from '@/apollo';
 import { client } from '@/apollo';
 import ProjItem from './ProjItem';
-import ProjPie from './ProjPie';
 import StripPercentage from './StripPercentage';
 import { useDailiesStatus } from './hook';
 import Description from './Description';
@@ -125,7 +124,6 @@ function Dailies(prop: { date?: string }) {
       fixedHeader
     >
       {list()}
-      <ProjPie data={hookStatus.currentDaily.dailyItems} />
     </PageContainer>
   );
 }

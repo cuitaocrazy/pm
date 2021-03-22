@@ -14,12 +14,14 @@
     path: '/dailies',
     name: 'dailies',
     component: './Daily/Write',
-    access: 'canDaily'
+    access: 'canDaily',
+    icon: 'solution',
   },
   {
     path: '/employee',
     name: 'employee',
     access: 'canEmployee',
+    icon: 'team',
     routes:[
       {
         path: '/employee/empDailies',
@@ -38,7 +40,8 @@
   {
     path: '/project',
     name: 'project',
-    access: 'canProj',//todo
+    access: 'canProj',
+    icon: 'project',
     routes:[
       {
         path: '/project/edit',
@@ -66,28 +69,27 @@
       },
     ]
   },
-
   {
     path: '/expense',
     name: 'expense',
     component: './Expense/Edit',
-    access: 'canExpense'
+    access: 'canExpense',
+    icon: 'accountBook',
   },
-
-
   {
     path: '/workCalendar',
     name: 'workCalendar',
     component: './WorkCalendar',
-    access: 'canWorkCalendar'
+    access: 'canWorkCalendar',
+    icon: 'calendar',
   },
   {
     path: '/settlement',
     name: 'settlement',
     component: './Settlement',
-    access: 'canSettlement'
+    access: 'canSettlement',
+    icon: 'container',
   },
-
   {
     component: './404',
   },

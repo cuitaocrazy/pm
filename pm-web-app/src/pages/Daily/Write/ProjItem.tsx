@@ -1,7 +1,5 @@
-import React, { forwardRef, useImperativeHandle, useState, useRef } from 'react';
-import { Card, Row, Col, Divider, Input, Slider } from 'antd';
-import { Collapse } from 'react-collapse';
-import { DoubleLeftOutlined } from '@ant-design/icons';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import { Card, Row, Col, Input, Slider } from 'antd';
 import * as R from 'ramda';
 import { buildProjName } from '@/pages/utils';
 import color from './colorDef';
@@ -37,7 +35,6 @@ export type ProjItemHandle = {
   getOffset: () => number;
 };
 const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = (props, ref) => {
-  const [isOpened, setIsOpened] = useState(true);
   const divRef = useRef<HTMLDivElement>(null);
   const visible =
     buildProjName(props.projId, props.projName || props.projId)
@@ -82,19 +79,11 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
           />
         </Col>
         <Col span={24}>
-          <Collapse isOpened={isOpened}>
-            <br />
-            <Input.TextArea
-              autoSize
-              onChange={(e) => props.onContentOfWorkChange(e.currentTarget.value)}
-              value={props.content || ''}
-            />
-          </Collapse>
-          <div onClick={() => setIsOpened(!isOpened)}>
-            <Divider plain style={{ marginBottom: 0 }}>
-              <DoubleLeftOutlined rotate={isOpened ? 90 : 270} />
-            </Divider>
-          </div>
+          <Input.TextArea
+            autoSize
+            onChange={(e) => props.onContentOfWorkChange(e.currentTarget.value)}
+            value={props.content || ''}
+          />
         </Col>
       </Row>
     </Card>

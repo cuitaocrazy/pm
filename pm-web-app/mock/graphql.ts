@@ -194,7 +194,7 @@ function randomNum(limit: number) {
 }
 
 function makeProjects() {
-  return R.range(1, 11).map(i => {
+  return R.range(1, 100).map(i => {
     return {
       id: `BOC-BJ-YF-${i}-2101`,
       name: `项目${i}`,

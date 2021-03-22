@@ -239,6 +239,24 @@ function makeExpenses() {
       },
       {
         project: {
+          id: 'BOC-BJ-YF-1-2101',
+          name: 'proj 1',
+        },
+        amount: 1001.01,
+        type: '差旅',
+        description: '费用测试1'
+      },
+      {
+        project: {
+          id: 'BOC-BJ-YF-1-2101',
+          name: 'proj 21',
+        },
+        amount: 2001.01,
+        type: '差旅',
+        description: '费用测试1'
+      },
+      {
+        project: {
           id: 'BOC-BJ-YF-2-2101',
           name: 'proj 2',
         },

@@ -1,4 +1,4 @@
-import type { Expense as CostType, CostInput, User } from '@/apollo';
+import type { Expense as CostType, CostInput } from '@/apollo';
 import { client } from '@/apollo';
 import { PageContainer } from '@ant-design/pro-layout';
 import { ApolloProvider } from '@apollo/client';
@@ -31,7 +31,7 @@ function getColumns(
   editHandle: (cost: CostRowType) => void,
   deleteHandle: (id: string) => void,
   visibleIndex: number[][],
-  subordinates: User[],
+  userFilter: { text: string; value: string }[],
   search: (filterDropdownProps: FilterDropdownProps) => any,
 ) {
   const makeGroupProps = (children: any, row: CostRowType, index: number) => {
@@ -50,11 +50,6 @@ function getColumns(
   const makeGroupRender = (value: string, row: CostRowType, index: number) => {
     return makeGroupProps(value, row, index);
   };
-
-  const userFilter = subordinates.map((user) => {
-    return { text: user.name, value: user.id };
-  });
-
   return [
     {
       title: '人员',
@@ -117,9 +112,48 @@ function getColumns(
 }
 
 const Cost = () => {
+  const [localState, setLocalState] = useState<{
+    search: string;
+  }>({ search: '' });
+
+  const getShowCost = (costRows: CostType[]) => {
+    return costRows
+      .filter((costRow) => {
+        if (localState.search === '' || localState.search === undefined) {
+          return true;
+        }
+        if (costRow.items[0]) {
+          return costRow.items.reduce((result: boolean, item) => {
+            return (
+              result ||
+              buildProjName(item.project.id, item.project.name).indexOf(localState.search) > -1
+            );
+          }, false);
+        }
+        return false;
+      })
+      .map((costRow: CostType) => {
+        const newcostRow = {
+          ...costRow,
+          ...{
+            items: costRow.items.filter((item) => {
+              if (localState.search === '' || localState.search === undefined) {
+                return true;
+              }
+              return (
+                buildProjName(item.project.id, item.project.name).indexOf(localState.search) > -1
+              );
+            }),
+          },
+        };
+        return newcostRow;
+      });
+  };
+
   const state = useCostState();
+  const revertCostRow = getShowCost(state.costs);
   const rows = unnest(
-    state.costs.map((cost) =>
+    revertCostRow.map((cost) =>
       cost.items.map((p) => ({
         id: cost.id,
         participant: cost.participant.name,
@@ -132,13 +166,13 @@ const Cost = () => {
       })),
     ),
   ).map((r, index) => ({ key: r.id + index, ...r }));
-  const costProjCountList = state.costs.map((c) => c.items.length);
+  const costProjCountList = rows.map((c) => c.raw.items.length);
+
   const firstIndexByCost = costProjCountList.reduce((s, e) => append(e + last(s)!, s), [0]);
+
   const visibleIndex = zip(firstIndexByCost, costProjCountList);
   const ref = useRef<FormDialogHandle<CostInput>>(null);
-  const [localState, setLocalState] = useState<{
-    search: string;
-  }>({ search: '' });
+
   const handleSearch = (selectedKeys: any[], confirm: () => void) => {
     confirm();
     setLocalState({
@@ -199,21 +233,17 @@ const Cost = () => {
     </div>
   );
 
-  const getShowCost = (costRows: CostRowType[]) => {
-    return costRows.filter((costRow) => {
-      if (localState.search === '' || localState.search === undefined) {
-        return true;
-      }
-      if (costRow.raw.items[0]) {
-        return (
-          buildProjName(costRow.raw.items[0].project.id, costRow.raw.items[0].project.name).indexOf(
-            localState.search,
-          ) > -1
-        );
-      }
-      return false;
+  const userFilter = revertCostRow
+    .map((cost) => {
+      return { value: cost.participant.id, text: cost.participant.name };
+    })
+    .sort((a, b) => {
+      return a.value > b.value ? 1 : -1;
+    })
+    .filter((item, index, arr) => {
+      if (index === 0) return true;
+      return arr[index - 1].value !== item.value;
     });
-  };
 
   return (
     <PageContainer
@@ -240,11 +270,11 @@ const Cost = () => {
           },
           state.deleteCost,
           visibleIndex,
-          state?.subordinates,
+          userFilter,
           search,
         )}
-        dataSource={getShowCost(rows)}
-        rowKey={(record) => record.id}
+        dataSource={rows}
+        rowKey={(record) => record.key}
       />
 
       <DialogForm submitHandle={(v: CostInput) => state.pushCost(v)} ref={ref} title="费用编辑">

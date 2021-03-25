@@ -58,4 +58,33 @@ export default defineConfig({
   history: {
     type: 'hash',
   },
+  chunks: ['vendors', 'umi'],
+  chainWebpack: function (config) {
+    config.merge({
+      mode: 'production',
+      optimization: {
+        // https://webpack.docschina.org/plugins/split-chunks-plugin
+        splitChunks: {
+          chunks: 'all',
+          // 生成块的最小大小（以字节为单位）
+          minSize: 20000,
+          // 最少共享次数
+          minChunks: 3,
+          // 生成名称的定界符
+          automaticNameDelimiter: '.',
+          cacheGroups: {
+            vendor: {
+              name: 'vendors',
+              // `module.resource` contains the absolute path of the file on disk.
+              test(module: any) {
+                return /[\\/]node_modules[\\/]/.test(module.resource);
+              },
+              // 优先级
+              priority: 10,
+            },
+          },
+        },
+      },
+    });
+  },
 });

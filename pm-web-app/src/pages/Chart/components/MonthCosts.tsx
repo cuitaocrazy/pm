@@ -1,6 +1,6 @@
 import React from 'react';
 import ProCard from '@ant-design/pro-card';
-import Column from '@ant-design/charts/es/Column';
+import Column from '@ant-design/charts/es/column';
 import { Empty } from 'antd';
 import * as R from 'ramda';
 import moment from 'moment';

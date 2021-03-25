@@ -61,7 +61,6 @@ export default defineConfig({
   chunks: ['vendors', 'umi'],
   chainWebpack: function (config) {
     config.merge({
-      mode: 'production',
       optimization: {
         // https://webpack.docschina.org/plugins/split-chunks-plugin
         splitChunks: {

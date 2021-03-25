@@ -58,8 +58,9 @@ export default defineConfig({
   history: {
     type: 'hash',
   },
-  chunks: ['vendors', 'umi'],
+  chunks: process.env.NODE_ENV === 'production' ? ['vendors', 'umi'] : ['umi'],
   chainWebpack: function (config) {
+    process.env.NODE_ENV === 'production' &&
     config.merge({
       optimization: {
         // https://webpack.docschina.org/plugins/split-chunks-plugin

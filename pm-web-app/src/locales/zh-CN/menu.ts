@@ -23,7 +23,7 @@ export default {
   'menu.employee.empDailies': '日报',
   'menu.employee.empExpense': '费用',
   'menu.project': '项目',
-  'menu.project.edit': '编辑',
+  'menu.project.edit': '项目编辑',
   'menu.project.changeLeader': '经理变更',
   'menu.project.projDailies': '日报',
   'menu.project.projExpense': '费用',

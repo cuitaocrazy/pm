@@ -1,7 +1,7 @@
 import React from 'react';
 import { Statistic, Divider, Table } from 'antd';
 import ProCard from '@ant-design/pro-card';
-import Pie from '@ant-design/charts/es/pie';
+import { Pie } from '@ant-design/charts';
 import type { Project, EmployeeOfExpensesItem } from '@/apollo';
 import * as R from 'ramda';
 import moment from 'moment';

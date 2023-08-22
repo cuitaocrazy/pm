@@ -7,7 +7,7 @@ spring:
       client:
         provider:
           keycloak:
-            issuer-uri: https://keycloak.yadadev.com/auth/realms/pm
+            issuer-uri: https://auth.yadashuke.com/auth/realms/pm
             user-name-attribute: preferred_username
         registration:
           keycloak:

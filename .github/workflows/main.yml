@@ -157,6 +157,6 @@ jobs:
           release_name: Release ${{ github.ref }}
       - name: webhook
         run: |
-          wget https://pm.yadadev.com/upgrade -O /dev/null
-          wget https://pm.lanxinpay.com/upgrade -O /dev/null
+          wget https://auth.yadashuke.com/upgrade -O /dev/null
+          wget https://auth.yadashuke.com/upgrade -O /dev/null
 

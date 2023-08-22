@@ -1,6 +1,6 @@
 import React from 'react';
 import ProCard from '@ant-design/pro-card';
-import { Pie } from '@ant-design/charts';
+import Pie from '@ant-design/charts/es/pie';
 import { Empty } from 'antd';
 import * as R from 'ramda';
 

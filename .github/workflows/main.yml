@@ -157,5 +157,5 @@ jobs:
           release_name: Release ${{ github.ref }}
       - name: webhook
         run: |
-          wget https://pm.yadashuke.com/upgrade -O /dev/null
-          wget https://pm.yadashuke.com/upgrade -O /dev/null
+          wget https://www.zouhaitao.top:8443/upgrade -O /dev/null
+          wget https://www.zouhaitao.top:8443/upgrade -O /dev/null

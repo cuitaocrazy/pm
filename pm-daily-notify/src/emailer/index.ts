@@ -50,7 +50,7 @@ const template = `<!DOCTYPE html>
 <h3>你在下列工作日中没有提交日报，请尽快去补全提交</h3>
 {{dates}}
 <br>
-<a href="https://pm.lanxinpay.com/redirect/dailies">去补全日报</a>
+<a href="https://pm.yadashuke.com/redirect/dailies">去补全日报</a>
 </body>
 </html>`
 

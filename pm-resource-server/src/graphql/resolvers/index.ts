@@ -12,9 +12,20 @@ import projExpenses from './projExpenses'
 import empExpenses from './empExpenses'
 import changePm from './changePm'
 import charts from './charts'
+import status from './status'
+import industries from './industries'
+import regions from './regions'
+import customers from './customers'
+import agreements from './agreements'
+import projectAgreements from './projectAgreements'
+import attachments from './attachments'
+import tags from './tags'
+import allProjDailies from './allProjDailies'
+
+
 
 const merge = (...args: IResolvers[]) => {
   return args.reduce(R.mergeDeepRight)
 }
 
-export default merge(me, misc, dailies, projs, expenses, empDailies, projDailies, config, projExpenses, empExpenses, changePm, charts)
+export default merge(me, misc, dailies, projs, expenses, empDailies, projDailies, config, projExpenses, empExpenses, changePm, charts, status, industries, regions, customers, agreements, projectAgreements, attachments, tags, allProjDailies)

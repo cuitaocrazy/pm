@@ -4,7 +4,7 @@ import type { CostInput, Query } from '@/apollo';
 import { Form, Input, InputNumber, Select, Button, Divider } from 'antd';
 import { gql, useQuery } from '@apollo/client';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { buildProjName } from '@/pages/utils';
+import { useBaseState } from '@/pages/utils/hook';
 
 const layout = {
   labelCol: { span: 8 },
@@ -26,6 +26,7 @@ const userQuery = gql`
 `;
 
 export default (form: FormInstance<CostInput>, data?: CostInput) => {
+  const { buildProjName } = useBaseState()
   const { data: resData } = useQuery<Query>(userQuery);
   return (
     <Form {...layout} form={form} initialValues={data}>
@@ -35,9 +36,13 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
       <Form.Item label="参与人员" name="participant" rules={[{ required: true }]}>
         <Select
           showSearch
-          filterOption={(input, option) =>
-            option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
+          filterOption={(input, option) => {
+            const nameStr: any = option?.children || '';
+            if (input && nameStr) {
+              return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+            }
+            return true;
+          }}
         >
           {resData?.subordinates.map((u) => (
             <Select.Option key={u.id} value={u.id}>
@@ -69,9 +74,13 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
                 >
                   <Select
                     showSearch
-                    filterOption={(input, option) =>
-                      option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
+                    filterOption={(input, option) => {
+                      const nameStr: any = option?.children || '';
+                      if (input && nameStr) {
+                        return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                      }
+                      return true;
+                    }}
                   >
                     {resData?.projs.map((u) => (
                       <Select.Option key={u.id} value={u.id}>

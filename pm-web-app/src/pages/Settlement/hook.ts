@@ -139,7 +139,7 @@ export function useSettlement(askConfirm: (message: string) => Promise<boolean>)
       } catch (e) {
         dispatch({
           type: ActionMessage.Add,
-          payload: `客户端: ${e.toString()}`,
+          payload: `客户端: ${e?.toString()}`,
         });
       }
       setStatus(Status.Prepare);

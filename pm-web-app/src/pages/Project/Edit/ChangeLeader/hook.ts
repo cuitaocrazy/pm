@@ -21,7 +21,7 @@ const QueryChangePmGql = gql`
 `;
 
 const pushChangePmGql = gql`
-  mutation($changePm: ChangePmInput!) {
+  mutation ($changePm: ChangePmInput!) {
     pushChangePm(changePm: $changePm)
   }
 `;
@@ -30,7 +30,9 @@ export function useChangePmState() {
   const [refresh, { data: queryData }] = useLazyQuery<Query>(QueryChangePmGql, {
     fetchPolicy: 'no-cache',
   });
-  useEffect(() => refresh(), [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
   const users: User[] = queryData?.dailyUsers || [];
   const { initialState } = useModel('@@initialState');
   if (initialState?.currentUser) {

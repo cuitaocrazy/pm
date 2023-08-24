@@ -6,7 +6,7 @@ import type { Project, EmployeeOfExpensesItem } from '@/apollo';
 import * as R from 'ramda';
 import moment from 'moment';
 import numeral from 'numeral';
-import { buildProjName } from '@/pages/utils';
+import { useBaseState } from '@/pages/utils/hook';
 
 type CostsProps = {
   loading: boolean;
@@ -15,6 +15,7 @@ type CostsProps = {
 };
 
 const Costs: React.FC<CostsProps> = (props) => {
+  const { buildProjName } = useBaseState()
   const { loading, title, costs } = props;
 
   const config = React.useMemo(() => {

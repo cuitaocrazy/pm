@@ -36,13 +36,13 @@ const queryGql = gql`
 `;
 
 const deleteGql = gql`
-  mutation($id: ID!) {
+  mutation ($id: ID!) {
     deleteCost(id: $id)
   }
 `;
 
 const pushCostGql = gql`
-  mutation($cost: CostInput!) {
+  mutation ($cost: CostInput!) {
     pushCost(cost: $cost)
   }
 `;
@@ -58,7 +58,9 @@ export function useCostState() {
     pushCostGql,
   );
 
-  useEffect(() => refresh(), [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const costs = queryData?.expenses || [];
 

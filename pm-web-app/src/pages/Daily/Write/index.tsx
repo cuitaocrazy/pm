@@ -1,8 +1,11 @@
 import React from 'react';
-import { Button, DatePicker, Input } from 'antd';
+import { Button, DatePicker, Input, Calendar, Row, Col } from 'antd';
+import { CheckCircleTwoTone } from '@ant-design/icons';
+import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
 import * as R from 'ramda';
 import moment from 'moment';
+import type { Moment } from 'moment';
 import { ApolloProvider } from '@apollo/client';
 import type { EmployeeOfDailyItem } from '@/apollo';
 import { client } from '@/apollo';
@@ -56,36 +59,23 @@ function Dailies(prop: { date?: string }) {
     hookStatus.setCurrentDaily(c);
   };
 
+  const onCalendarSelect = (value: Moment) => {
+    value && hookStatus.setCurrentDate(value.format(dateFormat))
+  };
+
+  const getDateNumabet = (value: Moment) => {
+    let allTime = null
+    const dailie = R.find((v) => v.date === value.format(dateFormat), hookStatus.dailies)
+    if (dailie) {
+      allTime =  R.sum(R.map((d) => d.timeConsuming, dailie.dailyItems))
+    }
+    return allTime
+  };
+
   return (
     <PageContainer
+      style={{ height: '60vh' }}
       loading={hookStatus.loading}
-      extra={[
-        <DatePicker
-          inputReadOnly
-          key="date"
-          value={moment(hookStatus.currentDate, dateFormat)}
-          onChange={(d) => d && hookStatus.setCurrentDate(d.format(dateFormat))}
-          dateRender={(current) => {
-            const style: React.CSSProperties = {};
-            if (hookStatus.completedDailiesDates!.includes(current.format(dateFormat))) {
-              style.border = '1px solid #1890ff';
-              style.borderRadius = '50%';
-            }
-            return (
-              <div className="ant-picker-cell-inner" style={style}>
-                {current.date()}
-              </div>
-            );
-          }}
-        />,
-        <Input
-          key="search"
-          style={{ width: 200 }}
-          addonBefore="检索"
-          allowClear
-          onChange={(e) => hookStatus.setFilter(e.target.value)}
-        />,
-      ]}
       content={
         <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -16 }}>
           <Description />
@@ -123,7 +113,73 @@ function Dailies(prop: { date?: string }) {
       ]}
       fixedHeader
     >
-      {list()}
+      <ProCard>
+        <Row>
+          <Col xs={24} sm={8}>
+            <ProCard bordered style={{ overflowY: 'auto' }}>
+              <Calendar
+                className='dailie-calendar'
+                fullscreen={true}
+                headerRender={({ value, type, onChange, onTypeChange }) => {
+                  return <div>
+                    <DatePicker
+                      inputReadOnly
+                      key="date"
+                      value={moment(hookStatus.currentDate, dateFormat)}
+                      onChange={(d) => d && hookStatus.setCurrentDate(d.format(dateFormat))}
+                      dateRender={(current) => {
+                        const style: React.CSSProperties = {};
+                        if (hookStatus.completedDailiesDates!.includes(current.format(dateFormat))) {
+                          style.border = '1px solid #1890ff';
+                          style.borderRadius = '50%';
+                        }
+                        return (
+                          <div className="ant-picker-cell-inner" style={style}>
+                            {current.date()}
+                          </div>
+                        );
+                      }}
+                    />
+                  </div>
+                }}
+                value={moment(hookStatus.currentDate, dateFormat)}
+                onSelect={onCalendarSelect}
+                dateCellRender={(date) =>
+                  R.cond<string[], React.ReactNode>([
+                    [
+                      (d) => R.includes(d, hookStatus.completedDailiesDates),
+                      R.always(
+                        <div style={{ textAlign: 'center' }}>
+                          <div> { getDateNumabet(date) }h</div>
+                          <CheckCircleTwoTone twoToneColor="#52c41a" />
+                        </div>,
+                      ),
+                    ],
+                    [R.T, R.always(null)],
+                  ])(date.format('YYYYMMDD'))
+                }
+              />
+            </ProCard>
+          </Col>
+          <Col xs={24} sm={16}>
+            <ProCard 
+              bordered 
+              bodyStyle={{ padding: '12px' }}
+              title={
+                <Input
+                  key="search"
+                  addonBefore="检索"
+                  allowClear
+                  onChange={(e) => hookStatus.setFilter(e.target.value)}
+                />
+              }
+              >
+              {list()}
+            </ProCard>
+          </Col>
+        </Row>
+      </ProCard>
+      
     </PageContainer>
   );
 }

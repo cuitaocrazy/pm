@@ -1,7 +1,9 @@
 import { Input, Form, Select } from 'antd';
 import type { FC } from 'react';
 import React from 'react';
-import { orgCode, projType, zoneCode } from '../../utils';
+// import { orgCode, projType, zoneCode } from '../../utils/hook';
+import { useBaseState } from '@/pages/utils/hook';
+import moment from 'moment';
 
 const { Option } = Select;
 
@@ -30,10 +32,11 @@ function getIdInfo(id?: string) {
     zone: result?.groups?.zone || '',
     projType: result?.groups?.projType || '',
     simpleName: result?.groups?.simpleName || '',
-    dateCode: result?.groups?.dateCode || '',
+    dateCode: result?.groups?.dateCode || moment().format('MMDD'),
   };
 }
 const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }) => {
+  const { orgCode, projType, zoneCode } = useBaseState();
   const info = getIdInfo(value);
   const getId = () =>
     `${info.org}-${info.zone}-${info.projType}-${info.simpleName}-${info.dateCode}`;
@@ -69,7 +72,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
       <Form.Item noStyle>
         <Select
           key="org"
-          placeholder="选择机构"
+          placeholder="选择行业"
           onChange={(e) => changeOrg(e.toString())}
           value={info.org || undefined}
           disabled={disabled}
@@ -85,9 +88,13 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
           key="zone"
           placeholder="选择区域"
           showSearch
-          filterOption={(input, option) =>
-            option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
+          filterOption={(input, option) => {
+            const nameStr: any = option?.children || '';
+            if (input && nameStr) {
+              return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+            }
+            return true;
+          }}
           onChange={(e) => changeZone(e.toString())}
           value={info.zone || undefined}
           disabled={disabled}
@@ -119,7 +126,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
           onChange={(e) => changeSimpleName(e.target.value)}
           value={info.simpleName}
           disabled={disabled}
-        ></Input>
+        />
         <Input
           key="dateCode"
           addonBefore={'日期编号'}
@@ -127,8 +134,8 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
           maxLength={4}
           value={info.dateCode}
           disabled={disabled}
-        ></Input>
-        <Input key="preview" disabled addonBefore={'预览'} value={getId()}></Input>
+        />
+        <Input key="preview" disabled addonBefore={'预览'} value={getId()} />
       </Form.Item>
     </Input.Group>
   );

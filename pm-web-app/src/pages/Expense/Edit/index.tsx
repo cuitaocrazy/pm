@@ -11,7 +11,7 @@ import DialogForm from '@/components/DialogForm';
 import ExpenseForm from './ExpenseForm';
 import { Button } from 'antd';
 import { append, last, unnest, zip } from 'ramda';
-import { buildProjName } from '@/pages/utils';
+import { useBaseState } from '@/pages/utils/hook';
 import { SearchOutlined } from '@ant-design/icons';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
@@ -112,6 +112,7 @@ function getColumns(
 }
 
 const Cost = () => {
+  const { buildProjName } = useBaseState()
   const [localState, setLocalState] = useState<{
     search: string;
   }>({ search: '' });

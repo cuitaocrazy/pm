@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import { Card, Row, Col, Input, Slider } from 'antd';
 import * as R from 'ramda';
-import { buildProjName } from '@/pages/utils';
+import { useBaseState } from '@/pages/utils/hook';
 import color from './colorDef';
 
 const maxH = 10;
@@ -21,7 +21,7 @@ type ProjItemProps = {
 const marks = ((vs) =>
   R.zipObj(
     vs,
-    vs.map((v) => `${v} h`),
+    vs.map((v) => `${v}h`),
   ))(R.range(0, maxH + 1));
 
 const getCardStyle = (involved: boolean, ended: boolean) => {
@@ -35,6 +35,7 @@ export type ProjItemHandle = {
   getOffset: () => number;
 };
 const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = (props, ref) => {
+  const { buildProjName } = useBaseState()
   const divRef = useRef<HTMLDivElement>(null);
   const visible =
     buildProjName(props.projId, props.projName || props.projId)
@@ -62,7 +63,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
       id={props.projId}
       hidden={!visible}
       size="small"
-      style={{ marginBottom: 16 }}
+      style={{ marginBottom: 16, display: 'inline-block', width: '100%', marginRight: '10px' }}
       {...getCardStyle(props.involvedProj, props.endedProj)}
     >
       {/* 设置一个暗锚, 本身Card是可以支持ref的, 但是antd定义的Type没有这个属性, 避免一些dev的报错, 假如一手工锚点 */}
@@ -80,7 +81,7 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
         </Col>
         <Col span={24}>
           <Input.TextArea
-            autoSize
+            autoSize={{ minRows: 2, maxRows: 6 }}
             onChange={(e) => props.onContentOfWorkChange(e.currentTarget.value)}
             value={props.content || ''}
           />

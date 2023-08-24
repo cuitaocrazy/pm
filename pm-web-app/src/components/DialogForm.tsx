@@ -5,8 +5,9 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } f
 
 export type FormDialogProps<T> = {
   children: (form: FormInstance<T>, data?: T) => React.ReactNode;
-  submitHandle: (v: T) => Promise<void>;
+  submitHandle?: (v: T) => Promise<void>;
   title?: string;
+  width?: number;
 };
 
 type FormDialogTmpProps<T> = FormDialogProps<T> & {
@@ -18,9 +19,11 @@ function FormDialogTmp<T extends unknown>(props: FormDialogTmpProps<T>) {
   const [form] = useForm<T>();
   return (
     <Modal
+      {...props}
       title={props.title}
       visible
       destroyOnClose
+      maskClosable={false}
       onOk={async () =>
         form
           .validateFields()

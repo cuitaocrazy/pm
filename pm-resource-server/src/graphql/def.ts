@@ -42,19 +42,57 @@ type EmployeeOfDailyItem {
 
 type Project {
   id: ID!
-  name: String!
+  pId: String
   leader: String!
-  budget: Int!
+  salesLeader: String!
+  name: String!
+  customer: String!
+  contName: String
+  projStatus: String!
+  contStatus: String!
+  acceStatus: String!
+  contAmount: Int
+  recoAmount: Int
+  projBudget: Int
+  budgetFee: Int
+  budgetCost: Int
+  actualFee: Int
+  actualCost: Int
+  taxAmount: Int
+  description: String
   createDate: String!
-  status: ProjectStatus!
+  updateTime: String
   participants: [String!]!
   contacts: [Contact!]!
+  actives:[Active!]
+  saleActives:[Active!]
+  status: ProjectStatus
+  isArchive: Boolean!
+  archiveTime: String
+  archivePerson: String
+  startTime: String
+  endTime: String
+  estimatedWorkload: Int
+  serviceCycle: Int
+  productDate: String
+  acceptDate: String
+  freePersonDays: Int
+  usedPersonDays: Int
+  requiredInspections: Int
+  actualInspections: Int
 }
 
 type Contact {
   name: String!
   duties: String
   phone: String
+}
+
+type Active {
+  date: String!
+  content: String!
+  fileList: [File!]
+  recorder: String
 }
 
 enum ProjectStatus {
@@ -117,21 +155,138 @@ type Charts {
   costOfGroups: [ChartKeyValue!]!
 }
 
+type Statu {
+  id: ID!
+  pId: String!
+  name: String!
+  code: String!
+  remark: String!
+  enable: Boolean!
+  isDel: Boolean!
+  sort: Int!
+  createDate: String!
+}
+
+type TreeStatu {
+  id: ID!
+  pId: String!
+  name: String!
+  code: String!
+  remark: String!
+  enable: Boolean!
+  isDel: Boolean!
+  sort: Int!
+  createDate: String!
+  children: [TreeStatu!]
+}
+
+type Industry {
+  id: ID!
+  name: String!
+  code: String!
+  remark: String!
+  enable: Boolean!
+  isDel: Boolean!
+  sort: Int!
+  createDate: String!
+}
+
+type Region {
+  id: ID!
+  name: String!
+  code: String!
+  remark: String!
+  enable: Boolean!
+  isDel: Boolean!
+  sort: Int!
+  createDate: String!
+}
+
+type Customer {
+  id: ID!
+  name: String!
+  industryCode: String!
+  regionCode: String!
+  salesman: String!
+  contacts: [CustomerContact!]!
+  enable: Boolean!
+  remark: String!
+  isDel: Boolean!
+  createDate: String!
+}
+
+type CustomerContact {
+  name: String!
+  phone: String!
+  tags: [String!]
+}
+
+type File {
+  uid: String!
+  name: String!
+  status: String!
+  url: String!
+  thumbUrl: String
+}
+
+type Agreement {
+  id: ID!
+  name: String!
+  customer: String!
+  type: String!
+  fileList: [File!]!
+  startTime: String!
+  endTime: String!
+  remark: String!
+  isDel: Boolean!
+  createDate: String!
+}
+
+type ProjectAgreement {
+  id: ID!
+  agreementId: String!
+}
+
+type Attachment {
+  id: ID!
+  name: String!
+  directory: String!
+  path: String!
+}
+
+type Tag {
+  id: ID!
+  name: String!
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
+  groupUsers(group: String!): [User!]!
   myDailies: EmployeeOfDailies
-  projs: [Project!]!
-  iLeadProjs: [Project!]!
+  projs(isArchive: Boolean): [Project!]!
+  iLeadProjs(isArchive: Boolean): [Project!]!
+  filterProjs(projType: String!): [Project!]!
+  filterProjsByApp(org: String, projType: String, type: String): [Project!]!
   expenses: [Expense!]!
   dailyUsers: [User!]!
   empDaily(userId: String!): EmployeeOfDailies!
   projDaily(projId: String!): ProjectOfDailies!
+  allProjDaily: [ProjectOfDailies!]
   workCalendar: [String!]!
   settleMonth: [String!]!
   empCosts(userId: String!): EmployeeOfExpenses!
   projCosts(projId: String!): ProjectOfExpenses!
   charts(year: String!): Charts!
+  status:[Statu!]!
+  treeStatus:[TreeStatu!]!
+  industries:[Industry!]!
+  regions:[Region!]!
+  customers:[Customer!]!
+  agreements:[Agreement!]!
+  projectAgreements:[ProjectAgreement!]!
+  attachments:[Attachment!]!
+  tags: [String]
 }
 
 input DailyInput {
@@ -142,17 +297,51 @@ input DailyInput {
 
 input ProjectInput {
   id: ID!
+  pId: String
+  leader: String!
+  salesLeader: String!
   name: String!
-  budget: Int!
-  status: ProjectStatus!
+  customer: String!
+  contName: String
+  projStatus: String!
+  contStatus: String!
+  acceStatus: String!
+  contAmount: Int
+  recoAmount: Int
+  projBudget: Int
+  budgetFee: Int
+  budgetCost: Int
+  actualFee: Int
+  actualCost: Int
+  taxAmount: Int
+  description: String
   participants: [String!]
   contacts: [ContactInput!]
+  actives: [ActiveInput!]
+  saleActives: [ActiveInput!]
+  status: ProjectStatus
+  startTime: String
+  endTime: String
+  estimatedWorkload: Int
+  serviceCycle: Int
+  productDate: String
+  acceptDate: String
+  freePersonDays: Int
+  usedPersonDays: Int
+  requiredInspections: Int
+  actualInspections: Int
 }
 
 input ContactInput {
   name: String!
   duties: String
   phone: String
+}
+input ActiveInput {
+  date: String!
+  content: String
+  fileList: [FileInput!]
+  recorder: String
 }
 
 input ProjCostInput {
@@ -174,15 +363,101 @@ input ChangePmInput {
   isRemovePart:Boolean
 }
 
+input StatuInput {
+  id: ID
+  pId: String!
+  name: String!
+  code: String!
+  enable: Boolean!
+  sort: Int!
+  remark: String!
+}
+
+input IndustryInput {
+  id: ID
+  name: String!
+  code: String!
+  enable: Boolean!
+  sort: Int!
+  remark: String!
+}
+
+input RegionInput {
+  id: ID
+  name: String!
+  code: String!
+  enable: Boolean!
+  sort: Int!
+  remark: String!
+}
+
+input CustomerInput {
+  id: ID
+  name: String!
+  industryCode: String!
+  regionCode: String!
+  salesman: String!
+  contacts: [CustomerContactInput!]
+  enable: Boolean!
+  remark: String!
+}
+input CustomerContactInput {
+  name: String!
+  phone: String!
+  tags: [String!]
+}
+
+input FileInput {
+  uid: String!
+  name: String!
+  status: String!
+  url: String!
+  thumbUrl: String
+}
+
+input AgreementInput {
+  id: ID
+  name: String!
+  customer: String!
+  type: String!
+  fileList: [FileInput!]!
+  startTime: String!
+  endTime: String!
+  remark: String!
+  contactProj: [String!]!
+}
+
+input AttachmentInput {
+  id: ID!
+  name: String!
+  directory: String!
+  path: String!
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
+  archiveProject(id: ID!): ID!
   deleteProject(id: ID!): ID!
+  restartProject(id: ID!): ID!
   pushCost(cost: CostInput!): ID!
   deleteCost(id: ID!): ID!
   pushWorkCalendar(data: [String!]!): ID!
   deleteWorkCalendar(data: [String!]!): ID!
   pushChangePm(changePm:ChangePmInput!): ID!
+  pushStatu(statu: StatuInput!): ID!
+  deleteStatu(id: ID!): ID!
+  pushIndustry(industry: IndustryInput!): ID!
+  deleteIndustry(id: ID!): ID!
+  pushRegion(region: RegionInput!): ID!
+  deleteRegion(id: ID!): ID!
+  pushCustomer(customer: CustomerInput!): ID!
+  deleteCustomer(id: ID!): ID!
+  pushAgreement(agreement: AgreementInput!): ID!
+  deleteAgreement(id: ID!): ID!
+  pushAttachment(attachment: AttachmentInput!): ID!
+  deleteAttachment(id: ID!): ID!
+  pushTags(tags: [String!]!): String
 }
 `
 const directivesDef = gql`

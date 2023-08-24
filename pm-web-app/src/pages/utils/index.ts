@@ -3,6 +3,7 @@ export const orgCode: Dic = {
   BOC: '中行',
   YADA: '亚大',
   SL: '首旅',
+  YADASK: '亚大数科',
 };
 
 export const zoneCode: Dic = {

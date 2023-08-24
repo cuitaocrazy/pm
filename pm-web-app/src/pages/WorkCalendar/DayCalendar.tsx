@@ -25,7 +25,7 @@ const DayCalendar: React.FC<DayCalendarProps> = (props) => {
       onSelect={onSelect}
       onPanelChange={(_, mode) => onPanelChange(mode)}
       dateCellRender={(date) =>
-        R.cond<string, React.ReactNode>([
+        R.cond<string[], React.ReactNode>([
           [
             (d) => R.includes(d, R.filter(isWeekend, days)),
             R.always(

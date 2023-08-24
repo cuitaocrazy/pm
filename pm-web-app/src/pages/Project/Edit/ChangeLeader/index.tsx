@@ -9,11 +9,12 @@ import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { useChangePmState } from './hook';
 import type { Project, User } from '@/apollo';
-import { buildProjName } from '@/pages/utils';
+import { useBaseState } from '@/pages/utils/hook';
 import { SearchOutlined } from '@ant-design/icons';
 import type { FilterDropdownProps } from 'antd/lib/table/interface';
 
 const ChangePm: React.FC<any> = () => {
+  const { buildProjName } = useBaseState()
   const ref = useRef<FormDialogHandle<ChangePmInput>>(null);
   const state = useChangePmState();
   const users = state?.users || [];

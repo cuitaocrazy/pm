@@ -2,7 +2,7 @@ import React from 'react';
 import { Input, Menu } from 'antd';
 import type { Project } from '@/apollo';
 import * as R from 'ramda';
-import { buildProjName } from '@/pages/utils';
+import { useBaseState } from '@/pages/utils/hook';
 
 type ProjectsProps = {
   projs: Project[];
@@ -10,6 +10,7 @@ type ProjectsProps = {
 };
 
 const Projects: React.FC<ProjectsProps> = (props) => {
+  const { buildProjName } = useBaseState()
   const { projs, handleClick } = props;
   const [search, setSearch] = React.useState<string>('');
 

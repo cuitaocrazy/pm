@@ -82,7 +82,6 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, projId: s
         },
       },
     ]).toArray()
-
     return ({
       ...dbid2id(head(d)),
       projId,

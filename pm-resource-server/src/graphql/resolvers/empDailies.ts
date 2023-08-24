@@ -86,7 +86,6 @@ async function getParticipateProjectDailiesByLeader (leaderId: string, userId: s
       },
     },
   ]).toArray()
-  console.log(JSON.stringify(d))
   return ({
     ...dbid2id(head(d)),
     userId,

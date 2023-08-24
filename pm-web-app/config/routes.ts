@@ -18,6 +18,13 @@
     icon: 'solution',
   },
   {
+    path: '/projectView',
+    name: 'projectView',
+    component: './Project/View',
+    access: 'canProjectView',
+    icon: 'project',
+  },
+  {
     path: '/employee',
     name: 'employee',
     access: 'canEmployee',
@@ -44,15 +51,33 @@
     icon: 'project',
     routes:[
       {
+        path: '/project/allEdit',
+        name: 'allEdit',
+        component: './Project/Edit/EditProj',
+        access: 'canProjAllEdit'
+      },
+      {
         path: '/project/edit',
         name: 'edit',
-        component: './Project/Edit',
+        component: './Project/Edit/EditProj',
         access: 'canProjEdit'
+      },
+      {
+        path: '/project/editSalesActive',
+        name: 'editSalesActive',
+        component: './Project/Edit/EditActive',
+        access: 'canEditSalesActive',
+      },
+      {
+        path: '/project/editAfterSalesActive',
+        name: 'editAfterSalesActive',
+        component: './Project/Edit/EditActive',
+        access: 'canEditAfterSalesActive',
       },
       {
         path: '/project/changeLeader',
         name: 'changeLeader',
-        component: './Project/ChangeLeader',
+        component: './Project/Edit/ChangeLeader',
         access: 'canChangeLeader' 
       },
       {
@@ -66,6 +91,12 @@
         name: 'projExpense',
         component: './Expense/View/ByProj',
         access: 'canProjExpense'
+      },
+      {
+        path: '/project/projWeeklies',
+        name: 'projWeeklies',
+        component: './Weekly/View/ByProj',
+        access: 'canProjWeeklies'
       },
     ]
   },
@@ -89,6 +120,45 @@
     component: './Settlement',
     access: 'canSettlement',
     icon: 'container',
+  },
+  {
+    path: '/infoManage',
+    name: 'infoManage',
+    access: 'canInfoManage',
+    icon: 'team',
+    routes:[
+      {
+        path: '/infoManage/statu',
+        name: 'statu',
+        component: './InfoManage/Statu/Edit',
+        access: 'canStatu'
+      },
+      {
+        path: '/infoManage/industry',
+        name: 'industry',
+        component: './InfoManage/Industry/Edit',
+        access: 'canIndustrial'
+      },
+      {
+        path: '/infoManage/region',
+        name: 'region',
+        component: './InfoManage/Region/Edit',
+        access: 'canRegion'
+      },
+      {
+        path: '/infoManage/customer',
+        name: 'customer',
+        component: './InfoManage/Customer/Edit',
+        access: 'canCustomer'
+      },
+      {
+        path: '/infoManage/agreement',
+        name: 'agreement',
+        component: './InfoManage/Agreement/Edit',
+        access: 'canAgreement'
+      },
+      
+    ]
   },
   {
     component: './404',

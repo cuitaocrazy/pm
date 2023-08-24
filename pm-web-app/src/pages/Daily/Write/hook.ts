@@ -53,6 +53,7 @@ export function useDailiesStatus(date?: string) {
     date: currentDate,
     dailyItems: [],
   });
+
   const [filter, setFilter] = useState('');
   const { initialState } = useModel('@@initialState');
   const dailies = useMemo(() => data?.myDailies?.dailies || [], [data]);
@@ -171,6 +172,7 @@ export function useDailiesStatus(date?: string) {
 
   return {
     loading: queryLoading || mutationLoading,
+    dailies,
     currentDate,
     filter,
     completedDailiesDates,

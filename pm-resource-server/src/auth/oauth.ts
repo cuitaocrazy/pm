@@ -165,3 +165,12 @@ async function getUserByGroup (groupId: string, fetch: AxiosInstance) {
     email: u.email,
   }))
 }
+
+export function getUsersByGroup (user: UserInfo, group: string) {
+  const { origin, pathname } = new URL(config.issuerBaseURL)
+  const keycloakAdminUrl = origin + pathname.replace('auth', 'auth/admin')
+  const keycloakReqConfig = { headers: { Authorization: `Bearer ${user.token}` }, baseURL: keycloakAdminUrl }
+  const inst = axios.create(keycloakReqConfig)
+
+  return getUserByRootGroup(group, inst)
+}

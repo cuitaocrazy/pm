@@ -111,13 +111,13 @@ const Project: React.FC<any> = () => {
         filters: projStatus.map((s) => ({ text: s[1], value: s[0] })),
         onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
       },  
-      {
-        title: '总人天数',
-        dataIndex: 'allTime',
-        key: 'allTime',
-        width: '80px',
-        render: (text: string, record: Proj) => <Tag color="cyan">{ text }</Tag>,
-      },  
+      // {
+      //   title: '总人天数',
+      //   dataIndex: 'allTime',
+      //   key: 'allTime',
+      //   width: '80px',
+      //   render: (text: string, record: Proj) => <Tag color="cyan">{ text }</Tag>,
+      // },
       {
         title: '客户名称',
         dataIndex: 'customer',

@@ -41,22 +41,6 @@ const getGql = (proName: string) => {
           tags
         }
       }
-      allProjDaily {
-        project {
-          id
-        }
-        dailies {
-          date
-          dailyItems {
-            employee {
-              id
-              name
-            }
-            timeConsuming
-            content
-          }
-        }
-      }
       ${ proName }(isArchive: $isArchive){
         id
         pId
@@ -136,6 +120,23 @@ const restartProjGql = gql`
     restartProject(id: $id)
   }
 `;
+
+// allProjDaily {
+//   project {
+//     id
+//   }
+//   dailies {
+//     date
+//     dailyItems {
+//       employee {
+//         id
+//         name
+//       }
+//       timeConsuming
+//       content
+//     }
+//   }
+// }
 
 
 export function useProjStatus() {

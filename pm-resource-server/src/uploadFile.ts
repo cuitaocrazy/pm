@@ -2,14 +2,11 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import moment from 'moment'
-import { ObjectId } from 'mongodb'
-import { Attachment } from './mongodb'
 
 // 设置动态目录
 const dynamicDestination = function(req, file, cb) {
   // 这里的 `directory` 是接口传递的动态目录，可以根据你的需求进行修改
   // const directory = req.body.directory;
-  console.log(req.body)
   let timeStr = moment(Date.now()).format("YYYY-MM-DD");
   const directory = `./attachment/${req.url.split('/').pop()}${req.body.directory ? req.body.directory : '/'}${timeStr}/`;
   if (!fs.existsSync(directory)) {
@@ -31,12 +28,22 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 export default (app, express) => {
-  app.use('/attachment/', express.static('./attachment/'))
+  app.get('/api/attachment/**', async (req, res) => {
+    try {
+      const filePath = `./attachment/${req.params[0]}`; // 构建文件路径
+      res.setHeader('Content-Type', 'application/octet-stream');
+      // 创建文件流并传递给响应对象
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch (error) {
+      res.status(500).send('Error reading file');
+    }
+  });
   // 临时文件存储，用来做未保存文件的预览
   app.post("/api/upload/tmp", upload.single("file"), async (req, res)=>{
     res.send({
       code: 1000,
-      data: `http://${req.get('Host')}/${req.file.path}`
+      data: `/api/${req.file.path}`
     });
   })
   //使用uploadFile中间件
@@ -58,7 +65,7 @@ export default (app, express) => {
       data: req.body.uids.map((item, index) => {
         return {
           uid: item,
-          path: `http://${req.get('Host')}/${req.files[index].path}`
+          path: `/api/${req.files[index].path}`
         }
       })
     });

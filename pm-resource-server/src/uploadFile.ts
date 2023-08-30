@@ -32,11 +32,18 @@ export default (app, express) => {
     try {
       const filePath = `./attachment/${req.params[0]}`; // 构建文件路径
       res.setHeader('Content-Type', 'application/octet-stream');
-      // 创建文件流并传递给响应对象
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
+      fs.access(filePath, fs.constants.F_OK, error => {
+        if (error) {
+          res.status(500).send('文件不存在：');
+          // 执行适当的错误处理操作，而不是停止服务
+        } else {
+          // 创建文件流并传递给响应对象
+          const fileStream = fs.createReadStream(filePath);
+          fileStream.pipe(res);
+        }
+      });
     } catch (error) {
-      res.status(500).send('Error reading file');
+      res.status(500).send('文件读取报错');
     }
   });
   // 临时文件存储，用来做未保存文件的预览
@@ -53,7 +60,7 @@ export default (app, express) => {
       data: req.body.uids.map((item, index) => {
         return {
           uid: item,
-          path: `http://${req.get('Host')}/${req.files[index].path}`
+          path: `/api/${req.files[index].path}`
         }
       })
     });
@@ -77,7 +84,7 @@ export default (app, express) => {
       data: req.body.uids.map((item, index) => {
         return {
           uid: item,
-          path: `http://${req.get('Host')}/${req.files[index].path}`
+          path: `/api/${req.files[index].path}`
         }
       })
     });

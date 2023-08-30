@@ -31,10 +31,10 @@ spring:
             - OAuth
             - RedirectWithAnchor=/#/{anchor}
         - id: test-web
-          uri: http://localhost:8000
+          uri: http://localhost:8000/web
           predicates:
-            - Path=/**
+            - Path=/web/**
           filters:
             - name: OAuth
               args:
-                staticPaths: /*.js,/*.css
+                staticPaths: /*.js,/*.css,/*.icon,/*.svg

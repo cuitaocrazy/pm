@@ -33,7 +33,7 @@ jobs:
       - name: build
         id: build
         run: |
-          cd pm-mobile
+          cd pm-web-mobile
           npm i
           npm run build
           cd ..

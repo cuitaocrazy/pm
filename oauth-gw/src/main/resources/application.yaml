@@ -31,9 +31,9 @@ spring:
             - OAuth
             - RedirectWithAnchor=/#/{anchor}
         - id: test-web
-          uri: http://localhost:8000/web
+          uri: http://localhost:8000
           predicates:
-            - Path=/web/**
+            - Path=/**
           filters:
             - name: OAuth
               args:

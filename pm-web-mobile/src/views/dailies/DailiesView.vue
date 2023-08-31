@@ -171,7 +171,7 @@ const showMessage = (theme: string, content = '这是一条普通通知信息', 
     margin-top: 10px;
     .t-collapse-panel {
       ::v-deep .t-cell {
-        height: 4.5vh;
+        padding: 5px 16px;
         text-align: left;
         .t-cell__title {
           font-size: 14px;

@@ -183,9 +183,8 @@ const onChangeProjType = (e: any) => {
       height: auto;
     }
     .t-collapse-panel {
-      height: 4.5vh;
       ::v-deep .t-cell {
-        height: 4.5vh;
+        padding: 5px 16px;
         text-align: left;
         .t-cell__title {
           font-size: 14px;

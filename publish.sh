@@ -25,6 +25,12 @@ change_app() {
   cd ..
 }
 
+change_mobile() {
+  cd pm-web-mobile
+  sed -i '' 's/  "version".*/  "version": "'$VERSION'",/' package.json
+  cd ..
+}
+
 change_resource_server() {
   cd pm-resource-server
   sed -i '' 's/  "version".*/  "version": "'$VERSION'",/' package.json
@@ -44,6 +50,7 @@ if git diff-index --quiet HEAD --; then
   change_version
   change_oauth
   change_app
+  change_mobile
   change_resource_server
   change_helm
   git add .

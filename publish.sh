@@ -28,6 +28,7 @@ change_app() {
 change_mobile() {
   cd pm-web-mobile
   sed -i '' 's/  "version".*/  "version": "'$VERSION'",/' package.json
+  sed -i '' 's/^VUE_APP_VERSION.*/VUE_APP_VERSION = "'$VERSION'"/' .env
   cd ..
 }
 

@@ -10,14 +10,16 @@
         {{ store.state.currentUser.me.groups.join(',') }}
       </template>
     </t-cell>
+    <t-cell title="版本号" :note="version" hover />
     <!-- <t-cell style="margin-top: 5px" title="修改密码" arrow hover /> -->
     <t-cell style="margin-top: 5px" title="退出登录" arrow hover @click="logOut" />
   </div>
-  
+
 </template>
 
 <script setup lang="ts">
 import { useStore } from 'vuex';
+const version = process.env.VUE_APP_VERSION
 const store = useStore()
 const avatarUrl = 'https://tdesign.gtimg.com/mobile/demos/avatar_1.png';
 

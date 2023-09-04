@@ -133,6 +133,8 @@ export const attachmentUpload = async (proj: ProjectInput) => {
       delete item.type
       delete item.response
       delete item.percent
+      delete item.raw
+      delete item.uploadTime
       // item.status = 'done'
       const sameId = fileArr.find((chItem: any) => chItem.uid === item.uid)
       if (sameId) {

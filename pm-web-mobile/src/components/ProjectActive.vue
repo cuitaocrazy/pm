@@ -58,7 +58,7 @@
           <t-form-item label="上传材料" name="fileList">
             <t-upload
               v-model="formData.fileList"
-              :default-files="formData.fileList"
+              multiple
               :max="8"
               :action="action"
               :on-fail="onFail"
@@ -122,11 +122,13 @@ const onChangeUpload = (files: Array<UploadFile>, { e, response, trigger, index,
 const onPreview = ({ file, e }: { file: UploadFile; e: MouseEvent }) => {
   // console.log('====onPreview', file, e);
 };
-const onSuccess = ({ file, fileList, response, e }: SuccessContext) => {
-  console.log('====onSuccess', file, fileList, e, response);
-  formData.fileList = formData.fileList.map((item, index) => {
+const onSuccess = ({ file, fileList, response }: SuccessContext) => {
+  console.log('====onSuccess', file, fileList, response);
+  formData.fileList = fileList.map((item, index) => {
+    console.log(item)
     item.uid = 'wx-upload-'+ item.lastModified + '-' + index
-    item.originFileObj = item.fileRaw
+    item.originFileObj = item.raw
+    item.url = item.response.data
     return item
   })
   console.log(formData.fileList);

@@ -118,7 +118,7 @@
       </div>
       <t-icon class="close-btn" name="close-circle" size="32" color="#fff" @click="viewVisible = false" />
     </t-popup> -->
-    <t-image-viewer :images="viewImages" :visible="viewVisible" @close="viewVisible = false" />
+    <t-image-viewer defaultIndex="0" :images="viewImages" :visible="viewVisible" @close="viewVisible = false" />
   </t-popup>
 </template>
 

@@ -116,8 +116,12 @@ export function useProjectState() {
   }
 
   const saveDailies = () => {
+    let canSave = true
     const daliArr: DailyInput[]  = []
     dailyProjects.value.forEach(item => {
+      if (item.dailyItem && (!!(item.dailyItem.timeConsuming > 0) != !!item.dailyItem.content)) {
+        canSave = false
+      }
       if (item.dailyItem && item.dailyItem.timeConsuming > 0 && item.dailyItem.content) {
         daliArr.push({
           projId: item.id || item.dailyItem.project?.id || '',
@@ -126,22 +130,27 @@ export function useProjectState() {
         })
       }
     })
+    // return
     return new Promise((resolve, reject) => {
-      const variables: MutationPushDailyArgs = {
-        date: moment(selectDate.value).format('YYYYMMDD'),
-        projDailies: daliArr
+      if (canSave) {
+        const variables: MutationPushDailyArgs = {
+          date: moment(selectDate.value).format('YYYYMMDD'),
+          projDailies: daliArr
+        }
+        apolloClient.mutate({
+          mutation: PushDaily,
+          variables: variables
+        }).then((data: any) => {
+          // 结果
+          resolve('保存成功')
+          refetch()
+        }).catch((error: any) => {
+          // 错误
+          reject('保存失败')
+        })
+      } else {
+        reject('请补全工时和工作量')
       }
-      apolloClient.mutate({
-        mutation: PushDaily,
-        variables: variables
-      }).then((data: any) => {
-        // 结果
-        resolve('保存成功')
-        refetch()
-      }).catch((error: any) => {
-        // 错误
-        reject('保存失败')
-      })
     })
   }
 

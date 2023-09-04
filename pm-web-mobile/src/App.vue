@@ -31,7 +31,7 @@ const list = ref([
 watch(
   () => route.name,
   (newValue) => {
-    console.log('当前路由为：', newValue);
+    // console.log('当前路由为：', newValue);
     value.value = route.name ? (route.name as string) : 'dailies';
   }
 );

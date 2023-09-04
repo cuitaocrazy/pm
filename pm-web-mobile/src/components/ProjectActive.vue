@@ -123,15 +123,13 @@ const onPreview = ({ file, e }: { file: UploadFile; e: MouseEvent }) => {
   // console.log('====onPreview', file, e);
 };
 const onSuccess = ({ file, fileList, response }: SuccessContext) => {
-  console.log('====onSuccess', file, fileList, response);
+  // console.log('====onSuccess', file, fileList, response);
   formData.fileList = fileList.map((item, index) => {
-    console.log(item)
     item.uid = 'wx-upload-'+ item.lastModified + '-' + index
     item.originFileObj = item.raw
     item.url = item.response.data
     return item
   })
-  console.log(formData.fileList);
 };
 const onRemove = ({ index, file, e }: UploadRemoveContext) => {
   // console.log('====onRemove', index, file, e);
@@ -151,13 +149,12 @@ const form = ref(null);
 // date
 const visible = ref(false);
 const onChange = (value: string) => {
-  console.log('change: ', value);
+  // console.log('change: ', value);
 };
 const onPick = (value: string) => {
-  console.log('pick: ', value);
+  // console.log('pick: ', value);
 };
 const onCancel = () => {
-  console.log('cancel');
   visible.value = false;
 };
 const onConfirm = (value: string) => {
@@ -167,12 +164,12 @@ const onConfirm = (value: string) => {
 
 // form
 const onReset = () => {
-  console.log('===onReset');
+  // console.log('===onReset');
 };
 
 const emits = defineEmits(['submit'])
 const onSubmit = (e: any) => {
-  console.log('===onSubmit', e);
+  // console.log('===onSubmit', e);
   if (!e.validateResult.content) {
     emits('submit', formData)
   }

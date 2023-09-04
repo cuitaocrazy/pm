@@ -1,5 +1,5 @@
 <template>
-  <t-popup placement="center" @visible-change="visibleChange">
+  <t-popup placement="center" @visible-change="visibleChange" closeBtn :closeOnOverlayClick="false">
     <div style="height: 80vh; width: 90vw;">
       <div class="header" v-if="proj">
         <t-tag size="extra-large" variant="light" :theme="tabValue === '1' ? 'primary' : 'default'" @click="tabChange('1')">项目详情</t-tag>
@@ -118,7 +118,7 @@
       </div>
       <t-icon class="close-btn" name="close-circle" size="32" color="#fff" @click="viewVisible = false" />
     </t-popup> -->
-    <t-image-viewer defaultIndex="0" :images="viewImages" :visible="viewVisible" @close="viewVisible = false" />
+    <t-image-viewer :images="viewImages" :visible="viewVisible" @close="viewVisible = false" />
   </t-popup>
 </template>
 
@@ -167,7 +167,6 @@ const reverseArr = (arr = []) => {
 const viewVisible = ref(false)
 const viewImages = ref<string[]>([])
 const handleOnPreview = (file: any) => {
-  console.log(file)
   const fileType = file.name.split('.').slice(-1)[0]
   if (['png', 'jpeg', 'gif', 'svg', 'jpg'].includes(fileType)) {
     viewImages.value = [file.url]

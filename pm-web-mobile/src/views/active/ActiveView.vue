@@ -91,7 +91,7 @@
 import { reactive, ref } from 'vue';
 import { buildProjName, projectTypeStr } from '@/utils';
  // @ts-ignore 引入Message组件
- import { Message } from 'tdesign-mobile-vue';
+ import { Message, Toast } from 'tdesign-mobile-vue';
 import logo from '@/assets/logo.jpg';
 import moment from 'moment';
 import { useProjectState } from './hook';
@@ -139,7 +139,6 @@ const onChangeProjType = (e: any) => {
 }
 
 const handleOnActiveSubmit = (active) => {
-  console.log(active)
   if (activeVisible.value) {
     let reqProj = JSON.parse(JSON.stringify(showProj))
     reqProj.actives.push({
@@ -152,7 +151,9 @@ const handleOnActiveSubmit = (active) => {
     delete reqProj.updateTime
     delete reqProj.isArchive
     delete reqProj.key
+    Toast({ theme: 'loading', message: '保存中', duration: 0 });
     saveActive(reqProj).then(res => {
+      Toast.clear();
       showMessage('success', '保存成功')
       activeVisible.value = false
     }).catch(error => {

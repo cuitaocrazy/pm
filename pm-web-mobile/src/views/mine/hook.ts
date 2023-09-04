@@ -93,7 +93,6 @@ export function useProjectState() {
   const loading = ref(true);
 
   onResult((queryResult) => {
-    console.log(queryResult.data);
     if (queryResult.data) {
       projs.value = queryResult.data.iLeadProjs || [];
       subordinates.value = queryResult?.data.subordinates || [];

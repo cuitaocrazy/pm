@@ -103,7 +103,6 @@ export function filterTodoProject (data: any[]) {
 
 // 附件上传
 export const attachmentUpload = async (proj: ProjectInput) => {
-  console.log(proj.actives)
   for (const [index, act] of (proj.actives || []).entries()) {
     const formData = new FormData();
     // 临时变量

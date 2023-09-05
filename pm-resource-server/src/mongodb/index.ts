@@ -47,7 +47,7 @@ export interface IProject {
   /**
    * 项目名称
    */
-  projName: string
+  name: string
   /**
    * 合同名称
    */

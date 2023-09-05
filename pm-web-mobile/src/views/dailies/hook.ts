@@ -3,6 +3,7 @@ import { ref, watch, inject } from 'vue';
 import { useQuery, useMutation, DefaultApolloClient } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import moment from 'moment';
+import * as R from 'ramda';
 
 type Pro = Project & {
   key: string
@@ -64,27 +65,19 @@ export function useProjectState() {
 
   watch([selectDate, dailies, projs], ([selectDate, dailies, projs]) => {
     // console.log(selectDate, dailies, projs)
+    let tempProjs = JSON.parse(JSON.stringify(projs)) 
     // 筛选和登录人有关且的项目
-    let tempArr = JSON.parse(JSON.stringify(projs))
-    tempArr = tempArr.filter(item => {
-      return item.participants.find(chItem => chItem === employee)
-    })
-    // 将项目按照  启动  未启动 关闭 顺序排序
-    tempArr = tempArr.sort((a, b) => {
-      const order = { "onProj": 0, "endProj": 2 };
-      const aNum = order[a.status] === undefined ? 1 : order[a.status]
-      const bNum = order[b.status] === undefined ? 1 : order[b.status]
-      return aNum - bNum;
-    });
-    // 在个人日报中讲选中的日期日报筛选出来
+    // tempArr = tempArr.filter(item => {
+    //   return item.participants.find(chItem => chItem === employee)
+    // })
+    // 在个人日报中讲将选中的日期日报筛选出来
     const selDateProj = dailies.find(item => {
       if (item.date === moment(selectDate).format('YYYYMMDD')) {
         return true
       }
     })
     // 将项目按照日报对应匹配
-    const tempDailyProjects:any = []
-    tempArr.forEach(item => {
+    tempProjs = tempProjs.map(item => {
       const tempPro:Pro = JSON.parse(JSON.stringify(item))
       tempPro.key = item.id + '-' + Number(new Date())
       selDateProj?.dailyItems.forEach(chItem => {
@@ -95,18 +88,67 @@ export function useProjectState() {
           }
         }
       });
-      if (tempPro.dailyItem) {
-        tempDailyProjects.unshift(tempPro)
-      } else {
+      if (!tempPro.dailyItem) {
         tempPro.dailyItem = {
           timeConsuming: 0,
           content: ''
         }
-        tempDailyProjects.push(tempPro)
       }
+      return tempPro
     })
+    const projGrouping = R.groupBy<Project>((p) => {
+      const writed = p.dailyItem.content && p.dailyItem.timeConsuming > 0;
+      const onProj = p.status !== 'endProj';
+      const involved = p.participants.includes(employee);
+
+      if (writed && involved && onProj) {
+        return 'writedAndInvolvedAndOnProj';
+      }
+
+      if (writed && involved && !onProj) {
+        return 'writedAndInvolvedAndEndProj';
+      }
+
+      if (writed && !involved && onProj) {
+        return 'writedAndExcludeAndOnProj';
+      }
+
+      if (writed && !involved && !onProj) {
+        return 'writedAndExcludeAndEndProj';
+      }
+
+      if (!writed && involved && onProj) {
+        return 'notWritedAndInvolvedAndOnProj';
+      }
+
+      if (!writed && involved && !onProj) {
+        return 'notWritedAndInvolvedAndEndProj';
+      }
+
+      if (!writed && !involved && onProj) {
+        return 'notWritedAndExcludeAndOnProj';
+      }
+
+      return 'notWritedAndExcludeAndEndProj';
+    });
+
+    const projGroup = projGrouping(tempProjs);
+    const sortedProjs = R.reduce<Project[], Project[]>(
+      R.concat,
+      [],
+      [
+        projGroup.writedAndInvolvedAndOnProj || [],
+        projGroup.writedAndExcludeAndOnProj || [],
+        projGroup.writedAndInvolvedAndEndProj || [],
+        projGroup.writedAndExcludeAndEndProj || [],
+        projGroup.notWritedAndInvolvedAndOnProj || [],
+        projGroup.notWritedAndExcludeAndOnProj || [],
+        projGroup.notWritedAndInvolvedAndEndProj || [],
+        projGroup.notWritedAndExcludeAndEndProj || [],
+      ],
+    );
     setTimeout(() => {
-      setDailyProject(tempDailyProjects)
+      setDailyProject(sortedProjs)
       loading.value = false
     }, 100)
   })
@@ -119,7 +161,7 @@ export function useProjectState() {
     let canSave = true
     const daliArr: DailyInput[]  = []
     dailyProjects.value.forEach(item => {
-      if (item.dailyItem && (!!(item.dailyItem.timeConsuming > 0) != !!item.dailyItem.content)) {
+      if (item.dailyItem && (!!item.dailyItem.timeConsuming != !!item.dailyItem.content)) {
         canSave = false
       }
       if (item.dailyItem && item.dailyItem.timeConsuming > 0 && item.dailyItem.content) {

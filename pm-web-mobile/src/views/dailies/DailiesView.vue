@@ -16,9 +16,9 @@
         <t-collapse-panel value="0">
           <template #header>
             {{ buildProjName(proj.id, proj.name) }}
-            <t-tag v-if="proj.status === 'onProj'" variant="light" theme="success">启动</t-tag>
-            <t-tag v-else-if="proj.status === 'endProj'" variant="light">关闭</t-tag>
-            <t-tag v-else variant="light" theme="warning">未启动</t-tag>
+            <t-tag v-if="proj.status === 'endProj'" variant="light" theme="warning">未启动</t-tag>
+            <t-tag v-else-if="proj.participants.includes(store.state.currentUser.me.id)" variant="light" theme="success">涉及</t-tag>
+            <t-tag v-else-if="!proj.participants.includes(store.state.currentUser.me.id)" variant="light">未涉及</t-tag>
           </template>
           <template #headerRightContent>
             <t-tag v-if="proj.dailyItem.timeConsuming" variant="light" theme="primary">{{ proj.dailyItem.timeConsuming / 10 + 'h' }}</t-tag>
@@ -51,7 +51,9 @@ import { ref, nextTick, watch } from 'vue';
 import { buildProjName } from '@/utils';
 import moment from 'moment';
 import logo from '@/assets/logo.jpg';
+import { useStore } from 'vuex';
 
+const store = useStore()
 type TDateType = 'selected' | 'disabled' | 'start' | 'centre' | 'end' | '';
 interface TDate {
   date: Date;

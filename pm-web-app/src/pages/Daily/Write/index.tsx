@@ -96,7 +96,7 @@ function Dailies(prop: { date?: string }) {
               variables: {
                 date: hookStatus.currentDate,
                 projDailies: hookStatus.currentDaily.dailyItems
-                  .filter((p) => p.timeConsuming !== 0)
+                  .filter((p) => p.timeConsuming !== 0 && p.content)
                   .map((p) => ({
                     projId: p.project.id,
                     timeConsuming: p.timeConsuming,
@@ -179,7 +179,6 @@ function Dailies(prop: { date?: string }) {
           </Col>
         </Row>
       </ProCard>
-      
     </PageContainer>
   );
 }

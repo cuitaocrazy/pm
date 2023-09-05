@@ -68,7 +68,7 @@ export function useDailiesStatus(date?: string) {
       const projIdsForCurrentDaily = rawDaily.dailyItems.map((p) => p.project.id) || [];
       const projGrouping = R.groupBy<Project>((p) => {
         const writed = projIdsForCurrentDaily.includes(p.id);
-        const onProj = p.status === 'onProj';
+        const onProj = p.status !== 'endProj';
         const involved = p.participants.includes(initialState!.currentUser!.id!);
 
         if (writed && involved && onProj) {
@@ -103,7 +103,6 @@ export function useDailiesStatus(date?: string) {
       });
 
       const projGroup = projGrouping(projs);
-
       const sortedProjs = R.reduce<Project[], Project[]>(
         R.concat,
         [],

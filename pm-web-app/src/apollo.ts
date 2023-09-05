@@ -122,6 +122,7 @@ export type Project = {
   usedPersonDays?: Scalars['Int'];
   requiredInspections?: Scalars['Int'];
   actualInspections?: Scalars['Int'];
+  timeConsuming?: Scalars['Int'];
 };
 
 export type Contact = {

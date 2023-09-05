@@ -76,11 +76,7 @@ const getGql = (proName: string) => {
         usedPersonDays
         requiredInspections
         actualInspections
-        contacts {
-          name
-          duties
-          phone
-        }
+        timeConsuming
         actives {
           recorder
           date

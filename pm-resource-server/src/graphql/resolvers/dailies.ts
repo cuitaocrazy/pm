@@ -1,7 +1,30 @@
-import { find, propEq, isNil } from 'ramda'
+import { find, propEq, isNil, head, map } from 'ramda';
 import { AuthContext, getGroupUsers } from '../../auth/oauth'
 import { EmployeeDaily, ProjDaily, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
+
+async function getParticipateProjectDailies() {
+  const d: any[] = await EmployeeDaily.aggregate([
+    // 转换成平坦对象
+    { $unwind: '$dailies' },
+    { $unwind: '$dailies.projs' },
+    {
+      $group: {
+        _id: '$dailies.projs.projId',
+        total: { $sum: '$dailies.projs.timeConsuming' },
+      },
+    }
+  ]).toArray()
+  // console.log(JSON.stringify(d))
+  for(let i = 0; i < d.length; i++ ) {
+    if (d[i]._id) {
+      const proj = await Project.findOne({ _id: d[i]._id })
+      if (proj && proj._id) {
+        Project.updateOne({ _id: proj._id }, { $set: { timeConsuming: d[i].total } }, { upsert: true }).then((res) => res)
+      }
+    }
+  }
+}
 
 export default {
   Query: {
@@ -51,14 +74,17 @@ export default {
   },
   Mutation: {
     pushDaily: (_: any, { date, projDailies }: { date: string, projDailies: ProjDaily[] }, context: AuthContext) =>
-      EmployeeDaily.findOne({ _id: context.user!.id }).then(d => {
+      EmployeeDaily.findOne({ _id: context.user!.id }).then(async d => {
         const curEd = d || { _id: context.user!.id, dailies: [] }
         let dailies = curEd.dailies.filter(d => d.date !== date)
         if (projDailies.reduce((s, e) => s + e.timeConsuming, 0)) {
           dailies = dailies.concat({ date, projs: projDailies })
         }
         curEd.dailies = dailies.sort((a, b) => a.date > b.date ? 1 : -1)
-        return EmployeeDaily.replaceOne({ _id: context.user!.id }, curEd, { upsert: true }).then(() => context.user!.id)
+        let request = await EmployeeDaily.replaceOne({ _id: context.user!.id }, curEd, { upsert: true }).then(() => context.user!.id)
+        // 更新项目内日报
+        getParticipateProjectDailies()
+        return request
       }),
   },
 }

@@ -80,6 +80,7 @@ type Project {
   usedPersonDays: Int
   requiredInspections: Int
   actualInspections: Int
+  timeConsuming: Int
 }
 
 type Contact {
@@ -272,7 +273,6 @@ type Query {
   dailyUsers: [User!]!
   empDaily(userId: String!): EmployeeOfDailies!
   projDaily(projId: String!): ProjectOfDailies!
-  allProjDaily: [ProjectOfDailies!]
   workCalendar: [String!]!
   settleMonth: [String!]!
   empCosts(userId: String!): EmployeeOfExpenses!

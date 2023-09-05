@@ -20,7 +20,6 @@ import agreements from './agreements'
 import projectAgreements from './projectAgreements'
 import attachments from './attachments'
 import tags from './tags'
-import allProjDailies from './allProjDailies'
 
 
 
@@ -28,4 +27,4 @@ const merge = (...args: IResolvers[]) => {
   return args.reduce(R.mergeDeepRight)
 }
 
-export default merge(me, misc, dailies, projs, expenses, empDailies, projDailies, config, projExpenses, empExpenses, changePm, charts, status, industries, regions, customers, agreements, projectAgreements, attachments, tags, allProjDailies)
+export default merge(me, misc, dailies, projs, expenses, empDailies, projDailies, config, projExpenses, empExpenses, changePm, charts, status, industries, regions, customers, agreements, projectAgreements, attachments, tags)

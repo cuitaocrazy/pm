@@ -178,6 +178,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         projStatus: '',
         contStatus: '',
         acceStatus: '',
+        status: undefined,
+        startTime: '',
+        endTime: '',
         actives: [],
       })
     }
@@ -300,7 +303,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="项目负责人" name="leader" rules={[{ required: true }]}>
-            <Select allowClear>
+            <Select disabled={!!data?.id && !isDerive} allowClear>
               {resData?.subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -368,7 +371,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
-            <Select loading={loading} onChange={v => setStageStatus(v)}>
+            <Select disabled={false} loading={loading} onChange={v => setStageStatus(v)}>
               {projStatus.map((s) => (
                 <Select.Option key={s[0]} value={s[0]}>
                   {s[1]}
@@ -379,12 +382,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         </Col>
         <Col span={8}>
           <Form.Item label="启动日期" name="startTime" rules={[{ required: stageStatus ? true : false}]}>
-            <DatePicker disabled={!stageStatus} format="YYYY-MM-DD" style={{ width: '100%' }}/>
+            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }}/>
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item label="关闭日期" name="endTime" rules={[{ required: stageStatus === 'endProj' ? true : false }]}>
-            <DatePicker disabled={stageStatus !== 'endProj'} format="YYYY-MM-DD" style={{ width: '100%' }}/>
+            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }}/>
           </Form.Item>
         </Col>
       </Row>

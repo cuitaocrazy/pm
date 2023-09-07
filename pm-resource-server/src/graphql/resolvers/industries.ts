@@ -24,7 +24,7 @@ export default {
         industry.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
         industry.isDel = false
       }
-      return Industry.updateOne({ _id: new ObjectId(id) }, { $set: industry }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      return Industry.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: industry }, { upsert: true }).then((res) => id || res.upsertedId._id)
     },
     deleteIndustry: (_: any, args: any, context: AuthContext) => {
       // console.log(args)

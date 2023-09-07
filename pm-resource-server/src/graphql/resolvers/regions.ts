@@ -24,11 +24,11 @@ export default {
         region.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
         region.isDel = false
       }
-      return Region.updateOne({ _id: new ObjectId(id) }, { $set: region }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      return Region.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: region }, { upsert: true }).then((res) => id || res.upsertedId._id)
     },
     deleteRegion: (_: any, args: any, context: AuthContext) => {
-      // console.log(args)
-      return Region.updateOne({ _id: new ObjectId(args.id) }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
+      const id = args.id
+      return Region.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
       // return Statu.deleteOne({ _id: new ObjectId(args.id) }).then(() => args.id)
     },
   },

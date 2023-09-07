@@ -20,11 +20,11 @@ export default {
         customer.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
         customer.isDel = false
       }
-      return Customer.updateOne({ _id: new ObjectId(id) }, { $set: customer }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      return Customer.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: customer }, { upsert: true }).then((res) => id || res.upsertedId._id)
     },
     deleteCustomer: (_: any, args: any, context: AuthContext) => {
-      // console.log(args)
-      return Customer.updateOne({ _id: new ObjectId(args.id) }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
+      const id = args.id
+      return Customer.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
       // return Statu.deleteOne({ _id: new ObjectId(args.id) }).then(() => args.id)
     },
   },

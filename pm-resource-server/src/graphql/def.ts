@@ -51,14 +51,14 @@ type Project {
   projStatus: String!
   contStatus: String!
   acceStatus: String!
-  contAmount: Int
-  recoAmount: Int
-  projBudget: Int
-  budgetFee: Int
-  budgetCost: Int
-  actualFee: Int
-  actualCost: Int
-  taxAmount: Int
+  contAmount: Float
+  recoAmount: Float
+  projBudget: Float
+  budgetFee: Float
+  budgetCost: Float
+  actualFee: Float
+  actualCost: Float
+  taxAmount: Float
   description: String
   createDate: String!
   updateTime: String
@@ -306,14 +306,14 @@ input ProjectInput {
   projStatus: String!
   contStatus: String!
   acceStatus: String!
-  contAmount: Int
-  recoAmount: Int
-  projBudget: Int
-  budgetFee: Int
-  budgetCost: Int
-  actualFee: Int
-  actualCost: Int
-  taxAmount: Int
+  contAmount: Float
+  recoAmount: Float
+  projBudget: Float
+  budgetFee: Float
+  budgetCost: Float
+  actualFee: Float
+  actualCost: Float
+  taxAmount: Float
   description: String
   participants: [String!]
   contacts: [ContactInput!]

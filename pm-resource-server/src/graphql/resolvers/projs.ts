@@ -88,6 +88,7 @@ export default {
       await ProjectAgreement.deleteMany({ _id: args.id })
       return Project.deleteOne({ _id: args.id }).then(() => args.id)
     },
+    // 废弃（20230906）
     restartProject: async (_: any, args: any, context: AuthContext) => {
       // 清除合同的绑定关系
       await ProjectAgreement.deleteMany({ _id: args.id })

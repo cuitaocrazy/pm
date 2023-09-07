@@ -114,13 +114,13 @@
     access: 'canWorkCalendar',
     icon: 'calendar',
   },
-  {
-    path: '/settlement',
-    name: 'settlement',
-    component: './Settlement',
-    access: 'canSettlement',
-    icon: 'container',
-  },
+  // {
+  //   path: '/settlement',
+  //   name: 'settlement',
+  //   component: './Settlement',
+  //   access: 'canSettlement',
+  //   icon: 'container',
+  // },
   {
     path: '/infoManage',
     name: 'infoManage',

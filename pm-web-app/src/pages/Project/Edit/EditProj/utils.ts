@@ -32,13 +32,25 @@ export const projectClassify = (data: any[]) => {
       tempProj[item.name] = [item]
     }
   });
-  let result: any = []
+  let classProjs: any = []
   R.mapObjIndexed((value: any, key: string) => {
-    result.push({
+    classProjs.push({
       name: key,
       projects: value
     })
   }, tempProj || {});
+  let result: any = []
+  classProjs.forEach((item: any) => {
+    item.projects.forEach((chItem: any, index: number) => {
+      result.push({
+        ...chItem,
+        props: {
+          allIndex: item.projects.length,
+          index: index
+        }
+      })
+    })
+  });
   return result;
 }
 

@@ -20,13 +20,11 @@ export default {
         attachment.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
         attachment.isDel = false
       }
-      const _id = new ObjectId(id)
-      return Attachment.updateOne({ _id: _id }, { $set: attachment }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      return Attachment.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: attachment }, { upsert: true }).then((res) => id || res.upsertedId._id)
     },
     deleteAttachment: (_: any, args: any, context: AuthContext) => {
-      // console.log(args)
-      const _id = new ObjectId(args.id)
-      return Attachment.updateOne({ _id: _id }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
+      const id = args.id
+      return Attachment.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
       // return Statu.deleteOne({ _id: new ObjectId(args.id) }).then(() => args.id)
     },
   },

@@ -48,7 +48,6 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => (
         <div>
           <a onClick={() => editHandle(record)}>{buildProjName(record.id, text)} </a>
-          { record.pId ? <ArrowUpOutlined style={{ color: 'red' }} /> : '' }
         </div>
       ),
       filters: [

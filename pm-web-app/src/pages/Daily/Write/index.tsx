@@ -86,9 +86,9 @@ function Dailies(prop: { date?: string }) {
         </div>
       }
       footer={[
-        <Button key="getLastHandle" onClick={handleLastReportOfDay}>
-          加载上次日报
-        </Button>,
+        // <Button key="getLastHandle" onClick={handleLastReportOfDay}>
+        //   加载上次日报
+        // </Button>,
         <Button
           key="submit"
           onClick={() =>

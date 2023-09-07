@@ -16,7 +16,7 @@ export default defineConfig({
     hmr: true,
   },
   layout: {
-    name: 'Ant Design Pro',
+    name: '亚大项目管理',
     locale: true,
     siderWidth: 208,
     ...defaultSettings,

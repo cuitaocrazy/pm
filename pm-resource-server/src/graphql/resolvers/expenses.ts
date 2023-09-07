@@ -52,11 +52,11 @@ export default {
         cost.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
         cost.assignee = context.user!.id
       }
-
-      return Cost.updateOne({ _id: new ObjectId(id) }, { $set: cost }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      return Cost.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: cost }, { upsert: true }).then((res) => id || res.upsertedId._id)
     },
     deleteCost: (_: any, args: any, context: AuthContext) => {
-      return Cost.deleteOne({ _id: new ObjectId(args.id), assignee: context.user!.id }).then(() => args.id)
+      const id = args.id
+      return Cost.deleteOne({ $or: [{_id: new ObjectId(id) }, { _id: id }], assignee: context.user!.id }).then(() => args.id)
     },
   },
 }

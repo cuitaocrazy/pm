@@ -16,7 +16,7 @@
         <t-collapse-panel value="0">
           <template #header>
             {{ buildProjName(proj.id, proj.name) }}
-            <t-tag v-if="proj.status === 'endProj'" variant="light" theme="warning">未启动</t-tag>
+            <t-tag v-if="proj.status === 'endProj'" variant="light" theme="warning">已结项</t-tag>
             <t-tag v-else-if="proj.participants.includes(store.state.currentUser.me.id)" variant="light" theme="success">涉及</t-tag>
             <t-tag v-else-if="!proj.participants.includes(store.state.currentUser.me.id)" variant="light">未涉及</t-tag>
           </template>

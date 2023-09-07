@@ -245,7 +245,6 @@ const Cost = () => {
       if (index === 0) return true;
       return arr[index - 1].value !== item.value;
     });
-
   return (
     <PageContainer
       extra={[

@@ -175,7 +175,6 @@ export function useProjStatus() {
     return { ...item, ...dailieObj }
   });
   const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
-  // console.log(projs)
   const todoProjs = filterTodoProject(projs).filter(el => {
     return buildProjName(el.id, el.name).indexOf(filter) > -1
   })
@@ -214,6 +213,7 @@ export function useProjStatus() {
     [pushCostHandle, refresh],
   );
 
+  // 废弃
   const restartProj = useCallback(
     async (id: string) => {
       await restartProjHandle({ variables: { id } });
@@ -238,7 +238,6 @@ export function useProjStatus() {
     refresh,
     archiveProj,
     deleteProj,
-    restartProj,
     pushProj,
   };
 }

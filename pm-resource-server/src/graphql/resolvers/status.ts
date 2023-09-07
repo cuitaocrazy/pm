@@ -44,15 +44,17 @@ export default {
   Mutation: {
     pushStatu: (_: any, args: any, context: AuthContext) => {
       const { id, ...statu } = args.statu
+      // 处理导入数据的_id不是 ObjectId 的问题
       if (!id) {
         statu.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
         statu.isDel = false
       }
-      return Statu.updateOne({ _id: new ObjectId(id) }, { $set: statu }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      return Statu.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: statu }, { upsert: true }).then((res) => id || res.upsertedId._id)
     },
     deleteStatu: (_: any, args: any, context: AuthContext) => {
       // console.log(args)
-      return Statu.updateOne({ _id: new ObjectId(args.id) }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
+      const id = args.id
+      return Statu.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
       // return Statu.deleteOne({ _id: new ObjectId(args.id) }).then(() => args.id)
     },
   },

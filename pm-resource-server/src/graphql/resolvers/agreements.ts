@@ -28,10 +28,9 @@ export default {
         await ProjectAgreement.updateOne({ _id: proID }, { $set: { agreementId: _id.toString() } }, { upsert: true }).then((res) => id || res.upsertedId._id)
       });
       delete agreement.contactProj
-      return Agreement.updateOne({ _id: _id }, { $set: agreement }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      return Agreement.updateOne({ $or: [{ _id: _id }, { _id: id }] }, { $set: agreement }, { upsert: true }).then((res) => id || res.upsertedId._id)
     },
     deleteAgreement: (_: any, args: any, context: AuthContext) => {
-      // console.log(args)
       const _id = new ObjectId(args.id)
       ProjectAgreement.deleteMany({ agreementId: _id.toString() })
       return Agreement.updateOne({ _id: _id }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)

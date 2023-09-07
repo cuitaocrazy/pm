@@ -98,7 +98,7 @@ export function useProjectState() {
   const { onResult, refetch  } = useQuery<Query, QueryFilterProjectArgs>(queryGql, {
     org: filter.org,
     projType: filter.projType,
-  });
+  }, { fetchPolicy: 'no-cache' });
 
   const tabValue = ref('1');
   const projs = ref<Project[]>();

@@ -87,7 +87,7 @@ const queryGql = gql`
 export function useProjectState() {
   const { onResult } = useQuery<Query, QueryProjectArgs>(queryGql, {
     isArchive: false,
-  });
+  }, { fetchPolicy: 'no-cache' });
   const projs = ref<Project[]>();
   const subordinates = ref<User[]>([]);
   const loading = ref(true);

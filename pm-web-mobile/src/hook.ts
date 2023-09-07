@@ -48,8 +48,8 @@ const queryGql = gql`
   }
 `;
 export function useInitState() {
-  const meQuery = useQuery<Query>(queryGqlMe);
-  const state = useQuery<Query>(queryGql);
+  const meQuery = useQuery<Query>(queryGqlMe, { fetchPolicy: 'no-cache' });
+  const state = useQuery<Query>(queryGql, { fetchPolicy: 'no-cache' });
   const store = useStore()
   
   meQuery.onResult((queryResult) => {

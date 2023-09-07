@@ -46,7 +46,7 @@ const PushDaily = gql`
 
 export function useProjectState() {
   const apolloClient: any = inject(DefaultApolloClient)
-  const { onResult, refetch } = useQuery<Query>(queryGql);
+  const { onResult, refetch } = useQuery<Query>(queryGql, { fetchPolicy: 'no-cache' });
   const loading = ref(true);
   const selectDate = ref(new Date());
   const dailies = ref<EmployeeOfDaily[]>([]);

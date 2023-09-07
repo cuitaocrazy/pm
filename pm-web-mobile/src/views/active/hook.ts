@@ -108,7 +108,7 @@ export function useProjectState() {
     type: 'active',
     org: filter.org,
     projType: filter.projType,
-  });
+  }, { fetchPolicy: 'no-cache' });
   const projs = ref<Project[]>();
   const showProjs = ref();
   const subordinates = ref<User[]>([]);

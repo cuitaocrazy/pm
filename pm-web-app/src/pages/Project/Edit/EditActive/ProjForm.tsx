@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import { map, filter, find } from 'ramda'
-import { Form, Input, Tabs, Tag, Button, Divider, Row, Col, DatePicker, Upload, Descriptions } from 'antd';
+import { Form, Input, Tabs, Tag, Button, Divider, Row, Col, DatePicker, Upload, Descriptions, Select } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import type { ProjectInput, Query } from '@/apollo';
@@ -169,28 +169,33 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 {(fields, { add, remove }, { errors }) => (
                   <>
                     <Form.Item>
-                      <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                      <Button type="dashed" onClick={() => add({recorder: initialState?.currentUser?.id }, fields.length)} icon={<PlusOutlined />}>
                         添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动
                       </Button>
                       <Form.ErrorList errors={errors} />
                     </Form.Item>
                     {renderActiveNode(fields).map((field, i) => (
-                      <div key={field.key} style={{ textAlign: 'center' }}>
+                      <div key={field.key} style={{ textAlign: 'left' }}>
                         <Divider>{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动 {field.name + 1}</Divider>
                         <Row>
                           <Col xs={24} sm={12}>
                             <Row>
                               <Col span={24}>
                                 <Form.Item
-                                  hidden
                                   labelCol={{ span: 5, offset: 0 }}
                                   key="recorder"
                                   label="记录人"
                                   name={[field.name, 'recorder']}
                                   rules={[{ required: true }]}
-                                  initialValue={initialState?.currentUser?.id}
+                                  // initialValue={initialState?.currentUser?.id}
                                 >
-                                  <Input />
+                                  <Select disabled >
+                                    {resData?.subordinates.map((u) => (
+                                      <Select.Option key={u.id} value={u.id}>
+                                        {u.name}
+                                      </Select.Option>
+                                    ))}
+                                  </Select>
                                 </Form.Item>
                               </Col>
                             </Row>
@@ -255,11 +260,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                             </Form.Item>
                           </Col>
                         </Row>
-                        <MinusCircleOutlined
-                          hidden={(field.name < (data?.actives?.length || 0))}
-                          className="dynamic-delete-button"
-                          onClick={() => remove(field.name)}
-                        />
+                        <div style={{ textAlign: 'center' }}>
+                          <MinusCircleOutlined
+                            hidden={(field.name < (data?.actives?.length || 0))}
+                            className="dynamic-delete-button"
+                            onClick={() => remove(field.name)}
+                          />
+                        </div>
                       </div>
                     ))}
                   </>
@@ -387,6 +394,5 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         </Descriptions>
       </Tabs.TabPane>
     </Tabs>
-   
   );
 };

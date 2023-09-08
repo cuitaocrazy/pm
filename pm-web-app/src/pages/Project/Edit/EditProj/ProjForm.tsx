@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Form, Input, InputNumber, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupUsersArgs } from '@/apollo';
+import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupUsersArgs, QueryProjDailyArgs } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
 import ProjIdComponent from './ProjIdComponent';
 import { projStatus } from './utils';
+import { forEach } from 'ramda';
 import moment from 'moment';
 
 const userQuery = gql`
@@ -39,6 +40,27 @@ const userQuery = gql`
   }
 `;
 
+const QueryDaily = gql`
+  query GetDaily($projId: String!) {
+    allProjDaily(projId: $projId) {
+      project {
+        id
+      }
+      dailies {
+        date
+        dailyItems {
+          employee {
+            id
+            name
+          }
+          timeConsuming
+          content
+        }
+      }
+    }
+  }
+`;
+
 const layout = {
   labelCol: { span: 9 },
   wrapperCol: { span: 16 },
@@ -48,6 +70,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { loading, data: resData } = useQuery<Query, QueryGroupUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
     group: '/项目二部/市场组',
   } });
+  const { data: queryData } = useQuery<Query, QueryProjDailyArgs >(QueryDaily, { fetchPolicy: 'no-cache', variables: {
+    projId: data?.id || '',
+  } });
   const { status, dataForTree } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const [isDerive, setIsDerive] = useState(false);
@@ -56,6 +81,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
+
+  // 获取填写日报人员id，禁止修改
+  let employeeIds: string[] = [];
+  if (queryData && queryData.allProjDaily.dailies.length) {
+    const employeesSet = new Set<string>([]);
+    forEach(item => forEach(chItem => employeesSet.add(chItem.employee.id), item.dailyItems), queryData.allProjDaily.dailies)
+    employeeIds = [...employeesSet]
+  }
 
   const props: UploadProps = {
     listType: "picture",
@@ -230,12 +263,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
     return tempFields;
   }
-
-  // 当id有变动，重置状态字段
-  const isParticChange = (value: any) => {
-    // @ts-ignore
-    return data?.employeeIds?.find((item: string) => item === value.id) ? true : false
-  };
   
   return (
     <Form 
@@ -336,7 +363,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               }}
             >
               {resData?.subordinates.map((u) => (
-                <Select.Option key={u.id} value={u.id} disabled={isParticChange(u)}>
+                <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
                   {u.name}
                 </Select.Option>
               ))}
@@ -515,7 +542,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               <>
                 <Form.Item>
                   {data?.status === 'endProj' ? '' :
-                    <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                    <Button type="dashed" onClick={() => add({recorder: initialState?.currentUser?.id }, fields.length)} icon={<PlusOutlined />}>
                       添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动
                     </Button>
                   }
@@ -534,7 +561,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                               label="记录人"
                               name={[field.name, 'recorder']}
                               rules={[{ required: true }]}
-                              initialValue={initialState?.currentUser?.id}
                             >
                               <Select disabled >
                                 {resData?.subordinates.map((u) => (
@@ -595,12 +621,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                         </Form.Item>
                       </Col>
                     </Row>
+                    <div style={{ textAlign: 'center' }}>
                     {data?.status === 'endProj' ? '' :
                       <MinusCircleOutlined
                         className="dynamic-delete-button"
                         onClick={() => remove(field.name)}
                       />
                     }
+                    </div>
                   </div>
                 ))}
               </>

@@ -273,6 +273,7 @@ type Query {
   dailyUsers: [User!]!
   empDaily(userId: String!): EmployeeOfDailies!
   projDaily(projId: String!): ProjectOfDailies!
+  allProjDaily(projId: String!): ProjectOfDailies!
   workCalendar: [String!]!
   settleMonth: [String!]!
   empCosts(userId: String!): EmployeeOfExpenses!

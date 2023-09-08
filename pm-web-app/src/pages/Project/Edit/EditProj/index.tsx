@@ -70,7 +70,7 @@ const Project: React.FC<any> = () => {
       width: 120
     },
     {
-      title: '项目id',
+      title: '项目ID',
       dataIndex: 'id',
       key: 'id',
       render: (text: string, record: Proj) => (

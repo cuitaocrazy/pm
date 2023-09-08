@@ -30,7 +30,7 @@ export default (
       </Row>
       <Row gutter={24}>
         <Col span={24}>
-          <Form.Item name="isRemovePart">
+          <Form.Item name="isRemovePart" hidden>
             <Checkbox checked={isRemovePart} onChange={() => setReomvePart(!isRemovePart)}>
               将原项目经理从项目成员中移除
             </Checkbox>

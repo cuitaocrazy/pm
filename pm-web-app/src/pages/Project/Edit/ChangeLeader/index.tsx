@@ -22,7 +22,7 @@ const ChangePm: React.FC<any> = () => {
     isRemovePart: boolean;
     selectProject: string[];
     search: string;
-  }>({ isRemovePart: true, selectProject: [], search: '' });
+  }>({ isRemovePart: false, selectProject: [], search: '' });
 
   const onFinish = (value: ChangePmInput) => {
     return state.pushChangePm({

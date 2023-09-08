@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
 import { useModel, history } from 'umi';
 import * as R from 'ramda';
-import { attachmentUpload, filterTodoProject, formatDailiesDate, projectClassify } from './utils';
+import { attachmentUpload, filterTodoProject, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
@@ -111,24 +111,6 @@ const deleteProjGql = gql`
     deleteProject(id: $id)
   }
 `;
-
-// allProjDaily {
-//   project {
-//     id
-//   }
-//   dailies {
-//     date
-//     dailyItems {
-//       employee {
-//         id
-//         name
-//       }
-//       timeConsuming
-//       content
-//     }
-//   }
-// }
-
 
 export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;

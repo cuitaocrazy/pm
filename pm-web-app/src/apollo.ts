@@ -325,7 +325,7 @@ export type Query = {
   dailyUsers: User[];
   empDaily: EmployeeOfDailies;
   projDaily: ProjectOfDailies;
-  allProjDaily: ProjectOfDailies[];
+  allProjDaily: ProjectOfDailies;
   workCalendar: Scalars['String'][];
   settleMonth: Scalars['String'][];
   empCosts: EmployeeOfExpenses;

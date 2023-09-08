@@ -3,8 +3,8 @@ import { AuthContext, getGroupUsers } from '../../auth/oauth'
 import { EmployeeDaily, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
 
-async function getParticipateProjectDailiesByLeader (leaderId: string, projId: string) {
-  const projIds = await Project.find({ leader: leaderId }).map(proj => proj._id).toArray()
+async function getParticipateProjectDailiesByLeader (leaderId: string | undefined, projId: string) {
+  const projIds = await Project.find(leaderId ? { leader: leaderId } : {}).map(proj => proj._id).toArray()
 
   if (includes(projId)(projIds)) {
     const d = await EmployeeDaily.aggregate([
@@ -103,6 +103,9 @@ export default {
     projDaily: async (_: any, { projId }: any, context: AuthContext) => {
       const user = context.user!
       return getParticipateProjectDailiesByLeader(user.id, projId)
+    },
+    allProjDaily: async (_: any, { projId }: any, context: AuthContext) => {
+      return getParticipateProjectDailiesByLeader(undefined, projId)
     },
   },
   ProjectOfDailies: {

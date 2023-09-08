@@ -522,14 +522,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   <Form.ErrorList errors={errors} />
                 </Form.Item>
                 {renderActiveNode(fields).map((field, i) => (
-                  <div key={field.key} style={{ textAlign: 'center' }}>
+                  <div key={field.key} style={{ textAlign: 'left' }}>
                     <Divider>{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动 {field.name + 1}</Divider>
                     <Row>
                       <Col xs={24} sm={12}>
                         <Row>
                           <Col span={24}>
                             <Form.Item
-                              hidden
                               labelCol={{ span: 5, offset: 0 }}
                               key="recorder"
                               label="记录人"
@@ -537,7 +536,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                               rules={[{ required: true }]}
                               initialValue={initialState?.currentUser?.id}
                             >
-                              <Input />
+                              <Select disabled >
+                                {resData?.subordinates.map((u) => (
+                                  <Select.Option key={u.id} value={u.id}>
+                                    {u.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
                             </Form.Item>
                           </Col>
                         </Row>

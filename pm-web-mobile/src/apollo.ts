@@ -326,6 +326,7 @@ export type QueryProjectArgs = {
 };
 
 export type QueryFilterProjectArgs = {
+  isAdmin?: Scalars['Boolean'];
   org?: Scalars['String'];
   projType?: Scalars['String'];
   type?: Scalars['String'];

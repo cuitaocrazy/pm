@@ -7,7 +7,6 @@ import type {
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect } from 'react';
-import { message } from 'antd';
 import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
 

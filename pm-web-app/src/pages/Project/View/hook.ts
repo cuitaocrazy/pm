@@ -10,7 +10,8 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
 import { useModel } from 'umi';
-import axios from 'axios';
+import * as R from 'ramda';
+import { projectClassify } from './utils';
 
 const queryGql = gql`
 query ($isArchive: Boolean) {
@@ -101,83 +102,11 @@ const pushProjGql = gql`
   }
 `;
 
-const archiveProjGql = gql`
-  mutation ($id: ID!) {
-    archiveProject(id: $id)
-  }
-`;
-
 const deleteProjGql = gql`
   mutation ($id: ID!) {
     deleteProject(id: $id)
   }
 `;
-
-// 数据转树型并且扁平化
-function convert(data: any[]) {
-  let result:any[] = [];
-  let map = {};
-  data.forEach(item => {
-      map[item.id] = item;
-  });
-  data.forEach(item => {
-      // item.pid 为null时 返回underfined
-      let parent = map[item.pId];
-      if (parent) {
-        (parent.children || (parent.children = [])).push(item);
-      } else {
-          // 这里push的item是pid为null的数据
-          result.push(item);
-      }
-  });
-  result = flat(result).map((el: any) => {
-    el.hasChildren = el.children ? true : false
-    delete el.children
-    return el
-  })
-  return result;
-}
-
-function flat(source: any[]) {
-  let res: any = []
-  source.forEach(el=>{
-      res.push(el)
-      el.children && res.push(...flat(el.children))
-  })
-  return res
-}
-// 附件上传
-async function attachmentUpload (proj: ProjectInput, buildProjName: any) {
-  for (let [index, act] of (proj.actives || []).entries()) {
-    const formData = new FormData();
-    // 临时变量
-    let fileArr:any = []
-    // 拼接附件存储路径
-    formData.append('directory',`/${buildProjName(proj.id, proj.name)}/${index}/`);
-    act.fileList?.forEach((file: any) => {
-      if (file.originFileObj) {
-        formData.append('uids[]', file.uid);
-        formData.append('files', file.originFileObj);
-        fileArr.push(file.originFileObj)
-      }
-    });
-    // 批量上传附件
-    if (fileArr.length) {
-      let { data } = await axios.post('/api/upload/active', formData)
-      if (data.code === 1000) {
-        fileArr = data.data
-      }
-    }
-    act?.fileList?.forEach((item: any) => {
-      delete item.originFileObj
-      let sameId = fileArr.find((chItem: any) => chItem.uid === item.uid)
-      if (sameId) {
-        item.url = sameId.path
-      }
-    })
-  }
-  return proj
-}
 
 export function useProjStatus() {
   const [archive, setArchive] = useState(false);
@@ -188,9 +117,6 @@ export function useProjStatus() {
     fetchPolicy: 'no-cache',
   });
 
-  const [archiveProjHandle, { loading: archiveLoading }] = useMutation<Mutation, MutationDeleteProjectArgs>(
-    archiveProjGql
-  );
   const [deleteProjHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteProjectArgs>(
     deleteProjGql
   );
@@ -207,25 +133,16 @@ export function useProjStatus() {
     initialRefresh()
   }, [refresh]);
   const tmpProjs = queryData?.projs || [];
-  const projs = convert(tmpProjs).filter(el => {
-    return buildProjName(el.id, el.name).indexOf(filter) > -1
-  })
+
+  const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
   const subordinates = queryData?.subordinates || [];
   const customers = queryData?.customers || [];
   const agreements = queryData?.agreements || [];
   const projectAgreements = queryData?.projectAgreements || [];
 
-  const archiveProj = useCallback(
-    async (id: string) => {
-      await archiveProjHandle({ variables: { id } });
-      refresh();
-    },
-    [archiveProjHandle, refresh],
-  );
-
   const deleteProj = useCallback(
     async (id: string) => {
-      await deleteProjHandle({ variables: { id } });
+      // await deleteProjHandle({ variables: { id } });
       refresh();
     },
     [deleteProjHandle, refresh],
@@ -233,20 +150,20 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      if (proj.status === 'endProj') { return }
-      let reqProj = await attachmentUpload(proj, buildProjName)
-      await pushCostHandle({
-        variables: {
-          proj: reqProj
-        },
-      });
+      // if (proj.status === 'endProj') { return }
+      // let reqProj = await attachmentUpload(proj, buildProjName)
+      // await pushCostHandle({
+      //   variables: {
+      //     proj: reqProj
+      //   },
+      // });
       refresh();
     },
     [pushCostHandle, refresh],
   );
 
   return {
-    loading: queryLoading || deleteLoading || pushLoading || archiveLoading,
+    loading: queryLoading || deleteLoading || pushLoading,
     projs,
     subordinates,
     customers,
@@ -257,7 +174,6 @@ export function useProjStatus() {
     setArchive,
     setFilter,
     refresh,
-    archiveProj,
     deleteProj,
     pushProj,
   };

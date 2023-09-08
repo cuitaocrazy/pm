@@ -205,13 +205,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           <Descriptions.Item label="项目描述:" span={3}>{ data?.description }</Descriptions.Item>
         </Descriptions>
       </Tabs.TabPane>
-      <Tabs.TabPane tab="巡检活动信息" key="2">
+      <Tabs.TabPane tab={projType === 'SQ' ? '销售活动' : projType === 'SH' ? '巡检活动' : '项目活动'} key="2">
         <Row>
           <Col span={10}>
             <div style={{ height: '50px' }}></div>
             <Timeline className='proj-detail-timeline' mode="left">
               {renderActiveNode(data?.actives).map((act, i) => (
                 <Timeline.Item key={i} label={moment(act.date).format('YYYY-MM-DD HH:mm:ss')}>
+                  <div>
+                    活动记录人: { act.recorder ? find(indu => indu.id === act.recorder, resData?.subordinates || [])?.name : '' }
+                  </div>
                   <div>
                     活动内容: {act.content}
                   </div>

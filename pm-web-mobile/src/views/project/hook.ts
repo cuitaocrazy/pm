@@ -1,5 +1,6 @@
 import type { Project, User, Query, QueryFilterProjectArgs } from '@/apollo';
 import { ref, watch, reactive } from 'vue';
+import { useStore } from 'vuex';
 import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { filterTodoProject } from '@/utils';
@@ -10,7 +11,7 @@ type Pro = Project & {
 };
 
 const queryGql = gql`
-  query ($org: String, $projType: String, $type: String) {
+  query ($org: String, $projType: String, $type: String, $isAdmin: Boolean) {
     subordinates {
       id
       name
@@ -36,7 +37,7 @@ const queryGql = gql`
         tags
       }
     }
-    filterProjsByApp (org: $org, projType: $projType, type: $type) {
+    filterProjsByApp (org: $org, projType: $projType, type: $type, isAdmin: $isAdmin) {
       id
       pId
       name
@@ -91,11 +92,13 @@ const queryGql = gql`
   }
 `;
 export function useProjectState() {
+  const store = useStore()
   const filter = reactive({
     org: '',
     projType: ''
   })
   const { onResult, refetch  } = useQuery<Query, QueryFilterProjectArgs>(queryGql, {
+    isAdmin: ['realm:supervisor'].filter(item => store.state.currentUser.me.access.includes(item)).length ? true : false,
     org: filter.org,
     projType: filter.projType,
   }, { fetchPolicy: 'no-cache' });

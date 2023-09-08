@@ -30,12 +30,9 @@ export default {
       .map(dbid2id).toArray(),
     filterProjsByApp: (_: any, __: any, context: AuthContext) => {
       let or = __.type === 'active' ? 
-        [ { leader: context.user!.id, }, { salesLeader: context.user!.id, }, { participants: { $elemMatch: { $eq: context.user!.id } } } ]:
-        [{ leader: context.user!.id, }, { salesLeader: context.user!.id } ]
-      let filter = {
-        isArchive: false,
-        $or: or,
-      }
+        [ { leader: context.user!.id, }, { salesLeader: context.user!.id }, { participants: { $elemMatch: { $eq: context.user!.id } } } ]:
+        [ { leader: context.user!.id, }, { salesLeader: context.user!.id } ]
+      let filter = __.isAdmin ? { isArchive: false } : { isArchive: false, $or: or }
       if (__.org || __.projType) {
         // ^[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$
         let regex = __.org && __.projType ? 

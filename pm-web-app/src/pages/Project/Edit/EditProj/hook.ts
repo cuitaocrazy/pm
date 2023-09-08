@@ -111,11 +111,6 @@ const deleteProjGql = gql`
     deleteProject(id: $id)
   }
 `;
-const restartProjGql = gql`
-  mutation ($id: ID!) {
-    restartProject(id: $id)
-  }
-`;
 
 // allProjDaily {
 //   project {
@@ -155,9 +150,6 @@ export function useProjStatus() {
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
     pushProjGql,
   );
-  const [restartProjHandle, { loading: restartLoading }] = useMutation<Mutation, MutationDeleteProjectArgs>(
-    restartProjGql
-  );
 
   const { refresh: initialRefresh } = useModel('@@initialState');
   const { buildProjName } = useBaseState();
@@ -168,11 +160,8 @@ export function useProjStatus() {
     initialRefresh()
   }, [refresh]);
 
-  const allProjDaily = formatDailiesDate(queryData?.allProjDaily || [])
-  // console.log(allProjDaily)
   const tmpProjs = ((isAdmin ?  queryData?.projs : queryData?.iLeadProjs) || []).map(item => {
-    const dailieObj = allProjDaily.find(all => all.project.id === item.id) || {}
-    return { ...item, ...dailieObj }
+    return { ...item }
   });
   const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
   const todoProjs = filterTodoProject(projs).filter(el => {
@@ -213,18 +202,8 @@ export function useProjStatus() {
     [pushCostHandle, refresh],
   );
 
-  // 废弃
-  const restartProj = useCallback(
-    async (id: string) => {
-      await restartProjHandle({ variables: { id } });
-      refresh();
-    },
-    [restartProjHandle, refresh],
-  );
-
   return {
-    loading: queryLoading || deleteLoading || pushLoading || archiveLoading || restartLoading,
-    allProjDaily,
+    loading: queryLoading || deleteLoading || pushLoading || archiveLoading,
     projs,
     todoProjs,
     subordinates,

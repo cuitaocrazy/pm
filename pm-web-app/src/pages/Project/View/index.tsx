@@ -1,7 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef } from 'react';
 import { Table, Tag, Input, Space } from 'antd';
-import { ArrowUpOutlined } from '@ant-design/icons';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -16,7 +15,6 @@ import { getStatusDisplayName, projStatus } from './utils';
 const Project: React.FC<any> = () => {
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
   const { projs, subordinates, customers, agreements, projectAgreements, loading, setFilter } = useProjStatus();
-  console.log(projs)
   const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
@@ -40,14 +38,39 @@ const Project: React.FC<any> = () => {
     });
   };
 
+  const makeGroupProps = (children: any, row: Proj, index: number) => {
+    const obj = {
+      children,
+      props: {} as any,
+    };
+    if (index === 0) {
+      // @ts-ignore
+      obj.props.rowSpan = row.props.allIndex - row.props.index;
+    } else {
+      // @ts-ignore
+      obj.props.rowSpan = row.props.index === 0 ? row.props.allIndex : 0;
+    }
+    return obj;
+  };
+  const makeGroupRender = (value: string, row: Proj, index: number) => {
+    return makeGroupProps(value, row, index);
+  };
+
   const columns = [
     {
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',
+      render: makeGroupRender,
+      width: 120
+    },
+    {
+      title: '项目ID',
+      dataIndex: 'id',
+      key: 'id',
       render: (text: string, record: Proj) => (
         <div>
-          <a onClick={() => editHandle(record)}>{buildProjName(record.id, text)} </a>
+          <a onClick={() => editHandle(record)}>{buildProjName(record.id, record.name)} </a>
         </div>
       ),
       filters: [
@@ -160,18 +183,7 @@ const Project: React.FC<any> = () => {
         return moment(updateTime, 'YYYYMMDD HH:mm:ss').format('YYYY年MM月DD日 HH:mm:ss');
       },
       width: 200,
-    },
-    {
-      title: '操作',
-      dataIndex: 'id',
-      key: 'action',
-      render: (id: string, record: Proj) => (
-        <Space>
-        </Space>
-      ),
-      fixed: 'right' as 'right',
-      width: 50,
-    },
+    }
   ];
 
   return (
@@ -187,7 +199,7 @@ const Project: React.FC<any> = () => {
     >
       <Table
         loading={loading}
-        scroll={{ x: 1100 }}
+        scroll={{ x: 1700 }}
         rowKey={(record) => record.id}
         columns={columns}
         dataSource={projs}

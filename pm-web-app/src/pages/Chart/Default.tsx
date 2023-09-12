@@ -8,7 +8,7 @@ const Default = () => {
   return (
     <PageContainer>
       <Card style={{ textAlign: 'center' }}>
-        <img src="/main-figure.png" style={{ width: '50%' }} />
+        <img src="/web/main-figure.png" style={{ width: '50%' }} />
       </Card>
     </PageContainer>
   );

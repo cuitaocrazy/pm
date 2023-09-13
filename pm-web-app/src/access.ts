@@ -24,11 +24,11 @@ export default function access(initialState: { currentUser?: API.CurrentUser | u
     canExpense: hasPower(['realm:assistant']),
     canWorkCalendar: hasPower(['realm:assistant']),
     canSettlement: hasPower(['realm:supervisor']),
-    canInfoManage: hasPower(['realm:supervisor', 'realm:assistant']),
+    canInfoManage: hasPower(['realm:supervisor', 'realm:assistant', 'realm:project_manager']),
     canStatu: hasPower(['realm:supervisor', 'realm:assistant']),
     canIndustrial: hasPower(['realm:supervisor', 'realm:assistant']),
     canRegion: hasPower(['realm:supervisor', 'realm:assistant']),
-    canCustomer: hasPower(['realm:supervisor', 'realm:assistant']),
+    canCustomer: hasPower(['realm:supervisor', 'realm:assistant', 'realm:project_manager']),
     canAgreement: hasPower(['realm:supervisor' ,'realm:assistant']),
   };
 }

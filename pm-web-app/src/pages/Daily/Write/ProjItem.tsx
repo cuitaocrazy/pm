@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
-import { Card, Row, Col, Input, Slider } from 'antd';
+import { Card, Row, Col, Input, Slider, InputNumber } from 'antd';
 import * as R from 'ramda';
 import { useBaseState } from '@/pages/utils/hook';
 import color from './colorDef';
@@ -70,14 +70,28 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
       <div ref={divRef} />
       <Row>
         <Col span={24}>
-          <Slider
-            marks={marks}
-            min={0}
-            max={maxH}
-            style={{ whiteSpace: 'nowrap' }}
-            onChange={props.onHoursChange}
-            value={props.hours}
-          />
+          <Row>
+            <Col span={19}>
+              <Slider
+                marks={marks}
+                min={0}
+                max={maxH}
+                style={{ whiteSpace: 'nowrap' }}
+                onChange={props.onHoursChange}
+                value={props.hours}
+              />
+            </Col>
+            <Col span={1}></Col>
+            <Col span={4}>
+              <span></span>
+              <InputNumber
+                addonBefore="自定义"
+                min={0}
+                value={props.hours}
+                onChange={e => props.onHoursChange(e || 0)}
+              />
+            </Col>
+          </Row>
         </Col>
         <Col span={24}>
           <Input.TextArea

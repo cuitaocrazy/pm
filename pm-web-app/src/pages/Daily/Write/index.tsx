@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, DatePicker, Input, Calendar, Row, Col } from 'antd';
-import { CheckCircleTwoTone } from '@ant-design/icons';
+import { Button, DatePicker, Input, Calendar, Row, Col, message, Badge, Radio } from 'antd';
+import { CheckCircleTwoTone, EditTwoTone, ClockCircleOutlined, FormOutlined } from '@ant-design/icons';
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
 import * as R from 'ramda';
@@ -13,13 +13,22 @@ import ProjItem from './ProjItem';
 import StripPercentage from './StripPercentage';
 import { useDailiesStatus } from './hook';
 import Description from './Description';
+import { isWeekend } from '@/utils/utils';
 
 const dateFormat = 'YYYYMMDD';
 
 function Dailies(prop: { date?: string }) {
   const hookStatus = useDailiesStatus(prop.date);
+  const involvedProj = hookStatus.currentDaily?.dailyItems?.filter(d => 
+    !(d.project.id.indexOf('-ZH-') >-1) && d.project.participants.includes(hookStatus.userId || ''))
+  const unInvolvedProj = hookStatus.currentDaily?.dailyItems?.filter(d => 
+    !(d.project.id.indexOf('-ZH-') >-1) && !d.project.participants.includes(hookStatus.userId || ''))
+  const syntPro = hookStatus.currentDaily?.dailyItems?.filter(d => 
+    (d.project.id.indexOf('-ZH-') >-1) )
 
-  const onHoursChange = (i: number) => (h: number) => {
+  const  onShowTypeChange = (e: any) =>  hookStatus.setShowType(e.target.value)
+  const onHoursChange = (id: string) => (h: number) => {
+    let i = hookStatus.currentDaily?.dailyItems.findIndex(p => p.project.id === id)
     hookStatus.setCurrentDaily(
       R.over(
         R.lensPath(['dailyItems', i]),
@@ -28,7 +37,8 @@ function Dailies(prop: { date?: string }) {
       ),
     );
   };
-  const onContentOfWorkChange = (i: number) => (c: string) =>
+  const onContentOfWorkChange = (id: string) => (c: string) => {
+    let i = hookStatus.currentDaily?.dailyItems.findIndex(p => p.project.id === id)
     hookStatus.setCurrentDaily(
       R.over(
         R.lensPath(['dailyItems', i]),
@@ -36,23 +46,41 @@ function Dailies(prop: { date?: string }) {
         hookStatus.currentDaily,
       ),
     );
+  }
 
-  const list = () =>
-    hookStatus.currentDaily?.dailyItems?.map((d, i) => (
+  // const list = () =>
+  //   hookStatus.currentDaily?.dailyItems?.map((d, i) => (
+  //     <ProjItem
+  //       key={d.project.id}
+  //       projId={d.project.id}
+  //       hours={d.timeConsuming}
+  //       content={d.content}
+  //       projName={d.project.name}
+  //       onHoursChange={onHoursChange(i)}
+  //       onContentOfWorkChange={onContentOfWorkChange(i)}
+  //       ref={hookStatus.refs[i]}
+  //       visibleFilter={hookStatus.filter}
+  //       involvedProj={d.project.participants.includes(hookStatus.userId || '')}
+  //       endedProj={d.project.status === 'endProj'}
+  //     />
+  //   ));
+
+  const list = (type: string) =>
+    (type === '0' ? involvedProj : type === '1' ? unInvolvedProj : syntPro).map((d, i) => (
       <ProjItem
         key={d.project.id}
         projId={d.project.id}
         hours={d.timeConsuming}
         content={d.content}
         projName={d.project.name}
-        onHoursChange={onHoursChange(i)}
-        onContentOfWorkChange={onContentOfWorkChange(i)}
+        onHoursChange={onHoursChange(d.project.id)}
+        onContentOfWorkChange={onContentOfWorkChange(d.project.id)}
         ref={hookStatus.refs[i]}
         visibleFilter={hookStatus.filter}
         involvedProj={d.project.participants.includes(hookStatus.userId || '')}
         endedProj={d.project.status === 'endProj'}
       />
-    ));
+  ));
 
   const handleLastReportOfDay = () => {
     const c = hookStatus.getLastDaily(hookStatus.currentDate);
@@ -91,7 +119,12 @@ function Dailies(prop: { date?: string }) {
         // </Button>,
         <Button
           key="submit"
-          onClick={() =>
+          onClick={() => {
+            let noneLen = hookStatus.currentDaily.dailyItems.filter((p) => !!p.timeConsuming !==  !!p.content).length
+            if (noneLen) {
+              message.info('工时和工作内容请填写完整')
+              return
+            }
             hookStatus.pushDaily({
               variables: {
                 date: hookStatus.currentDate,
@@ -104,7 +137,7 @@ function Dailies(prop: { date?: string }) {
                   })),
               },
             })
-          }
+          }}
           // disabled={!R.any((e) => e.timeConsuming !== 0, hookStatus.currentDaily.projs)}
           loading={hookStatus.loading}
         >
@@ -147,15 +180,49 @@ function Dailies(prop: { date?: string }) {
                 dateCellRender={(date) =>
                   R.cond<string[], React.ReactNode>([
                     [
-                      (d) => R.includes(d, hookStatus.completedDailiesDates),
+                      (d) => R.includes(d, R.filter(isWeekend, hookStatus.days)),
                       R.always(
                         <div style={{ textAlign: 'center' }}>
-                          <div> { getDateNumabet(date) }h</div>
-                          <CheckCircleTwoTone twoToneColor="#52c41a" />
+                          <Badge count="班"></Badge>
+                          { getDateNumabet(date) ? 
+                            <div> { getDateNumabet(date) }h</div>:
+                            <div><ClockCircleOutlined style={{ color: 'red' }} /></div>
+                          }
                         </div>,
                       ),
                     ],
-                    [R.T, R.always(null)],
+                    [
+                      (d) => R.includes(d, R.reject(isWeekend, hookStatus.days)),
+                      R.always(
+                        <div style={{ textAlign: 'center' }}>
+                          <Badge count="休" style={{ backgroundColor: '#52c41a' }}></Badge>
+                          { getDateNumabet(date) ? 
+                            <div> { getDateNumabet(date) }h</div> : <div></div>
+                          }
+                        </div>,
+                      ),
+                    ],
+                    [
+                      isWeekend,
+                      R.always(
+                        <div style={{ textAlign: 'center' }}>
+                          <Badge count="休" style={{ backgroundColor: '#52c41a' }}></Badge>
+                          { getDateNumabet(date) ? 
+                            <div> { getDateNumabet(date) }h</div> : <div></div>
+                          }
+                        </div>,
+                      ),
+                    ],
+                    [
+                      (d) => R.includes(d, hookStatus.completedDailiesDates),
+                      R.always(
+                        <div style={{ textAlign: 'center' }}>
+                          <ClockCircleOutlined style={{ color: 'green' }} />
+                          <div> { getDateNumabet(date) }h</div>
+                        </div>,
+                      ),
+                    ],
+                    [R.T, R.always(<div style={{ textAlign: 'center' }}><ClockCircleOutlined style={{ color: 'red' }} /></div>)],
                   ])(date.format('YYYYMMDD'))
                 }
               />
@@ -163,18 +230,31 @@ function Dailies(prop: { date?: string }) {
           </Col>
           <Col xs={24} sm={16}>
             <ProCard 
-              bordered 
+              bordered
+              headStyle={{ display: 'block' }}
               bodyStyle={{ padding: '12px' }}
               title={
-                <Input
-                  key="search"
-                  addonBefore="检索"
-                  allowClear
-                  onChange={(e) => hookStatus.setFilter(e.target.value)}
-                />
+                <Row>
+                  <Col span={8}>
+                    <Input
+                      key="search"
+                      addonBefore="检索"
+                      allowClear
+                      onChange={(e) => hookStatus.setFilter(e.target.value)}
+                    />
+                  </Col>
+                  <Col span={10}></Col>
+                  <Col span={6}>
+                    <Radio.Group style={{ marginBottom: 8 }} onChange={onShowTypeChange} value={hookStatus.showType}>
+                      <Radio.Button value="0">涉及</Radio.Button>
+                      <Radio.Button value="1">未涉及</Radio.Button>
+                      <Radio.Button value="2">综合</Radio.Button>
+                    </Radio.Group>
+                  </Col>
+                </Row>
               }
               >
-              {list()}
+              { list(hookStatus.showType) }
             </ProCard>
           </Col>
         </Row>

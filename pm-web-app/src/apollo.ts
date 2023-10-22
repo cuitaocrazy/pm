@@ -1,4 +1,22 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { onError } from '@apollo/client/link/error'
+import { message } from 'antd';
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  console.log(graphQLErrors)
+  if (graphQLErrors)
+    graphQLErrors.map(({ message: eorrMessage, path}) => {
+      if (path?.includes('deleteProject')) {
+        message.error(eorrMessage)
+      }
+    })
+  if (networkError) {
+    const errorObj = JSON.parse(JSON.stringify(networkError))
+    if (errorObj.statusCode === 401) {
+      message.error('请刷新页面重试')
+    }
+  } 
+})
 
 const cache = new InMemoryCache({
   addTypename: false,
@@ -11,7 +29,7 @@ const link = createHttpLink({
 export const client = new ApolloClient({
   // Provide required constructor fields
   cache,
-  link,
+  link: errorLink.concat(link)
 });
 
 // gen code by https://graphql-code-generator.com/
@@ -55,6 +73,25 @@ export type ProjectOfDaily = {
 export type ProjectOfDailyItem = {
   __typename?: 'ProjectOfDailyItem';
   employee: User;
+  timeConsuming: Scalars['Int'];
+  content?: Maybe<Scalars['String']>;
+};
+
+export type EmployeeDailies = {
+  __typename?: 'EmployeeDailies';
+  id: Scalars['String'];
+  dailies: EmployeeDaily[];
+};
+
+export type EmployeeDaily = {
+  __typename?: 'EmployeeDaily';
+  date: Scalars['String'];
+  projs: EmployeeDailyItem[];
+};
+
+export type EmployeeDailyItem = {
+  __typename?: 'EmployeeDailyItem';
+  projId: Scalars['ID'];
   timeConsuming: Scalars['Int'];
   content?: Maybe<Scalars['String']>;
 };
@@ -312,18 +349,59 @@ export type ProjectAgreement = {
   agreementId: Scalars['String'];
 };
 
+export type Market = {
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  leader: Scalars['String'];
+  projects: Maybe<MarketProject[]>;
+  contacts: Maybe<MarketContact[]>;
+  createDate: Scalars['String'];
+  updateTime: Scalars['String'];
+};
+
+export type MarketProject = {
+  name: Scalars['String'];
+  introduct: Scalars['String'];
+  scale: Scalars['String'];
+  plan: Scalars['String'];
+  status: MarketProjectStatus
+  fileList: Maybe<FileInput[]>;
+  visitRecord: Maybe<MarketProjectVisit[]>;
+};
+
+export type MarketContact = {
+  name: Scalars['String'];
+  phone: Scalars['String'];
+  duties: Scalars['String'][];
+  remark: Scalars['String'];
+};
+
+export type MarketProjectVisit = {
+  date: Scalars['String'];
+  content: Scalars['String'];
+};
+
+export enum MarketProjectStatus {
+  Track = 'track',
+  Stop = 'stop',
+  Transfer = 'transfer',
+}
+
 export type Query = {
   __typename?: 'Query';
   me: User;
   subordinates: User[];
-  groupUsers: User[];
+  groupsUsers: User[];
   myDailies?: Maybe<EmployeeOfDailies>;
   projs: Project[];
+  superProjs: Project[];
   iLeadProjs: Project[];
   filterProjs: Project[];
+  filterProjsByType: Project[];
   expenses: Expense[];
   dailyUsers: User[];
   empDaily: EmployeeOfDailies;
+  empDailys: EmployeeDailies[];
   projDaily: ProjectOfDailies;
   allProjDaily: ProjectOfDailies;
   workCalendar: Scalars['String'][];
@@ -339,6 +417,7 @@ export type Query = {
   agreements: Agreement[];
   projectAgreements: ProjectAgreement[];
   tags: Scalars['String'][];
+  markets: Market[];
 };
 
 export type QueryProjectArgs = {
@@ -369,8 +448,8 @@ export type QueryChartsArgs = {
   year: Scalars['String'];
 };
 
-export type QueryGroupUsersArgs = {
-  group: Scalars['String'];
+export type QueryGroupsUsersArgs = {
+  groups: Scalars['String'][];
 };
 
 export type DailyInput = {
@@ -521,6 +600,37 @@ export type TagInput = {
   name: Scalars['String'];
 };
 
+export type MarketInput = {
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  leader: Scalars['String'];
+  projects: Maybe<MarketProjectInput[]>;
+  contacts: Maybe<MarketContactInput[]>;
+  createDate: Scalars['String'];
+  updateTime: Scalars['String'];
+};
+
+export type MarketProjectInput = {
+  name: Scalars['String'];
+  introduct: Scalars['String'];
+  scale: Scalars['String'];
+  plan: Scalars['String'];
+  status: MarketProjectStatus
+  fileList: Maybe<FileInput[]>;
+  visitRecord: Maybe<MarketProjectVisitInput[]>;
+};
+
+export type MarketContactInput = {
+  name: Scalars['String'];
+  phone: Scalars['String'];
+  duties: Scalars['String'][];
+  remark: Scalars['String'];
+};
+
+export type MarketProjectVisitInput = {
+  date: Scalars['String'];
+  content: Scalars['String'];
+};
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -619,3 +729,10 @@ export type MutationPushTagsArgs = {
   tags: Scalars['String'][];
 };
 
+export type MutationPushMarketArgs = {
+  market: MarketInput;
+};
+
+export type MutationDeleteMarketArgs = {
+  id: Scalars['ID'];
+};

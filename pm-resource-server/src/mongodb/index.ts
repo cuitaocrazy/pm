@@ -141,6 +141,10 @@ export interface IProject {
    * 归档人
    */
   archivePerson: string
+  /**
+   * 总工时
+   */
+  timeConsuming: number
 }
 
 export const Project = client.db().collection<IProject>(pluralize('Project'))
@@ -464,3 +468,115 @@ export const Attachment = client.db().collection<IAttachment>(pluralize('Attachm
 }
 
 export const Tag = client.db().collection<ITags>(pluralize('Tag'))
+
+/**
+ * 市场信息
+ */
+export interface IMarket {
+  /**
+   * 机构id
+   */
+  _id: string
+  /**
+   * 负责人
+   */
+  leader: string
+  /**
+   * 机构名称
+   */
+  name: string
+  /**
+   * 机构项目
+   */
+  projects: [{
+    /**
+     * 项目名称
+     */
+    name: string
+    /**
+     * 项目简介
+     */
+    introduct: string
+    /**
+     * 项目规模
+     */
+    scale: string
+    /**
+     * 项目计划
+     */
+    plan: string
+     /**
+     * 项目状态
+     */
+    status?: 'track' | 'stop' | 'transfer',
+    /**
+     * 项目资料
+     */
+    fileList:  [{
+      /**
+       * uid
+       */
+      uid: string
+      /**
+       * 名称
+       */
+      name: string
+      /**
+       * 状态
+       */
+      status: string
+      /**
+       * 地址
+       */
+      url: string
+      /**
+       * 缩略地址
+       */
+      thumbUrl: String
+    }],
+    /**
+     * 拜访记录
+     */
+    visitRecord: [{
+      /**
+       * 拜访时间
+       */
+      date: string
+      /**
+       * 拜访内容
+       */
+      content: string
+    }],
+  }],
+  /**
+   * 机构联系人
+   */
+  contacts: [{
+    /**
+     * 姓名
+     */
+    name: string
+    /**
+     * 职务
+     */
+    duties?: string[]
+    /**
+     * 电话
+     */
+    phone?: string
+    /**
+     * 备注
+     */
+    remark?: string
+  }],
+  /**
+   * 创建日期
+   */
+  createDate?: Date
+  /**
+   * 更新时间
+   */
+  updateTime?: Date
+}
+
+export const Market = client.db().collection<IMarket>(pluralize('Market'))

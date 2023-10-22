@@ -174,14 +174,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             data?.endTime ? moment(data?.endTime).format('YYYY-MM-DD') : ''
           }</Descriptions.Item>
           
-          <Descriptions.Item label="合同金额:">{ data?.contAmount }</Descriptions.Item>
+          {/* <Descriptions.Item label="合同金额:">{ data?.contAmount }</Descriptions.Item>
           <Descriptions.Item label="确认金额:">{ data?.recoAmount }</Descriptions.Item>
           <Descriptions.Item label="税后金额:">{ data?.taxAmount }</Descriptions.Item>
           <Descriptions.Item label="项目预算:">{ data?.projBudget }</Descriptions.Item>
           <Descriptions.Item label="预算费用:">{ data?.budgetFee }</Descriptions.Item>
           <Descriptions.Item label="实际费用:">{ data?.actualFee }</Descriptions.Item>
           <Descriptions.Item label="预算成本:">{ data?.budgetCost }</Descriptions.Item>
-          <Descriptions.Item label="实际成本:">{ data?.actualCost }</Descriptions.Item>
+          <Descriptions.Item label="实际成本:">{ data?.actualCost }</Descriptions.Item> */}
           <Descriptions.Item label="预估工作量:">{ data?.estimatedWorkload }</Descriptions.Item>
           { projType === 'SQ' || projType === 'SH' ? '' :
             <Fragment>

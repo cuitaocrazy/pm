@@ -16,12 +16,12 @@ const ProjCostPage: React.FC = () => {
     <PageContainer>
       <ProCard>
         <Row>
-          <Col xs={24} sm={4}>
+          <Col xs={24} sm={6}>
             <ProCard collapsible title="员工列表" loading={queryProjsLoading}>
               <Employee users={users} handleClick={(userId: string) => queryCosts(userId)} />
             </ProCard>
           </Col>
-          <Col xs={24} sm={20}>
+          <Col xs={24} sm={18}>
             <ProCard bordered title="费用详情">
               <Expense
                 title={empCosts.employee.name}

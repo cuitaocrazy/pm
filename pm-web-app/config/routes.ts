@@ -101,6 +101,46 @@
     ]
   },
   {
+    path: '/synthetical',
+    name: 'synthetical',
+    access: 'canSynt',
+    icon: 'project',
+    routes:[
+      {
+        path: '/synthetical/edit',
+        name: 'syntEdit',
+        component: './Project/Edit/EditSynt',
+        access: 'canSyntEdit'
+      },
+      {
+        path: '/synthetical/dailies',
+        name: 'syntDailies',
+        component: './Daily/View/BySynt',
+        access: 'canSyntDailies'
+      },
+    ]
+  },
+  {
+    path: '/market',
+    name: 'market',
+    access: 'canMarket',
+    icon: 'project',
+    routes:[
+      {
+        path: '/market/custom',
+        name: 'marketCustom',
+        component: './Market/Edit/EditCustom',
+        access: 'canMarketCustom'
+      },
+      // {
+      //   path: '/market/plan',
+      //   name: 'marketPlan',
+      //   component: './Market/Edit/EditPlan',
+      //   access: 'canMarketPlan'
+      // },
+    ]
+  },
+  {
     path: '/expense',
     name: 'expense',
     component: './Expense/Edit',

@@ -10,6 +10,8 @@ import { useModel } from 'umi';
 
 const myQuery = gql`
   {
+    workCalendar
+    settleMonth
     myDailies {
       employee {
         id
@@ -25,7 +27,6 @@ const myQuery = gql`
         }
       }
     }
-
     projs {
       id
       name
@@ -55,9 +56,13 @@ export function useDailiesStatus(date?: string) {
   });
 
   const [filter, setFilter] = useState('');
+  const [showType, setShowType] = useState('0');
+
   const { initialState } = useModel('@@initialState');
   const dailies = useMemo(() => data?.myDailies?.dailies || [], [data]);
   const projs = useMemo(() => data?.projs || [], [data]);
+  const days = data?.workCalendar || [];
+  const months = data?.settleMonth || [];
   const getSheetForDate = useCallback(
     (
       rawDaily: EmployeeOfDaily = {
@@ -177,10 +182,14 @@ export function useDailiesStatus(date?: string) {
     completedDailiesDates,
     currentDaily,
     isNew,
+    showType,
+    days,
+    months,
     refresh,
     setCurrentDate,
     setCurrentDaily,
     setFilter,
+    setShowType,
     pushDaily: oPushDaily,
     refs: refs.current,
     getOffset: () => refs.current[0].current?.getOffset() || 0,

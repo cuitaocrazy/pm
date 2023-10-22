@@ -78,6 +78,18 @@ export default (app, express) => {
     });
   });
 
+  app.post('/api/upload/market', upload.array('files'), function(req, res, next) {
+    res.send({
+      code: 1000,
+      data: req.body.uids.map((item, index) => {
+        return {
+          uid: item,
+          path: `/api/${req.files[index].path}`
+        }
+      })
+    });
+  });
+
   app.post('/api/upload/knowledge', upload.array('files'), function(req, res, next) {
     res.send({
       code: 1000,

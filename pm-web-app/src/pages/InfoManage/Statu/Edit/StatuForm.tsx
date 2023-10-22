@@ -43,7 +43,7 @@ export default (form: FormInstance<StatuInput>, data?: StatuInput) => {
         <Input />
       </Form.Item>
       <Form.Item label="状态编码" name="code" rules={[{ required: true }]}>
-        <Input min={0} />
+        <Input placeholder='一般为大写状态名称首字母'/>
       </Form.Item>
       <Form.Item label="是否启用" name="enable" valuePropName="checked" rules={[{ required: true }]}>
         <Switch />

@@ -4,17 +4,16 @@ import type {
   MutationPushProjectArgs,
   ProjectInput,
   Query,
-  QueryProjectArgs
+  QueryFilterProjectArgs
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
-import { useModel } from 'umi';
-import * as R from 'ramda';
-import { projectClassify } from './utils';
+import { useModel, history } from 'umi';
+import { convert, attachmentUpload } from './utils';
 
 const queryGql = gql`
-query ($isArchive: Boolean) {
+query ($projType: String!) {
     subordinates {
       id
       name
@@ -40,7 +39,7 @@ query ($isArchive: Boolean) {
         tags
       }
     }
-    superProjs(isArchive: $isArchive){
+    filterProjsByType(projType: $projType) {
       id
       pId
       name
@@ -48,38 +47,14 @@ query ($isArchive: Boolean) {
       customer
       leader
       salesLeader
-      projStatus
-      contStatus
-      acceStatus
-      contAmount
-      recoAmount
-      projBudget
-      budgetFee
-      budgetCost
-      actualFee
-      actualCost
-      taxAmount
       description
       createDate
       updateTime
       participants
       status
-      isArchive
       startTime
       endTime
-      estimatedWorkload
-      serviceCycle
-      productDate
-      acceptDate
-      freePersonDays
-      usedPersonDays
-      requiredInspections
-      actualInspections
-      contacts {
-        name
-        duties
-        phone
-      }
+      timeConsuming
       actives {
         recorder
         date
@@ -109,17 +84,16 @@ const deleteProjGql = gql`
 `;
 
 export function useProjStatus() {
-  const [archive, setArchive] = useState(false);
-  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryProjectArgs>(queryGql, {
+  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryFilterProjectArgs>(queryGql, {
     variables: {
-      isArchive: archive
+      projType: 'ZH'
     },
     fetchPolicy: 'no-cache',
   });
-
-  const [deleteProjHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteProjectArgs>(
-    deleteProjGql
-  );
+  const [deleteProjHandle, { loading: deleteLoading }] = useMutation<
+    Mutation,
+    MutationDeleteProjectArgs
+  >(deleteProjGql);
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
     pushProjGql,
   );
@@ -132,9 +106,10 @@ export function useProjStatus() {
     refresh();
     initialRefresh()
   }, [refresh]);
-  const tmpProjs = queryData?.superProjs || [];
-
-  const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
+  const tmpProjs = queryData?.filterProjsByType || [];
+  const projs = convert(tmpProjs).filter(el => {
+    return el.name.indexOf(filter) > -1
+  })
   const subordinates = queryData?.subordinates || [];
   const customers = queryData?.customers || [];
   const agreements = queryData?.agreements || [];
@@ -142,7 +117,7 @@ export function useProjStatus() {
 
   const deleteProj = useCallback(
     async (id: string) => {
-      // await deleteProjHandle({ variables: { id } });
+      await deleteProjHandle({ variables: { id } });
       refresh();
     },
     [deleteProjHandle, refresh],
@@ -150,13 +125,13 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      // if (proj.status === 'endProj') { return }
-      // let reqProj = await attachmentUpload(proj, buildProjName)
-      // await pushCostHandle({
-      //   variables: {
-      //     proj: reqProj
-      //   },
-      // });
+      if (proj.status === 'endProj') { return }
+      let reqProj = await attachmentUpload(proj, buildProjName)
+      await pushCostHandle({
+        variables: {
+          proj: reqProj
+        },
+      });
       refresh();
     },
     [pushCostHandle, refresh],
@@ -170,8 +145,6 @@ export function useProjStatus() {
     agreements,
     projectAgreements,
     filter, 
-    archive, 
-    setArchive,
     setFilter,
     refresh,
     deleteProj,

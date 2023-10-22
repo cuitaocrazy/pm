@@ -12,7 +12,7 @@ const QueryChangePmGql = gql`
       name
       groups
     }
-    projs {
+    superProjs {
       id
       name
       leader
@@ -50,7 +50,7 @@ export function useChangePmState() {
     return users.filter((user) => user.id === userId).length > 0;
   };
 
-  const projs = queryData?.projs.filter((proj) => isMember(proj.leader)) || [];
+  const projs = queryData?.superProjs.filter((proj) => isMember(proj.leader)) || [];
   const [pushChangePmHandle] = useMutation<Mutation, MutationPushChangePmArgs>(pushChangePmGql);
   const pushChangePm = useCallback(
     async (changePm: ChangePmInput) => {

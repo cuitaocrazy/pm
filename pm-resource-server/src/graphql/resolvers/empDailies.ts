@@ -138,5 +138,8 @@ export default {
         return getDeafultDailies(userId)
       }
     },
+    empDailys: (_: any, __: any, context: AuthContext) => {
+      return EmployeeDaily.find().map(dbid2id).toArray()
+    },
   },
 }

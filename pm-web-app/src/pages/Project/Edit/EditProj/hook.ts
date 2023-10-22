@@ -114,7 +114,7 @@ const deleteProjGql = gql`
 
 export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
-  const queryGql = getGql( isAdmin ? 'projs' : 'iLeadProjs' )
+  const queryGql = getGql( isAdmin ? 'superProjs' : 'iLeadProjs' )
   const [archive, setArchive] = useState('0');
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryProjectArgs>(queryGql, {
     variables: {
@@ -142,7 +142,7 @@ export function useProjStatus() {
     initialRefresh()
   }, [refresh]);
 
-  const tmpProjs = ((isAdmin ?  queryData?.projs : queryData?.iLeadProjs) || []).map(item => {
+  const tmpProjs = ((isAdmin ?  queryData?.superProjs : queryData?.iLeadProjs) || []).map(item => {
     return { ...item }
   });
   const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))

@@ -24,6 +24,22 @@ type ProjectOfDailyItem {
   content: String
 }
 
+type EmployeeDailies {
+  id: String!
+  dailies: [EmployeeDaily!]!
+}
+
+type EmployeeDaily {
+  date: String!
+  projs: [EmployeeDailyItem!]!
+}
+
+type EmployeeDailyItem {
+  projId: String!
+  timeConsuming: Int!
+  content: String
+}
+
 type EmployeeOfDailies {
   employee: User!
   dailies(date: String): [EmployeeOfDaily!]!
@@ -46,11 +62,11 @@ type Project {
   leader: String!
   salesLeader: String!
   name: String!
-  customer: String!
+  customer: String
   contName: String
-  projStatus: String!
-  contStatus: String!
-  acceStatus: String!
+  projStatus: String
+  contStatus: String
+  acceStatus: String
   contAmount: Float
   recoAmount: Float
   projBudget: Float
@@ -260,17 +276,58 @@ type Tag {
   name: String!
 }
 
+type Market {
+  id: ID!
+  name: String!
+  leader: String!
+  projects: [MarketProject!]
+  contacts: [MarketContact!]
+  createDate: String!
+  updateTime: String!
+}
+
+type MarketProject {
+  name: String!
+  introduct: String
+  scale: String
+  plan: String
+  status: MarketProjectStatus
+  fileList: [File!]
+  visitRecord: [MarketProjectVisit!]
+}
+
+type MarketContact {
+  name: String!
+  phone: String!
+  duties: [String!]
+  remark: String
+}
+
+type MarketProjectVisit {
+  date: String!
+  content: String
+}
+
+enum MarketProjectStatus {
+  track
+  stop
+  transfer
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
-  groupUsers(group: String!): [User!]!
+  groupsUsers(groups: [String!]): [User!]!
   myDailies: EmployeeOfDailies
   projs(isArchive: Boolean): [Project!]!
+  superProjs(isArchive: Boolean): [Project!]!
   iLeadProjs(isArchive: Boolean): [Project!]!
   filterProjs(projType: String!): [Project!]!
   filterProjsByApp(org: String, projType: String, type: String, isAdmin: Boolean): [Project!]!
+  filterProjsByType(projType: String!): [Project!]!
   expenses: [Expense!]!
   dailyUsers: [User!]!
+  empDailys: [EmployeeDailies!]!
   empDaily(userId: String!): EmployeeOfDailies!
   projDaily(projId: String!): ProjectOfDailies!
   allProjDaily(projId: String!): ProjectOfDailies!
@@ -288,6 +345,7 @@ type Query {
   projectAgreements:[ProjectAgreement!]!
   attachments:[Attachment!]!
   tags: [String]
+  markets: [Market!]!
 }
 
 input DailyInput {
@@ -302,11 +360,11 @@ input ProjectInput {
   leader: String!
   salesLeader: String!
   name: String!
-  customer: String!
+  customer: String
   contName: String
-  projStatus: String!
-  contStatus: String!
-  acceStatus: String!
+  projStatus: String
+  contStatus: String
+  acceStatus: String
   contAmount: Float
   recoAmount: Float
   projBudget: Float
@@ -435,6 +493,38 @@ input AttachmentInput {
   path: String!
 }
 
+input MarketInput {
+  id: ID
+  name: String!
+  leader: String!
+  projects: [MarketProjectInput!]
+  contacts: [MarketContactInput!]
+  createDate: String
+  updateTime: String
+}
+
+input MarketProjectInput {
+  name: String!
+  introduct: String
+  scale: String
+  plan: String
+  status: MarketProjectStatus
+  fileList: [FileInput!]
+  visitRecord: [MarketProjectVisitInput!]
+}
+
+input MarketContactInput {
+  name: String!
+  phone: String!
+  duties: [String!]
+  remark: String
+}
+
+input MarketProjectVisitInput {
+  date: String!
+  content: String
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
@@ -459,6 +549,8 @@ type Mutation {
   pushAttachment(attachment: AttachmentInput!): ID!
   deleteAttachment(id: ID!): ID!
   pushTags(tags: [String!]!): String
+  pushMarket(market: MarketInput!): ID!
+  deleteMarket(id: ID!): ID!
 }
 `
 const directivesDef = gql`

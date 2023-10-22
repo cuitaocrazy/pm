@@ -98,7 +98,7 @@ export function getGroupUsers (user: UserInfo) {
   const groups = user.groups || []
 
   const inst = axios.create(keycloakReqConfig)
-
+  
   // eslint-disable-next-line no-useless-escape
   const roots = uniq(groups.map(g => g.match(/^\/[^\/]+/)![0]))
   return getUserByRootGroups(roots, inst)
@@ -166,11 +166,11 @@ async function getUserByGroup (groupId: string, fetch: AxiosInstance) {
   }))
 }
 
-export function getUsersByGroup (user: UserInfo, group: string) {
+export function getUsersByGroups (user: UserInfo, group: string[]) {
   const { origin, pathname } = new URL(config.issuerBaseURL)
   const keycloakAdminUrl = origin + pathname.replace('auth', 'auth/admin')
   const keycloakReqConfig = { headers: { Authorization: `Bearer ${user.token}` }, baseURL: keycloakAdminUrl }
   const inst = axios.create(keycloakReqConfig)
 
-  return getUserByRootGroup(group, inst)
+  return getUserByRootGroups(group, inst)
 }

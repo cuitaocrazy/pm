@@ -32,11 +32,16 @@ export default {
   'menu.project.projDailies': '日报',
   'menu.project.projExpense': '费用',
   'menu.project.projWeeklies': '周报',
+  'menu.synthetical': '综合项目',
+  'menu.synthetical.syntEdit': '综合项目管理',
+  'menu.synthetical.syntDailies': '综合项目日报',
+  'menu.market': '市场管理',
+  'menu.market.marketCustom': '市场客户管理',
+  'menu.market.marketPlan': '市场计划管理',
   'menu.infoManage': '信息维护',
   'menu.infoManage.statu': '项目类型管理',
   'menu.infoManage.industry': '行业管理',
   'menu.infoManage.region': '区域管理',
   'menu.infoManage.customer': '客户管理',
   'menu.infoManage.agreement': '合同管理',
-  
 };

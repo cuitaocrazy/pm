@@ -7,7 +7,6 @@ import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
-import ProjIdComponent from './ProjIdComponent';
 import { projStatus } from './utils';
 import { forEach } from 'ramda';
 import moment from 'moment';
@@ -189,7 +188,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Form.Item label={label} name={type} rules={[{ required: true }]}>
         {options.length ? (
           <Select allowClear>
-            {options.filter(s => s.enable).map((s: TreeStatu) => (
+            {options.map((s: TreeStatu) => (
               <Select.Option key={s.id} value={s.id}>
                 {s.name}
               </Select.Option>
@@ -271,63 +270,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       initialValues={data || { leader: initialState?.currentUser?.id }} 
       disabled={data?.status === 'endProj'}
     >
-      <Form.Item shouldUpdate noStyle>
-        {() => {
-          return (
-            <Row>
-              <Col xs={24} sm={20}>
-                <Form.Item labelCol={{ span: 3, offset: 0 }} hidden={!(isDerive || data?.pId)} label="关联项目ID" name="pId">
-                  <Input disabled />
-                </Form.Item>
-                <Form.Item
-                  labelCol={{ span: 3, offset: 0 }}
-                  label="ID"
-                  name="id"
-                  rules={[{ required: true }, { validator }]}
-                >
-                  <ProjIdComponent disabled={!!data?.id && !isDerive} onChange={onIdChange} />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={4}>
-                <Button
-                  key="create"
-                  hidden={!data?.id || isDerive}
-                  type="primary"
-                  onClick={deriveNewProject}
-                >
-                  派生一个新项目
-                </Button>
-              </Col>
-            </Row>
-          );
-        }}
-      </Form.Item>
       <Row>
         <Col span={8}>
           <Form.Item label="项目名称" name="name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={8}>
-          <Form.Item dependencies={['id']} noStyle>
-            {() => {
-              return getCustomers('customer', '客户名称');
-            }}
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
-            <Select disabled allowClear>
-              {resData?.agreements.map((u) => (
-                <Select.Option key={u.id} value={u.id}>
-                  {u.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
         <Col span={8}>
           <Form.Item label="项目负责人" name="leader" rules={[{ required: true }]}>
             <Select disabled={!!data?.id && !isDerive} allowClear>
@@ -350,8 +298,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
-          <Form.Item label="参与人员" name="participants">
+      </Row>
+      <Row>
+        <Col span={24}>
+          <Form.Item label="参与人员" name="participants" labelCol={{ span: 3, offset: 0 }}>
             <Select
               mode="multiple"
               filterOption={(input, option) => {
@@ -372,162 +322,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
       </Row>
-      <Row>
-        <Col span={8}>
-          <Form.Item dependencies={['id']} noStyle>
-            {() => {
-              return getLeveTwoStatus('projStatus', '项目状态');
-            }}
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item dependencies={['id']} noStyle>
-            {() => {
-              return getLeveTwoStatus('acceStatus', '验收状态');
-            }}
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item dependencies={['id']} noStyle>
-            {() => {
-              return getLeveTwoStatus('contStatus', '合同状态');
-            }}
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={8}>
-          <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
-            <Select disabled={false} loading={loading} onChange={v => setStageStatus(v)}>
-              {projStatus.map((s) => (
-                <Select.Option key={s[0]} value={s[0]}>
-                  {s[1]}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="启动日期" name="startTime" rules={[{ required: stageStatus ? true : false}]}>
-            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }}/>
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="关闭日期" name="endTime" rules={[{ required: stageStatus === 'endProj' ? true : false }]}>
-            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }}/>
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={8}>
-          <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={8}>
-          <Form.Item label="项目预算" name="projBudget" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="预算费用" name="budgetFee" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="实际费用" name="actualFee" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={8}>
-          <Form.Item label="预算成本" name="budgetCost" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="实际成本" name="actualCost" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-      </Row>
-      { projType === 'SQ' || projType === 'SH' ? '' :
-        <Row>
-          <Col span={8}>
-            <Form.Item label="投产日期" name="productDate" rules={[{ required: false }]}>
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }}/>
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label="验收日期" name="acceptDate" rules={[{ required: false }]}>
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }}/>
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label="免费维护期" name="serviceCycle" rules={[{ required: false }]}
-              tooltip={(<span className="ant-form-text">月</span>)}>
-              <InputNumber min={0} />
-            </Form.Item>
-          </Col>
-        </Row>
-      }
-      { 
-       projType === 'SH' ?
-       <Row hidden={projType !== 'SH'}>
-         <Col span={8}>
-           <Form.Item label="要求巡检次数" name="requiredInspections" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-           <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-          <Form.Item label="服务周期" name="serviceCycle" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">月</span>)} >
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-       </Row> : ''
-      }
-      { 
-       projType === 'SH' ?
-       <Row>
-         <Col span={8}>
-           <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-           <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-        
-         </Col>
-       </Row>: ''
-      }
       <Row>
         <Col span={24}>
           <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
@@ -631,55 +425,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                     </div>
                   </div>
                 ))}
-              </>
-            )}
-          </Form.List>
-        </Col>
-      </Row>
-      <Row hidden>
-        <Col span={24}>
-          <Form.List name="contacts">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map((field, i) => (
-                  <div key={field.key} style={{ textAlign: 'center' }}>
-                    <Divider>联系人 {i + 1}</Divider>
-                    <Form.Item
-                      labelCol={{ span: 3, offset: 0 }}
-                      key="name"
-                      label="联系人"
-                      name={[field.name, 'name']}
-                      rules={[{ required: true }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                    <Form.Item
-                      labelCol={{ span: 3, offset: 0 }}
-                      key="duties"
-                      label="职务"
-                      name={[field.name, 'duties']}
-                    >
-                      <Input />
-                    </Form.Item>
-                    <Form.Item
-                      labelCol={{ span: 3, offset: 0 }}
-                      key="phone"
-                      label="电话"
-                      name={[field.name, 'phone']}
-                    >
-                      <Input />
-                    </Form.Item>
-                    <MinusCircleOutlined
-                      className="dynamic-delete-button"
-                      onClick={() => remove(i)}
-                    />
-                  </div>
-                ))}
-                <Form.Item>
-                  <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
-                    添加售前活动
-                  </Button>
-                </Form.Item>
               </>
             )}
           </Form.List>

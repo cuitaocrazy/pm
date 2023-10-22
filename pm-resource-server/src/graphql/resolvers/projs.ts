@@ -13,8 +13,17 @@ export default {
       .sort({ createDate: -1 })
       .map(dbid2id).toArray()
     },
+    superProjs: (_: any, __: any, context: AuthContext) => { 
+      let filter = { _id: { $not: /-ZH-/ } }
+      if (__.isArchive === true || __.isArchive === false) { filter['isArchive'] = __.isArchive }
+      return Project
+      .find(filter)
+      .sort({ createDate: -1 })
+      .map(dbid2id).toArray()
+    },
     iLeadProjs: (_: any, __: any, context: AuthContext) => Project
       .find({
+        _id: { $not: /-ZH-/ },
         isArchive: __.isArchive ? __.isArchive : false,
         $or: [ { leader: context.user!.id, }, { salesLeader: context.user!.id } ],
       })
@@ -24,7 +33,14 @@ export default {
       .find({
         isArchive: false,
         $or: [ { leader: context.user!.id, }, { salesLeader: context.user!.id, }, { participants: { $elemMatch: { $eq: context.user!.id } } } ],
-        _id: { $regex: '(?:[^-]+-){1}'+__.projType+'' },
+        _id: { $regex: `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$` },
+      })
+      .sort({ createDate: -1 })
+      .map(dbid2id).toArray(),
+    filterProjsByType: (_: any, __: any, context: AuthContext) => Project
+      .find({
+        isArchive: false,
+        _id: { $regex: `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$` },
       })
       .sort({ createDate: -1 })
       .map(dbid2id).toArray(),
@@ -81,6 +97,10 @@ export default {
       return Project.updateOne({ _id: args.id }, { $set: { isArchive: true, archiveTime, archivePerson: context.user!.id } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
     },
     deleteProject: async (_: any, args: any, context: AuthContext) => {
+      let deletProj = await Project.findOne({ _id: args.id })
+      if (deletProj?.timeConsuming) {
+        return new Error(`项目已存在工时，无法删除！`)
+      }
       // 清除合同的绑定关系
       await ProjectAgreement.deleteMany({ _id: args.id })
       return Project.deleteOne({ _id: args.id }).then(() => args.id)

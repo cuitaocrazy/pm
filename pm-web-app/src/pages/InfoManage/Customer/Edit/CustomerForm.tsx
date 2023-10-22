@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Switch, Select, Row, Col, Divider, Button  } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { SelectProps } from 'antd';
-import type { Mutation, CustomerInput, MutationPushTagsArgs, Query, QueryGroupUsersArgs} from '@/apollo';
+import type { Mutation, CustomerInput, MutationPushTagsArgs, Query, QueryGroupsUsersArgs} from '@/apollo';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import type { FormInstance } from 'antd/lib/form';
 import { useBaseState } from '@/pages/utils/hook';
@@ -11,8 +11,8 @@ import { useBaseState } from '@/pages/utils/hook';
 const { Option } = Select;
 
 const userQuery = gql`
-  query GetGroupUsers($group: String!) {
-    groupUsers(group: $group) {
+  query GetGroupUsers($groups: [String!]) {
+    groupsUsers(groups: $groups) {
       id
       name
     }
@@ -32,8 +32,8 @@ const layout = {
 };
 
 export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
-  const { data: resData } = useQuery<Query, QueryGroupUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    group: '/项目二部/市场组',
+  const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
+    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
   } });
 
   const [pushTagsHandle] = useMutation<Mutation, MutationPushTagsArgs>(
@@ -96,7 +96,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
       </Form.Item>
       <Form.Item label="销售负责人" name="salesman" rules={[{ required: true }]}>
         <Select>
-          {resData?.groupUsers.map((u) => (
+          {resData?.groupsUsers.map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {u.name}
             </Select.Option>

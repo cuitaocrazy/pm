@@ -6,14 +6,14 @@ import type { Moment } from 'moment';
 import moment from 'moment';
 import { ApolloProvider } from '@apollo/client';
 import { client } from '@/apollo';
-import EmployeePage from './Employee';
+import ProjectsPage from './Projects';
 import CalendarPage from './Calendar';
 import DailiesPage from './Dailies';
-import { useUsersState, useDailyState } from './hook';
+import { useProjsState, useDailyState } from './hook';
 
-const EmployeeDailyPage = () => {
-  const { loading: queryUsersLoading, users, workCalendar, userDailiys } = useUsersState();
-  const { loading: queryDailyLoading, queryDaily, userId, daily } = useDailyState();
+const ProjectsDailyPage = () => {
+  const { loading: queryUsersLoading, projs } = useProjsState();
+  const { loading: queryDailyLoading, queryDaily, projId, daily } = useDailyState();
 
   const [date, setDate] = useState<Moment>(moment().day(1));
 
@@ -24,7 +24,7 @@ const EmployeeDailyPage = () => {
         split="vertical"
         extra={
           <>
-            {users.find((user) => user.id === userId)?.name}
+            {projs.find((proj) => proj.id === projId)?.name}
             <Divider type="vertical" />
             {`${moment(date).format('YYYY年MM月DD日')}-${moment(date)
               .add(6, 'd')
@@ -33,12 +33,12 @@ const EmployeeDailyPage = () => {
         }
       >
         <Row>
-          <Col xs={24} sm={6}>
-            <ProCard collapsible title="员工列表" loading={queryUsersLoading}>
-              <EmployeePage users={users} userDailiys={userDailiys} handleClick={queryDaily} />
+          <Col md={24} lg={10} xl={8} xxl={6}>
+            <ProCard collapsible title="项目列表" loading={queryUsersLoading}>
+              <ProjectsPage projs={projs} handleClick={queryDaily} />
             </ProCard>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col md={24} lg={14} xl={9} xxl={9}>
             <ProCard
               collapsible
               bordered
@@ -52,17 +52,12 @@ const EmployeeDailyPage = () => {
                 />
               }
             >
-              <CalendarPage
-                date={date}
-                setDate={setDate}
-                dailies={daily.dailies}
-                workCalendar={workCalendar}
-              />
+              <CalendarPage date={date} setDate={setDate} dailies={daily.dailies} />
             </ProCard>
           </Col>
-          <Col xs={24} sm={10}>
+          <Col md={24} xl={7} xxl={9}>
             <ProCard loading={queryDailyLoading}>
-              <DailiesPage date={date} dailies={daily.dailies} workCalendar={workCalendar} />
+              <DailiesPage date={date} dailies={daily.dailies} />
             </ProCard>
           </Col>
         </Row>
@@ -73,6 +68,6 @@ const EmployeeDailyPage = () => {
 
 export default () => (
   <ApolloProvider client={client}>
-    <EmployeeDailyPage />
+    <ProjectsDailyPage />
   </ApolloProvider>
 );

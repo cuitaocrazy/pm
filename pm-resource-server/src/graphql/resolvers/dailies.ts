@@ -15,15 +15,11 @@ async function getParticipateProjectDailies() {
       },
     }
   ]).toArray()
-  // console.log(JSON.stringify(d))
-  for(let i = 0; i < d.length; i++ ) {
-    if (d[i]._id) {
-      const proj = await Project.findOne({ _id: d[i]._id })
-      if (proj && proj._id) {
-        Project.updateOne({ _id: proj._id }, { $set: { timeConsuming: d[i].total } }, { upsert: true }).then((res) => res)
-      }
-    }
-  }
+  const allProj = await Project.find().toArray()
+  allProj.forEach(proj => {
+    const samePro = d.find(v => v._id === proj._id)
+    Project.updateOne({ _id: proj._id }, { $set: { timeConsuming: samePro ? samePro.total : 0 } }, { upsert: true }).then((res) => res)
+  })
 }
 
 export default {

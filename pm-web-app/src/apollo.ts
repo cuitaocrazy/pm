@@ -6,9 +6,8 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   console.log(graphQLErrors)
   if (graphQLErrors)
     graphQLErrors.map(({ message: eorrMessage, path}) => {
-      if (path?.includes('deleteProject')) {
-        message.error(eorrMessage)
-      }
+      if (path?.includes('charts')) return
+      message.error(eorrMessage)
     })
   if (networkError) {
     const errorObj = JSON.parse(JSON.stringify(networkError))
@@ -387,6 +386,25 @@ export enum MarketProjectStatus {
   Transfer = 'transfer',
 }
 
+export type MarketPlan = {
+  id: Scalars['ID'];
+  leader: Scalars['String'];
+  week: Scalars['String'];
+  weekPlans: MarketWeekPlan[];
+  createDate: Scalars['String'];
+  updateTime: Scalars['String'];
+};
+
+export type MarketWeekPlan = {
+  marketId: Scalars['String'];
+  marketName: Scalars['String'];
+  projectName: Scalars['String'];
+  projectScale: Scalars['String'];
+  projectStatus: Scalars['String'];
+  projectPlan?: Scalars['String'];
+  nextWeekPlan: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
@@ -418,6 +436,9 @@ export type Query = {
   projectAgreements: ProjectAgreement[];
   tags: Scalars['String'][];
   markets: Market[];
+  marketsBySuper: Market[];
+  marketPlans: MarketPlan[];
+  marketPlansBySuper: MarketPlan[];
 };
 
 export type QueryProjectArgs = {
@@ -632,6 +653,24 @@ export type MarketProjectVisitInput = {
   content: Scalars['String'];
 };
 
+export type MarketPlanInput = {
+  id: Scalars['ID'];
+  week: Scalars['String'];
+  weekPlans: MarketWeekPlanInput[];
+  createDate: Scalars['String'];
+  updateTime: Scalars['String'];
+};
+
+export type MarketWeekPlanInput = {
+  marketId: Scalars['String'];
+  marketName: Scalars['String'];
+  projectName: Scalars['String'];
+  projectScale: Scalars['String'];
+  projectStatus: Scalars['String'];
+  projectPlan?: Scalars['String'];
+  nextWeekPlan: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   pushDaily: Scalars['ID'];
@@ -650,6 +689,10 @@ export type Mutation = {
   pushCustomer: Scalars['ID'];
   pushAgreement: Scalars['ID'];
   pushTags: Scalars['ID'];
+  pushMarket: Scalars['ID'];
+  deleteMarket: Scalars['ID'];
+  pushMarketPlan: Scalars['ID'];
+  deleteMarketPlan: Scalars['ID'];
 };
 
 export type MutationPushDailyArgs = {
@@ -734,5 +777,13 @@ export type MutationPushMarketArgs = {
 };
 
 export type MutationDeleteMarketArgs = {
+  id: Scalars['ID'];
+};
+
+export type MutationPushMarketPlanArgs = {
+  marketPlan: MarketPlanInput;
+};
+
+export type MutationDeleteMarketPlanArgs = {
   id: Scalars['ID'];
 };

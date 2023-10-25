@@ -5,9 +5,9 @@
         <t-image class="logo" :src="logo" />
       </template>
       <template #title>
-        <t-tabs default-value="1" :value="tabValue" @change="tabChange" theme="tag">
-          <t-tab-panel value="1" label="待办" />
+        <t-tabs default-value="2" :value="tabValue" @change="tabChange" theme="tag">
           <t-tab-panel value="2" label="项目" />
+          <t-tab-panel value="1" label="待办" />
         </t-tabs>
       </template>
     </t-navbar>

@@ -50,7 +50,6 @@ const Employee: React.FC<EmployeeProps> = (props) => {
         defaultExpandAll
         treeData={genTreeData(R.filter((user: User) => R.includes(search, user.name))(users), userDailiys)}
         onSelect={(selectedKeys, { selected, selectedNodes, node }) => {
-          if (selectedNodes[0].title.indexOf('无') > -1) return
           selected ? handleClick(`${selectedKeys[0].toString().split('/')[0]}`) : handleClick('')
         }
         }

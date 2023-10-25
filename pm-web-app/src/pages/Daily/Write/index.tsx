@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, DatePicker, Input, Calendar, Row, Col, message, Badge, Radio } from 'antd';
-import { CheckCircleTwoTone, EditTwoTone, ClockCircleOutlined, FormOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined } from '@ant-design/icons';
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
 import * as R from 'ramda';
@@ -47,24 +47,7 @@ function Dailies(prop: { date?: string }) {
       ),
     );
   }
-
-  // const list = () =>
-  //   hookStatus.currentDaily?.dailyItems?.map((d, i) => (
-  //     <ProjItem
-  //       key={d.project.id}
-  //       projId={d.project.id}
-  //       hours={d.timeConsuming}
-  //       content={d.content}
-  //       projName={d.project.name}
-  //       onHoursChange={onHoursChange(i)}
-  //       onContentOfWorkChange={onContentOfWorkChange(i)}
-  //       ref={hookStatus.refs[i]}
-  //       visibleFilter={hookStatus.filter}
-  //       involvedProj={d.project.participants.includes(hookStatus.userId || '')}
-  //       endedProj={d.project.status === 'endProj'}
-  //     />
-  //   ));
-
+  
   const list = (type: string) =>
     (type === '0' ? involvedProj : type === '1' ? unInvolvedProj : syntPro).map((d, i) => (
       <ProjItem
@@ -81,11 +64,6 @@ function Dailies(prop: { date?: string }) {
         endedProj={d.project.status === 'endProj'}
       />
   ));
-
-  const handleLastReportOfDay = () => {
-    const c = hookStatus.getLastDaily(hookStatus.currentDate);
-    hookStatus.setCurrentDaily(c);
-  };
 
   const onCalendarSelect = (value: Moment) => {
     value && hookStatus.setCurrentDate(value.format(dateFormat))
@@ -243,12 +221,12 @@ function Dailies(prop: { date?: string }) {
                       onChange={(e) => hookStatus.setFilter(e.target.value)}
                     />
                   </Col>
-                  <Col span={10}></Col>
-                  <Col span={6}>
+                  <Col span={6}></Col>
+                  <Col span={10}>
                     <Radio.Group style={{ marginBottom: 8 }} onChange={onShowTypeChange} value={hookStatus.showType}>
-                      <Radio.Button value="0">涉及</Radio.Button>
-                      <Radio.Button value="1">未涉及</Radio.Button>
-                      <Radio.Button value="2">综合</Radio.Button>
+                      <Radio.Button value="0">涉及({ involvedProj.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
+                      <Radio.Button value="1">未涉及({ unInvolvedProj.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
+                      <Radio.Button value="2">综合({ syntPro.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
                     </Radio.Group>
                   </Col>
                 </Row>

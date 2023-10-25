@@ -16,7 +16,9 @@ function getUsersByGroup (group: string, users: UserWithGroup[]) {
 }
 
 async function getUserDailies (userId: string) {
-  const data = dbid2id(await EmployeeDaily.findOne({ _id: userId }))
+  const userDaily = await EmployeeDaily.findOne({ _id: userId })
+  if (!userDaily) { return getDeafultDailies(userId) }
+  const data = dbid2id(userDaily)
   return ({
     userId: data.id,
     dailies: data.dailies.map(d => ({
@@ -47,7 +49,6 @@ async function getParticipateProjectUsersByLeader (leaderId: string, users: User
 
 async function getParticipateProjectDailiesByLeader (leaderId: string, userId: string) {
   const projIds = await Project.find({ leader: leaderId }).map(proj => proj._id).toArray()
-
   const d = await EmployeeDaily.aggregate([
     {
       $match: {

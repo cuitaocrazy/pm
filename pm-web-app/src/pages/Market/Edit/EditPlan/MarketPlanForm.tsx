@@ -1,58 +1,34 @@
-import React, { useState } from 'react';
-import { Form, Input, InputNumber, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
-import type { UploadProps, UploadFile } from 'antd';
-import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupsUsersArgs, QueryProjDailyArgs } from '@/apollo';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Select, Button, DatePicker, Row, Col, message } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import type { Market, MarketPlanInput, MarketWeekPlan, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
-import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
-import { projStatus } from './utils';
-import { forEach } from 'ramda';
-import moment from 'moment';
+import moment from 'moment'
 
 const userQuery = gql`
-  query($groups: [String!]) {
-    groupsUsers(groups: $groups) {
-      id
-      name
-    }
-    agreements {
-      id
-      name
-      type
-    }
+  {
     subordinates {
       id
       name
     }
-    customers {
+    marketPlans {
+      id
+      week
+    }
+    markets {
       id
       name
-      industryCode
-      regionCode
-      enable
-    }
-    projs {
-      id
-    }
-  }
-`;
-
-const QueryDaily = gql`
-  query GetDaily($projId: String!) {
-    allProjDaily(projId: $projId) {
-      project {
-        id
-      }
-      dailies {
-        date
-        dailyItems {
-          employee {
-            id
-            name
-          }
-          timeConsuming
+      leader
+      projects {
+        name
+        introduct
+        scale
+        plan
+        status
+        visitRecord {
+          date
           content
         }
       }
@@ -65,363 +41,270 @@ const layout = {
   wrapperCol: { span: 16 },
 };
 
-export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
-  } });
-  const { data: queryData } = useQuery<Query, QueryProjDailyArgs >(QueryDaily, { fetchPolicy: 'no-cache', variables: {
-    projId: data?.id || '',
-  } });
-  const { status, dataForTree } = useBaseState();
+export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => {
+  const { loading, data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
   const { initialState } = useModel('@@initialState');
-  const [isDerive, setIsDerive] = useState(false);
-  const treeStatus = dataForTree(status);
-  const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
-  const result = reg.exec(data?.id || '');
-  const [projType, setProjType] = useState(result?.groups?.projType || '');
-  const [stageStatus, setStageStatus] = useState(data?.status || '');
+  const [seletMarkets, setSeletMarkets] = useState<Market[]>([]);
+  // 查看时初始化 seletMarkets的值
+  useEffect(() => {
+    if (data?.id && resData?.markets) {
+      let markArr: Market[] | any[]  = []
+      data?.weekPlans.forEach((item, index) => {
+        let findOb = resData?.markets.find(mar => mar.id == item.marketId)
+        markArr[index] = findOb || {}
+      })
+      setSeletMarkets(markArr)
+    }
+  }, [resData?.markets]);
 
-  // 获取填写日报人员id，禁止修改
-  let employeeIds: string[] = [];
-  if (queryData && queryData.allProjDaily.dailies.length) {
-    const employeesSet = new Set<string>([]);
-    forEach(item => forEach(chItem => employeesSet.add(chItem.employee.id), item.dailyItems), queryData.allProjDaily.dailies)
-    employeeIds = [...employeesSet]
+  const addWeekPlan = (add: any) => {
+    let week = form.getFieldValue('week')
+    if (week) {
+      add()
+    } else {
+      message.info('请先选择当前周')
+    }
   }
 
-  const props: UploadProps = {
-    listType: "picture",
-    action: '/api/upload/tmp',
-    defaultFileList: [],
-    showUploadList: {
-      showPreviewIcon: true,
-      showRemoveIcon: true,
-      showDownloadIcon: true
-    },
-    onChange: ({ file, fileList }) => {
-      // console.log(file, fileList)
-      if (file.status !== 'uploading') {
-        fileList.forEach(item => {
-          const { url, response } = item
-          item.url = url ? url : response.data
-          item.thumbUrl = ''
-          delete item.lastModified
-          delete item.percent
-          delete item.size
-          delete item.type
-          // delete item.originFileObj
-          delete item.response
-          delete item.xhr
-          delete item.lastModifiedDate
-        })
-      }
+  // 修改机构时更新选中的机构列表并初始化已经选中的项目参数
+  const onMarketChange = (value: string, filed: any) => {
+    let selectMarket = resData?.markets.find(item => item.id === value)
+    let tempSelet = seletMarkets || []
+    if (selectMarket) {
+      tempSelet[filed.name] = selectMarket
+      let tempWeekPlans = form.getFieldValue('weekPlans') || []
+      tempWeekPlans[filed.name] = { marketId: value, marketName: selectMarket.name }
+      form.setFieldsValue({
+        weekPlans: tempWeekPlans
+      })
+    }
+    setSeletMarkets(tempSelet)
+  };
+
+  // 修改项目时实时刷新对应的预算 状态和计划字段并更新拜访记录
+  const onProjectChange = (value: string, filed: any) => {
+    const { name: projectName, scale, status, plan } = seletMarkets[filed.name].projects?.find(item => item.name === value) || {};
+    let tempWeekPlans = form.getFieldValue('weekPlans') || []
+    tempWeekPlans[filed.name].projectScale = scale
+    tempWeekPlans[filed.name].projectStatus = status
+    tempWeekPlans[filed.name].projectPlan = plan
+    if (projectName) {
+      form.setFieldsValue({
+        weekPlans: tempWeekPlans
+      })
+      getWeekWork(filed.name)
     }
   };
 
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
- 
-  const validator = (rule: any, value: string) => {
-    const result = reg.exec(value);
-    setProjType(result?.groups?.projType || '')
-    if (result === null) {
-      return Promise.reject(Error('id格式不正确'));
-    }
+  // 获取选中的项目在选中周的拜访记录并拼接
+  const getWeekWork = (index: number) => {
+    let tempWeekPlans = form.getFieldValue('weekPlans') || []
+    let tempWeek = form.getFieldValue('week') || ''
+    const { visitRecord } = seletMarkets[index].projects?.find(item => item.name === tempWeekPlans[index].projectName) || {};
+    let visit = visitRecord?.filter(item => {
+      return moment(tempWeek).weekday(0).format('YYYY-MM-DD') === moment(item.date).weekday(0).format('YYYY-MM-DD')
+    }).map(v => v.content).join('\n')
+    tempWeekPlans[index].weekWork = visit || ''
+    form.setFieldsValue({
+      weekPlans: tempWeekPlans
+    })
+  }
 
-    if (!result.groups?.org) {
-      return Promise.reject(Error('请选择机构'));
-    }
+  const onPlanWeekChange = (date: any) => {
+    const tempWeekPlans = form.getFieldValue('weekPlans') || []
+    tempWeekPlans.forEach((p: MarketWeekPlan, index: number) => getWeekWork(index))
+    
+  }
 
-    if (!result.groups?.zone) {
-      return Promise.reject(Error('请选择区域'));
-    }
-
-    if (!result.groups?.projType) {
-      return Promise.reject(Error('请选择项目类型'));
-    }
-
-    if (!result.groups?.simpleName) {
-      return Promise.reject(Error('项目缩写不能为空'));
-    }
-
-    if (!/^\d{4}$/.exec(result.groups?.dateCode)) {
-      return Promise.reject(Error('日期编码为4位数字'));
-    }
-    const pId = form.getFieldValue('pId');
-    const id = form.getFieldValue('id');
-    if (id === pId) {
-      return Promise.reject(Error('派生项目ID不能与关联项目ID相同'));
-    }
-    return (!data?.id || isDerive) && resData!.projs.find((sp) => sp.id === value)
-      ? Promise.reject(Error('id已存在'))
-      : Promise.resolve();
-  };
-
-  const activeValidator = async (_: any) => {
-    const actives = form.getFieldValue(_.field);
-    let type = projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'
-    if ((projType === 'SQ' || projType === 'SH') && (!actives || !actives.length)) {
-      return Promise.reject(Error(`至少需要添加一个${type}活动`));
+  const weekPlansValidator = async (_: any) => {
+    const weekPlans = form.getFieldValue('weekPlans');
+    if (!weekPlans || weekPlans.length === 0) {
+      return Promise.reject(Error(`至少需要添加一条周计划`));
     } else {
       return true;
     }
   };
 
-  const getLeveTwoStatus = (type: string, label: string) => {
-    const id = form.getFieldValue('id');
-    const result = reg.exec(id);
-    let options: TreeStatu[] = [];
-    treeStatus.forEach((statu) => {
-      if (statu.code === result?.groups?.projType && statu.children) {
-        statu.children.map((s: TreeStatu) => {
-          if (s.code === type) {
-            options = s.children || [];
-          }
-        });
-      }
-    });
-    return (
-      <Form.Item label={label} name={type} rules={[{ required: true }]}>
-        {options.length ? (
-          <Select allowClear>
-            {options.map((s: TreeStatu) => (
-              <Select.Option key={s.id} value={s.id}>
-                {s.name}
-              </Select.Option>
-            ))}
-          </Select>
-        ) : (
-          <Select loading={loading} />
-        )}
-      </Form.Item>
-    );
-  };
-
-  // 当id有变动，重置状态字段
-  const onIdChange = (value: string) => {
-    // const result = reg.exec(value);
-    if (value) {
-      form.setFieldsValue({
-        id: value,
-        projStatus: '',
-        contStatus: '',
-        acceStatus: '',
-        status: undefined,
-        startTime: '',
-        endTime: '',
-        actives: [],
-      })
-    }
-  };
-
-  // 派生一个新项目
-  const deriveNewProject = () => {
-    setIsDerive(true)
-    form.setFieldValue('pId', data?.id);
-    // 生成派生项目id
-    let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('MMDD')}`) || '1'
-    onIdChange(newId);
-  };
-
-  // 获取客户信息
-  const getCustomers = (type: string, label: string) => {
-    let customersArr = resData?.customers.filter(item => item.enable) || []
-    if (customersArr.length > 1) {
-      const id = form.getFieldValue('id');
-      const result = reg.exec(id);
-      customersArr = customersArr.filter(item => {
-        return (item.industryCode === result?.groups?.org) && (item.regionCode === result?.groups?.zone)
-      })
-    }
-    return (
-      <Form.Item label={label} name={type} rules={[{ required: true }]}>
-        {customersArr.length ? (
-          <Select allowClear>
-            {customersArr.map((s: Customer) => (
-              <Select.Option key={s.id} value={s.id}>
-                {s.name}
-              </Select.Option>
-            ))}
-          </Select>
-        ) : (
-          <Select loading={loading} />
-        )}
-      </Form.Item>
-    );
-  }
-
-  const renderActiveNode = (fields: any) => {
-    let tempFields = []
-    for (let i = fields.length - 1; i >= 0; i--) {
-      fields['index'] = i
-      tempFields.push(fields[i])
-    }
-    return tempFields;
-  }
-  
   return (
     <Form 
       {...layout} 
       form={form} 
       initialValues={data || { leader: initialState?.currentUser?.id }} 
-      disabled={data?.status === 'endProj'}
     >
       <Row>
         <Col span={8}>
-          <Form.Item label="项目名称" name="name" rules={[{ required: true }]}>
+          <Form.Item hidden label="ID" name="id">
             <Input />
           </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="项目负责人" name="leader" rules={[{ required: true }]}>
-            <Select disabled={!!data?.id && !isDerive} allowClear>
-              {resData?.subordinates.map((u) => (
-                <Select.Option key={u.id} value={u.id}>
-                  {u.name}
-                </Select.Option>
-              ))}
-            </Select>
+          <Form.Item
+            label="当前周"
+            name="week"
+            rules={[{ required: true }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined
+            })}
+          >
+            <DatePicker
+              allowClear={false}
+              inputReadOnly
+              picker="week"
+              onChange={onPlanWeekChange}
+            />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="市场负责人" name="salesLeader" rules={[{ required: true }]}>
-            <Select allowClear>
-              {resData?.groupsUsers.map((u) => (
-                <Select.Option key={u.id} value={u.id}>
-                  {u.name}
-                </Select.Option>
-              ))}
-            </Select>
+          <Form.Item
+            label="周开始时间"
+            name="week"
+            getValueProps={(value) => ({
+              value: value ? moment(value).weekday(0) : undefined
+            })}
+          >
+             <DatePicker disabled picker="date" />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            label="周结束时间"
+            name="week"
+            getValueProps={(value) => ({
+              value: value ? moment(value).weekday(6) : undefined
+            })}
+          >
+            <DatePicker disabled picker="date" />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={24}>
-          <Form.Item label="参与人员" name="participants" labelCol={{ span: 3, offset: 0 }}>
-            <Select
-              mode="multiple"
-              filterOption={(input, option) => {
-                const nameStr: any = option?.children || '';
-                if (input && nameStr) {
-                  return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-                }
-                return true;
-              }}
-            >
-              {resData?.subordinates.map((u) => (
-                <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
-                  {u.name}
-                </Select.Option>
-              ))}
-              x
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
-            <Input.TextArea />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Form.List name='actives' rules={[{ validator: activeValidator }]}>
+          <Form.List name="weekPlans" rules={[{ validator: weekPlansValidator }]}>
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Form.Item>
-                  {data?.status === 'endProj' ? '' :
-                    <Button type="dashed" onClick={() => add({recorder: initialState?.currentUser?.id }, fields.length)} icon={<PlusOutlined />}>
-                      添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动
-                    </Button>
-                  }
+                  <Button type="dashed" onClick={() => addWeekPlan(add)} icon={<PlusOutlined />}>
+                    添加周计划
+                  </Button>
                   <Form.ErrorList errors={errors} />
                 </Form.Item>
-                {renderActiveNode(fields).map((field, i) => (
-                  <div key={field.key} style={{ textAlign: 'left' }}>
-                    <Divider>{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动 {field.name + 1}</Divider>
+                {fields.reverse().map((field, i) => (
+                  <div key={field.key}>
                     <Row>
-                      <Col xs={24} sm={12}>
-                        <Row>
-                          <Col span={24}>
+                      <Col span={8}>
+                        <Form.Item
+                          key="marketId"
+                          label="机构名称"
+                          name={[field.name, 'marketId']}
+                          rules={[{ required: true }]}
+                        >
+                          <Select onChange={v => onMarketChange(v, field)} placeholder="选择机构">
+                            {resData?.markets?.map((u) => (
+                              <Select.Option key={u.id} value={u.id}>
+                                {u.name}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                        <Form.Item
+                          hidden
+                          key="marketName"
+                          label="机构名称"
+                          name={[field.name, 'marketName']}
+                          rules={[{ required: true }]}
+                        >
+                          <Input />
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item
+                          noStyle
+                          shouldUpdate
+                        >
+                          {() => (
                             <Form.Item
-                              labelCol={{ span: 5, offset: 0 }}
-                              key="recorder"
-                              label="记录人"
-                              name={[field.name, 'recorder']}
+                              key="projectName"
+                              label="项目名称"
+                              name={[field.name, 'projectName']}
                               rules={[{ required: true }]}
+                              shouldUpdate
                             >
-                              <Select disabled >
-                                {resData?.subordinates.map((u) => (
-                                  <Select.Option key={u.id} value={u.id}>
-                                    {u.name}
-                                  </Select.Option>
-                                ))}
+                              <Select onChange={v => onProjectChange(v, field)}>
+                                {(seletMarkets[field.name]?.projects || []).map((u) => (
+                                    <Select.Option key={u.name} value={u.name}>
+                                      {u.name}
+                                    </Select.Option>
+                                  )
+                                )}
                               </Select>
                             </Form.Item>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col span={24}>
-                            <Form.Item
-                              labelCol={{ span: 5, offset: 0 }}
-                              key="date"
-                              label="活动日期"
-                              name={[field.name, 'date']}
-                              rules={[{ required: true }]}
-                            >
-                              <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: '100%' }}/>
-                            </Form.Item>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col span={24}>
-                            <Form.Item
-                              labelCol={{ span: 5, offset: 0 }}
-                              key="content"
-                              label="活动内容"
-                              name={[field.name, 'content']}
-                              rules={[{ required: true }]}
-                            >
-                              <Input.TextArea rows={4} placeholder="需包含：时间--地点--人物---事件" />
-                            </Form.Item>
-                          </Col>
-                        </Row>
+                          )}
+                        </Form.Item>
                       </Col>
-                      <Col xs={24} sm={12}>
+                      <Col span={8}>
                         <Form.Item
-                          labelCol={{ span: 5, offset: 0 }}
-                          key="fileList"
-                          label="活动材料"
-                          name={[field.name, 'fileList']}
-                          rules={[{ required: false }]}
-                          getValueFromEvent={normFile}
-                          style={{ textAlign: 'left' }}
+                          key="projectStatus"
+                          label="项目状态"
+                          name={[field.name, 'projectStatus']}
+                          rules={[{ required: true }]}
                         >
-                          <Upload
-                            { ...props } 
-                            defaultFileList={
-                              form.getFieldValue('actives') ? 
-                              form.getFieldValue('actives')[field.name]?.fileList as UploadFile[] : []
-                            }
-                          >
-                            <Button icon={<UploadOutlined />}>上传</Button>
-                          </Upload>
+                          <Select disabled>
+                              <Select.Option key={'track'} value={'track'}>跟踪</Select.Option>
+                              <Select.Option key={'stop'} value={'stop'}>终止</Select.Option>
+                              <Select.Option key={'transfer'} value={'transfer'}>转销售</Select.Option>
+                          </Select>
                         </Form.Item>
                       </Col>
                     </Row>
-                    <div style={{ textAlign: 'center' }}>
-                    {data?.status === 'endProj' ? '' :
+                    <Row>
+                      <Col span={8}>
+                        <Form.Item
+                          key="projectScale"
+                          label="项目预算"
+                          name={[field.name, 'projectScale']}
+                        >
+                          <Input disabled/>
+                        </Form.Item>
+                      </Col>
+                      <Col span={16}>
+                        <Form.Item
+                          key="projectPlan"
+                          label="项目计划"
+                          name={[field.name, 'projectPlan']}
+                          labelCol={{ span: 5, offset: 0 }}
+                        >
+                          <Input.TextArea disabled/>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={24}>
+                        <Form.Item
+                          key="weekWork"
+                          label="本周工作"
+                          name={[field.name, 'weekWork']}
+                          labelCol={{ span: 3, offset: 0 }}
+                        >
+                          <Input.TextArea />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={24}>
+                        <Form.Item
+                          key="nextWeekPlan"
+                          label="下周计划"
+                          name={[field.name, 'nextWeekPlan']}
+                          labelCol={{ span: 3, offset: 0 }}
+                        >
+                          <Input.TextArea />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <div style={{ textAlign: 'center' }} >
                       <MinusCircleOutlined
                         className="dynamic-delete-button"
+                        style={{ textAlign: 'center' }} 
                         onClick={() => remove(field.name)}
                       />
-                    }
                     </div>
                   </div>
                 ))}
@@ -429,7 +312,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             )}
           </Form.List>
         </Col>
-      </Row>
+      </Row>   
     </Form>
   );
 };

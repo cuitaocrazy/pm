@@ -1,153 +1,139 @@
 import type {
   Mutation,
-  MutationDeleteProjectArgs,
-  MutationPushProjectArgs,
-  ProjectInput,
+  MutationDeleteMarketPlanArgs,
+  MutationPushMarketPlanArgs,
+  QueryGroupsUsersArgs,
+  MarketPlanInput,
   Query,
-  QueryFilterProjectArgs
 } from '@/apollo';
-import { gql, useLazyQuery, useMutation } from '@apollo/client';
+import { gql, useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
-import { useBaseState } from '@/pages/utils/hook';
-import { useModel, history } from 'umi';
-import { convert, attachmentUpload } from './utils';
+import { useModel } from 'umi';
 
-const queryGql = gql`
-query ($projType: String!) {
-    subordinates {
-      id
-      name
-    }
-    agreements {
-      id
-      name
-    }
-    projectAgreements {
-      id
-      agreementId
-    }
-    customers {
-      id
-      name
-      industryCode
-      regionCode
-      salesman
-      enable
-      contacts {
-        name
-        phone
-        tags
+const getGql = (gqlName: string) => {
+  return gql`
+    {
+      ${ gqlName } {
+        id
+        leader
+        week
+        weekPlans {
+          marketId
+          marketName
+          projectName
+          projectScale
+          projectStatus
+          projectPlan
+          weekWork
+          nextWeekPlan
+        }
+        createDate
+        updateTime
       }
-    }
-    filterProjsByType(projType: $projType) {
-      id
-      pId
-      name
-      contName
-      customer
-      leader
-      salesLeader
-      description
-      createDate
-      updateTime
-      participants
-      status
-      startTime
-      endTime
-      timeConsuming
-      actives {
-        recorder
-        date
-        content
-        fileList {
-          uid
+      subordinates {
+        id
+        name
+      }
+      markets {
+        id
+        name
+        leader
+        projects {
           name
-          url
+          introduct
+          plan
           status
-          thumbUrl
         }
       }
     }
+  `;
+} 
+
+const userQuery = gql`
+  query($groups: [String!]) {
+    groupsUsers(groups: $groups) {
+      id
+      name
+    }
   }
 `;
 
-const pushProjGql = gql`
-  mutation ($proj: ProjectInput!) {
-    pushProject(proj: $proj)
+const pushMarketPlanGql = gql`
+  mutation ($marketPlan: MarketPlanInput!) {
+    pushMarketPlan(marketPlan: $marketPlan)
   }
 `;
 
-const deleteProjGql = gql`
+const deleteMarketPlanGql = gql`
   mutation ($id: ID!) {
-    deleteProject(id: $id)
+    deleteMarketPlan(id: $id)
   }
 `;
 
 export function useProjStatus() {
-  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryFilterProjectArgs>(queryGql, {
-    variables: {
-      projType: 'ZH'
-    },
+  const { refresh: initialRefresh, initialState } = useModel('@@initialState');
+  const isAdmin = initialState?.currentUser?.access?.includes('realm:supervisor')
+  const queryGql = getGql( isAdmin ? 'marketPlansBySuper' : 'marketPlans' )
+  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(queryGql, {
     fetchPolicy: 'no-cache',
   });
-  const [deleteProjHandle, { loading: deleteLoading }] = useMutation<
-    Mutation,
-    MutationDeleteProjectArgs
-  >(deleteProjGql);
-  const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
-    pushProjGql,
+
+  const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
+    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
+  } });
+
+  const [deleteMarketPlanHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteMarketPlanArgs>(
+    deleteMarketPlanGql
+  );
+  const [pushMarketPlanHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushMarketPlanArgs>(
+    pushMarketPlanGql,
   );
 
-  const { refresh: initialRefresh } = useModel('@@initialState');
-  const { buildProjName } = useBaseState();
   const [filter, setFilter] = useState('');
     
   useEffect(() => {
     refresh();
     initialRefresh()
   }, [refresh]);
-  const tmpProjs = queryData?.filterProjsByType || [];
-  const projs = convert(tmpProjs).filter(el => {
-    return el.name.indexOf(filter) > -1
-  })
+  const markets = queryData?.markets || []
   const subordinates = queryData?.subordinates || [];
-  const customers = queryData?.customers || [];
-  const agreements = queryData?.agreements || [];
-  const projectAgreements = queryData?.projectAgreements || [];
+  const groupsUsers = resData?.groupsUsers || []
+  let marketPlans = (isAdmin ? queryData?.marketPlansBySuper : queryData?.marketPlans)  || []
+  if (filter) {
+    marketPlans = marketPlans.filter(m => m.leader === filter)
+  }
 
-  const deleteProj = useCallback(
+  const deleteMarketPlan = useCallback(
     async (id: string) => {
-      await deleteProjHandle({ variables: { id } });
+      await deleteMarketPlanHandle({ variables: { id } });
       refresh();
     },
-    [deleteProjHandle, refresh],
+    [deleteMarketPlanHandle, refresh],
   );
 
-  const pushProj = useCallback(
-    async (proj: ProjectInput) => {
-      if (proj.status === 'endProj') { return }
-      let reqProj = await attachmentUpload(proj, buildProjName)
-      await pushCostHandle({
+  const pushMarketPlan = useCallback(
+    async (marketPlan: MarketPlanInput) => {
+      await pushMarketPlanHandle({
         variables: {
-          proj: reqProj
+          marketPlan: marketPlan
         },
       });
       refresh();
     },
-    [pushCostHandle, refresh],
+    [pushMarketPlanHandle, refresh],
   );
 
   return {
+    isAdmin,
     loading: queryLoading || deleteLoading || pushLoading,
-    projs,
+    markets,
+    marketPlans,
     subordinates,
-    customers,
-    agreements,
-    projectAgreements,
+    groupsUsers,
     filter, 
     setFilter,
     refresh,
-    deleteProj,
-    pushProj,
+    deleteMarketPlan,
+    pushMarketPlan,
   };
 }

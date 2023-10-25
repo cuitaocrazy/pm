@@ -132,12 +132,12 @@
         component: './Market/Edit/EditCustom',
         access: 'canMarketCustom'
       },
-      // {
-      //   path: '/market/plan',
-      //   name: 'marketPlan',
-      //   component: './Market/Edit/EditPlan',
-      //   access: 'canMarketPlan'
-      // },
+      {
+        path: '/market/plan',
+        name: 'marketPlan',
+        component: './Market/Edit/EditPlan',
+        access: 'canMarketPlan'
+      },
     ]
   },
   {

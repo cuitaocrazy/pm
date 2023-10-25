@@ -103,7 +103,7 @@ export function useProjectState() {
     projType: filter.projType,
   }, { fetchPolicy: 'no-cache' });
 
-  const tabValue = ref('1');
+  const tabValue = ref('2');
   const projs = ref<Project[]>();
   const showProjs = ref();
   const subordinates = ref<User[]>([]);

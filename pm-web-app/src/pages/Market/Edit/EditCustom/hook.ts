@@ -2,12 +2,13 @@ import type {
   Mutation,
   MutationDeleteMarketArgs,
   MutationPushMarketArgs,
+  QueryGroupsUsersArgs,
   MarketInput,
   Query,
 } from '@/apollo';
-import { gql, useLazyQuery, useMutation } from '@apollo/client';
+import { gql, useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
-import { useModel, history } from 'umi';
+import { useModel } from 'umi';
 import { attachmentUpload } from './utils';
 
 const getGql = (gqlName: string) => {
@@ -50,7 +51,16 @@ const getGql = (gqlName: string) => {
       }
     }
   `;
-} 
+}
+
+const userQuery = gql`
+  query($groups: [String!]) {
+    groupsUsers(groups: $groups) {
+      id
+      name
+    }
+  }
+`;
 
 const pushMarketGql = gql`
   mutation ($market: MarketInput!) {
@@ -65,11 +75,17 @@ const deleteMarketGql = gql`
 `;
 
 export function useProjStatus() {
-  const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
-  const queryGql = getGql( isAdmin ? 'markets' : 'markets' )
+  const { refresh: initialRefresh, initialState } = useModel('@@initialState');
+  const isAdmin = initialState?.currentUser?.access?.includes('realm:supervisor')
+
+  const queryGql = getGql( isAdmin ? 'marketsBySuper' : 'markets' )
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(queryGql, {
     fetchPolicy: 'no-cache',
   });
+
+  const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
+    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
+  } });
 
   const [deleteMarketHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteMarketArgs>(
     deleteMarketGql
@@ -78,7 +94,6 @@ export function useProjStatus() {
     pushMarketGql,
   );
 
-  const { refresh: initialRefresh } = useModel('@@initialState');
   const [filter, setFilter] = useState('');
     
   useEffect(() => {
@@ -86,8 +101,13 @@ export function useProjStatus() {
     initialRefresh()
   }, [refresh]);
 
-  const markets = queryData?.markets || []
   const subordinates = queryData?.subordinates || [];
+  const groupsUsers = resData?.groupsUsers || []
+  let markets = (isAdmin ? queryData?.marketsBySuper : queryData?.markets) || []
+  if (filter) {
+    markets = markets.filter(m => m.leader === filter)
+  }
+
 
   const deleteMarket = useCallback(
     async (id: string) => {
@@ -111,9 +131,11 @@ export function useProjStatus() {
   );
 
   return {
+    isAdmin,
     loading: queryLoading || deleteLoading || pushLoading,
     markets,
     subordinates,
+    groupsUsers,
     filter, 
     setFilter,
     refresh,

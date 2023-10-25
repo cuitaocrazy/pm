@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef, useState } from 'react';
-import { Button, Table, Popconfirm, Tag, Input, Space } from 'antd';
+import { Button, Table, Popconfirm, Tag, Select, Space } from 'antd';
 import type { Market as Mark, MarketInput, MarketProject, MarketProjectInput, MarketProjectVisit } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -15,7 +15,7 @@ import { getStatusDisplayName } from './utils';
 const Market: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<MarketInput>>(null);
   const projRef = useRef<FormDialogHandle<MarketProjectInput>>(null);
-  const { markets, subordinates, loading, deleteMarket, pushMarket } = useProjStatus();
+  const { isAdmin, markets, subordinates, groupsUsers, loading, setFilter, deleteMarket, pushMarket } = useProjStatus();
   const [editeMarket, setEditeMarket] = useState({});
   const [editeIndex, setEditeIndex] = useState(0);
 
@@ -81,27 +81,33 @@ const Market: React.FC<any> = () => {
         title: '项目名称',
         dataIndex: 'name',
         key: 'name',
+        width: '15%'
       },
-      {
-        title: '项目简介',
-        dataIndex: 'introduct',
-        key: 'introduct',
-      },
+    
       {
         title: '项目规模',
         dataIndex: 'scale',
         key: 'scale',
-      },
-      {
-        title: '项目计划',
-        dataIndex: 'plan',
-        key: 'plan',
+        width: '15%'
       },
       {
         title: '项目状态',
         dataIndex: 'status',
         key: 'status',
+        width: '10%',
         render: (status: string) => <Tag color={ status === 'track' ?  "success" : status === 'stop' ? 'default' : 'warning' }>{ getStatusDisplayName(status) }</Tag> ,
+      },
+      {
+        title: '项目简介',
+        dataIndex: 'introduct',
+        key: 'introduct',
+        width: '20%'
+      },
+      {
+        title: '项目计划',
+        dataIndex: 'plan',
+        key: 'plan',
+        width: '20%'
       },
       {
         title: '操作',
@@ -161,12 +167,15 @@ const Market: React.FC<any> = () => {
   return (
     <PageContainer
       extra={[
-        // <Input
-        //   key="name"
-        //   addonBefore="机构名称"
-        //   allowClear
-        //   onChange={(e) => setFilter(e.target.value)}
-        // />,
+        isAdmin ?
+        <Select placeholder="请选择市场人员" allowClear onChange={setFilter}>
+          {groupsUsers.map((u) => (
+            <Select.Option key={u.id} value={u.id}>
+              {u.name}
+            </Select.Option>
+          ))}
+        </Select> : ''
+        ,
         <Button key="create" type="primary" onClick={() => ref.current?.showDialog()}>
           新建
         </Button>

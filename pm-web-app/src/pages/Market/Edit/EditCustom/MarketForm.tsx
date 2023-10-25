@@ -48,7 +48,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
     >
       <Row>
         <Col span={8}>
-         <Form.Item hidden label="ID" name="id">
+          <Form.Item hidden label="ID" name="id">
             <Input />
           </Form.Item>
           <Form.Item label="机构名称" name="name" rules={[{ required: true }]}>
@@ -56,9 +56,9 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="机构负责人" name="leader" rules={[{ required: true }]}>
+          <Form.Item label="市场负责人" name="leader" rules={[{ required: true }]}>
             <Select disabled={!!data?.id } allowClear>
-              {resData?.subordinates.map((u) => (
+              {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>

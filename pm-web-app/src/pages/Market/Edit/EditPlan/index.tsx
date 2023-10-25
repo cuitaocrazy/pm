@@ -1,7 +1,7 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState } from 'react';
-import { Button, Table, Popconfirm, Tag, Input, Space, Radio } from 'antd';
-import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
+import React, { useRef } from 'react';
+import { Button, Table, Popconfirm, Tag, Select, Space } from 'antd';
+import type { MarketPlan as MarkPlan, MarketPlanInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
@@ -9,124 +9,142 @@ import { useProjStatus } from './hook';
 import MarketPlanForm from './MarketPlanForm';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
-import { useBaseState } from '@/pages/utils/hook';
-import { getStatusDisplayName, projStatus } from './utils';
-import { history } from 'umi';
+import { getStatusDisplayName } from './utils';
 
-const Project: React.FC<any> = () => {
-  const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
-  const ref = useRef<FormDialogHandle<ProjectInput>>(null);
-  const { projs, projectAgreements, loading, deleteProj, pushProj } = useProjStatus();
-  const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
-  const [editProj, setEditProj] = useState<Proj>();
+const Market: React.FC<any> = () => {
+  const ref = useRef<FormDialogHandle<MarketPlanInput>>(null);
+  const { isAdmin, marketPlans, subordinates, groupsUsers, loading, setFilter, deleteMarketPlan, pushMarketPlan } = useProjStatus();
 
-  const editHandle = (proj: Proj) => {
-    const agree = projectAgreements.filter(item => item.id === proj.id)
-    const { actives, ...pro } = proj;
-    setEditProj(proj)
-    ref.current?.showDialog({ 
-      ...pro,
-      contName: agree.length ? agree[0].agreementId : '', 
-      actives: (actives as ActiveInput[])?.map(item => {
-        // @ts-ignore
-        item.date = moment(item.date)
-        return item
-      }),
-      // @ts-ignore
-      startTime: pro.startTime && moment(pro.startTime),
-      // @ts-ignore
-      endTime: pro.endTime && moment(pro.endTime),
-      // @ts-ignore
-      productDate: pro.productDate && moment(pro.productDate),
-      // @ts-ignore
-      acceptDate: pro.acceptDate && moment(pro.acceptDate),
-    });
+  const editHandle = (mark: MarkPlan) => {
+    ref.current?.showDialog({ ...mark });
   };
 
   const columns = [
     {
-      title: '项目名称',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text: string, record: Proj) => (
-        <div>{text}</div>
-      ),
-      width: 120
+      title: '填写人',
+      dataIndex: 'leader',
+      key: 'leader',
+      render: (text: string, record: MarkPlan) => {
+        return subordinates.find((user) => user.id === record.leader)?.name;
+      },
     },
     {
-      title: '项目ID',
-      dataIndex: 'id',
-      key: 'id',
-      render: (text: string, record: Proj) => (
-        <div>
-          <a onClick={() => editHandle(record)}>{buildProjName(record.id, record.name)} </a>
-        </div>
+      title: '周号',
+      dataIndex: 'week',
+      key: 'week',
+      render: (text: string, record: MarkPlan) => (
+        <a onClick={() => editHandle(record)}>{ moment(record.week).format('YYYY-W周')}</a>
       ),
-      filters: [
-        {
-          text: '行业',
-          value: 'orgCode',
-          children: Object.keys(orgCode).map((s) => ({ text: orgCode[s], value: s })),
-        },
-        {
-          text: '区域',
-          value: 'zoneCode',
-          children: Object.keys(zoneCode).map((s) => ({ text: zoneCode[s], value: s })),
-        },
-        {
-          text: '类型',
-          value: 'projType',
-          children: Object.keys(projType).map((s) => ({ text: projType[s], value: s })),
-        }
-      ],
-      onFilter: (value: string | number | boolean, record: Proj) => record.id.indexOf(value + '') > -1,
-      width: 250
     },
     {
-      title: '总人天数',
-      dataIndex: 'timeConsuming',
-      key: 'timeConsuming',
-      width: '80px',
-      render: (text: string, record: Proj) => <Tag color="cyan">{ text ? text : 0 }</Tag>,
+      title: '周开始日期',
+      dataIndex: 'startDate',
+      key: 'startDate',
+      render: (text: string, record: MarkPlan) => moment(record.week).weekday(0).format('YYYY-MM-DD'),
+    },
+    {
+      title: '周结束日期',
+      dataIndex: 'endDate',
+      key: 'endDate',
+      render: (text: string, record: MarkPlan) => moment(record.week).weekday(6).format('YYYY-MM-DD'),
     },
     {
       title: '创建日期',
       dataIndex: 'createDate',
       key: 'createDate',
-      render: (createDate: string) => {
-        return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
-      },
-      width: 150,
+      render: (createDate: string) => moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日'),
     },
     {
       title: '更新时间',
       dataIndex: 'updateTime',
       key: 'updateTime',
-      render: (updateTime: string) => {
-        return moment(updateTime, 'YYYYMMDD HH:mm:ss').format('YYYY年MM月DD日 HH:mm:ss');
-      },
-      width: 200,
+      render: (updateTime: string) => moment(updateTime, 'YYYYMMDD HH:mm:ss').format('YYYY年MM月DD日 HH:mm:ss'),
     },
     {
       title: '操作',
       key: 'action',
-      render: (id: string, record: Proj) => (
+      render: (id: string, record: MarkPlan) => (
         <Space>
-          <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteProj(record.id)}>
+          <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteMarketPlan(record.id)}>
             <a key="delete">
-              删除
+              删除周计划
             </a>
           </Popconfirm>
         </Space>
       ),
       fixed: 'right' as 'right',
-      width: 120,
     },
   ];
+
+  const expandedRowRender = (record: MarkPlan) => {
+    const expandedColumns = [
+      {
+        title: '机构名称',
+        dataIndex: 'marketName',
+        key: 'marketName',
+        width: '10%'
+      },
+      {
+        title: '项目名称',
+        dataIndex: 'projectName',
+        key: 'projectName',
+        width: '10%'
+      },
+      {
+        title: '项目状态',
+        dataIndex: 'projectStatus',
+        key: 'projectStatus',
+        width: '10%',
+        render: (status: string) => <Tag color={ status === 'track' ?  "success" : status === 'stop' ? 'default' : 'warning' }>{ getStatusDisplayName(status) }</Tag> ,
+      },
+      {
+        title: '项目规模',
+        dataIndex: 'projectScale',
+        key: 'projectScale',
+        width: '10%'
+      },
+      {
+        title: '项目计划',
+        dataIndex: 'projectPlan',
+        key: 'projectPlan',
+        width: '14%'
+      },
+      {
+        title: '本周工作',
+        dataIndex: 'weekWork',
+        key: 'weekWork',
+        width: '23%'
+      },
+      {
+        title: '下周计划',
+        dataIndex: 'nextWeekPlan',
+        key: 'nextWeekPlan',
+        width: '23%'
+      },
+    ];
+
+    const data = record.weekPlans?.map((plan, index) => {
+      return { ...plan, index }
+    })
+    
+    return <Table rowKey={(record) => record.index} columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>
+  };
+  const rowExpandable = (record: MarkPlan) => {
+    return record.weekPlans && record.weekPlans.length ? true : false
+  }
 
   return (
     <PageContainer
       extra={[
+        isAdmin ?
+        <Select placeholder="请选择市场人员" allowClear onChange={setFilter}>
+          {groupsUsers.map((u) => (
+            <Select.Option key={u.id} value={u.id}>
+              {u.name}
+            </Select.Option>
+          ))}
+        </Select> : ''
+        ,
         <Button key="create" type="primary" onClick={() => ref.current?.showDialog()}>
           新建
         </Button>
@@ -136,17 +154,17 @@ const Project: React.FC<any> = () => {
         loading={loading}
         rowKey={(record) => record.id}
         columns={columns}
-        dataSource={projs}
-        scroll={{ x: 1500 }}
+        dataSource={ marketPlans }
+        expandable={{ expandedRowRender, rowExpandable }}
+        // scroll={{ x: 1500 }}
         size="middle"
       />
       <DialogForm
         ref={ref}
-        title="编辑项目"
+        title="编辑机构"
         width={1000}
-        submitHandle={(v: ProjectInput) => {  
-          // if (editProj?.status === 'endProj') { return Promise.resolve() }
-          return pushProj(v)
+        submitHandle={(v: MarketPlanInput) => {  
+          return pushMarketPlan(v)
         } }
       >
         {MarketPlanForm}
@@ -157,6 +175,6 @@ const Project: React.FC<any> = () => {
 
 export default () => (
   <ApolloProvider client={client}>
-    <Project />
+    <Market />
   </ApolloProvider>
 );

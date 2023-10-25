@@ -580,3 +580,68 @@ export interface IMarket {
 }
 
 export const Market = client.db().collection<IMarket>(pluralize('Market'))
+
+/**
+ * 市场项目计划
+ */
+export interface IMarketPlan {
+  /**
+   * 计划id
+   */
+  _id: string
+  /**
+   * 填写人
+   */
+  leader: string
+  /**
+   * 周编码
+   */
+  week: string
+  /**
+   * 机构ID
+   */
+  weekPlans: [{
+    /**
+     * 机构ID
+     */
+    marketId: string
+    /**
+     * 机构名称
+     */
+    marketName: string
+    /**
+     * 项目名称
+     */
+    projectName: string
+    /**
+     * 项目预算
+     */
+    projectScale: string
+    /**
+     * 项目状态
+     */
+    projectStatus: string
+    /**
+     * 项目计划
+     */
+    projectPlan: string
+    /**
+     * 本周工作
+     */
+    weekWork: string
+    /**
+     * 下周计划
+     */
+    nextWeekPlan: string
+  }]
+  /**
+   * 创建日期
+   */
+  createDate?: Date
+  /**
+   * 更新时间
+   */
+  updateTime?: Date
+}
+
+export const MarketPlan = client.db().collection<IMarketPlan>(pluralize('MarketPlan'))

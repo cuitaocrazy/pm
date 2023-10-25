@@ -12,9 +12,7 @@ const layout = {
 };
 
 export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInput) => {
-  console.log(data)
   const { initialState } = useModel('@@initialState');
-
   let files = data?.fileList as UploadFile[];
 
   const props: UploadProps = {

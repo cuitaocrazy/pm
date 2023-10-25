@@ -437,29 +437,34 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       </Row>
       <Row>
         <Col span={8}>
-          <Form.Item label="项目预算" name="projBudget" rules={[{ required: false }]}>
+          <Form.Item label="项目预算" name="projBudget" rules={[{ required: false }]}
+            tooltip={(<span className="ant-form-text">客户心理的预算</span>)}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="预算费用" name="budgetFee" rules={[{ required: false }]}>
+          <Form.Item label="预算费用" name="budgetFee" rules={[{ required: false }]}
+            tooltip={(<span className="ant-form-text">自己人员消耗的费用</span>)}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="实际费用" name="actualFee" rules={[{ required: false }]}>
+          <Form.Item label="实际费用" name="actualFee" rules={[{ required: false }]}
+            tooltip={(<span className="ant-form-text">实际消耗费用</span>)}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={8}>
-          <Form.Item label="预算成本" name="budgetCost" rules={[{ required: false }]}>
+          <Form.Item label="预算成本" name="budgetCost" rules={[{ required: false }]}
+            tooltip={(<span className="ant-form-text">采购或者外包的费用</span>)}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="实际成本" name="actualCost" rules={[{ required: false }]}>
+          <Form.Item label="实际成本" name="actualCost" rules={[{ required: false }]}
+            tooltip={(<span className="ant-form-text">实际采购成本</span>)}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>

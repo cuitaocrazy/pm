@@ -34,6 +34,7 @@
   <t-calendar
     class="calendar-sty"
     v-model:visible="visible"
+    :firstDayOfWeek="1"
     :defaultValue="selectDate"
     :value="selectDate"
     :format="format"

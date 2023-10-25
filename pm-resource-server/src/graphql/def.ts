@@ -314,6 +314,26 @@ enum MarketProjectStatus {
   transfer
 }
 
+type MarketPlan {
+  id: ID
+  leader: String!
+  week: String!
+  weekPlans: [MarketWeekPlan!]
+  createDate: String
+  updateTime: String
+}
+
+type MarketWeekPlan {
+  marketId: String!
+  marketName: String!
+  projectName: String!
+  projectScale: String!
+  projectStatus: String!
+  projectPlan: String
+  weekWork: String
+  nextWeekPlan: String
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -346,6 +366,9 @@ type Query {
   attachments:[Attachment!]!
   tags: [String]
   markets: [Market!]!
+  marketsBySuper: [Market!]!
+  marketPlans: [MarketPlan!]!
+  marketPlansBySuper: [MarketPlan!]!
 }
 
 input DailyInput {
@@ -525,6 +548,26 @@ input MarketProjectVisitInput {
   content: String
 }
 
+input MarketPlanInput {
+  id: ID
+  leader: String
+  week: String!
+  weekPlans: [MarketWeekPlanInput!]
+  createDate: String
+  updateTime: String
+}
+
+input MarketWeekPlanInput {
+  marketId: String!
+  marketName: String!
+  projectName: String!
+  projectScale: String!
+  projectStatus: String!
+  projectPlan: String
+  weekWork: String
+  nextWeekPlan: String
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
@@ -551,6 +594,8 @@ type Mutation {
   pushTags(tags: [String!]!): String
   pushMarket(market: MarketInput!): ID!
   deleteMarket(id: ID!): ID!
+  pushMarketPlan(marketPlan: MarketPlanInput!): ID!
+  deleteMarketPlan(id: ID!): ID!
 }
 `
 const directivesDef = gql`

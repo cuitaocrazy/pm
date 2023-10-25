@@ -82,6 +82,7 @@ async function getParticipateProjectDailiesByLeader (leaderId: string | undefine
         },
       },
     ]).toArray()
+    if (!head(d)) { return getDeafultDailies(projId) }
     return ({
       ...dbid2id(head(d)),
       projId,

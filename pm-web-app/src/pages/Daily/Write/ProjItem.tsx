@@ -59,7 +59,11 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
   }));
 
   useEffect(() => {
-    const delay = 1000; // 设置防抖延迟时间
+    setContentValue(props.content || '')
+  }, [props.content]);
+
+  useEffect(() => {
+    const delay = 300; // 设置防抖延迟时间
     const debounceTimeout = setTimeout(() => {
       props.onContentOfWorkChange(contentValue)
     }, delay);
@@ -111,8 +115,8 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
         <Col span={24}>
           <Input.TextArea
             autoSize={{ minRows: 2, maxRows: 6 }}
-            onChange={(e) => props.onContentOfWorkChange(contentValue)}
-            value={props.content || ''}
+            onChange={(e) => onContentChange(e.currentTarget.value)}
+            value={contentValue || ''}
           />
         </Col>
       </Row>

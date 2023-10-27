@@ -23,7 +23,7 @@ export default {
     pushMarket: async (_: any, args: any, context: AuthContext) => {
       const { id, ...market } = args.market
       // 判断是否有此项目，如果没有则为第一次创建
-      let repeat = await Market.findOne({ _id: id })
+      let repeat = await Market.findOne({ $or: [ { _id: new ObjectId(id) }, { _id: id }] })
       if (isNil(repeat)) {
         market.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
       } else {

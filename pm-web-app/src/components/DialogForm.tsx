@@ -17,6 +17,7 @@ type FormDialogTmpProps<T> = FormDialogProps<T> & {
 
 function FormDialogTmp<T extends unknown>(props: FormDialogTmpProps<T>) {
   const [form] = useForm<T>();
+  const [confirmLoading, setConfirmLoading] = useState(false)
   return (
     <Modal
       {...props}
@@ -24,11 +25,14 @@ function FormDialogTmp<T extends unknown>(props: FormDialogTmpProps<T>) {
       visible
       destroyOnClose
       maskClosable={false}
-      onOk={async () =>
+      confirmLoading={confirmLoading}
+      onOk={async () => 
         form
           .validateFields()
+          .then((v) => {setConfirmLoading(true); return v})
           .then(props.submitHandle)
           .then(() => props.setVisibleRef.current!(false))
+          .catch(e => { setConfirmLoading(false) })
       }
       onCancel={() => props.setVisibleRef.current!(false)}
     >

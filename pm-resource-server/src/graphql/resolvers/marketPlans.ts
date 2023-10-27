@@ -27,7 +27,7 @@ export default {
         return new Error(`已经存在选中周的计划，请重新选择周！`);
       }
 
-      const repeat = await MarketPlan.findOne({ _id: id })
+      const repeat = await MarketPlan.findOne({ $or: [ { _id: new ObjectId(id) }, { _id: id }] })
       if (isNil(repeat)) {
         marketPlan.leader = context.user!.id
         marketPlan.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')

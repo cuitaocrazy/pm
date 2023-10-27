@@ -3,7 +3,7 @@ import { onError } from '@apollo/client/link/error'
 import { message } from 'antd';
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  console.log(graphQLErrors)
+  // console.log(graphQLErrors)
   if (graphQLErrors)
     graphQLErrors.map(({ message: eorrMessage, path}) => {
       if (path?.includes('charts')) return
@@ -13,7 +13,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
     const errorObj = JSON.parse(JSON.stringify(networkError))
     if (errorObj.statusCode === 401) {
       message.error('请刷新页面重试')
-    }
+    } else if (errorObj.statusCode === 500) {
+      message.error('服务器发生错误，请检查服务器。')
+    } 
   } 
 })
 

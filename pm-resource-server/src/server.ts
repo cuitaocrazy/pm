@@ -5,6 +5,8 @@ import def from './graphql'
 import { client as mongoClient } from './mongodb'
 import ws from './ws'
 import uploadFile from './uploadFile'
+import exportFile from './exportFile'
+
 
 const app = express()
 const server = new ApolloServer({
@@ -15,6 +17,7 @@ const server = new ApolloServer({
 })
 
 uploadFile(app, express)
+exportFile(app, express)
 
 app.use(authMiddleware)
 server.applyMiddleware({ app, path: '/api/graphql' })

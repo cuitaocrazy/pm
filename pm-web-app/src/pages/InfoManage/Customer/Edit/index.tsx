@@ -39,7 +39,7 @@ const Customer: React.FC<any> = () => {
       render: (text: string, record: CustomerType) => (
         <a onClick={() => editHandle(record)}>{record.name}</a>
       ),
-      width: '10%',
+      width: '20%',
     },
     {
       title: '所属行业',

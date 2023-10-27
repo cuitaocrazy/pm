@@ -47,7 +47,7 @@ function Dailies(prop: { date?: string }) {
       ),
     );
   }
-  
+
   const list = (type: string) =>
     (type === '0' ? involvedProj : type === '1' ? unInvolvedProj : syntPro).map((d, i) => (
       <ProjItem

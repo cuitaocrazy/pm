@@ -269,33 +269,31 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
                           key="projectPlan"
                           label="项目计划"
                           name={[field.name, 'projectPlan']}
-                          labelCol={{ span: 5, offset: 0 }}
+                          labelCol={{ span: 3, offset: 3 }}
                         >
                           <Input.TextArea disabled/>
                         </Form.Item>
                       </Col>
                     </Row>
                     <Row>
-                      <Col span={24}>
+                      <Col span={12}>
                         <Form.Item
                           key="weekWork"
                           label="本周工作"
                           name={[field.name, 'weekWork']}
-                          labelCol={{ span: 3, offset: 0 }}
+                          labelCol={{ span: 6, offset: 0 }}
                         >
-                          <Input.TextArea />
+                          <Input.TextArea autoSize={{ minRows: 5 }}/>
                         </Form.Item>
                       </Col>
-                    </Row>
-                    <Row>
-                      <Col span={24}>
+                      <Col span={12}>
                         <Form.Item
                           key="nextWeekPlan"
                           label="下周计划"
                           name={[field.name, 'nextWeekPlan']}
-                          labelCol={{ span: 3, offset: 0 }}
+                          labelCol={{ span: 6, offset: 0 }}
                         >
-                          <Input.TextArea />
+                          <Input.TextArea autoSize={{ minRows: 5 }}/>
                         </Form.Item>
                       </Col>
                     </Row>

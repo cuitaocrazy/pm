@@ -13,7 +13,7 @@ import { getStatusDisplayName } from './utils';
 
 const Market: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<MarketPlanInput>>(null);
-  const { isAdmin, marketPlans, subordinates, groupsUsers, loading, setFilter, deleteMarketPlan, pushMarketPlan } = useProjStatus();
+  const { isAdmin, marketPlans, subordinates, groupsUsers, loading, setFilter, deleteMarketPlan, pushMarketPlan, exportExcel } = useProjStatus();
 
   const editHandle = (mark: MarkPlan) => {
     ref.current?.showDialog({ ...mark });
@@ -65,6 +65,9 @@ const Market: React.FC<any> = () => {
       key: 'action',
       render: (id: string, record: MarkPlan) => (
         <Space>
+          <a key="delete" onClick={() => exportExcel(record)}>
+            导出周报
+          </a>
           <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteMarketPlan(record.id)}>
             <a key="delete">
               删除周计划
@@ -127,7 +130,7 @@ const Market: React.FC<any> = () => {
       return { ...plan, index }
     })
     
-    return <Table rowKey={(record) => record.index} columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>
+    return <Table rowKey={(record) => record.index + record.marketName} columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>
   };
   const rowExpandable = (record: MarkPlan) => {
     return record.weekPlans && record.weekPlans.length ? true : false
@@ -137,7 +140,7 @@ const Market: React.FC<any> = () => {
     <PageContainer
       extra={[
         isAdmin ?
-        <Select placeholder="请选择市场人员" allowClear onChange={setFilter}>
+        <Select key='filter' placeholder="请选择市场人员" allowClear onChange={setFilter}>
           {groupsUsers.map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {u.name}

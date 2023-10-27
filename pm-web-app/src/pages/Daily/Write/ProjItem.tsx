@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { Card, Row, Col, Input, Slider, InputNumber } from 'antd';
 import * as R from 'ramda';
 import { useBaseState } from '@/pages/utils/hook';
@@ -36,6 +36,7 @@ export type ProjItemHandle = {
 };
 const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = (props, ref) => {
   const { buildProjName } = useBaseState()
+  const [contentValue, setContentValue] = useState(props.content || '')
   const divRef = useRef<HTMLDivElement>(null);
   const visible =
     buildProjName(props.projId, props.projName || props.projId)
@@ -56,6 +57,20 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
       return offset;
     },
   }));
+
+  useEffect(() => {
+    const delay = 1000; // 设置防抖延迟时间
+    const debounceTimeout = setTimeout(() => {
+      props.onContentOfWorkChange(contentValue)
+    }, delay);
+    return () => {
+      clearTimeout(debounceTimeout);
+    };
+  }, [contentValue]);
+   
+   const onContentChange = (e: string) => {
+      setContentValue(e)
+   };
 
   return (
     <Card
@@ -96,8 +111,8 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
         <Col span={24}>
           <Input.TextArea
             autoSize={{ minRows: 2, maxRows: 6 }}
-            onChange={(e) => props.onContentOfWorkChange(e.currentTarget.value)}
-            value={props.content || ''}
+            onChange={(e) => onContentChange(e.currentTarget.value)}
+            value={contentValue || ''}
           />
         </Col>
       </Row>

@@ -140,6 +140,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                       label="联系人标签" 
                       key="tags"
                       name={[field.name, 'tags']}
+                      rules={[{ required: true }]}
                     >
                       <Select
                         mode="tags"

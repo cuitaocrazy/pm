@@ -5,10 +5,12 @@ import type {
   QueryGroupsUsersArgs,
   MarketPlanInput,
   Query,
+  MarketPlan,
 } from '@/apollo';
 import { gql, useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useModel } from 'umi';
+import axios from 'axios'
 
 const getGql = (gqlName: string) => {
   return gql`
@@ -123,6 +125,18 @@ export function useProjStatus() {
     [pushMarketPlanHandle, refresh],
   );
 
+  const exportExcel = async (record: MarketPlan) => {
+    let reportName = subordinates.find((user) => user.id === record.leader)?.name;
+    await axios.get('/api/export', { responseType: 'blob', params: { id: record.id, reportName } }).then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${reportName}-${record.week}-工作周报.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+    });
+  }
+
   return {
     isAdmin,
     loading: queryLoading || deleteLoading || pushLoading,
@@ -135,5 +149,6 @@ export function useProjStatus() {
     refresh,
     deleteMarketPlan,
     pushMarketPlan,
+    exportExcel
   };
 }

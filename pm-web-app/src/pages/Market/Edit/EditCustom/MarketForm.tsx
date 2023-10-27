@@ -86,6 +86,15 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 3, offset: 0 }}
+                      key="phone"
+                      label="电话"
+                      name={[field.name, 'phone']}
+                      rules={[{ required: true }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Form.Item
+                      labelCol={{ span: 3, offset: 0 }}
                       key="duties"
                       label="职务"
                       name={[field.name, 'duties']}
@@ -95,14 +104,6 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
                         style={{ width: '100%' }}
                         placeholder="输入职务"
                       />
-                    </Form.Item>
-                    <Form.Item
-                      labelCol={{ span: 3, offset: 0 }}
-                      key="phone"
-                      label="电话"
-                      name={[field.name, 'phone']}
-                    >
-                      <Input />
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 3, offset: 0 }}

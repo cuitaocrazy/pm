@@ -476,7 +476,7 @@ export interface IMarket {
   /**
    * 机构id
    */
-  _id: string
+  _id: ObjectId
   /**
    * 负责人
    */
@@ -588,7 +588,7 @@ export interface IMarketPlan {
   /**
    * 计划id
    */
-  _id: string
+  _id: ObjectId
   /**
    * 填写人
    */

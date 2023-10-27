@@ -168,7 +168,7 @@ const Market: React.FC<any> = () => {
     <PageContainer
       extra={[
         isAdmin ?
-        <Select placeholder="请选择市场人员" allowClear onChange={setFilter}>
+        <Select key='filter' placeholder="请选择市场人员" allowClear onChange={setFilter}>
           {groupsUsers.map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {u.name}

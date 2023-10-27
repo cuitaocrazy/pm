@@ -111,8 +111,8 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
         <Col span={24}>
           <Input.TextArea
             autoSize={{ minRows: 2, maxRows: 6 }}
-            onChange={(e) => onContentChange(e.currentTarget.value)}
-            value={contentValue || ''}
+            onChange={(e) => props.onContentOfWorkChange(contentValue)}
+            value={props.content || ''}
           />
         </Col>
       </Row>

@@ -1,3 +1,3 @@
   MAJOR=1
   MONOR=0
-  BUILD=71
+  BUILD=72

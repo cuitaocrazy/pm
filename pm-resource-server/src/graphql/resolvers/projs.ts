@@ -58,6 +58,8 @@ export default {
           `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`
         filter['_id'] = { $regex: regex }
       }
+      if (__.customerId) { filter['customer'] = __.customerId }
+      filter['_id'] = { $not: /-ZH-/ }
       return Project
       .find(filter)
       .sort({ createDate: -1 })

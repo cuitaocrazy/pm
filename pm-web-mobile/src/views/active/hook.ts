@@ -5,13 +5,8 @@ import { useQuery, DefaultApolloClient } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { attachmentUpload } from '@/utils';
 
-type Pro = Project & {
-  key: string
-  todoTip?: string
-};
-
 const queryGql = gql`
-  query ($org: String, $projType: String, $type: String, $isAdmin: Boolean) {
+  query ($customerId: String, $org: String, $projType: String, $type: String, $isAdmin: Boolean) {
     subordinates {
       id
       name
@@ -37,7 +32,7 @@ const queryGql = gql`
         tags
       }
     }
-    filterProjsByApp (org: $org, projType: $projType, type: $type, isAdmin: $isAdmin) {
+    filterProjsByApp (customerId: $customerId, org: $org, projType: $projType, type: $type, isAdmin: $isAdmin) {
       id
       pId
       name
@@ -102,6 +97,7 @@ const pushProjGql = gql`
 export function useProjectState() {
   const store = useStore()
   const filter = reactive({
+    customerId: '',
     org: '',
     projType: ''
   })
@@ -109,6 +105,7 @@ export function useProjectState() {
   const { onResult, refetch } = useQuery<Query, QueryFilterProjectArgs>(queryGql, {
     isAdmin: ['realm:supervisor'].filter(item => store.state.currentUser.me.access.includes(item)).length ? true : false,
     type: 'active',
+    customerId: filter.customerId,
     org: filter.org,
     projType: filter.projType,
   }, { fetchPolicy: 'no-cache' });
@@ -116,6 +113,7 @@ export function useProjectState() {
   const showProjs = ref();
   const subordinates = ref<User[]>([]);
   const otherData = ref();
+  const customers = ref([]);
   const loading = ref(true);
 
   onResult((queryResult) => {
@@ -123,6 +121,7 @@ export function useProjectState() {
       projs.value = queryResult.data.filterProjsByApp || [];
       subordinates.value = queryResult?.data.subordinates || [];
       otherData.value = queryResult?.data || {}
+      customers.value = queryResult?.data.customers || []
       loading.value = false
     }
   });
@@ -163,6 +162,7 @@ export function useProjectState() {
 
   watch([filter], ([filter]) => {
     refetch({
+      customerId: filter.customerId,
       org: filter.org,
       projType: filter.projType,
     })
@@ -174,6 +174,7 @@ export function useProjectState() {
     showProjs,
     subordinates,
     otherData,
+    customers,
     saveActive
   };
 }

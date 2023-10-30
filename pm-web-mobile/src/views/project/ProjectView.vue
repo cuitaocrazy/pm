@@ -14,8 +14,9 @@
     <div class="content">
       <div>
         <t-dropdown-menu>
-          <t-dropdown-item :options="orgOptions" :value="filter.org" @change="onChangeOrg" />
-          <t-dropdown-item :options="projTypeOptions" :value="filter.projType" @change="onChangeProjType" />
+          <t-dropdown-item :options="customOptions" :value="filter.customerId" @change="onChangeCustomer" />
+          <!-- <t-dropdown-item :options="orgOptions" :value="filter.org" @change="onChangeOrg" />
+          <t-dropdown-item :options="projTypeOptions" :value="filter.projType" @change="onChangeProjType" /> -->
         </t-dropdown-menu>
       </div>
       <t-loading v-if="loading" theme="dots" size="40px" />
@@ -90,14 +91,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import { buildProjName } from '@/utils';
 import logo from '@/assets/logo.jpg';
 import moment from 'moment';
 import { useProjectState } from './hook';
 import ProjectInfo from '@/components/ProjectInfo.vue';
 
-const { loading, filter, showProjs, subordinates, tabValue, otherData } = useProjectState();
+const { loading, filter, showProjs, subordinates, tabValue, otherData, customers } = useProjectState();
 const status = JSON.parse(localStorage.getItem('status') || '[]')
 const industries = JSON.parse(localStorage.getItem('industries') || '[]')
 
@@ -113,27 +114,36 @@ const handleOnView = (proj: any) => {
 }
 
 // 筛选条件
-const orgOptions = industries.map(item => {
-  return {
-    value: item.code,
-    label: item.name,
-  }
+const customOptions = computed(() => {
+  let tempOpt = customers.value.map(c => { return { value: c.id, label: c.name } })
+  tempOpt.unshift({value: '', label: '请选择客户' })
+  return tempOpt
 })
-orgOptions.unshift({value: '', label: '默认行业' })
-const projTypeOptions = status.filter(item => item.pId === '0').map(item => {
-  return {
-    value: item.code,
-    label: item.name,
-  }
-})
-projTypeOptions.unshift({value: '', label: '默认类型' })
 
-const onChangeOrg = (e: any) => {
-  filter.org = e
+const onChangeCustomer = (e: any) => {
+  filter.customerId = e
 }
-const onChangeProjType = (e: any) => {
-  filter.projType = e
-}
+// const orgOptions = industries.map(item => {
+//   return {
+//     value: item.code,
+//     label: item.name,
+//   }
+// })
+// orgOptions.unshift({value: '', label: '默认行业' })
+// const projTypeOptions = status.filter(item => item.pId === '0').map(item => {
+//   return {
+//     value: item.code,
+//     label: item.name,
+//   }
+// })
+// projTypeOptions.unshift({value: '', label: '默认类型' })
+
+// const onChangeOrg = (e: any) => {
+//   filter.org = e
+// }
+// const onChangeProjType = (e: any) => {
+//   filter.projType = e
+// }
 
 </script>
 
@@ -202,7 +212,7 @@ const onChangeProjType = (e: any) => {
   ul {
     padding: 0;
     li {
-      height: 3vh;
+      min-height: 3vh;
       line-height: 3vh;
       span:nth-child(1) {
         display: inline-block;

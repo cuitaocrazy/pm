@@ -15,7 +15,7 @@ const layout = {
 export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInput) => {
   const { initialState } = useModel('@@initialState');
   let files = data?.fileList as UploadFile[];
-
+  console.log(data)
   const props: UploadProps = {
     listType: "picture-card",
     action: '/api/upload/tmp',
@@ -69,18 +69,18 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
       <Row>
         <Col span={8}>
           <Form.Item label="项目名称" name="name" rules={[{ required: true }]}>
-            <Input />
+            <Input disabled/>
           </Form.Item>
         </Col>
       
         <Col span={8}>
           <Form.Item label="项目规模" name="scale" rules={[{ required: false }]}>
-            <Input />
+            <Input disabled/>
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item label="项目状态" name="status" rules={[{ required: true }]}>
-            <Select allowClear>
+            <Select allowClear disabled>
                 <Select.Option key={'track'} value={'track'}>跟踪</Select.Option>
                 <Select.Option key={'stop'} value={'stop'}>终止</Select.Option>
                 <Select.Option key={'transfer'} value={'transfer'}>转销售</Select.Option>
@@ -90,21 +90,21 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
       </Row>
       <Row>
         <Col span={24}>
-          <Form.Item label="项目简介" name="introduct" labelCol={{ span: 3, offset: 0 }}>
+          <Form.Item hidden label="项目简介" name="introduct" labelCol={{ span: 3, offset: 0 }}>
             <Input.TextArea />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={24}>
-          <Form.Item label="项目计划" name="plan" labelCol={{ span: 3, offset: 0 }}>
+          <Form.Item hidden label="项目计划" name="plan" labelCol={{ span: 3, offset: 0 }}>
             <Input.TextArea />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={24}>
-          <Form.Item label="项目资料" name="fileList" rules={[{ required: false }]} getValueFromEvent={normFile} labelCol={{ span: 3, offset: 0 }}>
+          <Form.Item hidden label="项目资料" name="fileList" rules={[{ required: false }]} getValueFromEvent={normFile} labelCol={{ span: 3, offset: 0 }}>
             <Upload { ...props }>
               <div>
                 <PlusOutlined />
@@ -115,7 +115,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
         </Col>
       </Row>
       <Row>
-        <Col span={24} hidden>
+        <Col span={24}>
           <Form.List name='visitRecord'>
             {(fields, { add, remove }, { errors }) => (
               <>
@@ -125,6 +125,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                     </Button>
                   <Form.ErrorList errors={errors} />
                 </Form.Item>
+                <div style={{ maxHeight: '45vh', overflowY: 'auto' }}>
                 {renderActiveNode(fields).map((field, i) => (
                   <div key={field.key} style={{ textAlign: 'left' }}>
                     <Divider>拜访记录 {field.name + 1}</Divider>
@@ -169,6 +170,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                     </div>
                   </div>
                 ))}
+                </div>
               </>
             )}
           </Form.List>

@@ -229,7 +229,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                                   <Input.TextArea
                                     disabled={(field.name < (data?.actives?.length || 0))}
                                     rows={4}
-                                    placeholder="需包含：时间--地点--人物---事件"
+                                    placeholder="需包含：地点--人物---事件"
                                   />
                                 </Form.Item>
                               </Col>

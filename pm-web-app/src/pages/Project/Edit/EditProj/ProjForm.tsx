@@ -599,7 +599,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                               name={[field.name, 'content']}
                               rules={[{ required: true }]}
                             >
-                              <Input.TextArea rows={4} placeholder="需包含：时间--地点--人物---事件" />
+                              <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" />
                             </Form.Item>
                           </Col>
                         </Row>

@@ -1,13 +1,14 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef, useState } from 'react';
 import { Button, Table, Popconfirm, Tag, Select, Space } from 'antd';
-import type { Market as Mark, MarketInput, MarketProject, MarketProjectInput, MarketProjectVisit } from '@/apollo';
+import type { Market as Mark, MarketInput, MarketProject, MarketProjectInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
 import { useProjStatus } from './hook';
 import MarketForm from './MarketForm';
 import MarketProjectForm from './MarketProjectForm';
+import MarketProjectVisitForm from './MarketProjectVisitForm';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { getStatusDisplayName } from './utils';
@@ -15,6 +16,7 @@ import { getStatusDisplayName } from './utils';
 const Market: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<MarketInput>>(null);
   const projRef = useRef<FormDialogHandle<MarketProjectInput>>(null);
+  const projVisitRef = useRef<FormDialogHandle<MarketProjectInput>>(null);
   const { isAdmin, markets, subordinates, groupsUsers, loading, setFilter, deleteMarket, pushMarket } = useProjStatus();
   const [editeMarket, setEditeMarket] = useState({});
   const [editeIndex, setEditeIndex] = useState(0);
@@ -88,7 +90,7 @@ const Market: React.FC<any> = () => {
         title: '项目规模',
         dataIndex: 'scale',
         key: 'scale',
-        width: '15%'
+        width: '10%'
       },
       {
         title: '项目状态',
@@ -115,18 +117,22 @@ const Market: React.FC<any> = () => {
         key: 'index',
         render: (index: number, market: MarketProject) => (
           <Space>
-            <a key="archive" onClick={() => editeMarketProject(record, index)}>
+            <a key="edit" onClick={() => editeMarketProject(record, index)}>
               编辑项目
+            </a>
+            <a key="editVisit" onClick={() => editeMarketVisitProject(record, index)}>
+              管理拜访记录
             </a>
             <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteMarketProject(record, index)}>
               <a key="delete">
                 删除项目
               </a>
             </Popconfirm>
+          
           </Space>
         ),
         fixed: 'right' as 'right',
-        with: '10%'
+        with: '15%'
       },
     ];
 
@@ -134,7 +140,7 @@ const Market: React.FC<any> = () => {
       return { ...market, index }
     })
     
-    return <Table rowKey={(record) => record.index} columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>
+    return <Table rowKey={(record) => record.name} columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>
   };
   const rowExpandable = (record: Mark) => {
     return record.projects && record.projects.length ? true : false
@@ -143,17 +149,8 @@ const Market: React.FC<any> = () => {
   const editeMarketProject = (record: Mark, index: number) => {
     setEditeMarket(record)
     setEditeIndex(index);
-    let visitRecord: MarketProjectVisit[] = []
-    if (record.projects && record.projects[index] && record.projects[index].visitRecord) {
-      visitRecord = record.projects[index].visitRecord?.map(item => {
-        // @ts-ignore
-        item.date = moment(item.date)
-        return item
-      }) || []
-    }
     projRef.current?.showDialog(record.projects ?  {
       ...record.projects[index],
-      visitRecord
     } : undefined);
   }
 
@@ -162,6 +159,17 @@ const Market: React.FC<any> = () => {
     tempMarket.projects?.splice(index, 1);
     console.log(tempMarket)
     pushMarket(tempMarket)
+  }
+
+
+  const editeMarketVisitProject = (record: Mark, index: number) => {
+    setEditeMarket(record)
+    setEditeIndex(index);
+    console.log(record)
+    console.log(index)
+    projVisitRef.current?.showDialog(record.projects ?  {
+      ...record.projects[index],
+    } : undefined);
   }
 
   return (
@@ -215,6 +223,22 @@ const Market: React.FC<any> = () => {
         } }
       >
         {MarketProjectForm}
+      </DialogForm>
+      <DialogForm
+        ref={projVisitRef}
+        title="编辑拜访记录"
+        width={1000}
+        submitHandle={(v: MarketProjectInput) => {
+          let tempMarket: MarketInput = JSON.parse(JSON.stringify(editeMarket))
+          if (tempMarket?.projects) {
+            tempMarket.projects[editeIndex] = v
+          } else {
+            tempMarket.projects = [v]
+          }
+          return pushMarket(tempMarket)
+        } }
+      >
+        {MarketProjectVisitForm}
       </DialogForm>
     </PageContainer>
   );

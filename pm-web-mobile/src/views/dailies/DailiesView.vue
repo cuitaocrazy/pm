@@ -9,10 +9,11 @@
       <t-icon name="save" size="24px" @click="handleOnSave" />
     </template>
   </t-navbar>
+  <t-tabs default-value="0" :value="tabValue" :list="tabOptions" @change="tabChange" theme="tag"></t-tabs>
   <div class="content">
     <t-loading v-if="loading" theme="dots" size="40px" />
     <div v-else>
-      <t-collapse class="collapse" v-for="proj in dailyProjects" :key="proj.key" :defaultExpandAll="false">
+      <t-collapse class="collapse" v-for="proj in (tabValue === '0' ? involvedProj : tabValue === '1' ? unInvolvedProj : syntPro) " :key="proj.key" :defaultExpandAll="false">
         <t-collapse-panel value="0">
           <template #header>
             {{ buildProjName(proj.id, proj.name) }}
@@ -48,7 +49,7 @@
  // @ts-ignore 引入Message组件
 import { Message } from 'tdesign-mobile-vue';
 import type { EmployeeOfDaily } from '@/apollo';
-import { ref, nextTick, watch } from 'vue';
+import { ref, nextTick, watch, computed, reactive } from 'vue';
 import { buildProjName } from '@/utils';
 import moment from 'moment';
 import logo from '@/assets/logo.jpg';
@@ -70,19 +71,35 @@ const visible = ref(false);
 const tempDate = new Date();
 const minDate = new Date(tempDate.setMonth(tempDate.getMonth() - 3));
 const maxDate = new Date();
-const marks = ref({
-  0: '0h',
-  10: '1h',
-  20: '2h',
-  30: '3h',
-  40: '4h',
-  50: '5h',
-  60: '6h',
-  70: '7h',
-  80: '8h',
-  90: '9h',
-  100: '10h',
-});
+const marks = ref({ 0: '0h', 10: '1h', 20: '2h', 30: '3h', 40: '4h', 50: '5h', 60: '6h', 70: '7h', 80: '8h', 90: '9h', 100: '10h',});
+const tabValue = ref('0');
+const tabChange = (item: string) => {
+  tabValue.value = item
+}
+
+let involvedProj = reactive([])
+let unInvolvedProj = reactive([])
+let syntPro = reactive([])
+
+let tabOptions = reactive([{
+  label: '涉及(0)',
+  value: '0'
+},{
+  label: '未涉及(0)',
+  value: '1'
+},{
+  label: '综合(0)',
+  value: '2'
+}])
+
+watch([dailyProjects], ([dailyProjects]) => {
+  involvedProj = dailyProjects.filter(d => !(d.id.indexOf('-ZH-') >-1) && d.participants.includes(store.state.currentUser.me.id || ''))
+  unInvolvedProj = dailyProjects.filter(d => !(d.id.indexOf('-ZH-') >-1) && !d.participants.includes(store.state.currentUser.me.id || ''))
+  syntPro = dailyProjects.filter(d => (d.id.indexOf('-ZH-') >-1))
+  tabOptions[0].label = `涉及(${ involvedProj.reduce((prev, cur) => prev + cur.dailyItem.timeConsuming, 0)/10 }h)`
+  tabOptions[1].label = `未涉及(${ unInvolvedProj.reduce((prev, cur) => prev + cur.dailyItem.timeConsuming, 0)/10 }h)`
+  tabOptions[2].label = `综合(${ syntPro.reduce((prev, cur) => prev + cur.dailyItem.timeConsuming, 0)/10 }h)`
+})
 
 watch([visible], ([visible]) => {
   if (visible) {
@@ -162,7 +179,7 @@ const showMessage = (theme: string, content = '这是一条普通通知信息', 
   text-align: left;
 }
 .content {
-  height: 80vh;
+  height: 70vh;
   overflow: auto;
   padding-bottom: 5vh;
   // background-color: red;

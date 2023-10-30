@@ -5,13 +5,8 @@ import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { filterTodoProject } from '@/utils';
 
-type Pro = Project & {
-  key: string
-  todoTip?: string
-};
-
 const queryGql = gql`
-  query ($org: String, $projType: String, $type: String, $isAdmin: Boolean) {
+  query ($customerId: String, $org: String, $projType: String, $type: String, $isAdmin: Boolean) {
     subordinates {
       id
       name
@@ -37,7 +32,7 @@ const queryGql = gql`
         tags
       }
     }
-    filterProjsByApp (org: $org, projType: $projType, type: $type, isAdmin: $isAdmin) {
+    filterProjsByApp (customerId: $customerId, org: $org, projType: $projType, type: $type, isAdmin: $isAdmin) {
       id
       pId
       name
@@ -94,11 +89,13 @@ const queryGql = gql`
 export function useProjectState() {
   const store = useStore()
   const filter = reactive({
+    customerId: '',
     org: '',
-    projType: ''
+    projType: '',
   })
   const { onResult, refetch  } = useQuery<Query, QueryFilterProjectArgs>(queryGql, {
     isAdmin: ['realm:supervisor'].filter(item => store.state.currentUser.me.access.includes(item)).length ? true : false,
+    customerId: filter.customerId,
     org: filter.org,
     projType: filter.projType,
   }, { fetchPolicy: 'no-cache' });
@@ -109,12 +106,14 @@ export function useProjectState() {
   const subordinates = ref<User[]>([]);
   const otherData = ref();
   const loading = ref(true);
+  const customers = ref([]);
 
   onResult((queryResult) => {
     if (queryResult.data) {
       projs.value = queryResult.data.filterProjsByApp || [];
       subordinates.value = queryResult?.data.subordinates || [];
       otherData.value = queryResult?.data || {}
+      customers.value = queryResult?.data.customers || []
       loading.value = false
     }
   });
@@ -138,6 +137,7 @@ export function useProjectState() {
 
   watch([filter], ([filter]) => {
     refetch({
+      customerId: filter.customerId,
       org: filter.org,
       projType: filter.projType,
     })
@@ -149,6 +149,7 @@ export function useProjectState() {
     tabValue,
     showProjs,
     subordinates,
-    otherData
+    otherData,
+    customers
   };
 }

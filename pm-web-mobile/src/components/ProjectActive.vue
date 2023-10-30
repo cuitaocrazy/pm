@@ -52,7 +52,7 @@
               indicator
               autosize
               :maxlength="50"
-              placeholder="需包含：时间--地点--人物---事件"
+              placeholder="需包含：地点--人物---事件"
             ></t-textarea>
           </t-form-item>
           <t-form-item label="上传材料" name="fileList">

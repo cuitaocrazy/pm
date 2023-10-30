@@ -1,6 +1,6 @@
 import { Input, Form, Select } from 'antd';
 import type { FC } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 // import { orgCode, projType, zoneCode } from '../../utils/hook';
 import { useBaseState } from '@/pages/utils/hook';
 import moment from 'moment';
@@ -37,6 +37,8 @@ function getIdInfo(id?: string) {
 }
 const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }) => {
   const { status, orgCode, projType, zoneCode } = useBaseState();
+  const [isZh, setIsZh] = useState(false)
+
   const info = getIdInfo(value);
   const getId = () =>
     `${info.org}-${info.zone}-${info.projType}-${info.simpleName}-${info.dateCode}`;
@@ -53,7 +55,17 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
     info.projType = type;
     change();
   };
+  const handleOnKeyDown = (e: any) => {
+    if (e.key === "Enter") {
+      // 用户按下回车键
+      setIsZh(false)
+    } else if (e.shiftKey && e.key === "Shift") {
+      // 用户按下Shift键
+      setIsZh(false)
+    }
+  }
   const changeSimpleName = (simpleName: string) => {
+    if (isZh) return 
     const result = /^\w*$/.exec(simpleName);
     if (result) {
       info.simpleName = simpleName.toUpperCase();
@@ -124,6 +136,9 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
         <Input
           key="simpleName"
           addonBefore={'项目缩写'}
+          onCompositionStart={(e) => setIsZh(true)}
+          onBlur={(e) => setIsZh(false)}
+          onKeyDown={(e) => handleOnKeyDown(e)}
           onChange={(e) => changeSimpleName(e.target.value)}
           value={info.simpleName}
           disabled={disabled}

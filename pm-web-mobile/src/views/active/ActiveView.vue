@@ -10,8 +10,7 @@
   <div class="content">
     <div>
       <t-dropdown-menu>
-        <t-dropdown-item :options="orgOptions" :value="filter.org" @change="onChangeOrg" />
-        <t-dropdown-item :options="projTypeOptions" :value="filter.projType" @change="onChangeProjType" />
+        <t-dropdown-item :options="customOptions" :value="filter.customerId" @change="onChangeCustomer" />
       </t-dropdown-menu>
     </div>
     <t-loading v-if="loading" theme="dots" size="40px" />
@@ -88,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import { buildProjName, projectTypeStr } from '@/utils';
  // @ts-ignore 引入Message组件
  import { Message, Toast } from 'tdesign-mobile-vue';
@@ -98,7 +97,7 @@ import { useProjectState } from './hook';
 import ProjectInfo from '@/components/ProjectInfo.vue';
 import ProjectActive from '@/components/ProjectActive.vue';
 
-const { loading, filter, showProjs, subordinates, otherData, saveActive } = useProjectState();
+const { loading, filter, showProjs, subordinates, otherData, customers, saveActive } = useProjectState();
 const status = JSON.parse(localStorage.getItem('status') || '[]')
 const industries = JSON.parse(localStorage.getItem('industries') || '[]')
 let showProj = reactive(null)
@@ -116,26 +115,14 @@ const handleOnActive = (proj) => {
 }
 
 // 筛选条件
-const orgOptions = industries.map(item => {
-  return {
-    value: item.code,
-    label: item.name,
-  }
+const customOptions = computed(() => {
+  let tempOpt = customers.value.map(c => { return { value: c.id, label: c.name } })
+  tempOpt.unshift({value: '', label: '请选择客户' })
+  return tempOpt
 })
-orgOptions.unshift({value: '', label: '默认行业' })
-const projTypeOptions = status.filter(item => item.pId === '0').map(item => {
-  return {
-    value: item.code,
-    label: item.name,
-  }
-})
-projTypeOptions.unshift({value: '', label: '默认类型' })
 
-const onChangeOrg = (e: any) => {
-  filter.org = e
-}
-const onChangeProjType = (e: any) => {
-  filter.projType = e
+const onChangeCustomer = (e: any) => {
+  filter.customerId = e
 }
 
 const handleOnActiveSubmit = (active) => {
@@ -242,7 +229,7 @@ const showMessage = (theme: string, content = '这是一条普通通知信息', 
   ul {
     padding: 0;
     li {
-      height: 3vh;
+      min-height: 3vh;
       line-height: 3vh;
       span:nth-child(1) {
         display: inline-block;

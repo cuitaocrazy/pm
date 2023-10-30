@@ -343,7 +343,7 @@ type Query {
   superProjs(isArchive: Boolean): [Project!]!
   iLeadProjs(isArchive: Boolean): [Project!]!
   filterProjs(projType: String!): [Project!]!
-  filterProjsByApp(org: String, projType: String, type: String, isAdmin: Boolean): [Project!]!
+  filterProjsByApp(customerId: String, org: String, projType: String, type: String, isAdmin: Boolean): [Project!]!
   filterProjsByType(projType: String!): [Project!]!
   expenses: [Expense!]!
   dailyUsers: [User!]!

@@ -224,7 +224,7 @@ const isManager = computed(()=> {
   ul {
     padding: 0;
     li {
-      height: 3vh;
+      min-height: 3vh;
       line-height: 3vh;
       span {
         vertical-align: top;

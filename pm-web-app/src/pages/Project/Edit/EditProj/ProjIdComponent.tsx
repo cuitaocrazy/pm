@@ -136,6 +136,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
         <Input
           key="simpleName"
           addonBefore={'项目缩写'}
+          placeholder='只允许填写拼音或数字'
           onCompositionStart={(e) => setIsZh(true)}
           onBlur={(e) => setIsZh(false)}
           onKeyDown={(e) => handleOnKeyDown(e)}

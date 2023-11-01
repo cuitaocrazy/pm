@@ -4,7 +4,9 @@ import { EmployeeDaily, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
 
 async function getParticipateProjectDailiesByLeader (leaderId: string | undefined, projId: string) {
-  const projIds = await Project.find(leaderId ? { leader: leaderId } : {}).map(proj => proj._id).toArray()
+  let filter = {}
+  if (leaderId) filter = { $or: [ { leader: leaderId, }, { salesLeader: leaderId, } ] }
+  const projIds = await Project.find(filter).map(proj => proj._id).toArray()
 
   if (includes(projId)(projIds)) {
     const d = await EmployeeDaily.aggregate([

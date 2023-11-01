@@ -1,7 +1,7 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef, useState } from 'react';
-import { Button, Table, Popconfirm, Tag, Select, Space } from 'antd';
-import type { Market as Mark, MarketInput, MarketProject, MarketProjectInput } from '@/apollo';
+import { Button, Table, Popconfirm, Tag, Select, Space, DatePicker, Input } from 'antd';
+import type { Market as Mark, MarketInput, MarketProject, MarketProjectInput, MarketProjectVisit } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
@@ -9,9 +9,11 @@ import { useProjStatus } from './hook';
 import MarketForm from './MarketForm';
 import MarketProjectForm from './MarketProjectForm';
 import MarketProjectVisitForm from './MarketProjectVisitForm';
+import ProjectVisitTable from './ProjectVisitTable';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { getStatusDisplayName } from './utils';
+
 
 const Market: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<MarketInput>>(null);
@@ -20,6 +22,7 @@ const Market: React.FC<any> = () => {
   const { isAdmin, markets, subordinates, groupsUsers, loading, setFilter, deleteMarket, pushMarket } = useProjStatus();
   const [editeMarket, setEditeMarket] = useState({});
   const [editeIndex, setEditeIndex] = useState(0);
+  const refMap = useRef([])
 
   const editHandle = (mark: Mark) => {
     ref.current?.showDialog({ ...mark });
@@ -77,6 +80,16 @@ const Market: React.FC<any> = () => {
     },
   ];
 
+  const expandedRowRender2 = (record: MarketProject) => {
+    return <ProjectVisitTable
+              proj={record} 
+            />
+  };
+
+  const rowExpandable2 = (record: MarketProject) => {
+    return record.visitRecord && record.visitRecord.length ? true : false
+  }
+
   const expandedRowRender = (record: Mark) => {
     const expandedColumns = [
       {
@@ -121,7 +134,7 @@ const Market: React.FC<any> = () => {
               编辑项目
             </a>
             <a key="editVisit" onClick={() => editeMarketVisitProject(record, index)}>
-              管理拜访记录
+              编辑拜访记录
             </a>
             <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteMarketProject(record, index)}>
               <a key="delete">
@@ -137,10 +150,17 @@ const Market: React.FC<any> = () => {
     ];
 
     const data = record.projects?.map((market, index) => {
-      return { ...market, index }
+      return { ...market, index, marketId: record.id }
     })
     
-    return <Table rowKey={(record) => record.name} columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>
+    return <Table
+            rowKey={(record) => record.name}
+            columns={expandedColumns}
+            dataSource={ data }
+            pagination={false}
+            expandable={{ expandedRowRender: expandedRowRender2, rowExpandable: rowExpandable2 }}
+            size="middle"
+          />
   };
   const rowExpandable = (record: Mark) => {
     return record.projects && record.projects.length ? true : false
@@ -157,7 +177,6 @@ const Market: React.FC<any> = () => {
   const deleteMarketProject = (record: Mark, index: number) => {
     let tempMarket: MarketInput = JSON.parse(JSON.stringify(record))
     tempMarket.projects?.splice(index, 1);
-    console.log(tempMarket)
     pushMarket(tempMarket)
   }
 
@@ -165,8 +184,6 @@ const Market: React.FC<any> = () => {
   const editeMarketVisitProject = (record: Mark, index: number) => {
     setEditeMarket(record)
     setEditeIndex(index);
-    console.log(record)
-    console.log(index)
     projVisitRef.current?.showDialog(record.projects ?  {
       ...record.projects[index],
     } : undefined);

@@ -108,7 +108,6 @@ export function useProjStatus() {
     markets = markets.filter(m => m.leader === filter)
   }
 
-
   const deleteMarket = useCallback(
     async (id: string) => {
       await deleteMarketHandle({ variables: { id } });

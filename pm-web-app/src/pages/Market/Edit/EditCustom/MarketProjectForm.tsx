@@ -50,15 +50,6 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
     }
     return e?.fileList;
   };
-  
-  const renderActiveNode = (fields: any) => {
-    let tempFields = []
-    for (let i = fields.length - 1; i >= 0; i--) {
-      fields['index'] = i
-      tempFields.push(fields[i])
-    }
-    return tempFields;
-  }
 
   return (
     <Form 
@@ -125,7 +116,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                     </Button>
                   <Form.ErrorList errors={errors} />
                 </Form.Item>
-                {renderActiveNode(fields).map((field, i) => (
+                {[...fields].reverse().map((field, i) => (
                   <div key={field.key} style={{ textAlign: 'left' }}>
                     <Divider>拜访记录 {field.name + 1}</Divider>
                     <Row>

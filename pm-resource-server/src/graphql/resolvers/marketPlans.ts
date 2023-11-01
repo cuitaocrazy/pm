@@ -22,8 +22,8 @@ export default {
       marketPlan.week = moment(marketPlan.week).format('YYYY-[W]W')
       marketPlan.updateTime = moment().utc().utcOffset(8 * 60).format('YYYY-MM-DD HH:mm:ss')
 
-      const repeatWeek = await MarketPlan.findOne({ leader: context.user!.id, week: marketPlan.week })
-      if (repeatWeek && repeatWeek._id !== id) {
+      const repeatWeek = await MarketPlan.findOne({ leader: marketPlan.leader, week: marketPlan.week })
+      if (repeatWeek && (!id || (id !== repeatWeek._id.toString()))) {
         return new Error(`已经存在选中周的计划，请重新选择周！`);
       }
 

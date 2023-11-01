@@ -136,6 +136,9 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
           <Form.Item hidden label="ID" name="id">
             <Input />
           </Form.Item>
+          <Form.Item hidden label="负责人" name="leader">
+            <Input />
+          </Form.Item>
           <Form.Item
             label="当前周"
             name="week"

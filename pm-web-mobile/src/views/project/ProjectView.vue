@@ -93,7 +93,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed } from 'vue';
 import { buildProjName } from '@/utils';
-import logo from '@/assets/logo.jpg';
+import logo from '@/assets/logo.png';
 import moment from 'moment';
 import { useProjectState } from './hook';
 import ProjectInfo from '@/components/ProjectInfo.vue';

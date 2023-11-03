@@ -8,13 +8,13 @@ export default {
   Query: {
     marketsBySuper: (_: any, __: any, context: AuthContext) => { 
       return Market
-      .find()
+      .find({ isDel: false })
       .sort({ createDate: -1 })
       .map(dbid2id).toArray()
     },
     markets: (_: any, __: any, context: AuthContext) => { 
       return Market
-      .find({ leader: context.user!.id })
+      .find({ leader: context.user!.id, isDel: false })
       .sort({ createDate: -1 })
       .map(dbid2id).toArray()
     },
@@ -26,8 +26,10 @@ export default {
       let repeat = await Market.findOne({ $or: [ { _id: new ObjectId(id) }, { _id: id }] })
       if (isNil(repeat)) {
         market.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
+        market.isDel = false
       } else {
         market.createDate = repeat.createDate
+        market.isDel = repeat.isDel
       }
       let isRep = false;
       let proMap = {};
@@ -40,7 +42,8 @@ export default {
       return Market.updateOne({ $or: [ {_id: new ObjectId(id) }, { _id: id }] }, { $set: market }, { upsert: true }).then((res) => id || res.upsertedId._id)
     },
     deleteMarket: async (_: any, args: any, context: AuthContext) => {
-      return Market.deleteOne({ $or: [ {_id: new ObjectId(args.id) }, { _id: args.id }] }).then(() => args.id)
+      const id = args.id
+      return Market.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
     },
   },
 }

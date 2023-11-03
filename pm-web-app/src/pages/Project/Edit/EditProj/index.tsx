@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef, useState } from 'react';
-import { Button, Table, Popconfirm, Tag, Input, Space, Radio } from 'antd';
+import { Button, Table, Popconfirm, Tag, Input, Space, Radio, Badge } from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -277,7 +277,11 @@ const Project: React.FC<any> = () => {
           {isAdmin? 
             <Radio.Button value="1">归档项目</Radio.Button>
             :
-            <Radio.Button value="2">待办项目({todoProjs.length})</Radio.Button>
+            <Radio.Button value="2">
+              <Badge count={todoProjs.length}>
+                待办项目
+              </Badge>
+            </Radio.Button>
           }
         </Radio.Group>
         ,

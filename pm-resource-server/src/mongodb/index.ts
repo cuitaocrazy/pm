@@ -577,6 +577,10 @@ export interface IMarket {
    * 更新时间
    */
   updateTime?: Date
+  /**
+   * 是否删除
+   */
+  isDel: Boolean
 }
 
 export const Market = client.db().collection<IMarket>(pluralize('Market'))

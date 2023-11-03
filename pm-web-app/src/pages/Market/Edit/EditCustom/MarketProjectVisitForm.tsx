@@ -116,16 +116,15 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                   <Form.ErrorList errors={errors} />
                 </Form.Item>
                 <div style={{ maxHeight: '45vh', overflowY: 'auto' }}>
-                <Row>
                 {[...fields].reverse().map((field, i) => (
-                  <Col span={6} key={field.key} style={{ textAlign: 'left' }}>
+                  <div key={field.key} style={{ textAlign: 'left' }}>
                     <Divider>拜访记录 {field.name + 1}</Divider>
                     <Row>
                       <Col xs={24} sm={24}>
                         <Row>
                           <Col span={24}>
                             <Form.Item
-                              labelCol={{ span: 0, offset: 0 }}
+                              labelCol={{ span: 5, offset: 0 }}
                               key="date"
                               label="时间"
                               name={[field.name, 'date']}
@@ -141,7 +140,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                         <Row>
                           <Col span={24}>
                             <Form.Item
-                              labelCol={{ span: 0, offset: 0 }}
+                              labelCol={{ span: 5, offset: 0 }}
                               key="content"
                               label="内容"
                               name={[field.name, 'content']}
@@ -159,9 +158,8 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                         onClick={() => remove(field.name)}
                       />
                     </div>
-                  </Col>
+                  </div>
                 ))}
-                </Row>
                 </div>
               </>
             )}

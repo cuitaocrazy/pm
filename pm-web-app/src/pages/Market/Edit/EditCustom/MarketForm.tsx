@@ -75,44 +75,56 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
                 {fields.map((field, i) => (
                   <div key={field.key} style={{ textAlign: 'center' }}>
                     <Divider>联系人 {i + 1}</Divider>
-                    <Form.Item
-                      labelCol={{ span: 3, offset: 0 }}
-                      key="name"
-                      label="姓名"
-                      name={[field.name, 'name']}
-                      rules={[{ required: true }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                    <Form.Item
-                      labelCol={{ span: 3, offset: 0 }}
-                      key="phone"
-                      label="电话"
-                      name={[field.name, 'phone']}
-                      rules={[{ required: true }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                    <Form.Item
-                      labelCol={{ span: 3, offset: 0 }}
-                      key="duties"
-                      label="职务"
-                      name={[field.name, 'duties']}
-                    >
-                      <Select
-                        mode="tags"
-                        style={{ width: '100%' }}
-                        placeholder="输入职务"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      labelCol={{ span: 3, offset: 0 }}
-                      key="remark"
-                      label="备注"
-                      name={[field.name, 'remark']}
-                    >
-                      <Input />
-                    </Form.Item>
+                    <Row>
+                      <Col span={6}>
+                        <Form.Item
+                          labelCol={{ span: 12, offset: 0 }}
+                          key="name"
+                          label="姓名"
+                          name={[field.name, 'name']}
+                          rules={[{ required: true }]}
+                        >
+                          <Input />
+                        </Form.Item>
+                      </Col>
+                      <Col span={6}>
+                        <Form.Item
+                          key="phone"
+                          label="电话"
+                          name={[field.name, 'phone']}
+                          rules={[{ required: true }]}
+                        >
+                          <Input />
+                        </Form.Item>
+                      </Col>
+                      <Col span={10}>
+                        <Form.Item
+                          key="duties"
+                          label="职务"
+                          name={[field.name, 'duties']}
+                          rules={[{ required: true }]}
+                          extra="请包括部门和职位信息，例：卡部主管"
+                        >
+                          <Select
+                            mode="tags"
+                            style={{ width: '100%' }}
+                            placeholder="输入职务"
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={24}>
+                        <Form.Item
+                          labelCol={{ span: 3, offset: 0 }}
+                          key="remark"
+                          label="备注"
+                          name={[field.name, 'remark']}
+                        >
+                          <Input style={{ width: '100%' }}/>
+                        </Form.Item>
+                      </Col>
+                    </Row>
                     <MinusCircleOutlined
                       className="dynamic-delete-button"
                       onClick={() => remove(i)}

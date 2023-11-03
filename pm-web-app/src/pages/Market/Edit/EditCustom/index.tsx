@@ -1,7 +1,7 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef, useState } from 'react';
-import { Button, Table, Popconfirm, Tag, Select, Space, DatePicker, Input } from 'antd';
-import type { Market as Mark, MarketInput, MarketProject, MarketProjectInput, MarketProjectVisit } from '@/apollo';
+import { Button, Table, Popconfirm, Tag, Select, Space } from 'antd';
+import type { Market as Mark, MarketInput, MarketProject, MarketProjectInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
@@ -22,7 +22,6 @@ const Market: React.FC<any> = () => {
   const { isAdmin, markets, subordinates, groupsUsers, loading, setFilter, deleteMarket, pushMarket } = useProjStatus();
   const [editeMarket, setEditeMarket] = useState({});
   const [editeIndex, setEditeIndex] = useState(0);
-  const refMap = useRef([])
 
   const editHandle = (mark: Mark) => {
     ref.current?.showDialog({ ...mark });

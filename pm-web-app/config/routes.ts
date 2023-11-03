@@ -87,16 +87,16 @@
         access: 'canProjDailies'
       },
       {
-        path: '/project/projExpense',
-        name: 'projExpense',
-        component: './Expense/View/ByProj',
-        access: 'canProjExpense'
-      },
-      {
         path: '/project/projWeeklies',
         name: 'projWeeklies',
         component: './Weekly/View/ByProj',
         access: 'canProjWeeklies'
+      },
+      {
+        path: '/project/projExpense',
+        name: 'projExpense',
+        component: './Expense/View/ByProj',
+        access: 'canProjExpense'
       },
     ]
   },

@@ -141,6 +141,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                       key="tags"
                       name={[field.name, 'tags']}
                       rules={[{ required: true }]}
+                      extra="请包括部门和职位信息，例：卡部主管"
                     >
                       <Select
                         mode="tags"

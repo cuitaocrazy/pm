@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.yada"
-version = "1.0.73"
+version = "1.0.74"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {

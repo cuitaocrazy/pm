@@ -172,6 +172,7 @@ export type Contact = {
 
 export type Active = {
   __typename?: 'Active';
+  name?:  Scalars['String'];
   date: Scalars['String'];
   content?: Scalars['String'];
   fileList?: File[];
@@ -407,6 +408,19 @@ export type MarketWeekPlan = {
   nextWeekPlan: Scalars['String'];
 };
 
+export type EventLog = {
+  __typename?: 'EventLog';
+  id: Scalars['String'];
+  changeUser: Maybe<Scalars['String']>;
+  type: Maybe<Scalars['String']>;
+  target: Maybe<Scalars['String']>;
+  oldValue?: Maybe<Scalars['String']>;
+  newValue: Maybe<Scalars['String']>;
+  changeDate: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  information?: Maybe<Scalars['String']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
@@ -441,6 +455,8 @@ export type Query = {
   marketsBySuper: Market[];
   marketPlans: MarketPlan[];
   marketPlansBySuper: MarketPlan[];
+  eventLogs: EventLog[]
+
 };
 
 export type QueryProjectArgs = {
@@ -526,6 +542,7 @@ export type ContactInput = {
 };
 
 export type ActiveInput = {
+  name:  Scalars['String'];
   date: Scalars['String'];
   content: Scalars['String'];
   fileList?: Maybe<FileInput[]>;

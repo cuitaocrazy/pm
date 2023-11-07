@@ -81,6 +81,7 @@ query ($isArchive: Boolean) {
         phone
       }
       actives {
+        name
         recorder
         date
         content

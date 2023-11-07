@@ -649,3 +649,47 @@ export interface IMarketPlan {
 }
 
 export const MarketPlan = client.db().collection<IMarketPlan>(pluralize('MarketPlan'))
+
+/**
+ * 操作日志
+ */
+export interface IEventLog{
+  /**
+   * 日志id
+   */
+  _id: ObjectId
+  /**
+   * 操作用户
+   */
+  changeUser: string
+  /**
+   * 操作类型
+   */
+  type: string
+  /**
+   * 操作对象
+   */
+  target: string
+  /**
+   * 原始值
+   */
+  oldValue: string
+  /**
+   * 新值
+   */
+  newValue: string
+  /**
+   * 操作描述
+   */
+  description: string
+  /**
+   * 额外信息
+   */
+  information: string
+  /**
+   * 操作时间
+   */
+  changeDate?: string
+}
+
+export const EventLog = client.db().collection<IEventLog>(pluralize('EventLog'))

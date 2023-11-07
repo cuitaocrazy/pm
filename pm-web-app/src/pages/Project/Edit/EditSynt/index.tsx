@@ -7,6 +7,7 @@ import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';
+import DailyModal from './DailyModal';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { useBaseState } from '@/pages/utils/hook';
@@ -16,6 +17,7 @@ import { history } from 'umi';
 const Project: React.FC<any> = () => {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
+  const dailyRef = useRef<FormDialogHandle<Proj>>(null);
   const { projs, projectAgreements, loading, deleteProj, pushProj } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
   const [editProj, setEditProj] = useState<Proj>();
@@ -87,7 +89,8 @@ const Project: React.FC<any> = () => {
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
       width: '80px',
-      render: (text: string, record: Proj) => <Tag color="cyan">{ text ? text : 0 }</Tag>,
+      render: (text: number, record: Proj) => 
+        <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{ text ? ((text - 0) / 8).toFixed(2) : 0 }</Tag></Button>,
     },
     {
       title: '创建日期',
@@ -150,6 +153,13 @@ const Project: React.FC<any> = () => {
         } }
       >
         {ProjForm}
+      </DialogForm>
+      <DialogForm
+        ref={dailyRef}
+        title="查看日报"
+        width={1300}
+      >
+        {DailyModal}
       </DialogForm>
     </PageContainer>
   );

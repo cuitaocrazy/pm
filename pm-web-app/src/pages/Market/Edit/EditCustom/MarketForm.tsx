@@ -44,7 +44,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
     <Form 
       {...layout} 
       form={form} 
-      initialValues={data || { leader: initialState?.currentUser?.id }} 
+      initialValues={data || { leader: initialState?.currentUser?.id }}
     >
       <Row>
         <Col span={8}>

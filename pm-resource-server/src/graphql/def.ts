@@ -106,6 +106,7 @@ type Contact {
 }
 
 type Active {
+  name: String
   date: String!
   content: String!
   fileList: [File!]
@@ -334,6 +335,18 @@ type MarketWeekPlan {
   nextWeekPlan: String
 }
 
+type EventLog {
+  id: ID
+  changeUser: String!
+  type: String!
+  target: String!
+  oldValue: String
+  newValue: String!
+  changeDate: String!
+  description: String
+  information: String
+}
+
 type Query {
   me: User!
   subordinates: [User!]!
@@ -369,6 +382,7 @@ type Query {
   marketsBySuper: [Market!]!
   marketPlans: [MarketPlan!]!
   marketPlansBySuper: [MarketPlan!]!
+  eventLogs: [EventLog!]!
 }
 
 input DailyInput {
@@ -420,6 +434,7 @@ input ContactInput {
   phone: String
 }
 input ActiveInput {
+  name: String
   date: String!
   content: String
   fileList: [FileInput!]
@@ -568,6 +583,18 @@ input MarketWeekPlanInput {
   nextWeekPlan: String
 }
 
+input EventLogInput {
+  id: ID
+  changeUser: String!
+  type: String!
+  target: String!
+  oldValue: String
+  newValue: String!
+  changeDate: String!
+  description: String
+  information: String
+}
+
 type Mutation {
   pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
   pushProject(proj: ProjectInput!): ID!
@@ -596,6 +623,8 @@ type Mutation {
   deleteMarket(id: ID!): ID!
   pushMarketPlan(marketPlan: MarketPlanInput!): ID!
   deleteMarketPlan(id: ID!): ID!
+  pushEventLog(eventLog: EventLogInput!): ID!
+  deleteEventLog(id: ID!): ID!
 }
 `
 const directivesDef = gql`

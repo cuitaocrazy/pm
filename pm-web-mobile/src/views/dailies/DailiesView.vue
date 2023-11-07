@@ -52,7 +52,7 @@ import type { EmployeeOfDaily } from '@/apollo';
 import { ref, nextTick, watch, computed, reactive } from 'vue';
 import { buildProjName } from '@/utils';
 import moment from 'moment';
-import logo from '@/assets/logo.jpg';
+import logo from '@/assets/logo.png';
 import { useStore } from 'vuex';
 
 const store = useStore()

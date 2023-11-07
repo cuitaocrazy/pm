@@ -174,70 +174,84 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                       </Button>
                       <Form.ErrorList errors={errors} />
                     </Form.Item>
+                    <div style={{ maxHeight: '48vh', overflowY: 'auto' }}>
                     {renderActiveNode(fields).map((field, i) => (
                       <div key={field.key} style={{ textAlign: 'left' }}>
-                        <Divider>{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动 {field.name + 1}</Divider>
+                        <Divider>
+                          <Form.Item
+                            labelCol={{ span: 1, offset: 0 }}
+                            key="name"
+                            label="活动名称"
+                            name={[field.name, 'name']}
+                            rules={[{ required: true }]}
+                          >
+                            <Input
+                              disabled={(field.name < (data?.actives?.length || 0))}
+                              placeholder="请输入活动名称"
+                              style={{ width: '15vw', textAlign: 'center' }}
+                            />
+                          </Form.Item>
+                        </Divider>
                         <Row>
-                          <Col xs={24} sm={12}>
-                            <Row>
-                              <Col span={24}>
-                                <Form.Item
-                                  labelCol={{ span: 5, offset: 0 }}
-                                  key="recorder"
-                                  label="记录人"
-                                  name={[field.name, 'recorder']}
-                                  rules={[{ required: true }]}
-                                  // initialValue={initialState?.currentUser?.id}
-                                >
-                                  <Select disabled >
-                                    {resData?.subordinates.map((u) => (
-                                      <Select.Option key={u.id} value={u.id}>
-                                        {u.name}
-                                      </Select.Option>
-                                    ))}
-                                  </Select>
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col span={24}>
-                                <Form.Item
-                                  labelCol={{ span: 5, offset: 0 }}
-                                  key="date"
-                                  label="活动日期"
-                                  name={[field.name, 'date']}
-                                  rules={[{ required: true }]}
-                                >
-                                  <DatePicker
-                                    disabled={(field.name < (data?.actives?.length || 0))}
-                                    showTime
-                                    format="YYYY-MM-DD HH:mm:ss"
-                                    style={{ width: '100%' }}
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col span={24}>
-                                <Form.Item
-                                  labelCol={{ span: 5, offset: 0 }}
-                                  key="content"
-                                  label="活动内容"
-                                  name={[field.name, 'content']}
-                                  rules={[{ required: true }]}
-                                >
-                                  <Input.TextArea
-                                    disabled={(field.name < (data?.actives?.length || 0))}
-                                    rows={4}
-                                    placeholder="需包含：地点--人物---事件"
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
+                          <Col span={12}>
+                            <Form.Item
+                              labelCol={{ span: 6, offset: 0 }}
+                              key="date"
+                              label="活动日期"
+                              name={[field.name, 'date']}
+                              rules={[{ required: true }]}
+                              getValueProps={(value) => ({
+                                value: value ? moment(value) : undefined
+                              })}
+                            >
+                              <DatePicker
+                                disabled={(field.name < (data?.actives?.length || 0))}
+                                showTime
+                                format="YYYY-MM-DD HH:mm:ss"
+                                style={{ width: '100%' }}
+                              />
+                            </Form.Item>
                           </Col>
-                          <Col xs={24} sm={12}>
+                          <Col span={12}>
                             <Form.Item
                               labelCol={{ span: 5, offset: 0 }}
+                              key="recorder"
+                              label="记录人"
+                              name={[field.name, 'recorder']}
+                              rules={[{ required: true }]}
+                              // initialValue={initialState?.currentUser?.id}
+                            >
+                              <Select disabled >
+                                {resData?.subordinates.map((u) => (
+                                  <Select.Option key={u.id} value={u.id}>
+                                    {u.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col span={24}>
+                            <Form.Item
+                              labelCol={{ span: 3, offset: 0 }}
+                              key="content"
+                              label="活动内容"
+                              name={[field.name, 'content']}
+                              rules={[{ required: true }]}
+                            >
+                              <Input.TextArea
+                                disabled={(field.name < (data?.actives?.length || 0))}
+                                rows={4}
+                                placeholder="需包含：地点--人物---事件"
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col span={24}>
+                            <Form.Item
+                              labelCol={{ span: 3, offset: 0 }}
                               key="fileList"
                               label="活动材料"
                               name={[field.name, 'fileList']}
@@ -245,7 +259,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                               getValueFromEvent={normFile}
                               style={{ textAlign: 'left' }}
                             >
-                              <Upload 
+                              <Upload
+                                className="upload-list-inline"
                                 { ...props }
                                 disabled={(field.name < (data?.actives?.length || 0))}
                                 defaultFileList={
@@ -269,6 +284,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                         </div>
                       </div>
                     ))}
+                    </div>
                   </>
                 )}
               </Form.List>

@@ -7,6 +7,8 @@ import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';
+import ProjActiveForm from './ProjActiveForm';
+import DailyModal from './DailyModal';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { useBaseState } from '@/pages/utils/hook';
@@ -16,29 +18,20 @@ import { history } from 'umi';
 const Project: React.FC<any> = () => {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
+  const dailyRef = useRef<FormDialogHandle<Proj>>(null);
+  const activeRef = useRef<FormDialogHandle<ProjectInput>>(null);
+
   const { projs, todoProjs, subordinates, customers, agreements, projectAgreements, loading, archive, 
     setArchive, setFilter, archiveProj, deleteProj, pushProj } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
-  const [editProj, setEditProj] = useState<Proj>();
 
-  const editHandle = (proj: Proj) => {
+  const editHandle = (proj: Proj, openRef: any) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
-    setEditProj(proj)
-    ref.current?.showDialog({ 
+    openRef.current?.showDialog({ 
       ...pro,
       contName: agree.length ? agree[0].agreementId : '', 
-      actives: (actives as ActiveInput[])?.map(item => {
-        // @ts-ignore
-        item.date = moment(item.date)
-        return item
-      }),
-      // @ts-ignore
-      startTime: pro.startTime && moment(pro.startTime),
-      // @ts-ignore
-      endTime: pro.endTime && moment(pro.endTime),
-      // @ts-ignore
-      productDate: pro.productDate && moment(pro.productDate),
+      actives: (actives as ActiveInput[]),
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
@@ -75,7 +68,7 @@ const Project: React.FC<any> = () => {
       key: 'id',
       render: (text: string, record: Proj) => (
         <div>
-          <a onClick={() => editHandle(record)}>{buildProjName(record.id, record.name)} </a>
+          <a onClick={() => editHandle(record, ref)}>{buildProjName(record.id, record.name)} </a>
         </div>
       ),
       filters: [
@@ -126,11 +119,12 @@ const Project: React.FC<any> = () => {
       onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
     },  
     {
-      title: '总人天数',
+      title: '总人天',
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
       width: '80px',
-      render: (text: string, record: Proj) => <Tag color="cyan">{ text ? text : 0 }</Tag>,
+      render: (text: number, record: Proj) => 
+        <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{ text ? ((text - 0) / 8).toFixed(2) : 0 }</Tag></Button>,
     },
     {
       title: '客户名称',
@@ -241,7 +235,9 @@ const Project: React.FC<any> = () => {
       key: 'action',
       render: (id: string, record: Proj) => (
         <Space>
-        
+          <a key="archive" onClick={() => {editHandle(record, activeRef)}}>
+            添加项目活动
+          </a>
           <Popconfirm title="将项目数据归档，只能到归档列表查看！" okText="是" cancelText="否" onConfirm={() => archiveProj(record.id)}>
             <a key="archive" hidden={record.isArchive}>
               归档
@@ -255,7 +251,7 @@ const Project: React.FC<any> = () => {
         </Space>
       ),
       fixed: 'right' as 'right',
-      width: 120,
+      width: 180,
     },
   ];
 
@@ -308,12 +304,24 @@ const Project: React.FC<any> = () => {
         ref={ref}
         title="编辑项目"
         width={1000}
-        submitHandle={(v: ProjectInput) => {  
-          // if (editProj?.status === 'endProj') { return Promise.resolve() }
-          return pushProj(v)
-        } }
+        submitHandle={(v: ProjectInput) => pushProj(v)}
       >
         {ProjForm}
+      </DialogForm>
+      <DialogForm
+        ref={dailyRef}
+        title="查看日报"
+        width={1300}
+      >
+        {DailyModal}
+      </DialogForm>
+      <DialogForm
+        ref={activeRef}
+        title="项目活动管理"
+        width={1000}
+        submitHandle={(v: ProjectInput) => pushProj(v)}
+      >
+        {ProjActiveForm}
       </DialogForm>
     </PageContainer>
   );

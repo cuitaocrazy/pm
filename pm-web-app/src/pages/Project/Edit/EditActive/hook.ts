@@ -75,6 +75,7 @@ query ($projType: String!) {
       actualInspections
       timeConsuming
       actives {
+        name
         recorder
         date
         content

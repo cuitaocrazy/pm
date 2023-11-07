@@ -212,6 +212,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             <Timeline className='proj-detail-timeline' mode="left">
               {renderActiveNode(data?.actives).map((act, i) => (
                 <Timeline.Item key={i} label={moment(act.date).format('YYYY-MM-DD HH:mm:ss')}>
+                   <div>
+                    活动名称: { act.name }
+                  </div>
                   <div>
                     活动记录人: { act.recorder ? find(indu => indu.id === act.recorder, resData?.subordinates || [])?.name : '' }
                   </div>

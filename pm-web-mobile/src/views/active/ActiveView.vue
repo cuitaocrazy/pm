@@ -91,7 +91,7 @@ import { reactive, ref, computed } from 'vue';
 import { buildProjName, projectTypeStr } from '@/utils';
  // @ts-ignore 引入Message组件
  import { Message, Toast } from 'tdesign-mobile-vue';
-import logo from '@/assets/logo.jpg';
+import logo from '@/assets/logo.png';
 import moment from 'moment';
 import { useProjectState } from './hook';
 import ProjectInfo from '@/components/ProjectInfo.vue';

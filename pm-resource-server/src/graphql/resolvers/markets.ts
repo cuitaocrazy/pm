@@ -1,12 +1,13 @@
 import moment from 'moment'
 import { isNil, includes, length } from 'ramda';
 import { AuthContext, protect } from '../../auth/oauth';
-import { Market } from '../../mongodb'
+import { Market, EventLog } from '../../mongodb'
 import { ObjectId } from 'mongodb'
-import { dbid2id, id2dbid } from '../../util/utils'
+import { dbid2id, id2dbid, addEventLog } from '../../util/utils'
+
 export default {
   Query: {
-    marketsBySuper: (_: any, __: any, context: AuthContext) => { 
+    marketsBySuper: (_: any, __: any, context: AuthContext) => {
       return Market
       .find({ isDel: false })
       .sort({ createDate: -1 })
@@ -27,9 +28,27 @@ export default {
       if (isNil(repeat)) {
         market.createDate = moment().utc().utcOffset(8 * 60).format('YYYYMMDD')
         market.isDel = false
+        // 记录新增日志
+        addEventLog({
+          changeUser: context.user!.id,
+          type: 'add',
+          target: 'market',
+          oldValue: '' ,
+          newValue: JSON.stringify(args.market),
+          description: '新增市场客户'
+        })
       } else {
         market.createDate = repeat.createDate
         market.isDel = repeat.isDel
+        // 记录修改日志
+        addEventLog({
+          changeUser: context.user!.id,
+          type: 'edit',
+          target: 'market',
+          oldValue: JSON.stringify(repeat),
+          newValue: JSON.stringify(args.market),
+          description: '修改市场客户'
+        })
       }
       let isRep = false;
       let proMap = {};
@@ -43,6 +62,16 @@ export default {
     },
     deleteMarket: async (_: any, args: any, context: AuthContext) => {
       const id = args.id
+      const market = await Market.findOne({ $or: [ { _id: new ObjectId(id) }, { _id: id }] })
+      // 记录删除日志
+      addEventLog({
+        changeUser: context.user!.id,
+        type: 'delete',
+        target: 'market',
+        oldValue: JSON.stringify(market),
+        newValue: '',
+        description: '删除市场客户'
+      })
       return Market.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
     },
   },

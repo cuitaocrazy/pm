@@ -78,6 +78,7 @@ const getGql = (proName: string) => {
         actualInspections
         timeConsuming
         actives {
+          name
           recorder
           date
           content

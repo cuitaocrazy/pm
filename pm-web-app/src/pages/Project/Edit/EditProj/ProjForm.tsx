@@ -408,12 +408,26 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="启动日期" name="startTime" rules={[{ required: stageStatus ? true : false}]}>
+          <Form.Item
+            label="启动日期"
+            name="startTime"
+            rules={[{ required: stageStatus ? true : false}]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined
+            })}
+          >
             <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }}/>
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="关闭日期" name="endTime" rules={[{ required: stageStatus === 'endProj' ? true : false }]}>
+          <Form.Item
+            label="关闭日期"
+            name="endTime"
+            rules={[{ required: stageStatus === 'endProj' ? true : false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined
+            })}
+          >
             <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }}/>
           </Form.Item>
         </Col>
@@ -477,12 +491,26 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       { projType === 'SQ' || projType === 'SH' ? '' :
         <Row>
           <Col span={8}>
-            <Form.Item label="投产日期" name="productDate" rules={[{ required: false }]}>
+            <Form.Item
+              label="投产日期"
+              name="productDate"
+              rules={[{ required: false }]}
+              getValueProps={(value) => ({
+                value: value ? moment(value) : undefined
+              })}
+            >
               <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }}/>
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="验收日期" name="acceptDate" rules={[{ required: false }]}>
+            <Form.Item
+              label="验收日期"
+              name="acceptDate"
+              rules={[{ required: false }]}
+              getValueProps={(value) => ({
+                value: value ? moment(value) : undefined
+              })}
+            >
               <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }}/>
             </Form.Item>
           </Col>
@@ -555,58 +583,67 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 </Form.Item>
                 {renderActiveNode(fields).map((field, i) => (
                   <div key={field.key} style={{ textAlign: 'left' }}>
-                    <Divider>{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动 {field.name + 1}</Divider>
+                    <Divider>
+                      <Form.Item
+                        labelCol={{ span: 1, offset: 0 }}
+                        key="name"
+                        label="活动名称"
+                        name={[field.name, 'name']}
+                        rules={[{ required: true }]}
+                      >
+                        <Input placeholder="请输入活动名称" style={{ width: '15vw', textAlign: 'center' }}/>
+                      </Form.Item>
+                    </Divider>
                     <Row>
-                      <Col xs={24} sm={12}>
-                        <Row>
-                          <Col span={24}>
-                            <Form.Item
-                              labelCol={{ span: 5, offset: 0 }}
-                              key="recorder"
-                              label="记录人"
-                              name={[field.name, 'recorder']}
-                              rules={[{ required: true }]}
-                            >
-                              <Select disabled >
-                                {resData?.subordinates.map((u) => (
-                                  <Select.Option key={u.id} value={u.id}>
-                                    {u.name}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            </Form.Item>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col span={24}>
-                            <Form.Item
-                              labelCol={{ span: 5, offset: 0 }}
-                              key="date"
-                              label="活动日期"
-                              name={[field.name, 'date']}
-                              rules={[{ required: true }]}
-                            >
-                              <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: '100%' }}/>
-                            </Form.Item>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col span={24}>
-                            <Form.Item
-                              labelCol={{ span: 5, offset: 0 }}
-                              key="content"
-                              label="活动内容"
-                              name={[field.name, 'content']}
-                              rules={[{ required: true }]}
-                            >
-                              <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" />
-                            </Form.Item>
-                          </Col>
-                        </Row>
+                      <Col span={12}>
+                        <Form.Item
+                          labelCol={{ span: 6, offset: 0 }}
+                          key="date"
+                          label="活动日期"
+                          name={[field.name, 'date']}
+                          rules={[{ required: true }]}
+                          getValueProps={(value) => ({
+                            value: value ? moment(value) : undefined
+                          })}
+                        >
+                          <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: '100%' }}/>
+                        </Form.Item>
                       </Col>
-                      <Col xs={24} sm={12}>
+                      <Col span={12}>
                         <Form.Item
                           labelCol={{ span: 5, offset: 0 }}
+                          key="recorder"
+                          label="记录人"
+                          name={[field.name, 'recorder']}
+                          rules={[{ required: true }]}
+                        >
+                          <Select disabled >
+                            {resData?.subordinates.map((u) => (
+                              <Select.Option key={u.id} value={u.id}>
+                                {u.name}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={24}>
+                        <Form.Item
+                          labelCol={{ span: 3, offset: 0 }}
+                          key="content"
+                          label="活动内容"
+                          name={[field.name, 'content']}
+                          rules={[{ required: true }]}
+                        >
+                          <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={24}>
+                        <Form.Item
+                          labelCol={{ span: 3, offset: 0 }}
                           key="fileList"
                           label="活动材料"
                           name={[field.name, 'fileList']}
@@ -615,6 +652,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                           style={{ textAlign: 'left' }}
                         >
                           <Upload
+                            className="upload-list-inline"
                             { ...props } 
                             defaultFileList={
                               form.getFieldValue('actives') ? 

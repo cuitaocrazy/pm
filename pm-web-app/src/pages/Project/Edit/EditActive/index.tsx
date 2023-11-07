@@ -1,7 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef } from 'react';
 import { Table, Tag, Input, Space } from 'antd';
-import { ArrowUpOutlined } from '@ant-design/icons';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -25,17 +24,7 @@ const Project: React.FC<any> = () => {
     ref.current?.showDialog({ 
       ...pro,
       contName: agree.length ? agree[0].agreementId : '', 
-      actives: (actives as ActiveInput[])?.map(item => {
-        // @ts-ignore
-        item.date = moment(item.date)
-        return item
-      }),
-      // @ts-ignore
-      startTime: pro.startTime && moment(pro.startTime),
-      // @ts-ignore
-      endTime: pro.endTime && moment(pro.endTime),
-      // @ts-ignore
-      productDate: pro.productDate && moment(pro.productDate),
+      actives: (actives as ActiveInput[]),
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
@@ -47,17 +36,7 @@ const Project: React.FC<any> = () => {
     detailRef.current?.showDialog({ 
       ...pro,
       contName: agree.length ? agree[0].agreementId : '', 
-      actives: (actives as ActiveInput[])?.map(item => {
-        // @ts-ignore
-        item.date = moment(item.date)
-        return item
-      }),
-      // @ts-ignore
-      startTime: pro.startTime && moment(pro.startTime),
-      // @ts-ignore
-      endTime: pro.endTime && moment(pro.endTime),
-      // @ts-ignore
-      productDate: pro.productDate && moment(pro.productDate),
+      actives: (actives as ActiveInput[]),
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });

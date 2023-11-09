@@ -119,7 +119,14 @@ const Project: React.FC<any> = () => {
       onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
     },  
     {
-      title: '总人天',
+      title: '预算人天',
+      dataIndex: 'estimatedWorkload',
+      key: 'estimatedWorkload',
+      width: '80px',
+      render: (text: string, record: Proj) => <Tag color="cyan">{ text ? text : 0 }</Tag>,
+    },
+    {
+      title: '实际人天',
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
       width: '80px',
@@ -132,16 +139,6 @@ const Project: React.FC<any> = () => {
       key: 'customer',
       render: (text: string, record: Proj) => {
         return customers.find((cum) => cum.id === record.customer)?.name;
-      },
-      width:150,
-    },
-    {
-      title: '合同名称',
-      dataIndex: 'contName',
-      key: 'contName',
-      render: (text: string, record: Proj) => {
-        const agree = projectAgreements.filter(item => item.id === record.id)
-        return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : ''
       },
       width:150,
     },

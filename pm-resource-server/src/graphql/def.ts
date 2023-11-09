@@ -20,7 +20,7 @@ type ProjectOfDaily {
 
 type ProjectOfDailyItem {
   employee: User!
-  timeConsuming: Int!
+  timeConsuming: Float!
   content: String
 }
 
@@ -36,7 +36,7 @@ type EmployeeDaily {
 
 type EmployeeDailyItem {
   projId: String!
-  timeConsuming: Int!
+  timeConsuming: Float!
   content: String
 }
 
@@ -52,7 +52,7 @@ type EmployeeOfDaily {
 
 type EmployeeOfDailyItem {
   project: Project!
-  timeConsuming: Int!
+  timeConsuming: Float!
   content: String
 }
 
@@ -96,7 +96,7 @@ type Project {
   usedPersonDays: Int
   requiredInspections: Int
   actualInspections: Int
-  timeConsuming: Int
+  timeConsuming: Float
 }
 
 type Contact {
@@ -387,7 +387,7 @@ type Query {
 
 input DailyInput {
   projId: String!
-  timeConsuming: Int!
+  timeConsuming: Float!
   content: String
 }
 

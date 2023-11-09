@@ -1,4 +1,4 @@
-import { any, anyPass, equals, filter, find, head, identity, includes, pipe, prop, startsWith, uniqBy, unnest, without, zip } from 'ramda'
+import { any, anyPass, equals, filter, find, head, identity, includes, pipe, prop, startsWith, uniqBy, unnest, without, zip, sort, length } from 'ramda';
 import { AuthContext, getGroupUsers, UserInfo, UserWithGroup } from '../../auth/oauth'
 import { EmployeeDaily, Project } from '../../mongodb'
 import { dbid2id } from '../../util/utils'
@@ -124,7 +124,9 @@ export default {
         const users = await getGroupUsers(user)
         const u = find(pipe<UserWithGroup, string, boolean>(prop('id'), equals(userId)), users)
         if (u !== undefined) {
-          const boolList = zip(user.groups, u.groups).map(kv => startsWith(kv[0], kv[1]))
+          const diff = function(a, b) { return a.length - b.length; };
+          const userGroup = sort(diff, user.groups);
+          const boolList = zip(userGroup, u.groups).map(kv => startsWith(kv[0], kv[1]))
           if (any(identity, boolList)) {
             return getUserDailies(userId)
           } else {

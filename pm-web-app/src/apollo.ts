@@ -15,7 +15,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       message.error('请刷新页面重试')
     } else if (errorObj.statusCode === 500) {
       message.error('服务器发生错误，请检查服务器。')
-    } 
+    }
   } 
 })
 
@@ -74,7 +74,7 @@ export type ProjectOfDaily = {
 export type ProjectOfDailyItem = {
   __typename?: 'ProjectOfDailyItem';
   employee: User;
-  timeConsuming: Scalars['Int'];
+  timeConsuming: Scalars['Float'];
   content?: Maybe<Scalars['String']>;
 };
 
@@ -93,7 +93,7 @@ export type EmployeeDaily = {
 export type EmployeeDailyItem = {
   __typename?: 'EmployeeDailyItem';
   projId: Scalars['ID'];
-  timeConsuming: Scalars['Int'];
+  timeConsuming: Scalars['Float'];
   content?: Maybe<Scalars['String']>;
 };
 
@@ -116,7 +116,7 @@ export type EmployeeOfDaily = {
 export type EmployeeOfDailyItem = {
   __typename?: 'EmployeeOfDailyItem';
   project: Project;
-  timeConsuming: Scalars['Int'];
+  timeConsuming: Scalars['Float'];
   content?: Maybe<Scalars['String']>;
 };
 
@@ -160,7 +160,7 @@ export type Project = {
   usedPersonDays?: Scalars['Int'];
   requiredInspections?: Scalars['Int'];
   actualInspections?: Scalars['Int'];
-  timeConsuming?: Scalars['Int'];
+  timeConsuming?: Scalars['Float'];
 };
 
 export type Contact = {
@@ -493,7 +493,7 @@ export type QueryGroupsUsersArgs = {
 
 export type DailyInput = {
   projId: Scalars['String'];
-  timeConsuming: Scalars['Int'];
+  timeConsuming: Scalars['Float'];
   content?: Maybe<Scalars['String']>;
 };
 

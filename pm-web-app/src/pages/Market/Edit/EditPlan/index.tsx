@@ -82,7 +82,7 @@ const Market: React.FC<any> = () => {
   const expandedRowRender = (record: MarkPlan) => {
     const expandedColumns = [
       {
-        title: '机构名称',
+        title: '客户名称',
         dataIndex: 'marketName',
         key: 'marketName',
         width: '10%'
@@ -164,7 +164,7 @@ const Market: React.FC<any> = () => {
       />
       <DialogForm
         ref={ref}
-        title="编辑机构"
+        title="编辑客户"
         width={1000}
         submitHandle={(v: MarketPlanInput) => {  
           return pushMarketPlan(v)

@@ -66,7 +66,7 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
     }
   }
 
-  // 修改机构时更新选中的机构列表并初始化已经选中的项目参数
+  // 修改客户时更新选中的客户列表并初始化已经选中的项目参数
   const onMarketChange = (value: string, filed: any) => {
     let selectMarket = resData?.markets.find(item => item.id === value)
     let tempSelet = seletMarkets || []
@@ -195,11 +195,11 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
                       <Col span={8}>
                         <Form.Item
                           key="marketId"
-                          label="机构名称"
+                          label="客户名称"
                           name={[field.name, 'marketId']}
                           rules={[{ required: true }]}
                         >
-                          <Select onChange={v => onMarketChange(v, field)} placeholder="选择机构">
+                          <Select onChange={v => onMarketChange(v, field)} placeholder="选择客户">
                             {resData?.markets?.map((u) => (
                               <Select.Option key={u.id} value={u.id}>
                                 {u.name}
@@ -210,7 +210,7 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
                         <Form.Item
                           hidden
                           key="marketName"
-                          label="机构名称"
+                          label="客户名称"
                           name={[field.name, 'marketName']}
                           rules={[{ required: true }]}
                         >

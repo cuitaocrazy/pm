@@ -29,7 +29,7 @@ const Market: React.FC<any> = () => {
 
   const columns = [
     {
-      title: '机构名称',
+      title: '客户名称',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: Mark) => (
@@ -70,7 +70,7 @@ const Market: React.FC<any> = () => {
           </a>
           <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteMarket(record.id)}>
             <a key="delete">
-              删除机构
+              删除客户
             </a>
           </Popconfirm>
         </Space>
@@ -216,7 +216,7 @@ const Market: React.FC<any> = () => {
       />
       <DialogForm
         ref={ref}
-        title="编辑机构"
+        title="编辑客户"
         width={1000}
         submitHandle={(v: MarketInput) => {  
           return pushMarket(v)

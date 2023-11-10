@@ -6,6 +6,8 @@ import { Users } from './keycloak'
 import { getWorkDays } from './util/utils'
 import { DailyInfo, UserInfo } from './data'
 import { transporter, sendEmails } from './emailer'
+// console.log(moment('20231109', 'YYYYMMDD').valueOf())
+const afterTimestamp = 1699459200000  //2023年11月09日的时间戳，忽略2023年11月10日之前的日报
 
 const getConfigData = async (configId: string): Promise<string[]> => {
   const config = await Config.findOne({ _id: configId })
@@ -58,7 +60,8 @@ async function main (year: number) {
         name: user.name,
         email: user.email,
         dates: getNoDailyDates(getWorkDays(year, workCalendar), R.find(R.propEq('_id', user.id), empDailies)?.dailies || [])
-          .filter(date => R.isNil(user.createdTimestamp) || moment(date, 'YYYYMMDD').isAfter(moment(user.createdTimestamp))),
+          .filter(date => R.isNil(user.createdTimestamp) || moment(date, 'YYYYMMDD').isAfter(moment(user.createdTimestamp)))
+          .filter(date => moment(date, 'YYYYMMDD').isAfter(moment(afterTimestamp))), // 在次日期前的日报不提醒
       }))
       .filter(mail => R.not(R.isNil(mail.email)))
       .filter(mail => R.not(R.isEmpty(mail.dates)))

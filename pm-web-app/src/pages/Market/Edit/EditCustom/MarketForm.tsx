@@ -51,7 +51,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
           <Form.Item hidden label="ID" name="id">
             <Input />
           </Form.Item>
-          <Form.Item label="机构名称" name="name" rules={[{ required: true }]}>
+          <Form.Item label="客户名称" name="name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Col>
@@ -133,7 +133,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
                 ))}
                 <Form.Item>
                   <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
-                    添加机构联系人
+                    添加客户联系人
                   </Button>
                 </Form.Item>
               </>

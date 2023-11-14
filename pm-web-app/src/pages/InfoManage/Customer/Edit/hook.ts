@@ -24,6 +24,7 @@ const queryGql = gql`
         name
         phone
         tags
+        recorder
       }
       remark
       enable

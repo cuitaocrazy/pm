@@ -335,6 +335,10 @@ export const Region = client.db().collection<IRegion>(pluralize('Region'))
      * 职务
      */
     tags?: string[]
+    /**
+     * 录入人
+     */
+    recorder?: string
   }]
   /**
    * 备注

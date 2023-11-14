@@ -102,7 +102,7 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
     let tempWeek = form.getFieldValue('week') || ''
     const { visitRecord } = seletMarkets[index].projects?.find(item => item.name === tempWeekPlans[index].projectName) || {};
     let visit = visitRecord?.filter(item => {
-      return moment(tempWeek).weekday(0).format('YYYY-MM-DD') === moment(item.date).weekday(0).format('YYYY-MM-DD')
+      return moment(tempWeek).subtract(1,'week').weekday(0).format('YYYY-MM-DD') === moment(item.date).weekday(0).format('YYYY-MM-DD')
     }).map(v => v.content).join('\n')
     tempWeekPlans[index].weekWork = visit || ''
     form.setFieldsValue({
@@ -113,7 +113,6 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
   const onPlanWeekChange = (date: any) => {
     const tempWeekPlans = form.getFieldValue('weekPlans') || []
     tempWeekPlans.forEach((p: MarketWeekPlan, index: number) => getWeekWork(index))
-    
   }
 
   const weekPlansValidator = async (_: any) => {
@@ -282,7 +281,7 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
                       <Col span={12}>
                         <Form.Item
                           key="weekWork"
-                          label="本周工作"
+                          label="上周工作"
                           name={[field.name, 'weekWork']}
                           labelCol={{ span: 6, offset: 0 }}
                         >
@@ -292,7 +291,7 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
                       <Col span={12}>
                         <Form.Item
                           key="nextWeekPlan"
-                          label="下周计划"
+                          label="本周计划"
                           name={[field.name, 'nextWeekPlan']}
                           labelCol={{ span: 6, offset: 0 }}
                         >

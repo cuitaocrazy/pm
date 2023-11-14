@@ -7,7 +7,6 @@ import ws from './ws'
 import uploadFile from './uploadFile'
 import exportFile from './exportFile'
 
-
 const app = express()
 const server = new ApolloServer({
   typeDefs: def.typeDef,
@@ -25,7 +24,6 @@ app.get('/api', protect('realm:project_manager'), (req, res) => {
   res.send((req as any).auth)
 })
 const s = app.listen(3000, () => console.log('server starting!!!'))
-
 ws(s)
 
 const closeServer = () => {

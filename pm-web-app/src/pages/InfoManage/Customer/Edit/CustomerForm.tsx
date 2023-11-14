@@ -6,6 +6,7 @@ import type { Mutation, CustomerInput, MutationPushTagsArgs, Query, QueryGroupsU
 import { gql, useQuery, useMutation } from '@apollo/client';
 import type { FormInstance } from 'antd/lib/form';
 import { useBaseState } from '@/pages/utils/hook';
+import { useModel } from 'umi';
 // import { gql, useLazyQuery, useMutation } from '@apollo/client';
 
 const { Option } = Select;
@@ -17,6 +18,10 @@ const userQuery = gql`
       name
     }
     tags
+    subordinates {
+      id
+      name
+    }
   }
 `;
 
@@ -39,6 +44,8 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
   const [pushTagsHandle] = useMutation<Mutation, MutationPushTagsArgs>(
     pushTagsGql,
   );
+
+  const { initialState } = useModel('@@initialState');
   const [tags, setTags] = useState(resData?.tags || []);
   const { orgCode, zoneCode } = useBaseState();
   let options: SelectProps['options'] = [];
@@ -60,6 +67,12 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
       },
     })
     setTags([...new Set(tags.concat(value))])
+  }
+
+  const onContactChange = (filed: any) => {
+    let tempContact = form.getFieldValue('contacts')
+    tempContact[filed.name].recorder = initialState?.currentUser?.id
+    form.setFieldValue('contacts', tempContact)
   }
 
   return (
@@ -119,12 +132,27 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                     <Divider>联系人 {i + 1}</Divider>
                     <Form.Item
                       labelCol={{ span: 6, offset: 0 }}
+                      key="recorder"
+                      label="录入人"
+                      name={[field.name, 'recorder']}
+                      rules={[{ required: true }]}
+                    >
+                      <Select disabled>
+                        {resData?.subordinates.map((u) => (
+                          <Select.Option key={u.id} value={u.id}>
+                            {u.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item
+                      labelCol={{ span: 6, offset: 0 }}
                       key="name"
                       label="联系人姓名"
                       name={[field.name, 'name']}
                       rules={[{ required: true }]}
                     >
-                      <Input />
+                      <Input onChange={() => onContactChange(field)}/>
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 6, offset: 0 }}
@@ -133,7 +161,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                       name={[field.name, 'phone']}
                       rules={[{ required: true }]}
                     >
-                      <Input />
+                      <Input onChange={() => onContactChange(field)}/>
                     </Form.Item>
                     <Form.Item 
                       labelCol={{ span: 6, offset: 0 }}

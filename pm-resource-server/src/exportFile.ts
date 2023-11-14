@@ -45,7 +45,7 @@ export default (app, express) => {
       // worksheet.getCell('A1')
       worksheet.getRow(1).height = 20
       // 设置标题行
-      worksheet.addRow(['序号', '客户名称', '项目名称', '项目预算', '项目状态', '项目计划', '上周工作内容', '下周工作计划']);
+      worksheet.addRow(['序号', '客户名称', '项目名称', '项目预算', '项目状态', '项目计划', '上周工作内容', '本周工作计划']);
       worksheet.getRow(2).height = 20
       colum.forEach(c => worksheet.getCell(`${c}2`).border = border)
       // 添加数据

@@ -16,7 +16,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
     } else if (errorObj.statusCode === 500) {
       message.error('服务器发生错误，请检查服务器。')
     }
-  } 
+  }
 })
 
 const cache = new InMemoryCache({
@@ -318,6 +318,7 @@ export type CustomerContact = {
   name: Scalars['String'];
   phone: Maybe<Scalars['String']>;
   tags: Scalars['String'][];
+  recorder?: Scalars['String'];
 };
 
 export type File = {
@@ -611,6 +612,7 @@ export type CustomerContactInput = {
   name: Scalars['String'];
   phone: Maybe<Scalars['String']>;
   tags: Scalars['String'][];
+  recorder?: Scalars['String'];
 };
 
 export type FileInput = {

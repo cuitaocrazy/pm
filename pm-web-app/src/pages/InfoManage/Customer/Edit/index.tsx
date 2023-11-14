@@ -126,12 +126,21 @@ const Customer: React.FC<any> = () => {
           }) 
           return tagMap
         },
+      },
+      {
+        title: '录入人',
+        dataIndex: 'recorder',
+        key: 'recorder',
+        render: (text: string, record: CustomerContact) => {
+          return subordinates.find((user) => user.id === record.recorder)?.name;
+        },
+        width: '15%',
       }
     ];
 
     const data = record.contacts.map(cont => {
-      const { name, phone, tags } = cont
-      return { key: name + phone, name, phone, tags  }
+      const { name, phone, tags, recorder } = cont
+      return { key: name + phone, name, phone, tags, recorder }
     })
     
     return <Table columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>

@@ -237,6 +237,7 @@ type CustomerContact {
   name: String!
   phone: String!
   tags: [String!]
+  recorder: String
 }
 
 type File {
@@ -502,6 +503,7 @@ input CustomerContactInput {
   name: String!
   phone: String!
   tags: [String!]
+  recorder: String
 }
 
 input FileInput {

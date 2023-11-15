@@ -109,6 +109,10 @@ export interface IProject {
    */
   participants: string[]
   /**
+   * 收入确认年度
+   */
+  confirmYear: string
+  /**
    * 联系人
    */
   contacts: [{

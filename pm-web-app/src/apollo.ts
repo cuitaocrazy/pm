@@ -161,6 +161,7 @@ export type Project = {
   requiredInspections?: Scalars['Int'];
   actualInspections?: Scalars['Int'];
   timeConsuming?: Scalars['Float'];
+  confirmYear?: Scalars['String'];
 };
 
 export type Contact = {
@@ -534,6 +535,7 @@ export type ProjectInput = {
   usedPersonDays?: Scalars['Int'];
   requiredInspections?: Scalars['Int'];
   actualInspections?: Scalars['Int'];
+  confirmYear?: Scalars['String'];
 };
 
 export type ContactInput = {

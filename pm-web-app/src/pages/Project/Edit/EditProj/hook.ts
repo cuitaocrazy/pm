@@ -77,6 +77,7 @@ const getGql = (proName: string) => {
         requiredInspections
         actualInspections
         timeConsuming
+        confirmYear
         actives {
           name
           recorder

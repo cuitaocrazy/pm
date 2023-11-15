@@ -97,6 +97,7 @@ type Project {
   requiredInspections: Int
   actualInspections: Int
   timeConsuming: Float
+  confirmYear: String
 }
 
 type Contact {
@@ -427,6 +428,7 @@ input ProjectInput {
   usedPersonDays: Int
   requiredInspections: Int
   actualInspections: Int
+  confirmYear: String
 }
 
 input ContactInput {

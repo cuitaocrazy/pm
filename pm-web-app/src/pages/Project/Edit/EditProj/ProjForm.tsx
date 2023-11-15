@@ -477,7 +477,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="实际成本" name="actualCost" rules={[{ required: false }]}
+          <Form.Item label="采购成本" name="actualCost" rules={[{ required: false }]}
             tooltip={(<span className="ant-form-text">实际采购成本</span>)}>
             <InputNumber min={0} />
           </Form.Item>
@@ -562,6 +562,17 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
        </Row>: ''
       }
       <Row>
+        <Col span={8}>
+          <Form.Item label="收入确认年度" name="confirmYear" rules={[{ required: false }]}>
+          <Input />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+        </Col>
+        <Col span={8}>
+        </Col>
+      </Row>
+      <Row>
         <Col span={24}>
           <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
             <Input.TextArea />
@@ -587,9 +598,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                       <Form.Item
                         labelCol={{ span: 1, offset: 0 }}
                         key="name"
-                        label="活动名称"
+                        label=" "
                         name={[field.name, 'name']}
-                        rules={[{ required: true }]}
+                        rules={[{ required: true, message: '请输入活动名称' }]}
                       >
                         <Input placeholder="请输入活动名称" style={{ width: '15vw', textAlign: 'center' }}/>
                       </Form.Item>

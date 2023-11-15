@@ -200,7 +200,7 @@ const Project: React.FC<any> = () => {
     //   key: 'actualFee',
     // },
     // {
-    //   title: '实际成本(元)',
+    //   title: '采购成本(元)',
     //   dataIndex: 'actualCost',
     //   key: 'actualCost',
     // },

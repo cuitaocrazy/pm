@@ -11,14 +11,11 @@ import DailyModal from './DailyModal';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { useBaseState } from '@/pages/utils/hook';
-import { getStatusDisplayName, projStatus } from './utils';
-import { history } from 'umi';
 
 const Project: React.FC<any> = () => {
-  const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
   const dailyRef = useRef<FormDialogHandle<Proj>>(null);
-  const { projs, projectAgreements, loading, deleteProj, pushProj } = useProjStatus();
+  const { projs, projectAgreements, loading, deleteProj, pushProj, isAdmin } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
   const [editProj, setEditProj] = useState<Proj>();
 
@@ -130,7 +127,7 @@ const Project: React.FC<any> = () => {
   return (
     <PageContainer
       extra={[
-        <Button key="create" type="primary" onClick={() => ref.current?.showDialog()}>
+        <Button hidden={!isAdmin} key="create" type="primary" onClick={() => ref.current?.showDialog()}>
           新建
         </Button>
       ]}

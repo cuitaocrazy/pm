@@ -84,6 +84,8 @@ const deleteProjGql = gql`
 `;
 
 export function useProjStatus() {
+  const { refresh: initialRefresh, initialState } = useModel('@@initialState');
+  const isAdmin = initialState?.currentUser?.access?.includes('realm:supervisor')
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryFilterProjectArgs>(queryGql, {
     variables: {
       projType: 'ZH'
@@ -98,7 +100,6 @@ export function useProjStatus() {
     pushProjGql,
   );
 
-  const { refresh: initialRefresh } = useModel('@@initialState');
   const { buildProjName } = useBaseState();
   const [filter, setFilter] = useState('');
     
@@ -138,6 +139,7 @@ export function useProjStatus() {
   );
 
   return {
+    isAdmin,
     loading: queryLoading || deleteLoading || pushLoading,
     projs,
     subordinates,

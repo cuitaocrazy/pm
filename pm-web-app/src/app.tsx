@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import { notification } from 'antd';
+import { notification, message } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
@@ -114,3 +114,13 @@ const errorHandler = (error: ResponseError) => {
 export const request: RequestConfig = {
   errorHandler,
 };
+
+window.addEventListener('error', (event) => {
+  const { type } = event;
+  // 检查是否是 404 错误
+  if (type === 'error') {
+    // 在这里可以添加处理 net::ERR_ABORTED 错误的逻辑
+    message.error('认证超时，正在为您请刷新页面')
+    setTimeout(() => { location.reload()}, 1000)
+  }
+}, true);

@@ -42,7 +42,7 @@ data:
                 - Path=/redirect/{anchor}
               filters:
                 - OAuth
-                - RedirectWithAnchor=/#/{anchor}
+                - RedirectWithAnchor=/web/#/{anchor}
             - id: pm-app
               uri: http://web-app
               predicates:

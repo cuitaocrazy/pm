@@ -119,16 +119,17 @@ export const filterTodoProject = (data: any[]) => {
     const result = reg.exec(proj?.id || '');
     if (result?.groups?.projType === 'SZ') {  // 售中
       if (proj.acceptDate) {
-        let monthDiff =  moment(proj.acceptDate).diff(new Date(), 'month')
-        if (monthDiff <= 2) {
-          proj.todoTip = '验收日期不足三个月，请及时签署维护合同'
+        let monthDiff = moment(proj.acceptDate).diff(new Date(), 'month') + (proj.serviceCycle - 0)
+        if (monthDiff <= 2 && monthDiff > 0) {
+          proj.todoTip = '免费维护期不足三个月，请及时签署维护合同'
           return true
         }
       }
     } else if (result?.groups?.projType === 'SH') {  // 售后
       if (proj.startTime && proj.serviceCycle) {
         let monthDiff =  moment(new Date()).diff(proj.startTime, 'month')
-        if ((proj.serviceCycle - monthDiff) <= 3) {
+        const dif = proj.serviceCycle - monthDiff
+        if (dif <= 3 && dif > 0) {
           proj.todoTip = '维护服务即将不足三个月，请及时巡检'
           return true
         }

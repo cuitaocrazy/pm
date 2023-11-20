@@ -405,7 +405,7 @@ export type MarketWeekPlan = {
   marketId: Scalars['String'];
   marketName: Scalars['String'];
   projectName: Scalars['String'];
-  projectScale: Scalars['String'];
+  projectScale?: Scalars['String'];
   projectStatus: Scalars['String'];
   projectPlan?: Scalars['String'];
   nextWeekPlan: Scalars['String'];
@@ -689,7 +689,7 @@ export type MarketWeekPlanInput = {
   marketId: Scalars['String'];
   marketName: Scalars['String'];
   projectName: Scalars['String'];
-  projectScale: Scalars['String'];
+  projectScale?: Scalars['String'];
   projectStatus: Scalars['String'];
   projectPlan?: Scalars['String'];
   nextWeekPlan: Scalars['String'];

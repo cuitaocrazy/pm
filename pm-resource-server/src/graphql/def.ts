@@ -330,7 +330,7 @@ type MarketWeekPlan {
   marketId: String!
   marketName: String!
   projectName: String!
-  projectScale: String!
+  projectScale: String
   projectStatus: String!
   projectPlan: String
   weekWork: String
@@ -580,7 +580,7 @@ input MarketWeekPlanInput {
   marketId: String!
   marketName: String!
   projectName: String!
-  projectScale: String!
+  projectScale: String
   projectStatus: String!
   projectPlan: String
   weekWork: String

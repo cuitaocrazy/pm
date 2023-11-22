@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Button, DatePicker, Row, Col, message } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import type { Market, MarketPlanInput, MarketWeekPlan, Query } from '@/apollo';
+import type { Market, MarketPlanInput, MarketProject, MarketWeekPlan, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import type { FormInstance } from 'antd/lib/form';
@@ -27,6 +27,7 @@ const userQuery = gql`
         scale
         plan
         status
+        leader
         visitRecord {
           date
           content
@@ -45,6 +46,8 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
   const { loading, data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
   const { initialState } = useModel('@@initialState');
   const [seletMarkets, setSeletMarkets] = useState<Market[]>([]);
+  // const [seletProject, setSeletProject] = useState<MarketProject[]>([]);
+
   // 查看时初始化 seletMarkets的值
   useEffect(() => {
     if (data?.id && resData?.markets) {
@@ -56,6 +59,15 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
       setSeletMarkets(markArr)
     }
   }, [resData?.markets]);
+
+  const projectList = (index: number) => {
+    let proj = seletMarkets[index] || {}
+    if (proj.leader === initialState?.currentUser?.id) {
+      return proj.projects || []
+    } else  {
+      return proj.projects?.filter((p:MarketProject) => p.leader === initialState?.currentUser?.id) || []
+    }
+  }
 
   const addWeekPlan = (add: any) => {
     let week = form.getFieldValue('week')
@@ -230,7 +242,7 @@ export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => 
                               shouldUpdate
                             >
                               <Select onChange={v => onProjectChange(v, field)}>
-                                {(seletMarkets[field.name]?.projects || []).map((u) => (
+                                {projectList(field.name).map((u) => (
                                     <Select.Option key={u.name} value={u.name}>
                                       {u.name}
                                     </Select.Option>

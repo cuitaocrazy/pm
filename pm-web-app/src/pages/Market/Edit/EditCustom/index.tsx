@@ -13,9 +13,11 @@ import ProjectVisitTable from './ProjectVisitTable';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { getStatusDisplayName } from './utils';
+import { useModel } from 'umi';
 
 
 const Market: React.FC<any> = () => {
+  const { initialState } = useModel('@@initialState');
   const ref = useRef<FormDialogHandle<MarketInput>>(null);
   const projRef = useRef<FormDialogHandle<MarketProjectInput>>(null);
   const projVisitRef = useRef<FormDialogHandle<MarketProjectInput>>(null);
@@ -24,8 +26,16 @@ const Market: React.FC<any> = () => {
   const [editeIndex, setEditeIndex] = useState(0);
 
   const editHandle = (mark: Mark) => {
-    ref.current?.showDialog({ ...mark });
+    ref.current?.showDialog({ ...mark, participants: mark.participants || [] });
   };
+  const isLeader = (mark: Mark, proj?: MarketProject) => {
+    if (mark.leader === initialState?.currentUser?.id) {
+      return true
+    } else if (proj && proj.leader === initialState?.currentUser?.id) {
+      return true
+    }
+    return false
+  }
 
   const columns = [
     {
@@ -42,6 +52,14 @@ const Market: React.FC<any> = () => {
       key: 'leader',
       render: (text: string, record: Mark) => {
         return subordinates.find((user) => user.id === record.leader)?.name;
+      },
+    },
+    {
+      title: '参与人',
+      dataIndex: 'participants',
+      key: 'participants',
+      render: (text: string, record: Mark) => {
+        return subordinates.filter(s => record.participants?.includes(s.id)).map(user => user.name).join(' ');
       },
     },
     {
@@ -65,11 +83,11 @@ const Market: React.FC<any> = () => {
       key: 'action',
       render: (id: string, record: Mark) => (
         <Space>
-          <a key="archive" onClick={() => editeMarketProject(record, record.projects?.length ? record.projects?.length : 0)}>
+          <a hidden={!isLeader(record)} key="archive" onClick={() => editeMarketProject(record, record.projects?.length ? record.projects?.length : 0)}>
             添加项目
           </a>
           <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteMarket(record.id)}>
-            <a key="delete">
+            <a hidden={!isLeader(record)} key="delete">
               删除客户
             </a>
           </Popconfirm>
@@ -81,12 +99,15 @@ const Market: React.FC<any> = () => {
 
   const expandedRowRender2 = (record: MarketProject) => {
     return <ProjectVisitTable
-              proj={record} 
+              proj={record}
+              subordinates={subordinates}
             />
   };
 
   const rowExpandable2 = (record: MarketProject) => {
-    return record.visitRecord && record.visitRecord.length ? true : false
+    // @ts-ignore
+    const isShow = isAdmin || isLeader(record.market, record)
+    return isShow && record.visitRecord && record.visitRecord.length ? true : false
   }
 
   const expandedRowRender = (record: Mark) => {
@@ -97,12 +118,18 @@ const Market: React.FC<any> = () => {
         key: 'name',
         width: '15%'
       },
-    
       {
         title: '项目规模',
         dataIndex: 'scale',
         key: 'scale',
         width: '10%'
+      },
+      {
+        title: '项目负责人',
+        dataIndex: 'leader',
+        key: 'leader',
+        width: '10%',
+        render: (leader: string) => subordinates.find((user) => user.id === leader)?.name,
       },
       {
         title: '项目状态',
@@ -115,13 +142,13 @@ const Market: React.FC<any> = () => {
         title: '项目简介',
         dataIndex: 'introduct',
         key: 'introduct',
-        width: '20%'
+        width: '15%'
       },
       {
         title: '项目计划',
         dataIndex: 'plan',
         key: 'plan',
-        width: '20%'
+        width: '15%'
       },
       {
         title: '操作',
@@ -129,14 +156,14 @@ const Market: React.FC<any> = () => {
         key: 'index',
         render: (index: number, market: MarketProject) => (
           <Space>
-            <a key="edit" onClick={() => editeMarketProject(record, index)}>
+            <a hidden={!isLeader(record, market)} key="edit" onClick={() => editeMarketProject(record, index)}>
               编辑项目
             </a>
-            <a key="editVisit" onClick={() => editeMarketVisitProject(record, index)}>
+            <a hidden={!isLeader(record, market)} key="editVisit" onClick={() => editeMarketVisitProject(record, index)}>
               编辑拜访记录
             </a>
             <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteMarketProject(record, index)}>
-              <a key="delete">
+              <a hidden={!isLeader(record, market)} key="delete">
                 删除项目
               </a>
             </Popconfirm>
@@ -149,7 +176,7 @@ const Market: React.FC<any> = () => {
     ];
 
     const data = record.projects?.map((market, index) => {
-      return { ...market, index, marketId: record.id }
+      return { ...market, index, marketId: record.id, market: record }
     })
     
     return <Table
@@ -168,9 +195,15 @@ const Market: React.FC<any> = () => {
   const editeMarketProject = (record: Mark, index: number) => {
     setEditeMarket(record)
     setEditeIndex(index);
-    projRef.current?.showDialog(record.projects ?  {
+    const participants = record.participants ? [...record.participants, record.leader] : [record.leader]
+    const editProj = record.projects ? {
       ...record.projects[index],
-    } : undefined);
+      participants
+    } : {
+      participants
+    }
+    // @ts-ignore
+    projRef.current?.showDialog(editProj);
   }
 
   const deleteMarketProject = (record: Mark, index: number) => {
@@ -218,7 +251,8 @@ const Market: React.FC<any> = () => {
         ref={ref}
         title="编辑客户"
         width={1000}
-        submitHandle={(v: MarketInput) => {  
+        submitHandle={(v: MarketInput) => {
+          if (v.leader !== initialState?.currentUser?.id) return Promise.resolve()
           return pushMarket(v)
         } }
       >

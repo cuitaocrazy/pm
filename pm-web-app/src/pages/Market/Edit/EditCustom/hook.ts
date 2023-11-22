@@ -22,6 +22,7 @@ const getGql = (gqlName: string) => {
         id
         name
         leader
+        participants
         projects {
           name
           introduct
@@ -38,7 +39,9 @@ const getGql = (gqlName: string) => {
           visitRecord {
             date
             content
+            recorder
           }
+          leader
         }
         contacts {
           name

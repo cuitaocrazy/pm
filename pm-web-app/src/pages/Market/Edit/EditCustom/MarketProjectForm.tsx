@@ -2,10 +2,24 @@ import React from 'react';
 import { Form, Input, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import type { MarketProjectInput} from '@/apollo';
+import type { Query, QueryGroupsUsersArgs, MarketProjectInput} from '@/apollo';
+import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import type { FormInstance } from 'antd/lib/form';
 import moment from 'moment';
+
+const userQuery = gql`
+  query($groups: [String!]) {
+    groupsUsers(groups: $groups) {
+      id
+      name
+    }
+    subordinates {
+      id
+      name
+    }
+  }
+`;
 
 const layout = {
   labelCol: { span: 9 },
@@ -13,9 +27,11 @@ const layout = {
 };
 
 export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInput) => {
+  const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
+    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
+  } });
   const { initialState } = useModel('@@initialState');
   let files = data?.fileList as UploadFile[];
-
   const props: UploadProps = {
     listType: "picture-card",
     action: '/api/upload/tmp',
@@ -63,12 +79,6 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
             <Input />
           </Form.Item>
         </Col>
-      
-        <Col span={8}>
-          <Form.Item label="项目规模" name="scale" rules={[{ required: false }]}>
-            <Input />
-          </Form.Item>
-        </Col>
         <Col span={8}>
           <Form.Item label="项目状态" name="status" rules={[{ required: true }]}>
             <Select allowClear>
@@ -78,11 +88,28 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
             </Select>
           </Form.Item>
         </Col>
+        <Col span={8}>
+          <Form.Item label="项目规模" name="scale" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
       </Row>
       <Row>
-        <Col span={24}>
-          <Form.Item label="项目简介" name="introduct" labelCol={{ span: 3, offset: 0 }}>
+        <Col span={16}>
+          <Form.Item label="项目简介" name="introduct" labelCol={{ span: 3, offset: 1 }}>
             <Input.TextArea />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="项目负责人" name="leader" rules={[{ required: false }]}>
+            <Select allowClear>
+              { // @ts-ignore
+              resData?.subordinates.filter(s => data.participants.includes(s.id) ).map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
       </Row>

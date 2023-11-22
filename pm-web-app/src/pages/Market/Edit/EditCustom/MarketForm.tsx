@@ -45,6 +45,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
       {...layout} 
       form={form} 
       initialValues={data || { leader: initialState?.currentUser?.id }}
+      disabled={data && data?.leader !== initialState?.currentUser?.id}
     >
       <Row>
         <Col span={8}>
@@ -63,6 +64,27 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
                   {u.name}
                 </Select.Option>
               ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="参与人员" name="participants">
+            <Select
+              mode="multiple"
+              filterOption={(input, option) => {
+                const nameStr: any = option?.children || '';
+                if (input && nameStr) {
+                  return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                }
+                return true;
+              }}
+            >
+              {resData?.groupsUsers.map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+              x
             </Select>
           </Form.Item>
         </Col>

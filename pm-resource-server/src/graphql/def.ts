@@ -287,6 +287,7 @@ type Market {
   contacts: [MarketContact!]
   createDate: String!
   updateTime: String!
+  participants: [String!]
 }
 
 type MarketProject {
@@ -297,6 +298,7 @@ type MarketProject {
   status: MarketProjectStatus
   fileList: [File!]
   visitRecord: [MarketProjectVisit!]
+  leader: String
 }
 
 type MarketContact {
@@ -309,6 +311,7 @@ type MarketContact {
 type MarketProjectVisit {
   date: String!
   content: String
+  recorder: String
 }
 
 enum MarketProjectStatus {
@@ -543,6 +546,7 @@ input MarketInput {
   contacts: [MarketContactInput!]
   createDate: String
   updateTime: String
+  participants: [String!]
 }
 
 input MarketProjectInput {
@@ -553,6 +557,7 @@ input MarketProjectInput {
   status: MarketProjectStatus
   fileList: [FileInput!]
   visitRecord: [MarketProjectVisitInput!]
+  leader: String
 }
 
 input MarketContactInput {
@@ -565,6 +570,7 @@ input MarketContactInput {
 input MarketProjectVisitInput {
   date: String!
   content: String
+  recorder: String
 }
 
 input MarketPlanInput {

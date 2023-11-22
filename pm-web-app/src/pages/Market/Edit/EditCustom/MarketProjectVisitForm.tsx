@@ -2,10 +2,20 @@ import React from 'react';
 import { Form, Input, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import type { MarketProjectInput} from '@/apollo';
+import type { Query, MarketProjectInput} from '@/apollo';
+import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import type { FormInstance } from 'antd/lib/form';
 import moment from 'moment';
+
+const userQuery = gql`
+{
+    subordinates {
+      id
+      name
+    }
+  }
+`;
 
 const layout = {
   labelCol: { span: 9 },
@@ -13,6 +23,7 @@ const layout = {
 };
 
 export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInput) => {
+  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
   const { initialState } = useModel('@@initialState');
   let files = data?.fileList as UploadFile[];
   const props: UploadProps = {
@@ -49,6 +60,12 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
     }
     return e?.fileList;
   };
+
+  const onContactChange = (filed: any) => {
+    let tempContact = form.getFieldValue('visitRecord')
+    tempContact[filed.name].recorder = initialState?.currentUser?.id
+    form.setFieldValue('visitRecord', tempContact)
+  }
   
   return (
     <Form 
@@ -62,7 +79,17 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
             <Input disabled/>
           </Form.Item>
         </Col>
-      
+        <Col span={8}>
+          <Form.Item label="项目负责人" name="leader">
+            <Select disabled allowClear>
+              {resData?.subordinates.map(u => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
         <Col span={8}>
           <Form.Item label="项目规模" name="scale" rules={[{ required: false }]}>
             <Input disabled/>
@@ -125,6 +152,25 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                           <Col span={24}>
                             <Form.Item
                               labelCol={{ span: 5, offset: 0 }}
+                              key="recorder"
+                              label="录入人"
+                              name={[field.name, 'recorder']}
+                              rules={[{ required: true }]}
+                            >
+                              <Select disabled>
+                                {resData?.subordinates.map((u) => (
+                                  <Select.Option key={u.id} value={u.id}>
+                                    {u.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col span={24}>
+                            <Form.Item
+                              labelCol={{ span: 5, offset: 0 }}
                               key="date"
                               label="时间"
                               name={[field.name, 'date']}
@@ -133,7 +179,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                                 value: value ? moment(value) : undefined
                               })}
                             >
-                              <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: '100%' }}/>
+                              <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: '100%' }} onChange={() => onContactChange(field)}/>
                             </Form.Item>
                           </Col>
                         </Row>
@@ -146,7 +192,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
                               name={[field.name, 'content']}
                               rules={[{ required: true }]}
                             >
-                              <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" />
+                              <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" onChange={() => onContactChange(field)}/>
                             </Form.Item>
                           </Col>
                         </Row>

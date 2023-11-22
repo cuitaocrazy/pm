@@ -3,7 +3,6 @@ import { onError } from '@apollo/client/link/error'
 import { message } from 'antd';
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  console.log(graphQLErrors)
   if (graphQLErrors)
     graphQLErrors.map(({ message: eorrMessage, path}) => {
       if (path?.includes('charts')) return
@@ -362,6 +361,7 @@ export type Market = {
   contacts: Maybe<MarketContact[]>;
   createDate: Scalars['String'];
   updateTime: Scalars['String'];
+  participants?: Scalars['String'][];
 };
 
 export type MarketProject = {
@@ -372,6 +372,7 @@ export type MarketProject = {
   status: MarketProjectStatus
   fileList: Maybe<FileInput[]>;
   visitRecord: Maybe<MarketProjectVisit[]>;
+  leader?: Scalars['String'];
 };
 
 export type MarketContact = {
@@ -379,11 +380,12 @@ export type MarketContact = {
   phone: Scalars['String'];
   duties: Scalars['String'][];
   remark: Scalars['String'];
-};
+};  
 
 export type MarketProjectVisit = {
   date: Scalars['String'];
   content: Scalars['String'];
+  recorder?: Scalars['String'];
 };
 
 export enum MarketProjectStatus {
@@ -653,6 +655,7 @@ export type MarketInput = {
   contacts: Maybe<MarketContactInput[]>;
   createDate: Scalars['String'];
   updateTime: Scalars['String'];
+  participants?: Scalars['String'][];
 };
 
 export type MarketProjectInput = {
@@ -663,6 +666,7 @@ export type MarketProjectInput = {
   status: MarketProjectStatus
   fileList: Maybe<FileInput[]>;
   visitRecord: Maybe<MarketProjectVisitInput[]>;
+  leader?: Scalars['String'];
 };
 
 export type MarketContactInput = {
@@ -675,6 +679,7 @@ export type MarketContactInput = {
 export type MarketProjectVisitInput = {
   date: Scalars['String'];
   content: Scalars['String'];
+  recorder?: Scalars['String'];
 };
 
 export type MarketPlanInput = {

@@ -1,11 +1,11 @@
 import React, { forwardRef, useState, useImperativeHandle, useEffect } from 'react';
-import { Table, DatePicker, Space, Input} from 'antd';
-import type { MarketProject, MarketProjectVisit } from '@/apollo';
-import * as R from 'ramda';
+import { Table, DatePicker, Space, Input } from 'antd';
+import type { MarketProject, MarketProjectVisit, User } from '@/apollo';
 import moment from 'moment';
 
 type ProjVisitProps = {
   proj: MarketProject;
+  subordinates: User[]
   // onHoursChange: (hours: number) => void;
   // onContentOfWorkChange: (content: string) => void;
 };
@@ -71,6 +71,15 @@ const ProjVisitTable: React.ForwardRefRenderFunction<ProjVisitHandle, ProjVisitP
    
   const columns = [
     {
+      title: '填写人员',
+      dataIndex: 'recorder',
+      key: 'recorder',
+      width: '10%',
+      render: (value: string, visit: VisitTable) => {
+        return props.subordinates.find((user) => user.id === visit.recorder)?.name;
+      },
+    },
+    {
       title: '拜访时间',
       dataIndex: 'date',
       key: 'date',
@@ -93,7 +102,7 @@ const ProjVisitTable: React.ForwardRefRenderFunction<ProjVisitHandle, ProjVisitP
       title: '拜访内容',
       dataIndex: 'content',
       key: 'content',
-      width: '75%',
+      width: '65%',
       render: (value: string, visit: VisitTable) => {
         return value
         // return <Input.TextArea

@@ -15,7 +15,7 @@ export default {
     },
     markets: (_: any, __: any, context: AuthContext) => { 
       return Market
-      .find({ leader: context.user!.id, isDel: false })
+      .find({ $or: [ { leader: context.user!.id, }, { participants: { $elemMatch: { $eq: context.user!.id } } } ], isDel: false })
       .sort({ createDate: -1 })
       .map(dbid2id).toArray()
     },

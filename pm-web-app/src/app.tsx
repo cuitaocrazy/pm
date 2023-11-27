@@ -116,7 +116,9 @@ export const request: RequestConfig = {
 };
 
 window.addEventListener('error', (event) => {
-  const { type } = event;
+  const { type, target } = event;
+  // @ts-ignore
+  if (target && target?.nodeName === 'IMG') return
   // 检查是否是 404 错误
   if (type === 'error') {
     // 在这里可以添加处理 net::ERR_ABORTED 错误的逻辑

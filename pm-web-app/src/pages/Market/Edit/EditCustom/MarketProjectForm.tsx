@@ -89,8 +89,15 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目规模" name="scale" rules={[{ required: false }]}>
-            <Input />
+          <Form.Item label="项目负责人" name="leader" rules={[{ required: true }]}>
+            <Select allowClear>
+              { // @ts-ignore
+              resData?.subordinates.filter(s => data.participants.includes(s.id) ).map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
       </Row>
@@ -101,15 +108,8 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目负责人" name="leader" rules={[{ required: false }]}>
-            <Select allowClear>
-              { // @ts-ignore
-              resData?.subordinates.filter(s => data.participants.includes(s.id) ).map((u) => (
-                <Select.Option key={u.id} value={u.id}>
-                  {u.name}
-                </Select.Option>
-              ))}
-            </Select>
+          <Form.Item label="项目规模" name="scale" rules={[{ required: false }]}>
+            <Input />
           </Form.Item>
         </Col>
       </Row>

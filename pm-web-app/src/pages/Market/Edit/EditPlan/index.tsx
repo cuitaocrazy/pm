@@ -113,13 +113,13 @@ const Market: React.FC<any> = () => {
         width: '14%'
       },
       {
-        title: '本周工作',
+        title: '上周工作',
         dataIndex: 'weekWork',
         key: 'weekWork',
         width: '23%'
       },
       {
-        title: '下周计划',
+        title: '本周计划',
         dataIndex: 'nextWeekPlan',
         key: 'nextWeekPlan',
         width: '23%'

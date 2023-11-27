@@ -1,4 +1,4 @@
-version: "1.0.87"
+version: "1.0.88"
 replicaCount: 2
 oauth:
   issuer: https://auth.yadashuke.com/auth/realms/pm

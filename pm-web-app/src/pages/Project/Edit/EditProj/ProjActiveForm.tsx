@@ -1,14 +1,11 @@
-import React, { useState, Fragment } from 'react';
-import { map, filter, find } from 'ramda'
-import { Form, Input, Tabs, Tag, Button, Divider, Row, Col, DatePicker, Upload, Descriptions, Select } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, Button, Divider, Row, Col, DatePicker, Upload, Select } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import type { ProjectInput, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
-import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
-import { getStatusDisplayName } from './utils';
 import moment from 'moment';
 
 const userQuery = gql`
@@ -69,11 +66,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType] = useState(result?.groups?.projType || '');
-
-  // 客户信息
-  const customer = find(sub => sub.id === data?.customer, resData?.customers || [])
-  // 合同信息
-  const agreement = find(proA => proA.id === find(a => a.id ===data?.id, resData?.projectAgreements|| [])?.agreementId, resData?.agreements || [])
 
   const props: UploadProps = {
     listType: "picture",

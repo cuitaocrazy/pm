@@ -1,7 +1,7 @@
 import moment from 'moment'
-import { isNil, includes, length } from 'ramda';
-import { AuthContext, protect } from '../../auth/oauth';
-import { Market, EventLog } from '../../mongodb'
+import { isNil } from 'ramda';
+import { AuthContext } from '../../auth/oauth';
+import { Market } from '../../mongodb'
 import { ObjectId } from 'mongodb'
 import { dbid2id, id2dbid, addEventLog } from '../../util/utils'
 

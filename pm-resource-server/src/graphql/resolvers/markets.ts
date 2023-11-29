@@ -72,7 +72,7 @@ export default {
         newValue: '',
         description: '删除市场客户'
       })
-      return Market.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
+      return Market.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }).then((res) => args.id || res.upsertedId._id)
     },
   },
 }

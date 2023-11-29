@@ -26,7 +26,7 @@ const Customer: React.FC<any> = () => {
       industryCode: customer.industryCode,
       regionCode: customer.regionCode,
       salesman: customer.salesman,
-      contacts: [],
+      contacts: customer.contacts,
       enable: !customer.enable,
       remark: customer.remark,
     })

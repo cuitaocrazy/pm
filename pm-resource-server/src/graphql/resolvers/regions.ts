@@ -28,7 +28,7 @@ export default {
     },
     deleteRegion: (_: any, args: any, context: AuthContext) => {
       const id = args.id
-      return Region.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
+      return Region.updateOne({ $or: [{_id: new ObjectId(id) }, { _id: id }] }, { $set: { isDel: true } }).then((res) => args.id || res.upsertedId._id)
       // return Statu.deleteOne({ _id: new ObjectId(args.id) }).then(() => args.id)
     },
   },

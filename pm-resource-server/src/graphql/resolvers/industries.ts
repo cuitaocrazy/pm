@@ -28,7 +28,7 @@ export default {
     },
     deleteIndustry: (_: any, args: any, context: AuthContext) => {
       // console.log(args)
-      return Industry.updateOne({ _id: new ObjectId(args.id) }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
+      return Industry.updateOne({ _id: new ObjectId(args.id) }, { $set: { isDel: true } }).then((res) => args.id || res.upsertedId._id)
       // return Statu.deleteOne({ _id: new ObjectId(args.id) }).then(() => args.id)
     },
   },

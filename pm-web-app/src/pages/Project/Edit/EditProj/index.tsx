@@ -21,16 +21,16 @@ const Project: React.FC<any> = () => {
   const dailyRef = useRef<FormDialogHandle<Proj>>(null);
   const activeRef = useRef<FormDialogHandle<ProjectInput>>(null);
 
-  const { projs, todoProjs, subordinates, customers, agreements, projectAgreements, loading, archive, 
+  const { projs, todoProjs, subordinates, customers, projectAgreements, loading, archive, 
     setArchive, setFilter, archiveProj, deleteProj, pushProj } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
 
   const editHandle = (proj: Proj, openRef: any) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
-    openRef.current?.showDialog({ 
+    openRef.current?.showDialog({
       ...pro,
-      contName: agree.length ? agree[0].agreementId : '', 
+      contName: agree.length ? agree[0].agreementId : '',
       actives: (actives as ActiveInput[]),
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),

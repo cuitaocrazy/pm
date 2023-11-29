@@ -25,15 +25,19 @@ export default {
       await ProjectAgreement.deleteMany({ agreementId: _id.toString() })
       agreement.contactProj.forEach(async proID => {
         // 重新绑定
-        await ProjectAgreement.updateOne({ _id: proID }, { $set: { agreementId: _id.toString() } }, { upsert: true }).then((res) => id || res.upsertedId._id)
+        await ProjectAgreement.updateOne({ _id: proID }, { $set: { agreementId: _id.toString() } }, { upsert: true }).then((res) => proID || res.upsertedId._id)
       });
       delete agreement.contactProj
-      return Agreement.updateOne({ $or: [{ _id: _id }, { _id: id }] }, { $set: agreement }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      if (!id) {
+        return Agreement.updateOne({ _id: _id }, { $set: agreement }, { upsert: true }).then((res) => id || res.upsertedId._id)
+      } else {
+        return Agreement.updateOne({ $or: [{ _id: _id }, { _id: id }] }, { $set: agreement }).then((res) => id || res.upsertedId._id)
+      }
     },
-    deleteAgreement: (_: any, args: any, context: AuthContext) => {
+    deleteAgreement: async (_: any, args: any, context: AuthContext) => {
       const _id = new ObjectId(args.id)
-      ProjectAgreement.deleteMany({ agreementId: _id.toString() })
-      return Agreement.updateOne({ _id: _id }, { $set: { isDel: true } }, { upsert: true }).then((res) => args.id || res.upsertedId._id)
+      await ProjectAgreement.deleteMany({ agreementId: _id.toString() })
+      return Agreement.updateOne({ $or: [{ _id: _id }, { _id: args.id }] }, { $set: { isDel: true } }).then((res) => args.id || res.upsertedId._id)
       // return Statu.deleteOne({ _id: new ObjectId(args.id) }).then(() => args.id)
     },
   },

@@ -181,7 +181,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                           <Form.Item
                             labelCol={{ span: 1, offset: 0 }}
                             key="name"
-                            label="活动名称"
+                            label=" "
+                            colon={false}
                             name={[field.name, 'name']}
                             rules={[{ required: true }]}
                           >

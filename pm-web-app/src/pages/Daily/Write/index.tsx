@@ -226,7 +226,7 @@ function Dailies(prop: { date?: string }) {
                     <Radio.Group style={{ marginBottom: 8 }} onChange={onShowTypeChange} value={hookStatus.showType}>
                       <Radio.Button value="0">涉及({ involvedProj.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
                       <Radio.Button value="1">未涉及({ unInvolvedProj.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
-                      <Radio.Button value="2">综合({ syntPro.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
+                      <Radio.Button value="2">日常({ syntPro.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
                     </Radio.Group>
                   </Col>
                 </Row>

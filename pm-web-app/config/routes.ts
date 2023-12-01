@@ -18,26 +18,31 @@
     icon: 'solution',
   },
   {
-    path: '/projectView',
-    name: 'projectView',
-    component: './Project/View',
-    access: 'canProjectView',
-    icon: 'project',
-  },
-  {
-    path: '/employee',
-    name: 'employee',
-    access: 'canEmployee',
+    path: '/synthetical',
+    name: 'synthetical',
+    access: 'canSynt',
     icon: 'team',
     routes:[
       {
-        path: '/employee/empDailies',
+        path: '/synthetical/edit',
+        name: 'syntEdit',
+        component: './Project/Edit/EditSynt',
+        access: 'canSyntEdit'
+      },
+      {
+        path: '/synthetical/dailies',
+        name: 'syntDailies',
+        component: './Daily/View/BySynt',
+        access: 'canSyntDailies'
+      },
+      {
+        path: '/synthetical/empDailies',
         name: 'empDailies',
         component: './Daily/View/ByEmp',
         access: 'canEmpDailies'
       },
       {
-        path: '/employee/empExpense',
+        path: '/synthetical/empExpense',
         name: 'empExpense',
         component: './Expense/View/ByEmp',
         access: 'canEmpExpense'
@@ -81,6 +86,12 @@
         access: 'canChangeLeader' 
       },
       {
+        path: '/project/projectView',
+        name: 'projectView',
+        component: './Project/View',
+        access: 'canProjectView'
+      },
+      {
         path: '/project/projDailies',
         name: 'projDailies',
         component: './Daily/View/ByProj',
@@ -97,26 +108,6 @@
         name: 'projExpense',
         component: './Expense/View/ByProj',
         access: 'canProjExpense'
-      },
-    ]
-  },
-  {
-    path: '/synthetical',
-    name: 'synthetical',
-    access: 'canSynt',
-    icon: 'project',
-    routes:[
-      {
-        path: '/synthetical/edit',
-        name: 'syntEdit',
-        component: './Project/Edit/EditSynt',
-        access: 'canSyntEdit'
-      },
-      {
-        path: '/synthetical/dailies',
-        name: 'syntDailies',
-        component: './Daily/View/BySynt',
-        access: 'canSyntDailies'
       },
     ]
   },
@@ -141,18 +132,44 @@
     ]
   },
   {
-    path: '/expense',
-    name: 'expense',
-    component: './Expense/Edit',
-    access: 'canExpense',
+    path: '/business',
+    name: 'business',
+    access: 'canBusiness',
     icon: 'accountBook',
+    routes:[
+      {
+        path: '/business/customer',
+        name: 'customer',
+        component: './Business/Customer/Edit',
+        access: 'canCustomer'
+      },
+      {
+        path: '/business/agreement',
+        name: 'agreement',
+        component: './Business/Agreement/Edit',
+        access: 'canAgreement'
+      }
+    ]
   },
   {
-    path: '/workCalendar',
-    name: 'workCalendar',
-    component: './WorkCalendar',
-    access: 'canWorkCalendar',
-    icon: 'calendar',
+    path: '/expense',
+    name: 'expense',
+    access: 'canExpense',
+    icon: 'accountBook',
+    routes:[
+      {
+        path: '/expense/perExpense',
+        name: 'perExpense',
+        component: './Expense/Edit',
+        access: 'canPerExpense'
+      },
+      // {
+      //   path: '/expense/projExpense',
+      //   name: 'projExpense',
+      //   component: './Expense/Edit',
+      //   access: 'canProExpense'
+      // },
+    ]
   },
   // {
   //   path: '/settlement',
@@ -186,18 +203,12 @@
         access: 'canRegion'
       },
       {
-        path: '/infoManage/customer',
-        name: 'customer',
-        component: './InfoManage/Customer/Edit',
-        access: 'canCustomer'
-      },
-      {
-        path: '/infoManage/agreement',
-        name: 'agreement',
-        component: './InfoManage/Agreement/Edit',
-        access: 'canAgreement'
-      },
-      
+        path: '/infoManage/workCalendar',
+        name: 'workCalendar',
+        component: './WorkCalendar',
+        access: 'canWorkCalendar',
+        icon: 'calendar',
+      }    
     ]
   },
   {

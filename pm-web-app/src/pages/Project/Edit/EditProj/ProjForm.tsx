@@ -67,6 +67,9 @@ const layout = {
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
+  // const { loading, data: resData } = useQuery<Query, QueryRoleUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
+  //   role: 'engineer',
+  // } });
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
     groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
   } });
@@ -599,6 +602,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                         labelCol={{ span: 1, offset: 0 }}
                         key="name"
                         label=" "
+                        colon={false}
                         name={[field.name, 'name']}
                         rules={[{ required: true, message: '请输入活动名称' }]}
                       >

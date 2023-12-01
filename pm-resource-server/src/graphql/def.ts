@@ -356,6 +356,7 @@ type Query {
   me: User!
   subordinates: [User!]!
   groupsUsers(groups: [String!]): [User!]!
+  roleUsers(role: String!): [User!]!
   myDailies: EmployeeOfDailies
   projs(isArchive: Boolean): [Project!]!
   superProjs(isArchive: Boolean): [Project!]!

@@ -159,7 +159,17 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
         <Input />
       </Form.Item>
       <Form.Item label="关联客户" name="customer" rules={[{ required: true }]}>
-        <Select onChange={customerChange}>
+        <Select
+          showSearch
+          onChange={customerChange}
+          filterOption={(input, option) => {
+            const nameStr: any = option?.children || '';
+            if (input && nameStr) {
+              return nameStr.indexOf(input) >= 0;
+            }
+            return false;
+          }}
+        >
           {resData?.customers.map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {u.name}

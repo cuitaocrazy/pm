@@ -431,6 +431,7 @@ export type Query = {
   me: User;
   subordinates: User[];
   groupsUsers: User[];
+  roleUsers: User[];
   myDailies?: Maybe<EmployeeOfDailies>;
   projs: Project[];
   superProjs: Project[];
@@ -494,6 +495,10 @@ export type QueryChartsArgs = {
 
 export type QueryGroupsUsersArgs = {
   groups: Scalars['String'][];
+};
+
+export type QueryRoleUsersArgs = {
+  role: Scalars['String'];
 };
 
 export type DailyInput = {

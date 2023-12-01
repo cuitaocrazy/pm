@@ -174,3 +174,24 @@ export function getUsersByGroups (user: UserInfo, group: string[]) {
 
   return getUserByRootGroups(group, inst)
 }
+
+export function getUsersByRole (user: UserInfo, role: string) {
+  const { origin, pathname } = new URL(config.issuerBaseURL)
+  const keycloakAdminUrl = origin + pathname.replace('auth', 'auth/admin')
+  const keycloakReqConfig = { headers: { Authorization: `Bearer ${user.token}` }, baseURL: keycloakAdminUrl }
+  const inst = axios.create(keycloakReqConfig)
+  return getUserByRole(role, inst)
+}
+
+async function getUserByRole (role: string, fetch: AxiosInstance) {
+  const getName = (d: any) => ((d.lastName || '') + (d.firstName || '')) || d.username
+  // const users = await fetch.get(`/roles`).then(res => res.data as any[])
+  const users = await fetch.get(`/roles/${role}/users?first=0&max=5`).then(res => res.data as any[])
+  // console.log(users)
+  // console.log(users2)
+  return users.map(u => ({
+    id: u.username,
+    name: getName(u),
+    email: u.email,
+  }))
+}

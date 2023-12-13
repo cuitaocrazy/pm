@@ -47,7 +47,7 @@ const Market: React.FC<any> = () => {
       ),
     },
     {
-      title: '市场负责人',
+      title: '市场经理',
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Mark) => {
@@ -125,7 +125,7 @@ const Market: React.FC<any> = () => {
         width: '10%'
       },
       {
-        title: '项目负责人',
+        title: '项目经理',
         dataIndex: 'leader',
         key: 'leader',
         width: '10%',

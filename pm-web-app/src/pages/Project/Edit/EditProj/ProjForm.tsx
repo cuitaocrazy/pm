@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, InputNumber, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupsUsersArgs, QueryProjDailyArgs } from '@/apollo';
+import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupsUsersArgs, QueryProjDailyArgs, QueryRoleUsersArgs } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
@@ -61,13 +61,22 @@ const QueryDaily = gql`
   }
 `;
 
+const userQuery1 = gql`
+  query($role: String!) {
+    roleUsers(role: $role) {
+      id
+      name
+    }
+  }
+`;
+
 const layout = {
   labelCol: { span: 9 },
   wrapperCol: { span: 16 },
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  // const { loading, data: resData } = useQuery<Query, QueryRoleUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
+  // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   //   role: 'engineer',
   // } });
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
@@ -222,6 +231,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
   };
 
+  const onConfirmYearChange = (date: any, dateString: string) => {
+    form.setFieldValue('confirmYear', dateString)
+  };
+
   // 派生一个新项目
   const deriveNewProject = () => {
     setIsDerive(true)
@@ -332,7 +345,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       </Row>
       <Row>
         <Col span={8}>
-          <Form.Item label="项目负责人" name="leader" rules={[{ required: true }]}>
+          <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
             <Select disabled={!!data?.id && !isDerive} allowClear>
               {resData?.subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
@@ -343,7 +356,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="市场负责人" name="salesLeader" rules={[{ required: true }]}>
+          <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
@@ -566,8 +579,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       }
       <Row>
         <Col span={8}>
-          <Form.Item label="收入确认年度" name="confirmYear" rules={[{ required: false }]}>
-          <Input />
+          <Form.Item
+            label="确认年度"
+            name="confirmYear"
+            rules={[{ required: false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined
+            })}
+          >
+            <DatePicker picker="year" format="YYYY" style={{ width: '100%' }} onChange={onConfirmYearChange}/>
+          {/* <Input /> */}
           </Form.Item>
         </Col>
         <Col span={8}>

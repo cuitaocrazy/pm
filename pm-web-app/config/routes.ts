@@ -202,13 +202,18 @@
         component: './InfoManage/Region/Edit',
         access: 'canRegion'
       },
+      // {
+      //   path: '/infoManage/config',
+      //   name: 'config',
+      //   component: './InfoManage/Config/Edit',
+      //   access: 'canConfig',
+      // },
       {
         path: '/infoManage/workCalendar',
         name: 'workCalendar',
         component: './WorkCalendar',
         access: 'canWorkCalendar',
-        icon: 'calendar',
-      }    
+      }     
     ]
   },
   {

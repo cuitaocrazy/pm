@@ -92,7 +92,7 @@ const Project: React.FC<any> = () => {
       width: 250
     },
     {
-      title: '项目负责人',
+      title: '项目经理',
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Proj) => {
@@ -101,7 +101,7 @@ const Project: React.FC<any> = () => {
       width: 110,
     },
     {
-      title: '市场负责人',
+      title: '市场经理',
       dataIndex: 'salesLeader',
       key: 'salesLeader',
       render: (text: string, record: Proj) => {
@@ -209,23 +209,32 @@ const Project: React.FC<any> = () => {
     //   dataIndex: 'taxAmount',
     //   key: 'taxAmount',
     // },
+    // {
+    //   title: '创建日期',
+    //   dataIndex: 'createDate',
+    //   key: 'createDate',
+    //   render: (createDate: string) => {
+    //     return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
+    //   },
+    //   width: 150,
+    // },
+    // {
+    //   title: '更新时间',
+    //   dataIndex: 'updateTime',
+    //   key: 'updateTime',
+    //   render: (updateTime: string) => {
+    //     return moment(updateTime, 'YYYYMMDD HH:mm:ss').format('YYYY年MM月DD日 HH:mm:ss');
+    //   },
+    //   width: 200,
+    // },
     {
-      title: '创建日期',
-      dataIndex: 'createDate',
-      key: 'createDate',
-      render: (createDate: string) => {
-        return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
+      title: '确认年度',
+      dataIndex: 'confirmYear',
+      key: 'confirmYear',
+      render: (confirmYear: string) => {
+        return confirmYear;
       },
-      width: 150,
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updateTime',
-      key: 'updateTime',
-      render: (updateTime: string) => {
-        return moment(updateTime, 'YYYYMMDD HH:mm:ss').format('YYYY年MM月DD日 HH:mm:ss');
-      },
-      width: 200,
+      width: 100,
     },
     {
       title: '操作',

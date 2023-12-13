@@ -80,7 +80,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目负责人" name="leader">
+          <Form.Item label="项目经理" name="leader">
             <Select disabled allowClear>
               {resData?.subordinates.map(u => (
                 <Select.Option key={u.id} value={u.id}>

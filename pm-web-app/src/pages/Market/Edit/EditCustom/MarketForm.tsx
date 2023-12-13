@@ -57,7 +57,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="市场负责人" name="leader" rules={[{ required: true }]}>
+          <Form.Item label="市场经理" name="leader" rules={[{ required: true }]}>
             <Select disabled={!!data?.id } allowClear>
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>

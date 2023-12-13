@@ -94,7 +94,7 @@ const Project: React.FC<any> = () => {
       width: 250
     },
     {
-      title: '项目负责人',
+      title: '项目经理',
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Proj) => {
@@ -103,7 +103,7 @@ const Project: React.FC<any> = () => {
       width: 110,
     },
     {
-      title: '市场负责人',
+      title: '市场经理',
       dataIndex: 'salesLeader',
       key: 'salesLeader',
       render: (text: string, record: Proj) => {

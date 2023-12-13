@@ -143,10 +143,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               <Upload { ...props } fileList={agreement?.fileList as UploadFile[]}></Upload>
             </div>
           </Descriptions.Item>
-          <Descriptions.Item label="项目负责人:">{ 
+          <Descriptions.Item label="项目经理:">{ 
             find(sub => sub.id === data?.leader, resData?.subordinates || [])?.name
           }</Descriptions.Item>
-          <Descriptions.Item label="市场负责人:">{ 
+          <Descriptions.Item label="市场经理:">{ 
             find(sub => sub.id === data?.salesLeader, resData?.subordinates || [])?.name
           }</Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>{ 

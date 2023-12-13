@@ -89,7 +89,7 @@ export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInpu
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目负责人" name="leader" rules={[{ required: true }]}>
+          <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
             <Select allowClear>
               { // @ts-ignore
               resData?.subordinates.filter(s => data.participants.includes(s.id) ).map((u) => (

@@ -145,7 +145,7 @@ const Agreement: React.FC<any> = () => {
       <DialogForm submitHandle={(v: AgreementInput) => {
         let customerName = customers.find(item => item.id === v.customer)?.name
         return pushAgreement({...v, customerName})
-      }} ref={ref} title="编辑行业">
+      }} ref={ref} title="编辑合同">
         {AgreementForm}
       </DialogForm>
     </PageContainer>

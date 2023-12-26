@@ -179,7 +179,7 @@ const Customer: React.FC<any> = () => {
         expandable={{ expandedRowRender, rowExpandable }}
         size="middle"
       />
-      <DialogForm submitHandle={(v: CustomerInput) => pushCustomer(v)} ref={ref} title="编辑行业">
+      <DialogForm submitHandle={(v: CustomerInput) => pushCustomer(v)} ref={ref} title="编辑客户">
         {CustomerForm}
       </DialogForm>
     </PageContainer>

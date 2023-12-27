@@ -137,7 +137,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
     return e?.fileList;
   };
- 
+
   const validator = (rule: any, value: string) => {
     const result = reg.exec(value);
     setProjType(result?.groups?.projType || '')
@@ -234,6 +234,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const onConfirmYearChange = (date: any, dateString: string) => {
     form.setFieldValue('confirmYear', dateString)
   };
+  const ondoYearChange = (date: any, dateString: string) => {
+    form.setFieldValue('doYear', dateString)
+  };
 
   // 派生一个新项目
   const deriveNewProject = () => {
@@ -279,12 +282,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
     return tempFields;
   }
-  
+
   return (
-    <Form 
-      {...layout} 
-      form={form} 
-      initialValues={data || { leader: initialState?.currentUser?.id }} 
+    <Form
+      {...layout}
+      form={form}
+      initialValues={data || { leader: initialState?.currentUser?.id }}
       disabled={data?.status === 'endProj'}
     >
       <Form.Item shouldUpdate noStyle>
@@ -472,23 +475,30 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             <InputNumber min={0} />
           </Form.Item>
         </Col>
+
         <Col span={8}>
-          <Form.Item label="预算费用" name="budgetFee" rules={[{ required: false }]}
+          <Form.Item label="费用预算" name="budgetFee" rules={[{ required: false }]}
             tooltip={(<span className="ant-form-text">自己人员消耗的费用</span>)}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="实际费用" name="actualFee" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">实际消耗费用</span>)}>
+          <Form.Item label="预算成本" name="budgetCost" rules={[{ required: false }]}
+            tooltip={(<span className="ant-form-text">采购或者外包的费用</span>)}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
+      <Col span={8}>
+          <Form.Item label="人力费用" name="humanFee" rules={[{ required: false }]}
+            tooltip={(<span className="ant-form-text">实际消耗费用</span>)}>
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
         <Col span={8}>
-          <Form.Item label="预算成本" name="budgetCost" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">采购或者外包的费用</span>)}>
+          <Form.Item label="项目费用" name="projectFee" rules={[{ required: false }]}
+            tooltip={(<span className="ant-form-text">实际消耗费用</span>)}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
@@ -503,6 +513,25 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             <InputNumber min={0} />
           </Form.Item>
         </Col>
+        {
+       projType === 'SH' ?
+      (
+        <>
+        <Col span={8}>
+           <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
+             <InputNumber min={0} />
+           </Form.Item>
+         </Col>
+         <Col span={8}>
+           <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
+             <InputNumber min={0} />
+           </Form.Item>
+         </Col>
+         <Col span={8}>
+
+         </Col></>)
+       : ''
+      }
       </Row>
       { projType === 'SQ' || projType === 'SH' ? '' :
         <Row>
@@ -538,7 +567,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Col>
         </Row>
       }
-      { 
+      {
        projType === 'SH' ?
        <Row hidden={projType !== 'SH'}>
          <Col span={8}>
@@ -559,24 +588,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
          </Col>
        </Row> : ''
       }
-      { 
-       projType === 'SH' ?
-       <Row>
-         <Col span={8}>
-           <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-           <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-        
-         </Col>
-       </Row>: ''
-      }
+
       <Row>
         <Col span={8}>
           <Form.Item
@@ -592,6 +604,17 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
+          <Form.Item
+            label="实施年度"
+            name="doYear"
+            rules={[{ required: false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined
+            })}
+          >
+            <DatePicker picker="year" format="YYYY" style={{ width: '100%' }} onChange={ondoYearChange}/>
+          {/* <Input /> */}
+          </Form.Item>
         </Col>
         <Col span={8}>
         </Col>
@@ -689,9 +712,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                         >
                           <Upload
                             className="upload-list-inline"
-                            { ...props } 
+                            { ...props }
                             defaultFileList={
-                              form.getFieldValue('actives') ? 
+                              form.getFieldValue('actives') ?
                               form.getFieldValue('actives')[field.name]?.fileList as UploadFile[] : []
                             }
                           >

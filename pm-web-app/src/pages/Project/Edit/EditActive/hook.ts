@@ -56,6 +56,8 @@ query ($projType: String!) {
       budgetFee
       budgetCost
       actualFee
+      humanFee
+      projectFee
       actualCost
       taxAmount
       description
@@ -122,7 +124,7 @@ export function useProjStatus() {
   const { refresh: initialRefresh } = useModel('@@initialState');
   const { buildProjName } = useBaseState();
   const [filter, setFilter] = useState('');
-    
+
   useEffect(() => {
     refresh();
     initialRefresh()
@@ -165,7 +167,7 @@ export function useProjStatus() {
     customers,
     agreements,
     projectAgreements,
-    filter, 
+    filter,
     routeProjType,
     setFilter,
     refresh,

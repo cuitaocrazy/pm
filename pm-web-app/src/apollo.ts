@@ -138,6 +138,8 @@ export type Project = {
   budgetFee: Scalars['Float'];
   budgetCost: Scalars['Float'];
   actualFee: Scalars['Float'];
+  humanFee: Scalars['Float'];
+  projectFee: Scalars['Float'];
   actualCost: Scalars['Float'];
   taxAmount: Scalars['Float'];
   description?: Scalars['String'];
@@ -162,6 +164,7 @@ export type Project = {
   actualInspections?: Scalars['Int'];
   timeConsuming?: Scalars['Float'];
   confirmYear?: Scalars['String'];
+  doYear?: Scalars['String'];
 };
 
 export type Contact = {
@@ -524,6 +527,8 @@ export type ProjectInput = {
   budgetFee: Scalars['Float'];
   budgetCost: Scalars['Float'];
   actualFee: Scalars['Float'];
+  humanFee: Scalars['Float'];
+  projectFee: Scalars['Float'];
   actualCost: Scalars['Float'];
   taxAmount: Scalars['Float'];
   description?: Scalars['String'];
@@ -544,6 +549,7 @@ export type ProjectInput = {
   requiredInspections?: Scalars['Int'];
   actualInspections?: Scalars['Int'];
   confirmYear?: Scalars['String'];
+  doYear?: Scalars['String'];
 };
 
 export type ContactInput = {

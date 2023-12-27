@@ -21,7 +21,7 @@ const Project: React.FC<any> = () => {
   const dailyRef = useRef<FormDialogHandle<Proj>>(null);
   const activeRef = useRef<FormDialogHandle<ProjectInput>>(null);
 
-  const { projs, todoProjs, subordinates, customers, projectAgreements, loading, archive, 
+  const { projs, todoProjs, subordinates, customers, projectAgreements, loading, archive,
     setArchive, setFilter, archiveProj, deleteProj, pushProj } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
 
@@ -36,30 +36,11 @@ const Project: React.FC<any> = () => {
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
   };
-
-  const makeGroupProps = (children: any, row: Proj, index: number) => {
-    const obj = {
-      children,
-      props: {} as any,
-    };
-    if (index === 0) {
-      // @ts-ignore
-      obj.props.rowSpan = row.props.allIndex - row.props.index;
-    } else {
-      // @ts-ignore
-      obj.props.rowSpan = row.props.index === 0 ? row.props.allIndex : 0;
-    }
-    return obj;
-  };
-  const makeGroupRender = (value: string, row: Proj, index: number) => {
-    return makeGroupProps(value, row, index);
-  };
   const columns = [
     {
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',
-      render: makeGroupRender,
       width: 120
     },
     {
@@ -117,7 +98,7 @@ const Project: React.FC<any> = () => {
       render: (status: string) => <Tag color={ status ? status === 'onProj' ? "success" : 'default' : 'warning' }>{ getStatusDisplayName(status) }</Tag> ,
       filters: projStatus.map((s) => ({ text: s[1], value: s[0] })),
       onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
-    },  
+    },
     {
       title: '预算人天',
       dataIndex: 'estimatedWorkload',
@@ -130,7 +111,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
       width: '80px',
-      render: (text: number, record: Proj) => 
+      render: (text: number, record: Proj) =>
         <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{ text ? ((text - 0) / 8).toFixed(2) : 0 }</Tag></Button>,
     },
     {
@@ -276,7 +257,7 @@ const Project: React.FC<any> = () => {
       extra={[
         <Radio.Group key="archive" value={archive} onChange={e => setArchive(e.target.value)}>
           <Radio.Button value="0">项目</Radio.Button>
-          {isAdmin? 
+          {isAdmin?
             <Radio.Button value="1">归档项目</Radio.Button>
             :
             <Radio.Button value="2">

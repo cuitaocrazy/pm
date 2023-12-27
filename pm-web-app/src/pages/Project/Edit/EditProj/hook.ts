@@ -58,6 +58,8 @@ const getGql = (proName: string) => {
         budgetFee
         budgetCost
         actualFee
+        humanFee
+        projectFee
         actualCost
         taxAmount
         description
@@ -78,6 +80,7 @@ const getGql = (proName: string) => {
         actualInspections
         timeConsuming
         confirmYear
+        doYear
         actives {
           name
           recorder
@@ -94,7 +97,7 @@ const getGql = (proName: string) => {
       }
     }
   `;
-} 
+}
 
 const pushProjGql = gql`
   mutation ($proj: ProjectInput!) {
@@ -138,7 +141,7 @@ export function useProjStatus() {
   const { refresh: initialRefresh } = useModel('@@initialState');
   const { buildProjName } = useBaseState();
   const [filter, setFilter] = useState('');
-    
+
   useEffect(() => {
     refresh();
     initialRefresh()
@@ -194,8 +197,8 @@ export function useProjStatus() {
     customers,
     agreements,
     projectAgreements,
-    filter, 
-    archive, 
+    filter,
+    archive,
     setArchive,
     setFilter,
     refresh,

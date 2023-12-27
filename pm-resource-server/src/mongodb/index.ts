@@ -89,10 +89,7 @@ export interface IProject {
    * 预算成本
    */
   budgetCost: number;
-  /**
-   * 实际费用
-   */
-  actualFee: number;
+
   /**
    * 实际成本
    */
@@ -156,6 +153,18 @@ export interface IProject {
    * 总工时
    */
   timeConsuming: number;
+  /**
+   * 实施年度
+   */
+  doYear: string;
+  /**
+   * 人力费用
+   */
+  humanFee: number;
+  /**
+   * 项目费用
+   */
+  projectFee: number;
 }
 
 export const Project = client.db().collection<IProject>(pluralize("Project"));

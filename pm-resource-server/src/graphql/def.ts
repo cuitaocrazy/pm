@@ -72,7 +72,8 @@ const dataTypeDef = gql`
     projBudget: Float
     budgetFee: Float
     budgetCost: Float
-    actualFee: Float
+    humanFee: Float
+    projectFee: Float
     actualCost: Float
     taxAmount: Float
     description: String
@@ -99,6 +100,7 @@ const dataTypeDef = gql`
     timeConsuming: Float
     confirmYear: String
     projectClass: String
+    doYear: String
   }
 
   type Contact {
@@ -432,7 +434,8 @@ const dataTypeDef = gql`
     projBudget: Float
     budgetFee: Float
     budgetCost: Float
-    actualFee: Float
+    humanFee: Float
+    projectFee: Float
     actualCost: Float
     taxAmount: Float
     description: String
@@ -452,6 +455,7 @@ const dataTypeDef = gql`
     requiredInspections: Int
     actualInspections: Int
     confirmYear: String
+    doYear: String
   }
 
   input ContactInput {

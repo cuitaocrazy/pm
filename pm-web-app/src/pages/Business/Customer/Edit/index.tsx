@@ -62,7 +62,19 @@ const Customer: React.FC<any> = () => {
       dataIndex: 'salesman',
       key: 'salesman',
       render: (text: string, record: CustomerType) => {
-        return subordinates.find((user) => user.id === record.salesman)?.name;
+        // console.log(typeof record.salesman)
+        let name = ''
+        if(typeof record.salesman === 'string'){
+          record.salesman = [record.salesman]
+        }
+        record.salesman.map((item,index)=>{
+          if(index !== record.salesman.length-1){
+            name+=subordinates.find((user) => user.id === item)?.name+','
+          }else{
+            name+=subordinates.find((user) => user.id === item)?.name
+          }
+        })
+        return name;
       },
     },
     {
@@ -123,7 +135,7 @@ const Customer: React.FC<any> = () => {
         render: (text: string, record: CustomerContact) => {
           const tagMap = record.tags.map(tag => {
             return <Tag color="cyan" key={tag}>{ tag }</Tag>
-          }) 
+          })
           return tagMap
         },
       },
@@ -142,7 +154,7 @@ const Customer: React.FC<any> = () => {
       const { name, phone, tags, recorder } = cont
       return { key: name + phone, name, phone, tags, recorder }
     })
-    
+
     return <Table columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>
   };
   const rowExpandable = (record: CustomerType) => {
@@ -159,7 +171,7 @@ const Customer: React.FC<any> = () => {
               name: '',
               industryCode: '',
               regionCode: '',
-              salesman: '',
+              salesman: ['25070008','25080004'],
               contacts: [],
               enable: true,
               remark: '',

@@ -306,7 +306,7 @@ export type Customer = {
   name: Scalars['String'];
   industryCode: Scalars['String'];
   regionCode: Scalars['String'];
-  salesman: Scalars['String'];
+  salesman: Scalars['String'][];
   contacts: CustomerContact[];
   remark: Scalars['String'];
   enable: Scalars['Boolean'];
@@ -380,7 +380,7 @@ export type MarketContact = {
   phone: Scalars['String'];
   duties: Scalars['String'][];
   remark: Scalars['String'];
-};  
+};
 
 export type MarketProjectVisit = {
   date: Scalars['String'];
@@ -612,7 +612,7 @@ export type CustomerInput = {
   name: Scalars['String'];
   industryCode: Scalars['String'];
   regionCode: Scalars['String'];
-  salesman: Scalars['String'];
+  salesman: Scalars['String'][];
   contacts: CustomerContactInput[];
   remark: Scalars['String'];
   enable: Scalars['Boolean'];

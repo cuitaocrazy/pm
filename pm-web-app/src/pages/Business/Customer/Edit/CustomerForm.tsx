@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { Form, Input, Switch, Select, Row, Col, Divider, Button  } from 'antd';
+import { Form, Input, Switch, Select, Row, Col, Divider, Button } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import type { SelectProps } from 'antd';
-import type { Mutation, CustomerInput, MutationPushTagsArgs, Query, QueryGroupsUsersArgs} from '@/apollo';
+import type {
+  Mutation,
+  CustomerInput,
+  MutationPushTagsArgs,
+  Query,
+  QueryGroupsUsersArgs,
+} from '@/apollo';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import type { FormInstance } from 'antd/lib/form';
 import { useBaseState } from '@/pages/utils/hook';
@@ -37,13 +43,18 @@ const layout = {
 };
 
 export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
-  const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
-  } });
+  const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      groups: [
+        '/软件事业部/项目一部/市场组',
+        '/软件事业部/项目二部/市场组',
+        '/软件事业部/创新业务部/市场组',
+      ],
+    },
+  });
 
-  const [pushTagsHandle] = useMutation<Mutation, MutationPushTagsArgs>(
-    pushTagsGql,
-  );
+  const [pushTagsHandle] = useMutation<Mutation, MutationPushTagsArgs>(pushTagsGql);
 
   const { initialState } = useModel('@@initialState');
   const [tags, setTags] = useState(resData?.tags || []);
@@ -51,29 +62,29 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
   let options: SelectProps['options'] = [];
 
   const getOptions = () => {
-    options = [...new Set(resData?.tags.concat(tags))].map(tag => {
+    options = [...new Set(resData?.tags.concat(tags))].map((tag) => {
       return {
         value: tag,
-        label: tag
-      }
-    })
-    return options
-  }
+        label: tag,
+      };
+    });
+    return options;
+  };
 
   const handleTagsChange = async (value: any, option: any) => {
     await pushTagsHandle({
       variables: {
         tags: value,
       },
-    })
-    setTags([...new Set(tags.concat(value))])
-  }
+    });
+    setTags([...new Set(tags.concat(value))]);
+  };
 
   const onContactChange = (filed: any) => {
-    let tempContact = form.getFieldValue('contacts')
-    tempContact[filed.name].recorder = initialState?.currentUser?.id
-    form.setFieldValue('contacts', tempContact)
-  }
+    let tempContact = form.getFieldValue('contacts');
+    tempContact[filed.name].recorder = initialState?.currentUser?.id;
+    form.setFieldValue('contacts', tempContact);
+  };
 
   return (
     <Form {...layout} form={form} initialValues={data}>
@@ -84,10 +95,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
         <Input />
       </Form.Item>
       <Form.Item label="所属行业" name="industryCode" rules={[{ required: true }]}>
-        <Select
-          key="code"
-          placeholder="选择行业"
-        >
+        <Select key="code" placeholder="选择行业">
           {Object.keys(orgCode).map((k) => (
             <Option key={k} value={k}>
               {orgCode[k]}
@@ -96,10 +104,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
         </Select>
       </Form.Item>
       <Form.Item label="所属区域" name="regionCode" rules={[{ required: true }]}>
-      <Select
-          key="code"
-          placeholder="选择区域"
-        >
+        <Select key="code" placeholder="选择区域">
           {Object.keys(zoneCode).map((k) => (
             <Option key={k} value={k}>
               {zoneCode[k]}
@@ -108,15 +113,20 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
         </Select>
       </Form.Item>
       <Form.Item label="销售负责人" name="salesman" rules={[{ required: true }]}>
-        <Select>
+        <Select mode="multiple">
           {resData?.groupsUsers.map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {u.name}
             </Select.Option>
           ))}
         </Select>
-      </Form.Item>     
-      <Form.Item label="是否启用" name="enable" valuePropName="checked" rules={[{ required: true }]}>
+      </Form.Item>
+      <Form.Item
+        label="是否启用"
+        name="enable"
+        valuePropName="checked"
+        rules={[{ required: true }]}
+      >
         <Switch />
       </Form.Item>
       <Form.Item label="备注" name="remark" rules={[{ required: false }]}>
@@ -152,7 +162,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                       name={[field.name, 'name']}
                       rules={[{ required: true }]}
                     >
-                      <Input onChange={() => onContactChange(field)}/>
+                      <Input onChange={() => onContactChange(field)} />
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 6, offset: 0 }}
@@ -161,11 +171,11 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                       name={[field.name, 'phone']}
                       rules={[{ required: true }]}
                     >
-                      <Input onChange={() => onContactChange(field)}/>
+                      <Input onChange={() => onContactChange(field)} />
                     </Form.Item>
-                    <Form.Item 
+                    <Form.Item
                       labelCol={{ span: 6, offset: 0 }}
-                      label="联系人标签" 
+                      label="联系人标签"
                       key="tags"
                       name={[field.name, 'tags']}
                       rules={[{ required: true }]}

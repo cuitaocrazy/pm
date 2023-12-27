@@ -417,7 +417,7 @@ export interface ICustomer {
 
 export const Customer = client
   .db()
-  .collection<ICustomer>(pluralize("customers20240101"));
+  .collection<ICustomer>(pluralize("customers"));
 
 /**
  * 合同信息

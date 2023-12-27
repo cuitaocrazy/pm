@@ -7,7 +7,7 @@ import { dbid2id } from "../../util/utils";
 
 export default {
   Query: {
-    projectclasses: (_: any, __: any, context: AuthContext) =>
+    projectClasses: (_: any, __: any, context: AuthContext) =>
       ProjectClass.find({ isDel: false })
         .sort({ sort: 1 })
         .map(dbid2id)

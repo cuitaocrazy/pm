@@ -1,28 +1,33 @@
-import { MongoClient, ObjectId } from 'mongodb'
-import config from '../config/mongodb'
-import pluralize from '../util/pluralize'
+import { MongoClient, ObjectId } from "mongodb";
+import config from "../config/mongodb";
+import pluralize from "../util/pluralize";
 
-export const client = new MongoClient(config.url, { useNewUrlParser: true, useUnifiedTopology: true })
-client.connect()
+export const client = new MongoClient(config.url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+client.connect();
 
 export interface ProjDaily {
-  projId: string
-  timeConsuming: number
-  content: string
+  projId: string;
+  timeConsuming: number;
+  content: string;
 }
 
 /**
  * 员工日报
  */
 export interface IEmployeeDaily {
-  _id: string
+  _id: string;
   dailies: {
-    date: string
-    projs: ProjDaily[]
-  }[]
+    date: string;
+    projs: ProjDaily[];
+  }[];
 }
 
-export const EmployeeDaily = client.db().collection<IEmployeeDaily>(pluralize('EmployeeDaily'))
+export const EmployeeDaily = client
+  .db()
+  .collection<IEmployeeDaily>(pluralize("EmployeeDaily"));
 
 /**
  * 项目
@@ -31,451 +36,509 @@ export interface IProject {
   /**
    * id
    */
-  _id: string
+  _id: string;
   /**
    * 负责人
    */
-  leader: string
+  leader: string;
   /**
    * 销售负责人
    */
-  salesLeader: string
+  salesLeader: string;
   /**
    * 客户信息
    */
-  customer: string
+  customer: string;
   /**
    * 项目名称
    */
-  name: string
+  name: string;
   /**
    * 合同名称
    */
-  contName: string
+  contName: string;
   /**
    * 项目状态
    */
-  projStatus: string
+  projStatus: string;
   /**
    * 合同状态
    */
-  contStatus: string
+  contStatus: string;
   /**
    * 验收状态
    */
-  acceStatus: string
+  acceStatus: string;
   /**
    * 合同金额
    */
-  contAmount: number
+  contAmount: number;
   /**
    * 确认收入金额
    */
-  recoAmount: number
+  recoAmount: number;
   /**
    * 项目预算
    */
-  projBudget: number
+  projBudget: number;
   /**
    * 预算费用
    */
-  budgetFee: number
+  budgetFee: number;
   /**
    * 预算成本
    */
-  budgetCost: number
+  budgetCost: number;
   /**
    * 实际费用
    */
-  actualFee: number
+  actualFee: number;
   /**
    * 实际成本
    */
-  actualCost: number
+  actualCost: number;
   /**
    * 税后金额
    */
-  taxAmount: number
+  taxAmount: number;
   /**
    * 创建日期
    */
-  createDate: Date
+  createDate: Date;
   /**
    * 更新时间
    */
-  updateTime: Date
+  updateTime: Date;
   /**
    * 参与人员
    */
-  participants: string[]
+  participants: string[];
   /**
    * 收入确认年度
    */
-  confirmYear: string
+  confirmYear: string;
   /**
    * 联系人
    */
-  contacts: [{
-    /**
-     * 姓名
-     */
-    name: string
-    /**
-     * 职务
-     */
-    duties?: string
-    /**
-     * 电话
-     */
-    phone?: string
-  }],
+  contacts: [
+    {
+      /**
+       * 姓名
+       */
+      name: string;
+      /**
+       * 职务
+       */
+      duties?: string;
+      /**
+       * 电话
+       */
+      phone?: string;
+    }
+  ];
   /**
    * 项目状态
    */
-  status?: 'onProj' | 'endProj',
+  status?: "onProj" | "endProj";
   /**
    * 是否归档
    */
-  isArchive: Boolean,
+  isArchive: Boolean;
   /**
    * 归档时间
    */
-  archiveTime: string,
+  archiveTime: string;
   /**
    * 归档人
    */
-  archivePerson: string
+  archivePerson: string;
   /**
    * 总工时
    */
-  timeConsuming: number
+  timeConsuming: number;
 }
 
-export const Project = client.db().collection<IProject>(pluralize('Project'))
+export const Project = client.db().collection<IProject>(pluralize("Project"));
 
 export interface ISettledDaily {
-  _id: string
-  emps: [{
-    empId: string
-    contents: [ProjDaily]
-  }]
+  _id: string;
+  emps: [
+    {
+      empId: string;
+      contents: [ProjDaily];
+    }
+  ];
 }
 
-export const SettledDaily = client.db().collection<ISettledDaily>(pluralize('SettledDaily'))
+export const SettledDaily = client
+  .db()
+  .collection<ISettledDaily>(pluralize("SettledDaily"));
 
 /**
  * 开支
  */
 export interface ICost {
-  _id: ObjectId
-  assignee: string
-  createDate: string
-  participant: string
+  _id: ObjectId;
+  assignee: string;
+  createDate: string;
+  participant: string;
   projs: {
-    id: string
-    amount: number
-    type: string
-    description?: string
-  }[]
+    id: string;
+    amount: number;
+    type: string;
+    description?: string;
+  }[];
 }
 
-export const Cost = client.db().collection<ICost>(pluralize('Cost'))
+export const Cost = client.db().collection<ICost>(pluralize("Cost"));
 
 /**
  * 配置
  */
 export interface IConfig {
-  _id: string
-  data: any
+  _id: string;
+  data: any;
 }
 
-export const Config = client.db().collection<IConfig>(pluralize('Config'))
+export const Config = client.db().collection<IConfig>(pluralize("Config"));
 
 /**
  * 状态
  */
 export interface IStatu {
-  _id: ObjectId
+  _id: ObjectId;
   /**
    * 父id
    */
-  pId: string
+  pId: string;
   /**
    * 名称
    */
-  name: string
+  name: string;
   /**
    * 代码
    */
-  code: string
+  code: string;
   /**
    * 备注
    */
-  remark:string
+  remark: string;
   /**
    * 是否删除
    */
-  isDel: Boolean
+  isDel: Boolean;
   /**
    * 排序
    */
-  sort: number
+  sort: number;
   /**
    * 创建日期
    */
-  createDate: Date
+  createDate: Date;
 }
 
-export const Statu = client.db().collection<IStatu>(pluralize('Statu'))
+export const Statu = client.db().collection<IStatu>(pluralize("Statu"));
 
 /**
  * 行业
  */
- export interface IIndustry {
-  _id: ObjectId
+export interface IIndustry {
+  _id: ObjectId;
   /**
    * 名称
    */
-  name: string
+  name: string;
   /**
    * 代码
    */
-  code: string
+  code: string;
   /**
    * 备注
    */
-  remark:string
-   /**
+  remark: string;
+  /**
    * 是否启用
    */
-  enable: Boolean
+  enable: Boolean;
   /**
    * 是否删除
    */
-  isDel: Boolean
+  isDel: Boolean;
   /**
    * 排序
    */
-  sort: number
+  sort: number;
   /**
    * 创建日期
    */
-  createDate: Date
+  createDate: Date;
 }
 
-export const Industry = client.db().collection<IIndustry>(pluralize('Industry'))
+export const Industry = client
+  .db()
+  .collection<IIndustry>(pluralize("Industry"));
 
 /**
  * 区域
  */
- export interface IRegion {
-  _id: ObjectId
+export interface IRegion {
+  _id: ObjectId;
   /**
    * 名称
    */
-  name: string
+  name: string;
   /**
    * 代码
    */
-  code: string
+  code: string;
   /**
    * 备注
    */
-  remark:string
-   /**
+  remark: string;
+  /**
    * 是否启用
    */
-  enable: Boolean
+  enable: Boolean;
   /**
    * 是否删除
    */
-  isDel: Boolean
+  isDel: Boolean;
   /**
    * 排序
    */
-  sort: number
+  sort: number;
   /**
    * 创建日期
    */
-  createDate: Date
+  createDate: Date;
 }
 
-export const Region = client.db().collection<IRegion>(pluralize('Region'))
+export const Region = client.db().collection<IRegion>(pluralize("Region"));
+
+/**
+ * 区域
+ */
+export interface IProjectClass {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+}
+export const ProjectClass = client
+  .db()
+  .collection<IProjectClass>(pluralize("ProjectClass"));
 
 /**
  * 客户信息
  */
- export interface ICustomer {
-  _id: ObjectId
+export interface ICustomer {
+  _id: ObjectId;
   /**
    * 名称
    */
-  name: string
+  name: string;
   /**
    * 行业编码
    */
-  industryCode: string
+  industryCode: string;
   /**
    * 区域编码
    */
-  regionCode: string
+  regionCode: string;
   /**
    * 销售负责人
    */
-  salesman: string
+  salesman: string[];
   /**
    * 客户联系人
-  */
-  contacts: [{
-    /**
-     * 姓名
-     */
-    name: string
-    /**
-     * 电话
-     */
-    phone: string
-    /**
-     * 职务
-     */
-    tags?: string[]
-    /**
-     * 录入人
-     */
-    recorder?: string
-  }]
+   */
+  contacts: [
+    {
+      /**
+       * 姓名
+       */
+      name: string;
+      /**
+       * 电话
+       */
+      phone: string;
+      /**
+       * 职务
+       */
+      tags?: string[];
+      /**
+       * 录入人
+       */
+      recorder?: string;
+    }
+  ];
   /**
    * 备注
    */
-  remark:string
-   /**
+  remark: string;
+  /**
    * 是否启用
    */
-  enable: Boolean
+  enable: Boolean;
   /**
    * 是否删除
    */
-  isDel: Boolean
+  isDel: Boolean;
   /**
    * 创建日期
    */
-  createDate: Date
+  createDate: Date;
 }
 
-export const Customer = client.db().collection<ICustomer>(pluralize('Customer'))
+export const Customer = client
+  .db()
+  .collection<ICustomer>(pluralize("customers20240101"));
 
 /**
  * 合同信息
  */
- export interface IAgreement {
-  _id: ObjectId
+export interface IAgreement {
+  _id: ObjectId;
   /**
    * 名称
    */
-  name: string
+  name: string;
   /**
    * 关联客户
    */
-  customer: string
+  customer: string;
   /**
    * 合同类型
    */
-  type: string
+  type: string;
   /**
    * 文件列表
    */
-  fileList:  [{
-    /**
-     * uid
-     */
-    uid: string
-    /**
-     * 名称
-     */
-    name: string
-    /**
-     * 状态
-     */
-    status: string
-    /**
-     * 地址
-     */
-    url: string
-  }]
+  fileList: [
+    {
+      /**
+       * uid
+       */
+      uid: string;
+      /**
+       * 名称
+       */
+      name: string;
+      /**
+       * 状态
+       */
+      status: string;
+      /**
+       * 地址
+       */
+      url: string;
+    }
+  ];
   /**
    * 开始时间
    */
-  startTime: Date
+  startTime: Date;
   /**
    * 结束时间
    */
-  endTime: Date
+  endTime: Date;
   /**
    * 备注
    */
-  remark:string
+  remark: string;
   /**
    * 是否删除
    */
-  isDel: Boolean
+  isDel: Boolean;
   /**
    * 创建日期
    */
-  createDate: Date
+  createDate: Date;
 }
 
-export const Agreement = client.db().collection<IAgreement>(pluralize('Agreement'))
+export const Agreement = client
+  .db()
+  .collection<IAgreement>(pluralize("Agreement"));
 
 /**
  * 项目合同关联关系
  */
- export interface IProjectAgreement {
-  _id: ObjectId
+export interface IProjectAgreement {
+  _id: ObjectId;
   /**
    * 合同id
    */
-  agreementId: string
+  agreementId: string;
 }
 
-export const ProjectAgreement = client.db().collection<IProjectAgreement>(pluralize('ProjectAgreement'))
+export const ProjectAgreement = client
+  .db()
+  .collection<IProjectAgreement>(pluralize("ProjectAgreement"));
 
 /**
  * 文件表
  */
- export interface IAttachment {
-  _id: ObjectId
+export interface IAttachment {
+  _id: ObjectId;
   /**
    * 名称
    */
-  name: string,
+  name: string;
   /**
    * 文件目录
    */
-  directory: string,
+  directory: string;
   /**
    * 存储地址
    */
-  path: string,
+  path: string;
 }
 
-export const Attachment = client.db().collection<IAttachment>(pluralize('Attachment'))
+export const Attachment = client
+  .db()
+  .collection<IAttachment>(pluralize("Attachment"));
 
 /**
  * 标签表
  */
- export interface ITags {
-  _id: ObjectId
+export interface ITags {
+  _id: ObjectId;
   /**
    * 名称
    */
-  name: string,
+  name: string;
   /**
    * 创建日期
    */
-  createDate: string
+  createDate: string;
 }
 
-export const Tag = client.db().collection<ITags>(pluralize('Tag'))
+export const Tag = client.db().collection<ITags>(pluralize("Tag"));
 
 /**
  * 市场信息
@@ -484,114 +547,122 @@ export interface IMarket {
   /**
    * 机构id
    */
-  _id: ObjectId
+  _id: ObjectId;
   /**
    * 负责人
    */
-  leader: string
+  leader: string;
   /**
    * 机构名称
    */
-  name: string
+  name: string;
   /**
    * 机构项目
    */
-  projects: [{
-    /**
-     * 项目名称
-     */
-    name: string
-    /**
-     * 项目简介
-     */
-    introduct: string
-    /**
-     * 项目规模
-     */
-    scale: string
-    /**
-     * 项目计划
-     */
-    plan: string
-     /**
-     * 项目状态
-     */
-    status?: 'track' | 'stop' | 'transfer',
-    /**
-     * 项目资料
-     */
-    fileList:  [{
+  projects: [
+    {
       /**
-       * uid
+       * 项目名称
        */
-      uid: string
+      name: string;
       /**
-       * 名称
+       * 项目简介
        */
-      name: string
+      introduct: string;
       /**
-       * 状态
+       * 项目规模
        */
-      status: string
+      scale: string;
       /**
-       * 地址
+       * 项目计划
        */
-      url: string
+      plan: string;
       /**
-       * 缩略地址
+       * 项目状态
        */
-      thumbUrl: String
-    }],
-    /**
-     * 拜访记录
-     */
-    visitRecord: [{
+      status?: "track" | "stop" | "transfer";
       /**
-       * 拜访时间
+       * 项目资料
        */
-      date: string
+      fileList: [
+        {
+          /**
+           * uid
+           */
+          uid: string;
+          /**
+           * 名称
+           */
+          name: string;
+          /**
+           * 状态
+           */
+          status: string;
+          /**
+           * 地址
+           */
+          url: string;
+          /**
+           * 缩略地址
+           */
+          thumbUrl: String;
+        }
+      ];
       /**
-       * 拜访内容
+       * 拜访记录
        */
-      content: string
-    }],
-  }],
+      visitRecord: [
+        {
+          /**
+           * 拜访时间
+           */
+          date: string;
+          /**
+           * 拜访内容
+           */
+          content: string;
+        }
+      ];
+    }
+  ];
   /**
    * 机构联系人
    */
-  contacts: [{
-    /**
-     * 姓名
-     */
-    name: string
-    /**
-     * 职务
-     */
-    duties?: string[]
-    /**
-     * 电话
-     */
-    phone?: string
-    /**
-     * 备注
-     */
-    remark?: string
-  }],
+  contacts: [
+    {
+      /**
+       * 姓名
+       */
+      name: string;
+      /**
+       * 职务
+       */
+      duties?: string[];
+      /**
+       * 电话
+       */
+      phone?: string;
+      /**
+       * 备注
+       */
+      remark?: string;
+    }
+  ];
   /**
    * 创建日期
    */
-  createDate?: Date
+  createDate?: Date;
   /**
    * 更新时间
    */
-  updateTime?: Date
+  updateTime?: Date;
   /**
    * 是否删除
    */
-  isDel: Boolean
+  isDel: Boolean;
 }
 
-export const Market = client.db().collection<IMarket>(pluralize('Market'))
+export const Market = client.db().collection<IMarket>(pluralize("Market"));
 
 /**
  * 市场项目计划
@@ -600,104 +671,110 @@ export interface IMarketPlan {
   /**
    * 计划id
    */
-  _id: ObjectId
+  _id: ObjectId;
   /**
    * 填写人
    */
-  leader: string
+  leader: string;
   /**
    * 周编码
    */
-  week: string
+  week: string;
   /**
    * 机构ID
    */
-  weekPlans: [{
-    /**
-     * 机构ID
-     */
-    marketId: string
-    /**
-     * 机构名称
-     */
-    marketName: string
-    /**
-     * 项目名称
-     */
-    projectName: string
-    /**
-     * 项目预算
-     */
-    projectScale: string
-    /**
-     * 项目状态
-     */
-    projectStatus: string
-    /**
-     * 项目计划
-     */
-    projectPlan: string
-    /**
-     * 本周工作
-     */
-    weekWork: string
-    /**
-     * 下周计划
-     */
-    nextWeekPlan: string
-  }]
+  weekPlans: [
+    {
+      /**
+       * 机构ID
+       */
+      marketId: string;
+      /**
+       * 机构名称
+       */
+      marketName: string;
+      /**
+       * 项目名称
+       */
+      projectName: string;
+      /**
+       * 项目预算
+       */
+      projectScale: string;
+      /**
+       * 项目状态
+       */
+      projectStatus: string;
+      /**
+       * 项目计划
+       */
+      projectPlan: string;
+      /**
+       * 本周工作
+       */
+      weekWork: string;
+      /**
+       * 下周计划
+       */
+      nextWeekPlan: string;
+    }
+  ];
   /**
    * 创建日期
    */
-  createDate?: Date
+  createDate?: Date;
   /**
    * 更新时间
    */
-  updateTime?: Date
+  updateTime?: Date;
 }
 
-export const MarketPlan = client.db().collection<IMarketPlan>(pluralize('MarketPlan'))
+export const MarketPlan = client
+  .db()
+  .collection<IMarketPlan>(pluralize("MarketPlan"));
 
 /**
  * 操作日志
  */
-export interface IEventLog{
+export interface IEventLog {
   /**
    * 日志id
    */
-  _id: ObjectId
+  _id: ObjectId;
   /**
    * 操作用户
    */
-  changeUser: string
+  changeUser: string;
   /**
    * 操作类型
    */
-  type: string
+  type: string;
   /**
    * 操作对象
    */
-  target: string
+  target: string;
   /**
    * 原始值
    */
-  oldValue: string
+  oldValue: string;
   /**
    * 新值
    */
-  newValue: string
+  newValue: string;
   /**
    * 操作描述
    */
-  description: string
+  description: string;
   /**
    * 额外信息
    */
-  information: string
+  information: string;
   /**
    * 操作时间
    */
-  changeDate?: string
+  changeDate?: string;
 }
 
-export const EventLog = client.db().collection<IEventLog>(pluralize('EventLog'))
+export const EventLog = client
+  .db()
+  .collection<IEventLog>(pluralize("EventLog"));

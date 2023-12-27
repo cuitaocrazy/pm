@@ -23,9 +23,10 @@ import tags from './tags'
 import markets from './markets'
 import marketPlans from './marketPlans'
 import eventLogs from './eventLogs'
+import projectClasses from './projectClass'
 
 const merge = (...args: IResolvers[]) => {
   return args.reduce(R.mergeDeepRight)
 }
 
-export default merge(me, misc, dailies, projs, expenses, empDailies, projDailies, config, projExpenses, empExpenses, changePm, charts, status, industries, regions, customers, agreements, projectAgreements, attachments, tags, markets, marketPlans, eventLogs)
+export default merge(me, misc, dailies, projs, expenses, empDailies, projDailies, config, projExpenses, empExpenses, changePm, charts, status, industries, regions, customers, agreements, projectAgreements, attachments, tags, markets, marketPlans, eventLogs,projectClasses)

@@ -46,7 +46,6 @@ change_helm() {
 }
 
 echo $VERSION
-if git diff-index --quiet HEAD --; then
   git pull
   change_version
   change_oauth
@@ -60,7 +59,3 @@ if git diff-index --quiet HEAD --; then
   git push
   git push origin $VERSION
   exit 0
-else
-  echo '先提交修改'
-  exit -1
-fi

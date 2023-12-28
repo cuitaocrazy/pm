@@ -623,6 +623,14 @@ export type RegionInput = {
   remark?: Scalars['String'];
   sort: Scalars['Int'];
 };
+export type ProjectClassInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
+};
 
 export type CustomerInput = {
   id?: Maybe<Scalars['ID']>;
@@ -799,7 +807,7 @@ export type MutationPushRegionArgs = {
   region: RegionInput;
 };
 export type MutationPushProjectClassArgs = {
-  region: RegionInput;
+  projectclass: ProjectClassInput;
 };
 export type MutationDeleteRegionArgs = {
   id: Scalars['ID'];

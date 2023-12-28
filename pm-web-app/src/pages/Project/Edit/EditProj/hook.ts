@@ -57,7 +57,6 @@ const getGql = (proName: string) => {
         projBudget
         budgetFee
         budgetCost
-        actualFee
         humanFee
         projectFee
         actualCost

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, InputNumber, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupsUsersArgs, QueryProjDailyArgs, QueryRoleUsersArgs } from '@/apollo';
+import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupsUsersArgs, QueryProjDailyArgs } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
@@ -61,14 +61,6 @@ const QueryDaily = gql`
   }
 `;
 
-const userQuery1 = gql`
-  query($role: String!) {
-    roleUsers(role: $role) {
-      id
-      name
-    }
-  }
-`;
 
 const layout = {
   labelCol: { span: 9 },

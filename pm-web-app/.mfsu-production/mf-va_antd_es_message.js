@@ -1,3 +1,3 @@
-import _ from '/Users/zouhaitao/Documents/code/YD-git/pm/pm-web-app/node_modules/antd/es/message';
+import _ from '/Users/zhouyueyang/Documents/work/ribao/pm-web-app/node_modules/antd/es/message';
 export default _;
-export * from '/Users/zouhaitao/Documents/code/YD-git/pm/pm-web-app/node_modules/antd/es/message';
+export * from '/Users/zhouyueyang/Documents/work/ribao/pm-web-app/node_modules/antd/es/message';

@@ -1,2 +1,2 @@
-import _ from '/Users/zouhaitao/Documents/code/YD-git/pm/pm-web-app/node_modules/antd/es/dropdown';
+import _ from '/Users/zhouyueyang/Documents/work/ribao/pm-web-app/node_modules/antd/es/dropdown';
 export default _;

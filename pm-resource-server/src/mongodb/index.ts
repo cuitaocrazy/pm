@@ -167,6 +167,8 @@ export interface IProject {
   projectFee: number;
 
   group: string;
+
+  projectClass: string;
 }
 
 export const Project = client.db().collection<IProject>(pluralize("Project"));

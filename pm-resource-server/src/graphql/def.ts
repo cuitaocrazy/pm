@@ -459,6 +459,7 @@ const dataTypeDef = gql`
     confirmYear: String
     doYear: String
     group: String
+    projectClass: String
   }
 
   input ContactInput {

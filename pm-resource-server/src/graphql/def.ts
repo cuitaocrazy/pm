@@ -101,6 +101,7 @@ const dataTypeDef = gql`
     confirmYear: String
     projectClass: String
     doYear: String
+    group: String
   }
 
   type Contact {
@@ -410,6 +411,7 @@ const dataTypeDef = gql`
     marketPlansBySuper: [MarketPlan!]!
     eventLogs: [EventLog!]!
     projectClasses: [ProjectClass!]!
+    groups: [String!]!
   }
 
   input DailyInput {
@@ -456,6 +458,7 @@ const dataTypeDef = gql`
     actualInspections: Int
     confirmYear: String
     doYear: String
+    group: String
   }
 
   input ContactInput {

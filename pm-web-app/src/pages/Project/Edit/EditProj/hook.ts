@@ -80,6 +80,8 @@ const getGql = (proName: string) => {
         timeConsuming
         confirmYear
         doYear
+        projectClass
+        group
         actives {
           name
           recorder

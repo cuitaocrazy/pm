@@ -1,8 +1,26 @@
 import React, { useState } from 'react';
-import { Form, Input, InputNumber, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
+import {
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Button,
+  Divider,
+  Row,
+  Col,
+  DatePicker,
+  Upload,
+} from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupsUsersArgs, QueryProjDailyArgs } from '@/apollo';
+import type {
+  ProjectInput,
+  Customer,
+  Query,
+  TreeStatu,
+  QueryGroupsUsersArgs,
+  QueryProjDailyArgs,
+} from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
@@ -13,7 +31,7 @@ import { forEach } from 'ramda';
 import moment from 'moment';
 
 const userQuery = gql`
-  query($groups: [String!]) {
+  query ($groups: [String!]) {
     groupsUsers(groups: $groups) {
       id
       name
@@ -23,6 +41,17 @@ const userQuery = gql`
       name
       type
     }
+    projectClasses {
+      id
+      name
+      code
+      remark
+      enable
+      isDel
+      sort
+      createDate
+    }
+    groups
     subordinates {
       id
       name
@@ -61,22 +90,32 @@ const QueryDaily = gql`
   }
 `;
 
-
 const layout = {
   labelCol: { span: 9 },
   wrapperCol: { span: 16 },
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
+  console.log(data, 'data=====');
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   //   role: 'engineer',
   // } });
-  const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
-  } });
-  const { data: queryData } = useQuery<Query, QueryProjDailyArgs >(QueryDaily, { fetchPolicy: 'no-cache', variables: {
-    projId: data?.id || '',
-  } });
+  const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      groups: [
+        '/软件事业部/项目一部/市场组',
+        '/软件事业部/项目二部/市场组',
+        '/软件事业部/创新业务部/市场组',
+      ],
+    },
+  });
+  const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      projId: data?.id || '',
+    },
+  });
   const { status, dataForTree } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const [isDerive, setIsDerive] = useState(false);
@@ -90,37 +129,40 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   let employeeIds: string[] = [];
   if (queryData && queryData.allProjDaily.dailies.length) {
     const employeesSet = new Set<string>([]);
-    forEach(item => forEach(chItem => employeesSet.add(chItem.employee.id), item.dailyItems), queryData.allProjDaily.dailies)
-    employeeIds = [...employeesSet]
+    forEach(
+      (item) => forEach((chItem) => employeesSet.add(chItem.employee.id), item.dailyItems),
+      queryData.allProjDaily.dailies,
+    );
+    employeeIds = [...employeesSet];
   }
 
   const props: UploadProps = {
-    listType: "picture",
+    listType: 'picture',
     action: '/api/upload/tmp',
     defaultFileList: [],
     showUploadList: {
       showPreviewIcon: true,
       showRemoveIcon: true,
-      showDownloadIcon: true
+      showDownloadIcon: true,
     },
     onChange: ({ file, fileList }) => {
       // console.log(file, fileList)
       if (file.status !== 'uploading') {
-        fileList.forEach(item => {
-          const { url, response } = item
-          item.url = url ? url : response.data
-          item.thumbUrl = ''
-          delete item.lastModified
-          delete item.percent
-          delete item.size
-          delete item.type
+        fileList.forEach((item) => {
+          const { url, response } = item;
+          item.url = url ? url : response.data;
+          item.thumbUrl = '';
+          delete item.lastModified;
+          delete item.percent;
+          delete item.size;
+          delete item.type;
           // delete item.originFileObj
-          delete item.response
-          delete item.xhr
-          delete item.lastModifiedDate
-        })
+          delete item.response;
+          delete item.xhr;
+          delete item.lastModifiedDate;
+        });
       }
-    }
+    },
   };
 
   const normFile = (e: any) => {
@@ -132,7 +174,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   const validator = (rule: any, value: string) => {
     const result = reg.exec(value);
-    setProjType(result?.groups?.projType || '')
+    setProjType(result?.groups?.projType || '');
     if (result === null) {
       return Promise.reject(Error('id格式不正确'));
     }
@@ -168,7 +210,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   const activeValidator = async (_: any) => {
     const actives = form.getFieldValue(_.field);
-    let type = projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'
+    let type = projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目';
     if ((projType === 'SQ' || projType === 'SH') && (!actives || !actives.length)) {
       return Promise.reject(Error(`至少需要添加一个${type}活动`));
     } else {
@@ -193,11 +235,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Form.Item label={label} name={type} rules={[{ required: true }]}>
         {options.length ? (
           <Select allowClear>
-            {options.filter(s => s.enable).map((s: TreeStatu) => (
-              <Select.Option key={s.id} value={s.id}>
-                {s.name}
-              </Select.Option>
-            ))}
+            {options
+              .filter((s) => s.enable)
+              .map((s: TreeStatu) => (
+                <Select.Option key={s.id} value={s.id}>
+                  {s.name}
+                </Select.Option>
+              ))}
           </Select>
         ) : (
           <Select loading={loading} />
@@ -219,35 +263,37 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         startTime: '',
         endTime: '',
         actives: [],
-      })
+      });
     }
   };
 
   const onConfirmYearChange = (date: any, dateString: string) => {
-    form.setFieldValue('confirmYear', dateString)
+    form.setFieldValue('confirmYear', dateString);
   };
   const ondoYearChange = (date: any, dateString: string) => {
-    form.setFieldValue('doYear', dateString)
+    form.setFieldValue('doYear', dateString);
   };
 
   // 派生一个新项目
   const deriveNewProject = () => {
-    setIsDerive(true)
+    setIsDerive(true);
     form.setFieldValue('pId', data?.id);
     // 生成派生项目id
-    let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('MMDD')}`) || '1'
+    let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('MMDD')}`) || '1';
     onIdChange(newId);
   };
 
   // 获取客户信息
   const getCustomers = (type: string, label: string) => {
-    let customersArr = resData?.customers.filter(item => item.enable) || []
+    let customersArr = resData?.customers.filter((item) => item.enable) || [];
     if (customersArr.length > 1) {
       const id = form.getFieldValue('id');
       const result = reg.exec(id);
-      customersArr = customersArr.filter(item => {
-        return (item.industryCode === result?.groups?.org) && (item.regionCode === result?.groups?.zone)
-      })
+      customersArr = customersArr.filter((item) => {
+        return (
+          item.industryCode === result?.groups?.org && item.regionCode === result?.groups?.zone
+        );
+      });
     }
     return (
       <Form.Item label={label} name={type} rules={[{ required: true }]}>
@@ -264,16 +310,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         )}
       </Form.Item>
     );
-  }
+  };
 
   const renderActiveNode = (fields: any) => {
-    let tempFields = []
+    let tempFields = [];
     for (let i = fields.length - 1; i >= 0; i--) {
-      fields['index'] = i
-      tempFields.push(fields[i])
+      fields['index'] = i;
+      tempFields.push(fields[i]);
     }
     return tempFields;
-  }
+  };
 
   return (
     <Form
@@ -287,7 +333,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           return (
             <Row>
               <Col xs={24} sm={20}>
-                <Form.Item labelCol={{ span: 3, offset: 0 }} hidden={!(isDerive || data?.pId)} label="关联项目ID" name="pId">
+                <Form.Item
+                  labelCol={{ span: 3, offset: 0 }}
+                  hidden={!(isDerive || data?.pId)}
+                  label="关联项目ID"
+                  name="pId"
+                >
                   <Input disabled />
                 </Form.Item>
                 <Form.Item
@@ -337,6 +388,33 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             </Select>
           </Form.Item>
         </Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <Form.Item label="项目分类" name="projectClass" rules={[{ required: false }]}>
+            <Select allowClear>
+              {resData?.projectClasses.map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="项目部门" name="group" rules={[{ required: false }]}>
+            <Select allowClear>
+              {resData?.groups.map((u, index) => {
+                return (
+                  <Select.Option key={index} value={u}>
+                    {u.toString().split('/')[2]}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}></Col>
       </Row>
       <Row>
         <Col span={8}>
@@ -409,7 +487,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
-            <Select disabled={false} loading={loading} onChange={v => setStageStatus(v)}>
+            <Select disabled={false} loading={loading} onChange={(v) => setStageStatus(v)}>
               {projStatus.map((s) => (
                 <Select.Option key={s[0]} value={s[0]}>
                   {s[1]}
@@ -422,12 +500,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           <Form.Item
             label="启动日期"
             name="startTime"
-            rules={[{ required: stageStatus ? true : false}]}
+            rules={[{ required: stageStatus ? true : false }]}
             getValueProps={(value) => ({
-              value: value ? moment(value) : undefined
+              value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }}/>
+            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -436,10 +514,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             name="endTime"
             rules={[{ required: stageStatus === 'endProj' ? true : false }]}
             getValueProps={(value) => ({
-              value: value ? moment(value) : undefined
+              value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }}/>
+            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>
@@ -462,41 +540,65 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       </Row>
       <Row>
         <Col span={8}>
-          <Form.Item label="项目预算" name="projBudget" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">客户心理的预算</span>)}>
+          <Form.Item
+            label="项目预算"
+            name="projBudget"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">客户心理的预算</span>}
+          >
             <InputNumber min={0} />
           </Form.Item>
         </Col>
 
         <Col span={8}>
-          <Form.Item label="费用预算" name="budgetFee" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">自己人员消耗的费用</span>)}>
+          <Form.Item
+            label="费用预算"
+            name="budgetFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
+          >
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="预算成本" name="budgetCost" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">采购或者外包的费用</span>)}>
+          <Form.Item
+            label="预算成本"
+            name="budgetCost"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
+          >
             <InputNumber min={0} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
-      <Col span={8}>
-          <Form.Item label="人力费用" name="humanFee" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">实际消耗费用</span>)}>
+        <Col span={8}>
+          <Form.Item
+            label="人力费用"
+            name="humanFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际消耗费用</span>}
+          >
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目费用" name="projectFee" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">实际消耗费用</span>)}>
+          <Form.Item
+            label="项目费用"
+            name="projectFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际消耗费用</span>}
+          >
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="采购成本" name="actualCost" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">实际采购成本</span>)}>
+          <Form.Item
+            label="采购成本"
+            name="actualCost"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际采购成本</span>}
+          >
             <InputNumber min={0} />
           </Form.Item>
         </Col>
@@ -505,27 +607,27 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             <InputNumber min={0} />
           </Form.Item>
         </Col>
-        {
-       projType === 'SH' ?
-      (
-        <>
-        <Col span={8}>
-           <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-           <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-
-         </Col></>)
-       : ''
-      }
+        {projType === 'SH' ? (
+          <>
+            <Col span={8}>
+              <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+            <Col span={8}></Col>
+          </>
+        ) : (
+          ''
+        )}
       </Row>
-      { projType === 'SQ' || projType === 'SH' ? '' :
+      {projType === 'SQ' || projType === 'SH' ? (
+        ''
+      ) : (
         <Row>
           <Col span={8}>
             <Form.Item
@@ -533,10 +635,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               name="productDate"
               rules={[{ required: false }]}
               getValueProps={(value) => ({
-                value: value ? moment(value) : undefined
+                value: value ? moment(value) : undefined,
               })}
             >
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }}/>
+              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -545,41 +647,54 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               name="acceptDate"
               rules={[{ required: false }]}
               getValueProps={(value) => ({
-                value: value ? moment(value) : undefined
+                value: value ? moment(value) : undefined,
               })}
             >
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }}/>
+              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="免费维护期" name="serviceCycle" rules={[{ required: false }]}
-              tooltip={(<span className="ant-form-text">月</span>)}>
+            <Form.Item
+              label="免费维护期"
+              name="serviceCycle"
+              rules={[{ required: false }]}
+              tooltip={<span className="ant-form-text">月</span>}
+            >
               <InputNumber min={0} />
             </Form.Item>
           </Col>
         </Row>
-      }
-      {
-       projType === 'SH' ?
-       <Row hidden={projType !== 'SH'}>
-         <Col span={8}>
-           <Form.Item label="要求巡检次数" name="requiredInspections" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-           <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }]}>
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-         <Col span={8}>
-          <Form.Item label="服务周期" name="serviceCycle" rules={[{ required: false }]}
-            tooltip={(<span className="ant-form-text">月</span>)} >
-             <InputNumber min={0} />
-           </Form.Item>
-         </Col>
-       </Row> : ''
-      }
+      )}
+      {projType === 'SH' ? (
+        <Row hidden={projType !== 'SH'}>
+          <Col span={8}>
+            <Form.Item
+              label="要求巡检次数"
+              name="requiredInspections"
+              rules={[{ required: false }]}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }]}>
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="服务周期"
+              name="serviceCycle"
+              rules={[{ required: false }]}
+              tooltip={<span className="ant-form-text">月</span>}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+        </Row>
+      ) : (
+        ''
+      )}
 
       <Row>
         <Col span={8}>
@@ -588,11 +703,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             name="confirmYear"
             rules={[{ required: false }]}
             getValueProps={(value) => ({
-              value: value ? moment(value) : undefined
+              value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker picker="year" format="YYYY" style={{ width: '100%' }} onChange={onConfirmYearChange}/>
-          {/* <Input /> */}
+            <DatePicker
+              picker="year"
+              format="YYYY"
+              style={{ width: '100%' }}
+              onChange={onConfirmYearChange}
+            />
+            {/* <Input /> */}
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -601,15 +721,19 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             name="doYear"
             rules={[{ required: false }]}
             getValueProps={(value) => ({
-              value: value ? moment(value) : undefined
+              value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker picker="year" format="YYYY" style={{ width: '100%' }} onChange={ondoYearChange}/>
-          {/* <Input /> */}
+            <DatePicker
+              picker="year"
+              format="YYYY"
+              style={{ width: '100%' }}
+              onChange={ondoYearChange}
+            />
+            {/* <Input /> */}
           </Form.Item>
         </Col>
-        <Col span={8}>
-        </Col>
+        <Col span={8}></Col>
       </Row>
       <Row>
         <Col span={24}>
@@ -620,15 +744,23 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       </Row>
       <Row>
         <Col span={24}>
-          <Form.List name='actives' rules={[{ validator: activeValidator }]}>
+          <Form.List name="actives" rules={[{ validator: activeValidator }]}>
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Form.Item>
-                  {data?.status === 'endProj' ? '' :
-                    <Button type="dashed" onClick={() => add({recorder: initialState?.currentUser?.id }, fields.length)} icon={<PlusOutlined />}>
+                  {data?.status === 'endProj' ? (
+                    ''
+                  ) : (
+                    <Button
+                      type="dashed"
+                      onClick={() =>
+                        add({ recorder: initialState?.currentUser?.id }, fields.length)
+                      }
+                      icon={<PlusOutlined />}
+                    >
                       添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动
                     </Button>
-                  }
+                  )}
                   <Form.ErrorList errors={errors} />
                 </Form.Item>
                 {renderActiveNode(fields).map((field, i) => (
@@ -642,7 +774,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                         name={[field.name, 'name']}
                         rules={[{ required: true, message: '请输入活动名称' }]}
                       >
-                        <Input placeholder="请输入活动名称" style={{ width: '15vw', textAlign: 'center' }}/>
+                        <Input
+                          placeholder="请输入活动名称"
+                          style={{ width: '15vw', textAlign: 'center' }}
+                        />
                       </Form.Item>
                     </Divider>
                     <Row>
@@ -654,10 +789,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                           name={[field.name, 'date']}
                           rules={[{ required: true }]}
                           getValueProps={(value) => ({
-                            value: value ? moment(value) : undefined
+                            value: value ? moment(value) : undefined,
                           })}
                         >
-                          <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: '100%' }}/>
+                          <DatePicker
+                            showTime
+                            format="YYYY-MM-DD HH:mm:ss"
+                            style={{ width: '100%' }}
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -668,7 +807,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                           name={[field.name, 'recorder']}
                           rules={[{ required: true }]}
                         >
-                          <Select disabled >
+                          <Select disabled>
                             {resData?.subordinates.map((u) => (
                               <Select.Option key={u.id} value={u.id}>
                                 {u.name}
@@ -704,10 +843,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                         >
                           <Upload
                             className="upload-list-inline"
-                            { ...props }
+                            {...props}
                             defaultFileList={
-                              form.getFieldValue('actives') ?
-                              form.getFieldValue('actives')[field.name]?.fileList as UploadFile[] : []
+                              form.getFieldValue('actives')
+                                ? (form.getFieldValue('actives')[field.name]
+                                    ?.fileList as UploadFile[])
+                                : []
                             }
                           >
                             <Button icon={<UploadOutlined />}>上传</Button>
@@ -716,12 +857,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                       </Col>
                     </Row>
                     <div style={{ textAlign: 'center' }}>
-                    {data?.status === 'endProj' ? '' :
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button"
-                        onClick={() => remove(field.name)}
-                      />
-                    }
+                      {data?.status === 'endProj' ? (
+                        ''
+                      ) : (
+                        <MinusCircleOutlined
+                          className="dynamic-delete-button"
+                          onClick={() => remove(field.name)}
+                        />
+                      )}
                     </div>
                   </div>
                 ))}

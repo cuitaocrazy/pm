@@ -37,6 +37,7 @@ export async function getCurrentBasics() {
             isDel
             createDate
           }
+          groups
         }
       `,
       fetchPolicy: 'no-cache'

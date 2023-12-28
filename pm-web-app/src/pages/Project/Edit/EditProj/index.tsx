@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Button, Table, Popconfirm, Tag, Input, Space, Radio, Badge } from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
@@ -23,7 +23,7 @@ const Project: React.FC<any> = () => {
 
   const { projs, todoProjs, subordinates, customers, projectAgreements, loading, archive,
     setArchive, setFilter, archiveProj, deleteProj, pushProj } = useProjStatus();
-  const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
+  const { status, orgCode, zoneCode, projType, buildProjName,groupType } = useBaseState();
 
   const editHandle = (proj: Proj, openRef: any) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
@@ -67,7 +67,7 @@ const Project: React.FC<any> = () => {
           text: '类型',
           value: 'projType',
           children: Object.keys(projType).map((s) => ({ text: projType[s], value: s })),
-        }
+        },
       ],
       onFilter: (value: string | number | boolean, record: Proj) => record.id.indexOf(value + '') > -1,
       width: 250
@@ -99,6 +99,23 @@ const Project: React.FC<any> = () => {
       filters: projStatus.map((s) => ({ text: s[1], value: s[0] })),
       onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
     },
+    {
+      title: '项目部门',
+      dataIndex: 'group',
+      key: 'group',
+      width: '200px',
+      render: (status: string) =>  {
+        let name = status&&status.split('/')[2];
+        return name;
+      },
+      filters: groupType.map((s) => ({ text: s.toString().split('/')[2], value: s })),
+      onFilter: (value: string | number | boolean, record: Proj) => record.group === value,
+    },
+//{
+//   text: '部门',
+//   value: 'groupType',
+//   children: Object.keys(groupType).map((s) => ({ text: groupType[s], value: s })),
+// },
     {
       title: '预算人天',
       dataIndex: 'estimatedWorkload',

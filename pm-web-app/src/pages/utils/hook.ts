@@ -47,6 +47,10 @@ function getProjTypeName(type: string) {
 
   return getCodeName(type, projTypeAll, () => `没有找到项目类型代码${type}`);
 }
+// function getGroupTypeName(type: string) {
+
+//   return getCodeName(type, groupTypeAll, () => `没有找到部门类型代码${type}`);
+// }
 
 function buildProjName(id: string, name: string) {
   const reg = /^(?<org>\w+)-(?<zone>\w+)-(?<type>\w+)-(?<name>\w+)-(?<date>\d+)$/;
@@ -96,9 +100,11 @@ export function useBaseState() {
   const status = initialState?.status || [];
   const industries = initialState?.industries || [];
   const regions = initialState?.regions || [];
+   let groupType = initialState?.groups || [];
   let orgCode = {}
   let zoneCode = {}
   let projType = {}
+  
 
   status.forEach(statu => {
     if (statu.pId === '0') {
@@ -125,6 +131,7 @@ export function useBaseState() {
     status,
     industries,
     regions,
+    groupType,
     orgCode,
     zoneCode,
     projType,

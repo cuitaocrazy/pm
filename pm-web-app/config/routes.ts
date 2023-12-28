@@ -83,7 +83,7 @@
         path: '/project/changeLeader',
         name: 'changeLeader',
         component: './Project/Edit/ChangeLeader',
-        access: 'canChangeLeader' 
+        access: 'canChangeLeader'
       },
       {
         path: '/project/projectView',
@@ -202,6 +202,12 @@
         component: './InfoManage/Region/Edit',
         access: 'canRegion'
       },
+      {
+        path: '/infoManage/projectClass',
+        name: 'projectClass',
+        component: './InfoManage/ProjectClass/Edit',
+        access: 'canRegion'
+      },
       // {
       //   path: '/infoManage/config',
       //   name: 'config',
@@ -213,7 +219,7 @@
         name: 'workCalendar',
         component: './WorkCalendar',
         access: 'canWorkCalendar',
-      }     
+      }
     ]
   },
   {

@@ -302,7 +302,17 @@ export type Region = {
   sort: Scalars['Int'];
   createDate: Scalars['String'];
 };
-
+export type ProjectClass = {
+  __typename?: 'Region';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
+};
 export type Customer = {
   __typename?: 'Customer';
   id: Scalars['ID'];
@@ -456,6 +466,7 @@ export type Query = {
   treeStatus: TreeStatu[];
   industries: Industry[];
   regions: Region[];
+  projectClasses:ProjectClass[];
   customers: Customer[];
   agreements: Agreement[];
   projectAgreements: ProjectAgreement[];
@@ -787,8 +798,13 @@ export type MutationDeleteIndustryArgs = {
 export type MutationPushRegionArgs = {
   region: RegionInput;
 };
-
+export type MutationPushProjectClassArgs = {
+  region: RegionInput;
+};
 export type MutationDeleteRegionArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeleteProjectClassArgs = {
   id: Scalars['ID'];
 };
 

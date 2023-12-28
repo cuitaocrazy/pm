@@ -45,6 +45,7 @@ export default {
   'menu.infoManage.statu': '项目类型管理',
   'menu.infoManage.industry': '行业管理',
   'menu.infoManage.region': '区域管理',
+  'menu.infoManage.projectClass': '项目分类',
   'menu.infoManage.config': '配置管理',
   'menu.infoManage.workCalendar': '工作日历',
 };

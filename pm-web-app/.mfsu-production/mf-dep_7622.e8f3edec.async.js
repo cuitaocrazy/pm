@@ -1,0 +1,1 @@
+(self.webpackChunkant_design_pro=self.webpackChunkant_design_pro||[]).push([["mf-dep_7622"],{87622:function(u,n,e){"use strict";e.r(n),e.d(n,{getInstance:function(){return t.getInstance}});var t=e(84737);n.default=t.default}}]);

@@ -56,7 +56,6 @@ query ($isArchive: Boolean) {
       projBudget
       budgetFee
       budgetCost
-      actualFee
       actualCost
       taxAmount
       description

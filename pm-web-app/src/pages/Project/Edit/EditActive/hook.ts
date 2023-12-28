@@ -55,7 +55,8 @@ query ($projType: String!) {
       projBudget
       budgetFee
       budgetCost
-      actualFee
+      humanFee
+      projectFee
       humanFee
       projectFee
       actualCost

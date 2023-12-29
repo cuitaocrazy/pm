@@ -47,6 +47,7 @@ query ($projType: String!) {
       customer
       leader
       group
+      confirmYear
       salesLeader
       projStatus
       contStatus

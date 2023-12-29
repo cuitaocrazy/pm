@@ -179,23 +179,14 @@ const Project: React.FC<any> = () => {
       width:100,
     },
     {
-      title: '创建日期',
-      dataIndex: 'createDate',
-      key: 'createDate',
-      render: (createDate: string) => {
-        return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
+      title: '确认年度',
+      dataIndex: 'confirmYear',
+      key: 'confirmYear',
+      render: (confirmYear: string) => {
+        return confirmYear;
       },
-      width: 150,
+      width: 100,
     },
-    {
-      title: '更新时间',
-      dataIndex: 'updateTime',
-      key: 'updateTime',
-      render: (updateTime: string) => {
-        return moment(updateTime, 'YYYYMMDD HH:mm:ss').format('YYYY年MM月DD日 HH:mm:ss');
-      },
-      width: 200,
-    }
   ];
 
   return (

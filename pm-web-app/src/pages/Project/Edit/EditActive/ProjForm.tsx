@@ -113,7 +113,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   const activeValidator = async (_: any) => {
     const actives = form.getFieldValue(_.field);
-    let type = projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'
+    let type = projType === 'SQ' ? '销售' : projType === 'SH' ? '售后' : '项目'
     if (!actives || !actives.length) {
       return Promise.reject(Error(`至少需要添加一个${type}活动`));
     } else {
@@ -132,7 +132,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   
   return (
     <Tabs defaultActiveKey="1" type="card">
-      <Tabs.TabPane tab={projType === 'SQ' ? '销售活动信息' : '巡检活动信息'} key="1">
+      <Tabs.TabPane tab={projType === 'SQ' ? '销售活动信息' : '售后活动信息'} key="1">
         <Form 
           {...layout} 
           form={form} 
@@ -170,7 +170,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   <>
                     <Form.Item>
                       <Button type="dashed" onClick={() => add({recorder: initialState?.currentUser?.id }, fields.length)} icon={<PlusOutlined />}>
-                        添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动
+                        添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '售后' : '项目'}活动
                       </Button>
                       <Form.ErrorList errors={errors} />
                     </Form.Item>
@@ -383,11 +383,11 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           <Descriptions.Item label="确认金额:">{ data?.recoAmount }</Descriptions.Item>
           <Descriptions.Item label="税后金额:">{ data?.taxAmount }</Descriptions.Item>
           <Descriptions.Item label="项目预算:">{ data?.projBudget }</Descriptions.Item>
-          <Descriptions.Item label="预算费用:">{ data?.budgetFee }</Descriptions.Item>
+          <Descriptions.Item label="费用预算:">{ data?.budgetFee }</Descriptions.Item>
           {/* <Descriptions.Item label="实际费用:">{ data?.actualFee }</Descriptions.Item> */}
           <Descriptions.Item label="项目费用:">{ data?.projectFee }</Descriptions.Item>
           <Descriptions.Item label="人力费用:">{ data?.humanFee }</Descriptions.Item>
-          <Descriptions.Item label="预算成本:">{ data?.budgetCost }</Descriptions.Item>
+          <Descriptions.Item label="成本预算:">{ data?.budgetCost }</Descriptions.Item>
           <Descriptions.Item label="采购成本:">{ data?.actualCost }</Descriptions.Item>
           <Descriptions.Item label="预估工作量:">{ data?.estimatedWorkload }</Descriptions.Item>
           { projType === 'SZ' ?
@@ -400,7 +400,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           }
           { projType === 'SH' ?
             <Fragment>
-              <Descriptions.Item> </Descriptions.Item>
+              {/* <Descriptions.Item> </Descriptions.Item> */}
               <Descriptions.Item label="免费人天数:">{ data?.freePersonDays }</Descriptions.Item>
               <Descriptions.Item label="已用人天数:">{ data?.usedPersonDays }</Descriptions.Item>
               <Descriptions.Item label="要求巡检次数:">{ data?.requiredInspections }</Descriptions.Item>

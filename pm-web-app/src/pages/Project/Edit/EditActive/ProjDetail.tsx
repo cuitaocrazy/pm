@@ -178,11 +178,11 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           <Descriptions.Item label="确认金额:">{ data?.recoAmount }</Descriptions.Item>
           <Descriptions.Item label="税后金额:">{ data?.taxAmount }</Descriptions.Item>
           <Descriptions.Item label="项目预算:">{ data?.projBudget }</Descriptions.Item>
-          <Descriptions.Item label="预算费用:">{ data?.budgetFee }</Descriptions.Item>
+          <Descriptions.Item label="费用预算:">{ data?.budgetFee }</Descriptions.Item>
           {/* <Descriptions.Item label="实际费用:">{ data?.actualFee }</Descriptions.Item> */}
           <Descriptions.Item label="项目费用:">{ data?.projectFee }</Descriptions.Item>
           <Descriptions.Item label="人力费用:">{ data?.humanFee }</Descriptions.Item>
-          <Descriptions.Item label="预算成本:">{ data?.budgetCost }</Descriptions.Item>
+          <Descriptions.Item label="成本预算:">{ data?.budgetCost }</Descriptions.Item>
           <Descriptions.Item label="采购成本:">{ data?.actualCost }</Descriptions.Item>
           <Descriptions.Item label="预估工作量:">{ data?.estimatedWorkload }</Descriptions.Item>
           { projType === 'SZ' ?
@@ -195,7 +195,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           }
           { projType === 'SH' ?
             <Fragment>
-              <Descriptions.Item> </Descriptions.Item>
+              {/* <Descriptions.Item> </Descriptions.Item> */}
               <Descriptions.Item label="免费人天数:">{ data?.freePersonDays }</Descriptions.Item>
               <Descriptions.Item label="已用人天数:">{ data?.usedPersonDays }</Descriptions.Item>
               <Descriptions.Item label="要求巡检次数:">{ data?.requiredInspections }</Descriptions.Item>

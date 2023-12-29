@@ -205,7 +205,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           <Descriptions.Item label="项目描述:" span={3}>{ data?.description }</Descriptions.Item>
         </Descriptions>
       </Tabs.TabPane>
-      <Tabs.TabPane tab={projType === 'SQ' ? '销售活动' : projType === 'SH' ? '巡检活动' : '项目活动'} key="2">
+      <Tabs.TabPane tab={projType === 'SQ' ? '销售活动' : projType === 'SH' ? '售后活动' : '项目活动'} key="2">
         <Row>
           <Col span={10}>
             <div style={{ height: '50px' }}></div>

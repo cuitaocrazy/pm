@@ -1,6 +1,6 @@
 import type { FormInstance } from 'antd/es/form/Form';
 import { useForm } from 'antd/es/form/Form';
-import { Modal } from 'antd';
+import { ButtonProps, Modal } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 export type FormDialogProps<T> = {
@@ -8,6 +8,7 @@ export type FormDialogProps<T> = {
   submitHandle?: (v: T) => Promise<void>;
   title?: string;
   width?: number;
+  cancelButtonProps?:ButtonProps
 };
 
 type FormDialogTmpProps<T> = FormDialogProps<T> & {

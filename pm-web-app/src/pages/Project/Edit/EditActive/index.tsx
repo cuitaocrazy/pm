@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef } from 'react';
-import { Table, Tag, Input, Space } from 'antd';
+import React, { useRef, useState } from 'react';
+import { Table, Tag, Input, Space,Button, ButtonProps } from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -186,7 +186,9 @@ const Project: React.FC<any> = () => {
       width: 150,
     },
   ];
-
+  const onCancelButtonProps: ButtonProps = {
+    style: { display: 'none' }, // 设置样式让按钮消失
+  };
   return (
     <PageContainer
       extra={[
@@ -214,7 +216,8 @@ const Project: React.FC<any> = () => {
       >
         {ProjForm}
       </DialogForm>
-      <DialogForm
+      <DialogForm 
+      cancelButtonProps={onCancelButtonProps}
         ref={detailRef}
         title="项目详情"
         width={1000}

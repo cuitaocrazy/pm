@@ -46,6 +46,7 @@ query ($projType: String!) {
       contName
       customer
       leader
+      group
       salesLeader
       projStatus
       contStatus
@@ -56,7 +57,6 @@ query ($projType: String!) {
       budgetFee
       budgetCost
       humanFee
-      projectFee
       humanFee
       projectFee
       actualCost

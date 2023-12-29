@@ -17,7 +17,7 @@ const Project: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
   const { projs, subordinates, customers, agreements, projectAgreements, routeProjType, loading, setFilter, pushProj } = useProjStatus();
-  const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
+  const { status, orgCode, zoneCode, projType, buildProjName,groupType } = useBaseState();
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
@@ -128,6 +128,18 @@ const Project: React.FC<any> = () => {
       width:100,
     },
     {
+      title: '项目部门',
+      dataIndex: 'group',
+      key: 'group',
+      width: '200px',
+      render: (status: string) =>  {
+        let name = status&&status.split('/')[2];
+        return name;
+      },
+      filters: groupType.map((s) => ({ text: s.toString().split('/')[2], value: s })),
+      onFilter: (value: string | number | boolean, record: Proj) => record.group === value,
+    },
+    {
       title: '合同状态',
       dataIndex: 'contStatus',
       key: 'contStatus',
@@ -170,7 +182,7 @@ const Project: React.FC<any> = () => {
       render: (id: string, record: Proj) => (
         <Space>
           <a key="change" onClick={() => editHandle(record)}>
-            添加{ routeProjType === 'SQ' ? '销售' : '巡检'  }活动
+            添加{ routeProjType === 'SQ' ? '销售' : '售后'  }活动
           </a>
           {/* <Popconfirm title="是否删除？" okText="是" cancelText="否" onConfirm={() => deleteProj(id)}>
             <a key="delete">

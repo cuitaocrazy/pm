@@ -47,6 +47,7 @@ query ($isArchive: Boolean) {
       contName
       customer
       leader
+      group
       salesLeader
       projStatus
       contStatus

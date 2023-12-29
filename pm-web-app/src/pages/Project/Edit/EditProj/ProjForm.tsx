@@ -210,7 +210,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   const activeValidator = async (_: any) => {
     const actives = form.getFieldValue(_.field);
-    let type = projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目';
+    let type = projType === 'SQ' ? '销售' : projType === 'SH' ? '售后' : '项目';
     if ((projType === 'SQ' || projType === 'SH') && (!actives || !actives.length)) {
       return Promise.reject(Error(`至少需要添加一个${type}活动`));
     } else {
@@ -562,7 +562,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         </Col>
         <Col span={8}>
           <Form.Item
-            label="预算成本"
+            label="成本预算"
             name="budgetCost"
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
@@ -758,7 +758,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                       }
                       icon={<PlusOutlined />}
                     >
-                      添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '巡检' : '项目'}活动
+                      添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '售后' : '项目'}活动
                     </Button>
                   )}
                   <Form.ErrorList errors={errors} />

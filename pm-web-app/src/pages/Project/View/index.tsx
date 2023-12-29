@@ -15,7 +15,7 @@ import { getStatusDisplayName, projStatus } from './utils';
 const Project: React.FC<any> = () => {
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
   const { projs, subordinates, customers, agreements, projectAgreements, loading, setFilter } = useProjStatus();
-  const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
+  const { status, orgCode, zoneCode, projType, buildProjName,groupType } = useBaseState();
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
@@ -38,30 +38,30 @@ const Project: React.FC<any> = () => {
     });
   };
 
-  const makeGroupProps = (children: any, row: Proj, index: number) => {
-    const obj = {
-      children,
-      props: {} as any,
-    };
-    if (index === 0) {
-      // @ts-ignore
-      obj.props.rowSpan = row.props.allIndex - row.props.index;
-    } else {
-      // @ts-ignore
-      obj.props.rowSpan = row.props.index === 0 ? row.props.allIndex : 0;
-    }
-    return obj;
-  };
-  const makeGroupRender = (value: string, row: Proj, index: number) => {
-    return makeGroupProps(value, row, index);
-  };
-
+  // const makeGroupProps = (children: any, row: Proj, index: number) => {
+  //   const obj = {
+  //     children,
+  //     props: {} as any,
+  //   };
+  //   if (index === 0) {
+  //     // @ts-ignore
+  //     obj.props.rowSpan = row.props.allIndex - row.props.index;
+  //   } else {
+  //     // @ts-ignore
+  //     obj.props.rowSpan = row.props.index === 0 ? row.props.allIndex : 0;
+  //   }
+  //   return obj;
+  // };
+  // const makeGroupRender = (value: string, row: Proj, index: number) => {
+  //   return makeGroupProps(value, row, index);
+  // };
+  // render: makeGroupRender,
   const columns = [
     {
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',
-      render: makeGroupRender,
+      
       width: 120
     },
     {
@@ -147,6 +147,18 @@ const Project: React.FC<any> = () => {
         return status?.find((statu) => statu.id === record.projStatus)?.name;
       },
       width:100,
+    },
+    {
+      title: '项目部门',
+      dataIndex: 'group',
+      key: 'group',
+      width: '200px',
+      render: (status: string) =>  {
+        let name = status&&status.split('/')[2];
+        return name;
+      },
+      filters: groupType.map((s) => ({ text: s.toString().split('/')[2], value: s })),
+      onFilter: (value: string | number | boolean, record: Proj) => record.group === value,
     },
     {
       title: '合同状态',

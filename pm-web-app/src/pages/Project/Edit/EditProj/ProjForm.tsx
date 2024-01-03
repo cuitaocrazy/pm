@@ -391,7 +391,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       </Row>
       <Row>
         <Col span={8}>
-          <Form.Item label="项目分类" name="projectClass" rules={[{ required: false }]}>
+          <Form.Item label="项目分类" name="projectClass" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.projectClasses.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
@@ -402,7 +402,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目部门" name="group" rules={[{ required: false }]}>
+          <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.groups.map((u, index) => {
                 return (

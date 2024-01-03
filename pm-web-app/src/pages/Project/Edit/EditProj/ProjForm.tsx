@@ -279,7 +279,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     setIsDerive(true);
     form.setFieldValue('pId', data?.id);
     // 生成派生项目id
-    let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('MMDD')}`) || '1';
+    let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('YYYY')}`) || '1';
     onIdChange(newId);
   };
 

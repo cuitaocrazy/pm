@@ -32,7 +32,7 @@ function getIdInfo(id?: string) {
     zone: result?.groups?.zone || '',
     projType: result?.groups?.projType || '',
     simpleName: result?.groups?.simpleName || '',
-    dateCode: result?.groups?.dateCode || moment().format('MMDD'),
+    dateCode: result?.groups?.dateCode || moment().format('YYYY'),
   };
 }
 const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }) => {
@@ -146,7 +146,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
         />
         <Input
           key="dateCode"
-          addonBefore={'日期编号'}
+          addonBefore={'年度编号'}
           onChange={(e) => changeDateCode(e.target.value)}
           maxLength={4}
           value={info.dateCode}

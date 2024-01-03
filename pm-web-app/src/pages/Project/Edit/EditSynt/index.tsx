@@ -90,20 +90,11 @@ const Project: React.FC<any> = () => {
         <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{ text ? ((text - 0) / 8).toFixed(2) : 0 }</Tag></Button>,
     },
     {
-      title: '创建日期',
-      dataIndex: 'createDate',
-      key: 'createDate',
-      render: (createDate: string) => {
-        return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
-      },
-      width: 150,
-    },
-    {
       title: '更新时间',
       dataIndex: 'updateTime',
       key: 'updateTime',
       render: (updateTime: string) => {
-        return moment(updateTime, 'YYYYMMDD HH:mm:ss').format('YYYY年MM月DD日 HH:mm:ss');
+        return moment(updateTime, 'YYYYMMDD').format('YYYY年MM月DD日');
       },
       width: 200,
     },

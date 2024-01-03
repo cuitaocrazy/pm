@@ -419,7 +419,15 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
-            <Select disabled={!!data?.id && !isDerive} allowClear>
+            <Select disabled={!!data?.id && !isDerive} allowClear
+            showSearch
+            filterOption={(input, option) => {
+              const nameStr: any = option?.children || '';
+              if (input && nameStr) {
+                return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              }
+              return true;
+            }}>
               {resData?.subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -430,7 +438,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         </Col>
         <Col span={8}>
           <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
-            <Select allowClear>
+            <Select allowClear showSearch
+            filterOption={(input, option) => {
+              const nameStr: any = option?.children || '';
+              if (input && nameStr) {
+                return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              }
+              return true;
+            }}>
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}

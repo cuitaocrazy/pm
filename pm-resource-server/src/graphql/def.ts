@@ -412,6 +412,7 @@ const dataTypeDef = gql`
     eventLogs: [EventLog!]!
     projectClasses: [ProjectClass!]!
     groups: [String!]!
+    detailgroups: [String!]!
   }
 
   input DailyInput {

@@ -87,7 +87,7 @@ export function useProjStatus() {
   });
 
   const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
+    groups: ['/软件事业部/软件一部/市场组', '/软件事业部/软件二部/市场组', '/软件事业部/创新业务部/市场组'],
   } });
 
   const [deleteMarketHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteMarketArgs>(
@@ -98,7 +98,7 @@ export function useProjStatus() {
   );
 
   const [filter, setFilter] = useState('');
-    
+
   useEffect(() => {
     refresh();
     initialRefresh()
@@ -138,7 +138,7 @@ export function useProjStatus() {
     markets,
     subordinates,
     groupsUsers,
-    filter, 
+    filter,
     setFilter,
     refresh,
     deleteMarket,

@@ -96,7 +96,6 @@ const layout = {
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   //   role: 'engineer',
   // } });
@@ -104,8 +103,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     fetchPolicy: 'no-cache',
     variables: {
       groups: [
-        '/软件事业部/项目一部/市场组',
-        '/软件事业部/项目二部/市场组',
+        '/软件事业部/软件一部/市场组',
+        '/软件事业部/软件二部/市场组',
         '/软件事业部/创新业务部/市场组',
       ],
     },
@@ -279,7 +278,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     setIsDerive(true);
     form.setFieldValue('pId', data?.id);
     // 生成派生项目id
-    let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('YYYY')}`) || '1';
+    let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('MMDD')}`) || '1';
     onIdChange(newId);
   };
 
@@ -391,7 +390,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       </Row>
       <Row>
         <Col span={8}>
-          <Form.Item label="项目分类" name="projectClass" rules={[{ required: true }]}>
+          <Form.Item label="项目分类" name="projectClass" rules={[{ required: false }]}>
             <Select allowClear>
               {resData?.projectClasses.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
@@ -402,7 +401,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
+          <Form.Item label="项目部门" name="group" rules={[{ required: false }]}>
             <Select allowClear>
               {resData?.groups.map((u, index) => {
                 return (
@@ -419,15 +418,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
-            <Select disabled={!!data?.id && !isDerive} allowClear
-            showSearch
-            filterOption={(input, option) => {
-              const nameStr: any = option?.children || '';
-              if (input && nameStr) {
-                return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-              }
-              return true;
-            }}>
+            <Select disabled={!!data?.id && !isDerive} allowClear>
               {resData?.subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -438,14 +429,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         </Col>
         <Col span={8}>
           <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
-            <Select allowClear showSearch
-            filterOption={(input, option) => {
-              const nameStr: any = option?.children || '';
-              if (input && nameStr) {
-                return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-              }
-              return true;
-            }}>
+            <Select allowClear>
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}

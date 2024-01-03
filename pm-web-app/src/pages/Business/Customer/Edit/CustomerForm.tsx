@@ -47,8 +47,8 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
     fetchPolicy: 'no-cache',
     variables: {
       groups: [
-        '/软件事业部/项目一部/市场组',
-        '/软件事业部/项目二部/市场组',
+        '/软件事业部/软件一部/市场组',
+        '/软件事业部/软件二部/市场组',
         '/软件事业部/创新业务部/市场组',
       ],
     },

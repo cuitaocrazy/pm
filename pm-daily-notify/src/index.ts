@@ -1,20 +1,18 @@
-import arg from 'arg'
-import * as R from 'ramda'
-import moment from 'moment'
-import { Config, EmployeeDaily, IEmployeeDaily, client } from './mongodb'
-import { Users } from './keycloak'
-import { getWorkDays } from './util/utils'
-import { DailyInfo, UserInfo } from './data'
-import { transporter, sendEmails } from './emailer'
-// console.log(moment('20231109', 'YYYYMMDD').valueOf())
-const afterTimestamp = 1699459200000  //2023年11月09日的时间戳，忽略2023年11月10日之前的日报
+import arg from "arg";
+import * as R from "ramda";
+import moment from "moment";
+import { Config, EmployeeDaily, IEmployeeDaily, client } from "./mongodb";
+import { Users } from "./keycloak";
+import { getWorkDays } from "./util/utils";
+import { DailyInfo, UserInfo } from "./data";
+import { transporter, sendEmails } from "./emailer";
+// console.log(moment('20240107', 'YYYYMMDD').valueOf())
+const afterTimestamp = 1673020800000; //2024年1月07日的时间戳，忽略2024年1月7日之前的日报
 
 const getConfigData = async (configId: string): Promise<string[]> => {
-  const config = await Config.findOne({ _id: configId })
-  return R.isNil(config)
-    ? []
-    : config.data
-}
+  const config = await Config.findOne({ _id: configId });
+  return R.isNil(config) ? [] : config.data;
+};
 
 const getEmpDailiesData = async (year: string): Promise<IEmployeeDaily[]> => {
   const dailies = await EmployeeDaily.aggregate([
@@ -23,65 +21,81 @@ const getEmpDailiesData = async (year: string): Promise<IEmployeeDaily[]> => {
         _id: 1,
         dailies: {
           $filter: {
-            input: '$dailies',
-            as: 'd',
-            cond: { $regexMatch: { input: '$$d.date', regex: `^${year}.*` } },
+            input: "$dailies",
+            as: "d",
+            cond: { $regexMatch: { input: "$$d.date", regex: `^${year}.*` } },
           },
         },
       },
     },
-  ]).toArray()
+  ]).toArray();
   if (R.isEmpty(dailies)) {
-    return []
+    return [];
   } else {
-    return dailies
+    return dailies;
   }
-}
+};
 
 export const getUsers = async (): Promise<UserInfo[]> => {
   const users = await Users()
-    .then(users => users.find())
-    .then(R.map((u: any) => ({ id: u.username, name: u.lastName + u.firstName, email: u.email, createdTimestamp: u.createdTimestamp })))
-    .then(R.filter((u: any) => R.not(R.isNil(u.email))))
-  return users
-}
+    .then((users) => users.find())
+    .then(
+      R.map((u: any) => ({
+        id: u.username,
+        name: u.lastName + u.firstName,
+        email: u.email,
+        createdTimestamp: u.createdTimestamp,
+      }))
+    )
+    .then(R.filter((u: any) => R.not(R.isNil(u.email))));
+  return users;
+};
 
 export const getNoDailyDates = (workdays: string[], dailies: DailyInfo[]) =>
-  workdays.filter(date => R.isNil(R.find(R.propEq('date', date), dailies)))
+  workdays.filter((date) => R.isNil(R.find(R.propEq("date", date), dailies)));
 
-async function main (year: number) {
+async function main(year: number) {
   try {
-    const workCalendar = await getConfigData('workCalendar')
-    const empDailies = await getEmpDailiesData(`${year}`)
+    const workCalendar = await getConfigData("workCalendar");
+    const empDailies = await getEmpDailiesData(`${year}`);
 
-    const users = await getUsers()
+    const users = await getUsers();
     const mails = users
-      .map(user => ({
+      .map((user) => ({
         name: user.name,
         email: user.email,
-        dates: getNoDailyDates(getWorkDays(year, workCalendar), R.find(R.propEq('_id', user.id), empDailies)?.dailies || [])
-          .filter(date => R.isNil(user.createdTimestamp) || moment(date, 'YYYYMMDD').isAfter(moment(user.createdTimestamp)))
-          .filter(date => moment(date, 'YYYYMMDD').isAfter(moment(afterTimestamp))), // 在次日期前的日报不提醒
+        dates: getNoDailyDates(
+          getWorkDays(year, workCalendar),
+          R.find(R.propEq("_id", user.id), empDailies)?.dailies || []
+        )
+          .filter(
+            (date) =>
+              R.isNil(user.createdTimestamp) ||
+              moment(date, "YYYYMMDD").isAfter(moment(user.createdTimestamp))
+          )
+          .filter((date) =>
+            moment(date, "YYYYMMDD").isAfter(moment(afterTimestamp))
+          ), // 在次日期前的日报不提醒
       }))
-      .filter(mail => R.not(R.isNil(mail.email)))
-      .filter(mail => R.not(R.isEmpty(mail.dates)))
+      .filter((mail) => R.not(R.isNil(mail.email)))
+      .filter((mail) => R.not(R.isEmpty(mail.dates)));
 
-    const verify = await transporter.verify()
+    const verify = await transporter.verify();
     if (verify) {
-      sendEmails(mails)
+      sendEmails(mails);
     } else {
-      console.error('Verifies SMTP configuration failed!')
-      process.exitCode = 1
+      console.error("Verifies SMTP configuration failed!");
+      process.exitCode = 1;
     }
   } catch (error) {
-    console.error(error)
-    process.exitCode = 1
+    console.error(error);
+    process.exitCode = 1;
   } finally {
-    await client.close()
+    await client.close();
   }
 }
 
-const args = arg({ '--year': Number })
-const year = args['--year'] || moment().year()
+const args = arg({ "--year": Number });
+const year = args["--year"] || moment().year();
 
-main(year)
+main(year);

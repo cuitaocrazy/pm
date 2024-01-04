@@ -12,7 +12,6 @@ type DailiesProps = {
 
 const getItem = (date: string, users: ProjectOfDailyItem[]) => {
   if (R.not(R.isEmpty(users))) {
-    console.log('test')
     return (
       <Timeline.Item key={date} color="green">
         <h3>{moment(date, 'YYYYMMDD').format('YYYY年MM月DD日')}</h3>

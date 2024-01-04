@@ -68,7 +68,7 @@ const layout = {
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    groups: ['/软件事业部/项目一部/市场组', '/软件事业部/项目二部/市场组', '/软件事业部/创新业务部/市场组'],
+    groups: ['/软件事业部/软件一部/市场组', '/软件事业部/软件二部/市场组', '/软件事业部/创新业务部/市场组'],
   } });
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs >(QueryDaily, { fetchPolicy: 'no-cache', variables: {
     projId: data?.id || '',
@@ -125,7 +125,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
     return e?.fileList;
   };
- 
+
   const validator = (rule: any, value: string) => {
     const result = reg.exec(value);
     setProjType(result?.groups?.projType || '')
@@ -263,12 +263,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
     return tempFields;
   }
-  
+
   return (
-    <Form 
-      {...layout} 
-      form={form} 
-      initialValues={data || { leader: initialState?.currentUser?.id }} 
+    <Form
+      {...layout}
+      form={form}
+      initialValues={data || { leader: initialState?.currentUser?.id }}
       disabled={data?.status === 'endProj'}
     >
       <Form.Item shouldUpdate noStyle>
@@ -426,9 +426,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                           style={{ textAlign: 'left' }}
                         >
                           <Upload
-                            { ...props } 
+                            { ...props }
                             defaultFileList={
-                              form.getFieldValue('actives') ? 
+                              form.getFieldValue('actives') ?
                               form.getFieldValue('actives')[field.name]?.fileList as UploadFile[] : []
                             }
                           >

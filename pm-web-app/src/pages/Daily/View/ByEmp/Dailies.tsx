@@ -81,9 +81,6 @@ const queryGql = gql`
     }
   }
 `;
-type Args = {
-  date:Date
-}
 const DailiesPage: React.FC<DailiesProps> = (props) => {
   const { date, dailies, workCalendar } = props;
   const { buildProjName } = useBaseState();
@@ -98,7 +95,6 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
     })
     .then((r:any) => {
       const { actives, ...pro } = r.data.findOneProjectById;
-      console.log(actives,'actives===')
       const agree = projectAgreements.filter(item => item.id === r.data.findOneProjectById.id)
       detailRef.current?.showDialog({ 
         ...pro,

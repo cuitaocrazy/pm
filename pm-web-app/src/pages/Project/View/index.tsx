@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef } from 'react';
-import { Table, Tag, Input, Space, ButtonProps } from 'antd';
+import { Table, Tag, Input, ButtonProps } from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -19,7 +19,6 @@ const Project: React.FC<any> = () => {
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
-    console.log(proj,'pro=======')
     detailRef.current?.showDialog({ 
       ...pro,
       contName: agree.length ? agree[0].agreementId : '', 

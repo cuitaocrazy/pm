@@ -488,7 +488,8 @@ export type Query = {
   marketsBySuper: Market[];
   marketPlans: MarketPlan[];
   marketPlansBySuper: MarketPlan[];
-  eventLogs: EventLog[]
+  eventLogs: EventLog[];
+  findOneProjectById:Project;
 
 };
 
@@ -499,6 +500,9 @@ export type QueryProjectArgs = {
 export type QueryFilterProjectArgs = {
   projType: Scalars['String'];
 };
+export type QueryFilterProjectByIdArgs = {
+  id:Scalars['String']
+}
 
 export type QueryEmpDailyArgs = {
   userId: Scalars['String'];

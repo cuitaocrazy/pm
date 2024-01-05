@@ -19,6 +19,7 @@ const Project: React.FC<any> = () => {
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
+    console.log(proj,'pro=======')
     detailRef.current?.showDialog({ 
       ...pro,
       contName: agree.length ? agree[0].agreementId : '', 

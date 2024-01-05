@@ -90,7 +90,7 @@ const Project: React.FC<any> = () => {
         <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{ text ? ((text - 0) / 8).toFixed(2) : 0 }</Tag></Button>,
     },
     {
-      title: '更新时间',
+      title: '更新日期',
       dataIndex: 'updateTime',
       key: 'updateTime',
       render: (updateTime: string) => {

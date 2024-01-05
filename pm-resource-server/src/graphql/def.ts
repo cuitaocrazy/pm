@@ -413,6 +413,7 @@ const dataTypeDef = gql`
     projectClasses: [ProjectClass!]!
     groups: [String!]!
     detailgroups: [String!]!
+    findOneProjectById(id: String!): Project!
   }
 
   input DailyInput {

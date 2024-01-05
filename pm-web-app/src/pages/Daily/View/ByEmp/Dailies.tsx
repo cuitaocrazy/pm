@@ -136,7 +136,7 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
               <Card.Meta
                 title={`${buildProjName(proj.project.id, proj.project.name)}(${
                   proj.timeConsuming
-                }h)1`}
+                }h)`}
                 description={<div style={{ whiteSpace: 'pre-wrap' }}>{proj.content}</div>}
               />
             </Card>
@@ -154,7 +154,7 @@ const DailiesPage: React.FC<DailiesProps> = (props) => {
                     style={{ color: '#1890ff', cursor: 'pointer' }}
                   >{`${buildProjName(proj.project.id, proj.project.name)}(${
                     proj.timeConsuming
-                  }h)2`}</span>
+                  }h)`}</span>
                 }
                 description={<div style={{ whiteSpace: 'pre-wrap' }}>{proj.content}</div>}
               />

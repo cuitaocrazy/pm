@@ -291,9 +291,9 @@ const Project: React.FC<any> = () => {
           allowClear
           onChange={(e) => setFilter(e.target.value)}
         />,
-        <Button key="create" type="primary" onClick={() => ref.current?.showDialog()}>
-          新建
-        </Button>
+        // <Button key="create" type="primary" onClick={() => ref.current?.showDialog()}>
+        //   新建
+        // </Button>
       ]}
     >
       <Table

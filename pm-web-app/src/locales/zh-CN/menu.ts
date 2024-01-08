@@ -24,6 +24,7 @@ export default {
   'menu.synthetical.empExpense': '员工费用',
   'menu.project': '项目管理',
   'menu.project.allEdit': '全部项目',
+  'menu.project.establishPro':'项目立项',
   'menu.project.edit': '项目维护',
   'menu.project.editSalesActive': '售前活动',
   'menu.project.editAfterSalesActive': '售后活动',

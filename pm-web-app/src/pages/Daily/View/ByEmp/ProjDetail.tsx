@@ -187,8 +187,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           <Descriptions.Item label="实际费用:">{ data?.actualFee }</Descriptions.Item>
           <Descriptions.Item label="预算成本:">{ data?.budgetCost }</Descriptions.Item>
           <Descriptions.Item label="采购成本:">{ data?.actualCost }</Descriptions.Item> */}
-          <Descriptions.Item label="预估工作量:">{data?.estimatedWorkload}</Descriptions.Item>
-          {projType === 'SQ' || projType === 'SH' ? '' :
+          {projType !== 'ZH' ?
+            <Fragment>
+              <Descriptions.Item label="预估工作量:">{data?.estimatedWorkload}</Descriptions.Item>
+            </Fragment>
+            : ''}
+
+          {projType === 'SQ' || projType === 'SH' || projType === 'ZH' ? '' :
             <Fragment>
               <Descriptions.Item> </Descriptions.Item>
               <Descriptions.Item label="投产日期:">{data?.productDate ? moment(data?.productDate).format('YYYY-MM-DD') : ''}</Descriptions.Item>
@@ -206,7 +211,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               <Descriptions.Item label="服务周期:">{data?.serviceCycle}</Descriptions.Item>
             </Fragment> : ''
           }
-          <Descriptions.Item> </Descriptions.Item>
+          {/* <Descriptions.Item> </Descriptions.Item> */}
           <Descriptions.Item label="项目描述:" span={3}>{data?.description}</Descriptions.Item>
         </Descriptions>
       </Tabs.TabPane>

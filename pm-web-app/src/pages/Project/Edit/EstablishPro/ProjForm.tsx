@@ -963,7 +963,7 @@ export default () => {
       <Button onClick={()=>form.resetFields()} style={{float: 'right'}}>重置</Button>
       <Button onClick={async ()=>{form
           .validateFields()
-          .then(()=>pushProj).then(()=>
+          .then(pushProj).then(()=>
             messageApi.open({
             type: 'success',
             content: '新增成功！',

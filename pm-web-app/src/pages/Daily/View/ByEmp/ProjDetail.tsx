@@ -172,7 +172,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               <Descriptions.Item label="启动日期:">{
                 data?.startTime ? moment(data?.startTime).format('YYYY-MM-DD') : ''
               }</Descriptions.Item>
-              <Descriptions.Item label="关闭日期:">{
+              <Descriptions.Item label="结束日期:">{
                 data?.endTime ? moment(data?.endTime).format('YYYY-MM-DD') : ''
               }</Descriptions.Item>
             </Fragment>

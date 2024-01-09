@@ -23,7 +23,7 @@ const Project: React.FC<any> = () => {
 
   const { projs, todoProjs, subordinates, customers, projectAgreements, loading, archive,
     setArchive, setFilter, archiveProj, deleteProj, pushProj } = useProjStatus();
-  const { status, orgCode, zoneCode, projType, buildProjName,groupType } = useBaseState();
+  const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
 
   const editHandle = (proj: Proj, openRef: any) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
@@ -95,7 +95,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'status',
       key: 'status',
       width: '120px',
-      render: (status: string) => <Tag color={ status ? status === 'onProj' ? "success" : 'default' : 'warning' }>{ getStatusDisplayName(status) }</Tag> ,
+      render: (status: string) => <Tag color={status ? status === 'onProj' ? "success" : 'default' : 'warning'}>{getStatusDisplayName(status)}</Tag>,
       filters: projStatus.map((s) => ({ text: s[1], value: s[0] })),
       onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
     },
@@ -104,24 +104,24 @@ const Project: React.FC<any> = () => {
       dataIndex: 'group',
       key: 'group',
       width: '200px',
-      render: (status: string) =>  {
-        let name = status&&status.split('/')[2];
+      render: (status: string) => {
+        let name = status && status.split('/')[2];
         return name;
       },
       filters: groupType.map((s) => ({ text: s.toString().split('/')[2], value: s })),
       onFilter: (value: string | number | boolean, record: Proj) => record.group === value,
     },
-//{
-//   text: '部门',
-//   value: 'groupType',
-//   children: Object.keys(groupType).map((s) => ({ text: groupType[s], value: s })),
-// },
+    //{
+    //   text: '部门',
+    //   value: 'groupType',
+    //   children: Object.keys(groupType).map((s) => ({ text: groupType[s], value: s })),
+    // },
     {
       title: '预算人天',
       dataIndex: 'estimatedWorkload',
       key: 'estimatedWorkload',
       width: '80px',
-      render: (text: string, record: Proj) => <Tag color="cyan">{ text ? text : 0 }</Tag>,
+      render: (text: string, record: Proj) => <Tag color="cyan">{text ? text : 0}</Tag>,
     },
     {
       title: '实际人天',
@@ -129,7 +129,7 @@ const Project: React.FC<any> = () => {
       key: 'timeConsuming',
       width: '80px',
       render: (text: number, record: Proj) =>
-        <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{ text ? ((text - 0) / 8).toFixed(2) : 0 }</Tag></Button>,
+        <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{text ? ((text - 0) / 8).toFixed(2) : 0}</Tag></Button>,
     },
     {
       title: '客户名称',
@@ -138,7 +138,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return customers.find((cum) => cum.id === record.customer)?.name;
       },
-      width:150,
+      width: 150,
     },
     {
       title: '项目状态',
@@ -147,7 +147,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.projStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     {
       title: '合同状态',
@@ -156,7 +156,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.contStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     {
       title: '验收状态',
@@ -165,7 +165,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.acceStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     // {
     //   title: '合同金额(元)',
@@ -239,7 +239,7 @@ const Project: React.FC<any> = () => {
       key: 'action',
       render: (id: string, record: Proj) => (
         <Space>
-          <a key="archive" onClick={() => {editHandle(record, activeRef)}}>
+          <a key="archive" onClick={() => { editHandle(record, activeRef) }}>
             添加项目活动
           </a>
           <Popconfirm title="将项目数据归档，只能到归档列表查看！" okText="是" cancelText="否" onConfirm={() => archiveProj(record.id)}>
@@ -259,7 +259,7 @@ const Project: React.FC<any> = () => {
     },
   ];
 
-  if (!isAdmin&&archive === "2") {
+  if (!isAdmin && archive === "2") {
     columns.splice(2, 0, {
       title: '待办内容',
       dataIndex: 'todoTip',
@@ -274,7 +274,7 @@ const Project: React.FC<any> = () => {
       extra={[
         <Radio.Group key="archive" value={archive} onChange={e => setArchive(e.target.value)}>
           <Radio.Button value="0">项目</Radio.Button>
-          {isAdmin?
+          {isAdmin ?
             <Radio.Button value="1">归档项目</Radio.Button>
             :
             <Radio.Button value="2">
@@ -300,7 +300,7 @@ const Project: React.FC<any> = () => {
         loading={loading}
         rowKey={(record) => record.id}
         columns={columns}
-        dataSource={ !isAdmin&&archive === "2" ? todoProjs : projs}
+        dataSource={!isAdmin && archive === "2" ? todoProjs : projs}
         scroll={{ x: 1500 }}
         size="middle"
       />

@@ -140,7 +140,7 @@ export default () => {
   if (queryData && queryData.allProjDaily.dailies.length) {
     const employeesSet = new Set<string>([]);
     forEach(
-      (item:any) => forEach((chItem:any) => employeesSet.add(chItem.employee.id), item.dailyItems),
+      (item: any) => forEach((chItem: any) => employeesSet.add(chItem.employee.id), item.dailyItems),
       queryData.allProjDaily.dailies,
     );
     employeeIds = [...employeesSet];
@@ -336,14 +336,14 @@ export default () => {
 
   return (
     <Form
-    style={{background:'#fff'}}
+      style={{ background: '#fff' }}
       {...layout}
       form={form}
       // initialValues={data || { leader: initialState?.currentUser?.id }}
       initialValues={{ leader: initialState?.currentUser?.id }}
-      // disabled={data?.status === 'endProj'}
+    // disabled={data?.status === 'endProj'}
     >
-      <Form.Item   shouldUpdate noStyle>
+      <Form.Item shouldUpdate noStyle>
         {() => {
           return (
             <Row>
@@ -358,14 +358,14 @@ export default () => {
                   <Input disabled />
                 </Form.Item>
                 <Form.Item
-                style={{marginTop:'40px'}}
+                  style={{ marginTop: '40px' }}
                   labelCol={{ span: 3, offset: 0 }}
                   label="ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >
                   {/* disabled={!!data?.id && !isDerive} */}
-                  <ProjIdComponent  onChange={onIdChange} />
+                  <ProjIdComponent onChange={onIdChange} />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={4}>
@@ -374,7 +374,7 @@ export default () => {
                   // hidden={!data?.id || isDerive}
                   hidden={!false || isDerive}
                   type="primary"
-                  // onClick={deriveNewProject}
+                // onClick={deriveNewProject}
                 >
                   派生一个新项目
                 </Button>
@@ -438,16 +438,16 @@ export default () => {
       <Row>
         <Col span={8}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
-          {/* disabled={!!data?.id && !isDerive} */}
-            <Select  allowClear
-            showSearch
-            filterOption={(input, option) => {
-              const nameStr: any = option?.children || '';
-              if (input && nameStr) {
-                return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-              }
-              return true;
-            }}>
+            {/* disabled={!!data?.id && !isDerive} */}
+            <Select allowClear
+              showSearch
+              filterOption={(input, option) => {
+                const nameStr: any = option?.children || '';
+                if (input && nameStr) {
+                  return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                }
+                return true;
+              }}>
               {resData?.subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -459,13 +459,13 @@ export default () => {
         <Col span={8}>
           <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
             <Select allowClear showSearch
-            filterOption={(input, option) => {
-              const nameStr: any = option?.children || '';
-              if (input && nameStr) {
-                return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-              }
-              return true;
-            }}>
+              filterOption={(input, option) => {
+                const nameStr: any = option?.children || '';
+                if (input && nameStr) {
+                  return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                }
+                return true;
+              }}>
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -545,7 +545,7 @@ export default () => {
         </Col>
         <Col span={8}>
           <Form.Item
-            label="关闭日期"
+            label="结束日期"
             name="endTime"
             rules={[{ required: stageStatus === 'endProj' ? true : false }]}
             getValueProps={(value) => ({
@@ -783,7 +783,7 @@ export default () => {
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Form.Item>
-                {/* data?.status === 'endProj' */}
+                  {/* data?.status === 'endProj' */}
                   {false ? (
                     ''
                   ) : (
@@ -883,7 +883,7 @@ export default () => {
                             defaultFileList={
                               form.getFieldValue('actives')
                                 ? (form.getFieldValue('actives')[field.name]
-                                    ?.fileList as UploadFile[])
+                                  ?.fileList as UploadFile[])
                                 : []
                             }
                           >
@@ -893,7 +893,7 @@ export default () => {
                       </Col>
                     </Row>
                     <div style={{ textAlign: 'center' }}>
-                    {/* data?.status === 'endProj' */}
+                      {/* data?.status === 'endProj' */}
                       {false ? (
                         ''
                       ) : (
@@ -959,17 +959,19 @@ export default () => {
           </Form.List>
         </Col>
       </Row>
-      <div  style={{paddingBottom: '40px',paddingRight:'20px'}} >
-      <Button onClick={()=>form.resetFields()} style={{float: 'right'}}>重置</Button>
-      <Button onClick={async ()=>{form
-          .validateFields()
-          .then(pushProj).then(()=>
-            messageApi.open({
-            type: 'success',
-            content: '新增成功！',
-            duration:2
-          })).then(()=>form.resetFields()).catch((error) => {})}} style={{marginRight:'20px',float: 'right'}} type="primary">提交</Button>
-      <div style={{clear:'both'}}></div>
+      <div style={{ paddingBottom: '40px', paddingRight: '20px' }} >
+        <Button onClick={() => form.resetFields()} style={{ float: 'right' }}>重置</Button>
+        <Button onClick={async () => {
+          form
+            .validateFields()
+            .then(pushProj).then(() =>
+              messageApi.open({
+                type: 'success',
+                content: '新增成功！',
+                duration: 2
+              })).then(() => form.resetFields()).catch((error) => { })
+        }} style={{ marginRight: '20px', float: 'right' }} type="primary">提交</Button>
+        <div style={{ clear: 'both' }}></div>
       </div>
       {contextHolder}
     </Form>

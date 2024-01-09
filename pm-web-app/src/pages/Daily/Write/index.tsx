@@ -19,14 +19,13 @@ const dateFormat = 'YYYYMMDD';
 
 function Dailies(prop: { date?: string }) {
   const hookStatus = useDailiesStatus(prop.date);
-  const involvedProj = hookStatus.currentDaily?.dailyItems?.filter(d => 
-    !(d.project.id.indexOf('-ZH-') >-1) && d.project.participants.includes(hookStatus.userId || ''))
-  const unInvolvedProj = hookStatus.currentDaily?.dailyItems?.filter(d => 
-    !(d.project.id.indexOf('-ZH-') >-1) && !d.project.participants.includes(hookStatus.userId || ''))
-  const syntPro = hookStatus.currentDaily?.dailyItems?.filter(d => 
-    (d.project.id.indexOf('-ZH-') >-1) )
-
-  const  onShowTypeChange = (e: any) =>  hookStatus.setShowType(e.target.value)
+  const involvedProj = hookStatus.currentDaily?.dailyItems?.filter(d =>
+    !(d.project.id.indexOf('-ZH-') > -1) && (d.project.participants.includes(hookStatus.userId || '') || d.project.leader.includes(hookStatus.userId || '') || d.project.salesLeader.includes(hookStatus.userId || '')))
+  const unInvolvedProj = hookStatus.currentDaily?.dailyItems?.filter(d =>
+    !(d.project.id.indexOf('-ZH-') > -1) && (!d.project.participants.includes(hookStatus.userId || '') || !d.project.leader.includes(hookStatus.userId || '') || !d.project.salesLeader.includes(hookStatus.userId || '')))
+  const syntPro = hookStatus.currentDaily?.dailyItems?.filter(d =>
+    (d.project.id.indexOf('-ZH-') > -1))
+  const onShowTypeChange = (e: any) => hookStatus.setShowType(e.target.value)
   const onHoursChange = (id: string) => (h: number) => {
     let i = hookStatus.currentDaily?.dailyItems.findIndex(p => p.project.id === id)
     hookStatus.setCurrentDaily(
@@ -63,7 +62,7 @@ function Dailies(prop: { date?: string }) {
         involvedProj={d.project.participants.includes(hookStatus.userId || '')}
         endedProj={d.project.status === 'endProj'}
       />
-  ));
+    ));
 
   const onCalendarSelect = (value: Moment) => {
     value && hookStatus.setCurrentDate(value.format(dateFormat))
@@ -73,7 +72,7 @@ function Dailies(prop: { date?: string }) {
     let allTime = null
     const dailie = R.find((v) => v.date === value.format(dateFormat), hookStatus.dailies)
     if (dailie) {
-      allTime =  R.sum(R.map((d) => d.timeConsuming, dailie.dailyItems))
+      allTime = R.sum(R.map((d) => d.timeConsuming, dailie.dailyItems))
     }
     return allTime
   };
@@ -98,7 +97,7 @@ function Dailies(prop: { date?: string }) {
         <Button
           key="submit"
           onClick={() => {
-            let noneLen = hookStatus.currentDaily.dailyItems.filter((p) => !!p.timeConsuming !==  !!p.content).length
+            let noneLen = hookStatus.currentDaily.dailyItems.filter((p) => !!p.timeConsuming !== !!p.content).length
             if (noneLen) {
               message.info('工时和工作内容请填写完整')
               return
@@ -162,8 +161,8 @@ function Dailies(prop: { date?: string }) {
                       R.always(
                         <div style={{ textAlign: 'center' }}>
                           <Badge count="班"></Badge>
-                          { getDateNumabet(date) ? 
-                            <div> { getDateNumabet(date) }h</div>:
+                          {getDateNumabet(date) ?
+                            <div> {getDateNumabet(date)}h</div> :
                             <div><ClockCircleOutlined style={{ color: 'red' }} /></div>
                           }
                         </div>,
@@ -174,8 +173,8 @@ function Dailies(prop: { date?: string }) {
                       R.always(
                         <div style={{ textAlign: 'center' }}>
                           <Badge count="休" style={{ backgroundColor: '#52c41a' }}></Badge>
-                          { getDateNumabet(date) ? 
-                            <div> { getDateNumabet(date) }h</div> : <div></div>
+                          {getDateNumabet(date) ?
+                            <div> {getDateNumabet(date)}h</div> : <div></div>
                           }
                         </div>,
                       ),
@@ -185,8 +184,8 @@ function Dailies(prop: { date?: string }) {
                       R.always(
                         <div style={{ textAlign: 'center' }}>
                           <Badge count="休" style={{ backgroundColor: '#52c41a' }}></Badge>
-                          { getDateNumabet(date) ? 
-                            <div> { getDateNumabet(date) }h</div> : <div></div>
+                          {getDateNumabet(date) ?
+                            <div> {getDateNumabet(date)}h</div> : <div></div>
                           }
                         </div>,
                       ),
@@ -196,7 +195,7 @@ function Dailies(prop: { date?: string }) {
                       R.always(
                         <div style={{ textAlign: 'center' }}>
                           <ClockCircleOutlined style={{ color: 'green' }} />
-                          <div> { getDateNumabet(date) }h</div>
+                          <div> {getDateNumabet(date)}h</div>
                         </div>,
                       ),
                     ],
@@ -207,7 +206,7 @@ function Dailies(prop: { date?: string }) {
             </ProCard>
           </Col>
           <Col xs={24} sm={16}>
-            <ProCard 
+            <ProCard
               bordered
               headStyle={{ display: 'block' }}
               bodyStyle={{ padding: '12px' }}
@@ -224,15 +223,15 @@ function Dailies(prop: { date?: string }) {
                   <Col span={6}></Col>
                   <Col span={10}>
                     <Radio.Group style={{ marginBottom: 8 }} onChange={onShowTypeChange} value={hookStatus.showType}>
-                      <Radio.Button value="0">涉及({ involvedProj.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
-                      <Radio.Button value="1">未涉及({ unInvolvedProj.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
-                      <Radio.Button value="2">日常({ syntPro.reduce((prev, cur) => prev + cur.timeConsuming, 0) }h)</Radio.Button>
+                      <Radio.Button value="0">涉及({involvedProj.reduce((prev, cur) => prev + cur.timeConsuming, 0)}h)</Radio.Button>
+                      <Radio.Button value="1">未涉及({unInvolvedProj.reduce((prev, cur) => prev + cur.timeConsuming, 0)}h)</Radio.Button>
+                      <Radio.Button value="2">日常({syntPro.reduce((prev, cur) => prev + cur.timeConsuming, 0)}h)</Radio.Button>
                     </Radio.Group>
                   </Col>
                 </Row>
               }
-              >
-              { list(hookStatus.showType) }
+            >
+              {list(hookStatus.showType)}
             </ProCard>
           </Col>
         </Row>

@@ -32,6 +32,8 @@ const myQuery = gql`
       name
       participants
       status
+      leader
+      salesLeader
     }
   }
 `;

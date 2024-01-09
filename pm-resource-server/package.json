@@ -1,6 +1,6 @@
 {
   "name": "pm-resource-server",
-  "version": "1.0.113",
+  "version": "1.0.114",
   "main": "index.js",
   "license": "MIT",
   "private": "true",

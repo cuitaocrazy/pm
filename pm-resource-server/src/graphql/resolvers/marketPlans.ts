@@ -1,18 +1,34 @@
 import moment from "moment";
 import { isNil } from "ramda";
-import { AuthContext } from "../../auth/oauth";
+import { AuthContext, getUsersByGroups } from "../../auth/oauth";
 import { MarketPlan } from "../../mongodb";
 import { ObjectId } from "mongodb";
-import { dbid2id, id2dbid } from "../../util/utils";
+import { dbid2id, id2dbid, getMaxGroup } from "../../util/utils";
 export default {
   Query: {
     marketPlansBySuper: (_: any, __: any, context: AuthContext) =>
       MarketPlan.find().sort({ week: -1 }).map(dbid2id).toArray(),
-    marketPlans: (_: any, __: any, context: AuthContext) =>
-      MarketPlan.find({ leader: context.user!.id })
+    marketPlans: async (_: any, __: any, context: AuthContext) => {
+      const user = context.user!;
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
+      }
+
+      return MarketPlan.find({
+        $or: [
+          { leader: context.user!.id },
+          { leader: { $in: subordinateIds } },
+        ],
+      })
         .sort({ week: -1 })
         .map(dbid2id)
-        .toArray(),
+        .toArray();
+    },
   },
   Mutation: {
     pushMarketPlan: async (_: any, args: any, context: AuthContext) => {

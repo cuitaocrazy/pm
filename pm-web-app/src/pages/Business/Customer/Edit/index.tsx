@@ -26,6 +26,7 @@ const Customer: React.FC<any> = () => {
       industryCode: customer.industryCode,
       regionCode: customer.regionCode,
       salesman: customer.salesman,
+      officeAddress: customer.officeAddress,
       contacts: customer.contacts,
       enable: !customer.enable,
       remark: customer.remark,
@@ -64,18 +65,27 @@ const Customer: React.FC<any> = () => {
       render: (text: string, record: CustomerType) => {
         // console.log(typeof record.salesman)
         let name = ''
-        if(typeof record.salesman === 'string'){
+        if (typeof record.salesman === 'string') {
           record.salesman = [record.salesman]
         }
-        record.salesman.map((item,index)=>{
-          if(index !== record.salesman.length-1){
-            name+=subordinates.find((user) => user.id === item)?.name+','
-          }else{
-            name+=subordinates.find((user) => user.id === item)?.name
+        record.salesman.map((item, index) => {
+          if (index !== record.salesman.length - 1) {
+            name += subordinates.find((user) => user.id === item)?.name + ','
+          } else {
+            name += subordinates.find((user) => user.id === item)?.name
           }
         })
         return name;
       },
+    },
+    {
+      title: '办公地址',
+      dataIndex: 'officeAddress',
+      key: 'officeAddress',
+      render: (text: string, record: CustomerType) => (
+        <a onClick={() => editHandle(record)}>{record.officeAddress}</a>
+      ),
+      width: '20%',
     },
     {
       title: '备注',
@@ -134,7 +144,7 @@ const Customer: React.FC<any> = () => {
         key: 'tags',
         render: (text: string, record: CustomerContact) => {
           const tagMap = record.tags.map(tag => {
-            return <Tag color="cyan" key={tag}>{ tag }</Tag>
+            return <Tag color="cyan" key={tag}>{tag}</Tag>
           })
           return tagMap
         },
@@ -147,7 +157,13 @@ const Customer: React.FC<any> = () => {
           return subordinates.find((user) => user.id === record.recorder)?.name;
         },
         width: '15%',
-      }
+      },
+      {
+        title: '备注',
+        dataIndex: 'remark',
+        key: 'remark',
+        width: '30%'
+      },
     ];
 
     const data = record.contacts.map(cont => {
@@ -155,7 +171,7 @@ const Customer: React.FC<any> = () => {
       return { key: name + phone, name, phone, tags, recorder }
     })
 
-    return <Table columns={expandedColumns} dataSource={data} pagination={false} size="middle"/>
+    return <Table columns={expandedColumns} dataSource={data} pagination={false} size="middle" />
   };
   const rowExpandable = (record: CustomerType) => {
     return record.contacts.length ? true : false
@@ -171,7 +187,8 @@ const Customer: React.FC<any> = () => {
               name: '',
               industryCode: '',
               regionCode: '',
-              salesman: ['25070008','25080004'],
+              salesman: ['25070008', '25080004'],
+              officeAddress: '',
               contacts: [],
               enable: true,
               remark: '',

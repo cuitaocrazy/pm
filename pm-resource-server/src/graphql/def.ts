@@ -243,6 +243,7 @@ const dataTypeDef = gql`
     regionCode: String!
     salesman: [String!]!
     contacts: [CustomerContact!]!
+    officeAddress:String
     enable: Boolean!
     remark: String!
     isDel: Boolean!
@@ -254,6 +255,7 @@ const dataTypeDef = gql`
     phone: String!
     tags: [String!]
     recorder: String
+    remark: String
   }
 
   type File {
@@ -539,6 +541,7 @@ const dataTypeDef = gql`
     industryCode: String!
     regionCode: String!
     salesman: [String!]!
+    officeAddress:String
     contacts: [CustomerContactInput!]
     enable: Boolean!
     remark: String!

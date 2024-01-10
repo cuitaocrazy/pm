@@ -327,7 +327,7 @@ export type QueryProjectArgs = {
 
 export type QueryFilterProjectArgs = {
   isAdmin?: Scalars['Boolean'];
-  customerId? : Scalars['String'];
+  customerId?: Scalars['String'];
   org?: Scalars['String'];
   projType?: Scalars['String'];
   type?: Scalars['String'];
@@ -466,6 +466,7 @@ export type CustomerInput = {
   industryCode: Scalars['String'];
   regionCode: Scalars['String'];
   salesman: Scalars['String'];
+  officeAddress: Scalars['String'];
   contacts: CustomerContactInput[];
   remark: Scalars['String'];
   enable: Scalars['Boolean'];
@@ -475,6 +476,7 @@ export type CustomerContactInput = {
   name: Scalars['String'];
   phone: Maybe<Scalars['String']>;
   tags: Scalars['String'][];
+  remark: Scalars['String'];
 };
 
 export type FileInput = {

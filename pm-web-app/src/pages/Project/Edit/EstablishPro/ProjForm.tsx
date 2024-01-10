@@ -384,19 +384,19 @@ export default () => {
         }}
       </Form.Item>
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="项目名称" name="name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item dependencies={['id']} noStyle>
             {() => {
               return getCustomers('customer', '客户名称');
             }}
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
             <Select disabled allowClear>
               {resData?.agreements.map((u) => (
@@ -409,7 +409,7 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="项目分类" name="projectClass" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.projectClasses.map((u) => (
@@ -420,7 +420,7 @@ export default () => {
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.groups.map((u, index) => {
@@ -433,10 +433,10 @@ export default () => {
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}></Col>
+        <Col span={7}></Col>
       </Row>
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
             {/* disabled={!!data?.id && !isDerive} */}
             <Select allowClear
@@ -456,7 +456,7 @@ export default () => {
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
             <Select allowClear showSearch
               filterOption={(input, option) => {
@@ -474,7 +474,7 @@ export default () => {
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="参与人员" name="participants">
             <Select
               mode="multiple"
@@ -497,21 +497,21 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item dependencies={['id']} noStyle>
             {() => {
               return getLeveTwoStatus('projStatus', '项目状态');
             }}
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item dependencies={['id']} noStyle>
             {() => {
               return getLeveTwoStatus('acceStatus', '验收状态');
             }}
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item dependencies={['id']} noStyle>
             {() => {
               return getLeveTwoStatus('contStatus', '合同状态');
@@ -520,7 +520,7 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
             <Select disabled={false} loading={loading} onChange={(v) => setStageStatus(v)}>
               {projStatus.map((s) => (
@@ -531,7 +531,7 @@ export default () => {
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="启动日期"
             name="startTime"
@@ -543,7 +543,7 @@ export default () => {
             <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="结束日期"
             name="endTime"
@@ -557,24 +557,24 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="项目预算"
             name="projBudget"
@@ -585,7 +585,7 @@ export default () => {
           </Form.Item>
         </Col>
 
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="费用预算"
             name="budgetFee"
@@ -595,7 +595,7 @@ export default () => {
             <InputNumber min={0} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="成本预算"
             name="budgetCost"
@@ -607,7 +607,7 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="人力费用"
             name="humanFee"
@@ -617,7 +617,7 @@ export default () => {
             <InputNumber min={0} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="项目费用"
             name="projectFee"
@@ -627,7 +627,7 @@ export default () => {
             <InputNumber min={0} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="采购成本"
             name="actualCost"
@@ -637,24 +637,24 @@ export default () => {
             <InputNumber min={0} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }]}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
           <>
-            <Col span={8}>
+            <Col span={7}>
               <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
                 <InputNumber min={0} />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={7}>
               <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
                 <InputNumber min={0} />
               </Form.Item>
             </Col>
-            <Col span={8}></Col>
+            <Col span={7}></Col>
           </>
         ) : (
           ''
@@ -664,7 +664,7 @@ export default () => {
         ''
       ) : (
         <Row>
-          <Col span={8}>
+          <Col span={7}>
             <Form.Item
               label="投产日期"
               name="productDate"
@@ -676,7 +676,7 @@ export default () => {
               <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={7}>
             <Form.Item
               label="验收日期"
               name="acceptDate"
@@ -688,7 +688,7 @@ export default () => {
               <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={7}>
             <Form.Item
               label="免费维护期"
               name="serviceCycle"
@@ -702,7 +702,7 @@ export default () => {
       )}
       {projType === 'SH' ? (
         <Row hidden={projType !== 'SH'}>
-          <Col span={8}>
+          <Col span={7}>
             <Form.Item
               label="要求巡检次数"
               name="requiredInspections"
@@ -711,12 +711,12 @@ export default () => {
               <InputNumber min={0} />
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={7}>
             <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }]}>
               <InputNumber min={0} />
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={7}>
             <Form.Item
               label="服务周期"
               name="serviceCycle"
@@ -732,7 +732,7 @@ export default () => {
       )}
 
       <Row>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="确认年度"
             name="confirmYear"
@@ -750,7 +750,7 @@ export default () => {
             {/* <Input /> */}
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={7}>
           <Form.Item
             label="实施年度"
             name="doYear"
@@ -768,11 +768,11 @@ export default () => {
             {/* <Input /> */}
           </Form.Item>
         </Col>
-        <Col span={8}></Col>
+        <Col span={7}></Col>
       </Row>
       <Row>
-        <Col span={24}>
-          <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
+        <Col span={24} >
+          <Form.Item label="项目描述" name="description" labelCol={{ span: 2.4, offset: 1 }} >
             <Input.TextArea />
           </Form.Item>
         </Col>
@@ -788,6 +788,7 @@ export default () => {
                     ''
                   ) : (
                     <Button
+                      style={{ left: '5%' }}
                       type="dashed"
                       onClick={() =>
                         add({ recorder: initialState?.currentUser?.id }, fields.length)
@@ -974,6 +975,6 @@ export default () => {
         <div style={{ clear: 'both' }}></div>
       </div>
       {contextHolder}
-    </Form>
+    </Form >
   );
 };

@@ -20,11 +20,13 @@ const queryGql = gql`
       industryCode
       regionCode
       salesman
+      officeAddress
       contacts {
         name
         phone
         tags
         recorder
+        remark
       }
       remark
       enable

@@ -388,6 +388,10 @@ export interface ICustomer {
    */
   salesman: string[];
   /**
+ * 办公地址
+ */
+  officeAddress: string;
+  /**
    * 客户联系人
    */
   contacts: [
@@ -408,6 +412,10 @@ export interface ICustomer {
        * 录入人
        */
       recorder?: string;
+      /**
+      * 备注
+      */
+      remark: string;
     }
   ];
   /**

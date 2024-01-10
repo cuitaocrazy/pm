@@ -121,6 +121,9 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
           ))}
         </Select>
       </Form.Item>
+      <Form.Item label="办公地址" name="officeAddress" rules={[{ required: false }]}>
+        <Input />
+      </Form.Item>
       <Form.Item
         label="是否启用"
         name="enable"
@@ -188,6 +191,16 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                         onChange={handleTagsChange}
                         options={getOptions()}
                       />
+                    </Form.Item>
+                    <Form.Item
+                      labelCol={{ span: 6, offset: 0 }}
+                      key="remark"
+                      label="备注"
+                      name={[field.remark, 'remark']}
+                      rules={[{ required: false }]}
+                      extra="可以填写该联系人所在地等信息"
+                    >
+                      <Input onChange={() => onContactChange(field)} />
                     </Form.Item>
                     <MinusCircleOutlined
                       className="dynamic-delete-button"

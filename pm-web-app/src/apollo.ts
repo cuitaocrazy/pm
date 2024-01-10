@@ -4,7 +4,7 @@ import { message } from 'antd';
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
-    graphQLErrors.map(({ message: eorrMessage, path}) => {
+    graphQLErrors.map(({ message: eorrMessage, path }) => {
       if (path?.includes('charts')) return
       message.error(eorrMessage)
     })
@@ -165,7 +165,7 @@ export type Project = {
   timeConsuming?: Scalars['Float'];
   confirmYear?: Scalars['String'];
   doYear?: Scalars['String'];
-  group?:Scalars['String'];
+  group?: Scalars['String'];
 };
 
 export type Contact = {
@@ -177,7 +177,7 @@ export type Contact = {
 
 export type Active = {
   __typename?: 'Active';
-  name?:  Scalars['String'];
+  name?: Scalars['String'];
   date: Scalars['String'];
   content?: Scalars['String'];
   fileList?: File[];
@@ -337,6 +337,7 @@ export type Customer = {
   enable: Scalars['Boolean'];
   isDel: Scalars['Boolean'];
   createDate: Scalars['String'];
+  officeAddress: Scalars['String'];
 };
 
 export type CustomerContact = {
@@ -345,6 +346,7 @@ export type CustomerContact = {
   phone: Maybe<Scalars['String']>;
   tags: Scalars['String'][];
   recorder?: Scalars['String'];
+  remark: Scalars['String'];
 };
 
 export type File = {
@@ -478,8 +480,8 @@ export type Query = {
   treeStatus: TreeStatu[];
   industries: Industry[];
   regions: Region[];
-  projectClasses:ProjectClass[];
-  groups:Group[];
+  projectClasses: ProjectClass[];
+  groups: Group[];
   customers: Customer[];
   agreements: Agreement[];
   projectAgreements: ProjectAgreement[];
@@ -489,7 +491,7 @@ export type Query = {
   marketPlans: MarketPlan[];
   marketPlansBySuper: MarketPlan[];
   eventLogs: EventLog[];
-  findOneProjectById:Project;
+  findOneProjectById: Project;
 
 };
 
@@ -501,7 +503,7 @@ export type QueryFilterProjectArgs = {
   projType: Scalars['String'];
 };
 export type QueryFilterProjectByIdArgs = {
-  id:Scalars['String']
+  id: Scalars['String']
 }
 
 export type QueryEmpDailyArgs = {
@@ -587,7 +589,7 @@ export type ContactInput = {
 };
 
 export type ActiveInput = {
-  name:  Scalars['String'];
+  name: Scalars['String'];
   date: Scalars['String'];
   content: Scalars['String'];
   fileList?: Maybe<FileInput[]>;
@@ -663,6 +665,7 @@ export type CustomerInput = {
   industryCode: Scalars['String'];
   regionCode: Scalars['String'];
   salesman: Scalars['String'][];
+  officeAddress: Scalars['String'];
   contacts: CustomerContactInput[];
   remark: Scalars['String'];
   enable: Scalars['Boolean'];

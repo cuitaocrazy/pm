@@ -1,8 +1,13 @@
 import moment from "moment";
 import { isNil } from "ramda";
-import { AuthContext } from "../../auth/oauth";
+import {
+  AuthContext,
+  getAllGroups,
+  getGroupUsers,
+  getUsersByGroups,
+} from "../../auth/oauth";
 import { Project, ProjectAgreement } from "../../mongodb";
-import { dbid2id, id2dbid } from "../../util/utils";
+import { dbid2id, id2dbid, getMaxGroup } from "../../util/utils";
 export default {
   Query: {
     projs: (_: any, __: any, context: AuthContext) => {
@@ -15,32 +20,70 @@ export default {
         .map(dbid2id)
         .toArray();
     },
-    superProjs: (_: any, __: any, context: AuthContext) => {
+    superProjs: async (_: any, __: any, context: AuthContext) => {
       let filter = { _id: { $not: /-ZH-/ } };
       if (__.isArchive === true || __.isArchive === false) {
         filter["isArchive"] = __.isArchive;
       }
+      const user = context.user!;
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
+      }
+      filter["$or"] = [
+        { participants: { $elemMatch: { $eq: context.user!.id } } },
+        { leader: { $in: subordinateIds } },
+      ];
+
+
       return Project.find(filter)
         .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
     },
-    iLeadProjs: (_: any, __: any, context: AuthContext) =>
-      Project.find({
+    iLeadProjs: async (_: any, __: any, context: AuthContext) => {
+      const user = context.user!;
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
+      }
+
+      return Project.find({
         _id: { $not: /-ZH-/ },
         isArchive: __.isArchive ? __.isArchive : false,
-        $or: [{ leader: context.user!.id }, { salesLeader: context.user!.id }],
+        $or: [
+          { leader: context.user!.id },
+          { salesLeader: context.user!.id },
+          { leader: { $in: subordinateIds } },
+        ],
       })
         .sort({ createDate: -1 })
         .map(dbid2id)
-        .toArray(),
-    filterProjs: (_: any, __: any, context: AuthContext) =>
-      Project.find({
+        .toArray();
+    },
+    filterProjs: async (_: any, __: any, context: AuthContext) => {
+      const user = context.user!;
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
+      }
+      return Project.find({
         isArchive: false,
         $or: [
           { leader: context.user!.id },
           { salesLeader: context.user!.id },
           { participants: { $elemMatch: { $eq: context.user!.id } } },
+          { leader: { $in: subordinateIds } },
         ],
         _id: {
           $regex: `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`,
@@ -48,7 +91,8 @@ export default {
       })
         .sort({ createDate: -1 })
         .map(dbid2id)
-        .toArray(),
+        .toArray();
+    },
     filterProjsByType: (_: any, __: any, context: AuthContext) =>
       Project.find({
         isArchive: false,

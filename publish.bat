@@ -129,9 +129,9 @@ echo git commit -m 'release '%MAJOR%.%MONOR%.%BUILD%
 echo git tag -a %MAJOR%.%MONOR%.%BUILD% -m 'release '%MAJOR%.%MONOR%.%BUILD%
 echo git push
 echo git push origin %MAJOR%.%MONOR%.%BUILD%
-git add .
-git add .
-git commit -m 'release '%MAJOR%.%MONOR%.%BUILD%
-git tag -a %MAJOR%.%MONOR%.%BUILD% -m 'release '%MAJOR%.%MONOR%.%BUILD%
-git push
-git push origin %MAJOR%.%MONOR%.%BUILD%
+REM git add .
+REM git add .
+REM git commit -m 'release '%MAJOR%.%MONOR%.%BUILD%
+REM git tag -a %MAJOR%.%MONOR%.%BUILD% -m 'release '%MAJOR%.%MONOR%.%BUILD%
+REM git push
+REM git push origin %MAJOR%.%MONOR%.%BUILD%

@@ -10,7 +10,6 @@ export default {
      */
     groups: async (_: any, __: any, context: AuthContext) => {
       const user = context.user!;
-      console.log(user);
       let groups;
       try {
         groups = await getAllGroups(user);

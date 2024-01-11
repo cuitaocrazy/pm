@@ -12,6 +12,7 @@ export default {
   Query: {
     projs: (_: any, __: any, context: AuthContext) => {
       let filter = {};
+
       if (__.isArchive === true || __.isArchive === false) {
         filter["isArchive"] = __.isArchive;
       }
@@ -21,11 +22,56 @@ export default {
         .toArray();
     },
     superProjs: async (_: any, __: any, context: AuthContext) => {
-      let filter = { _id: { $not: /-ZH-/ } };
+      let filter = {};
       if (__.isArchive === true || __.isArchive === false) {
         filter["isArchive"] = __.isArchive;
       }
+
+      let {
+        regions,
+        industries,
+        projTypes,
+        page,
+        pageSize,
+        confirmYear,
+        group,
+        status,
+      } = __;
+      if (!page || page === 0) {
+        page = 1;
+      }
+      if (!pageSize || pageSize === 0) {
+        pageSize = 10;
+      }
+      const skip = (page - 1) * pageSize;
       const user = context.user!;
+
+      const regexArray: RegExp[] = [];
+      if (!regions || regions.length == 0) regions = ["\\w*"];
+      if (!industries || industries.length == 0) industries = ["\\w*"];
+      if (!projTypes || projTypes.length == 0) projTypes = ["\\w*"];
+
+      if (confirmYear) {
+        filter["confirmYear"] = confirmYear;
+      }
+      if (status) {
+        filter["status"] = status;
+      }
+      if (group) {
+        filter["group"] = group;
+      }
+
+      for (let i = 0; i < regions.length; i++) {
+        for (let j = 0; j < industries.length; j++) {
+          for (let k = 0; k < projTypes.length; k++) {
+            const regexStr = `^${regions[i]}-${industries[j]}-${projTypes[k]}-.*`;
+            regexArray.push(new RegExp(regexStr));
+          }
+        }
+      }
+      // filter = { _id: { $not: /-ZH-/ } };
+      filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+
       const maxGroup = getMaxGroup(user.groups);
       let subordinateIds: string[] = [];
 
@@ -34,16 +80,37 @@ export default {
         const subordinate = await getUsersByGroups(user, maxGroup);
         subordinateIds = subordinate.map((subordinate) => subordinate.id);
       }
-      filter["$or"] = [
-        { participants: { $elemMatch: { $eq: context.user!.id } } },
-        { leader: { $in: subordinateIds } },
-      ];
-
-
-      return Project.find(filter)
+      filter["$or"] = [];
+      if (filter["$or"]) {
+        filter["$or"] = filter["$or"].concat([
+          { participants: { $elemMatch: { $eq: context.user!.id } } },
+          { leader: { $in: subordinateIds } },
+        ]);
+      } else {
+        filter["$or"] = [
+          { participants: { $elemMatch: { $eq: context.user!.id } } },
+          { leader: { $in: subordinateIds } },
+        ];
+      }
+      const result = await Project.find(filter)
+        .skip(skip)
+        .limit(pageSize)
         .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
+      const total = await Project.find(filter).count();
+      return {
+        result,
+        page,
+        total,
+      };
+
+      // return Project.find(filter)
+      //   .skip(skip)
+      //   .limit(pageSize)
+      //   .sort({ createDate: -1 })
+      //   .map(dbid2id)
+      //   .toArray();
     },
     iLeadProjs: async (_: any, __: any, context: AuthContext) => {
       const user = context.user!;
@@ -107,10 +174,10 @@ export default {
       let or =
         __.type === "active"
           ? [
-            { leader: context.user!.id },
-            { salesLeader: context.user!.id },
-            { participants: { $elemMatch: { $eq: context.user!.id } } },
-          ]
+              { leader: context.user!.id },
+              { salesLeader: context.user!.id },
+              { participants: { $elemMatch: { $eq: context.user!.id } } },
+            ]
           : [{ leader: context.user!.id }, { salesLeader: context.user!.id }];
       let filter = __.isAdmin
         ? { isArchive: false }
@@ -121,8 +188,8 @@ export default {
           __.org && __.projType
             ? `^${__.org}+-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`
             : __.org
-              ? `^${__.org}+-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$`
-              : `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`;
+            ? `^${__.org}+-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$`
+            : `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`;
         filter["_id"] = { $regex: regex };
       }
       if (__.customerId) {
@@ -162,7 +229,10 @@ export default {
         .format("YYYY-MM-DD HH:mm:ss");
       // 判断参与人员里是否有操作人，没有则添加进去
       if (!proj.participants.includes(context.user!.id)) {
-        proj.participants = proj.participants.concat(context.user!.id, proj.salesLeader);
+        proj.participants = proj.participants.concat(
+          context.user!.id,
+          proj.salesLeader
+        );
       }
       // 判断是否关联了合同，若关联则更新，没关联则删除（废除，项目内不控制合同关联关系）
       // if (proj.contName) {

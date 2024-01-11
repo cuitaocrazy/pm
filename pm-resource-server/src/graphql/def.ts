@@ -103,6 +103,11 @@ const dataTypeDef = gql`
     doYear: String
     group: String
   }
+  type ProjectPage {
+    result: [Project!]!
+    page: Int!
+    total: Int!
+  }
 
   type Contact {
     name: String!
@@ -243,7 +248,7 @@ const dataTypeDef = gql`
     regionCode: String!
     salesman: [String!]!
     contacts: [CustomerContact!]!
-    officeAddress:String
+    officeAddress: String
     enable: Boolean!
     remark: String!
     isDel: Boolean!
@@ -376,7 +381,18 @@ const dataTypeDef = gql`
     roleUsers(role: String!): [User!]!
     myDailies: EmployeeOfDailies
     projs(isArchive: Boolean): [Project!]!
-    superProjs(isArchive: Boolean): [Project!]!
+    superProjs(
+      isArchive: Boolean
+      regions: [String]
+      industries: [String]
+      projTypes: [String]
+      page: Int
+      pageSize: Int
+      confirmYear: String
+      group: String
+      status: String
+    ): ProjectPage
+
     iLeadProjs(isArchive: Boolean): [Project!]!
     filterProjs(projType: String!): [Project!]!
     filterProjsByApp(
@@ -541,7 +557,7 @@ const dataTypeDef = gql`
     industryCode: String!
     regionCode: String!
     salesman: [String!]!
-    officeAddress:String
+    officeAddress: String
     contacts: [CustomerContactInput!]
     enable: Boolean!
     remark: String!

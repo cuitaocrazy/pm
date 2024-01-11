@@ -1,19 +1,25 @@
-import { ProjDaily } from './mongodb'
+import { ProjDaily } from "./mongodb";
 
 export interface DailyInfo {
-  date: string
-  projs: ProjDaily[]
+  date: string;
+  projs: ProjDaily[];
 }
 
 export interface UserInfo {
-  id: string
-  name: string
-  email: string
-  createdTimestamp: number
+  id: string;
+  name: string;
+  email: string;
+  createdTimestamp: number;
 }
 
 export interface MailInfo {
-  name: string
-  email: string
-  dates: string[]
+  name: string;
+  email: string;
+  dates: string[];
+}
+export interface ProjectMailInfo {
+  name: string;
+  email: string;
+  dates: string[];
+  projectName: string;
 }

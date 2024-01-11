@@ -10,8 +10,7 @@ export default {
      */
     groups: async (_: any, __: any, context: AuthContext) => {
       const user = context.user!;
-      console.log("groups");
-      // console.log(user);
+      console.log(user);
       let groups;
       try {
         groups = await getAllGroups(user);
@@ -19,7 +18,6 @@ export default {
         console.log(e);
         groups = [];
       }
-      console.log(groups);
       return groups
         .map((group) => group.path)
         .filter((str) => (str.match(/\//g) || []).length === 2);

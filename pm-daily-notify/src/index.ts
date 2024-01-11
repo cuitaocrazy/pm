@@ -1,13 +1,24 @@
 import arg from "arg";
 import * as R from "ramda";
 import moment from "moment";
-import { Config, EmployeeDaily, IEmployeeDaily, client } from "./mongodb";
+import {
+  Config,
+  EmployeeDaily,
+  IEmployeeDaily,
+  client,
+  Project,
+} from "./mongodb";
 import { Users } from "./keycloak";
 import { getWorkDays } from "./util/utils";
 import { DailyInfo, UserInfo } from "./data";
-import { transporter, sendEmails } from "./emailer";
+import {
+  transporter,
+  sendEmails,
+  sendWeiHuEmails,
+  sendYanShouEmails,
+} from "./emailer";
 // console.log(moment('20240107', 'YYYYMMDD').valueOf())
-const afterTimestamp = 1673020800000; //2024年1月07日的时间戳，忽略2024年1月7日之前的日报
+const afterTimestamp = 1704556800000; //2024年1月07日的时间戳，忽略2024年1月7日之前的日报
 
 const getConfigData = async (configId: string): Promise<string[]> => {
   const config = await Config.findOne({ _id: configId });
@@ -58,8 +69,16 @@ async function main(year: number) {
   try {
     const workCalendar = await getConfigData("workCalendar");
     const empDailies = await getEmpDailiesData(`${year}`);
-
-    const users = await getUsers();
+    const noSendEmailList = [
+      "na.yang@bjyada.com",
+      "shujian.du@bjyada.com",
+      "yong.zhang@bjyada.com",
+      "jiabin.fan@bjyada.com",
+      "fengming.jiang@bjyada.com",
+    ];
+    const users = (await getUsers()).filter(
+      (user) => noSendEmailList.indexOf(user.email) == -1
+    );
     const mails = users
       .map((user) => ({
         name: user.name,
@@ -95,7 +114,58 @@ async function main(year: number) {
   }
 }
 
+// async function sendProjectRemind(today: string) {
+//   const users = await getUsers();
+//   const mails = [];
+//   users.forEach(user=>{
+//     let projects = await getUsersProject(user)
+//   })
+//   .filter((mail) => R.not(R.isNil(mail.email)))
+//   .filter((mail) => R.not(R.isEmpty(mail.dates)));
+
+// }
+
 const args = arg({ "--year": Number });
 const year = args["--year"] || moment().year();
-
 main(year);
+// const today = new Date();
+// const dayOfWeek = today.getDay();
+// if (dayOfWeek === 1) {
+//   main(year);
+// }
+
+const getUsersProject = async (user: UserInfo) => {
+  const projects = await Project.find({ leader: user.id }).filter((project) => {
+    const reg =
+      /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
+    const result = reg.exec(project.id || "");
+    if (result?.groups?.projType === "SZ") {
+      // 售中
+      if (project.acceptDate) {
+        let dayDiff = moment(project.acceptDate).diff(new Date(), "day");
+        console.log(project.id + "  " + dayDiff);
+        if (dayDiff == 90) {
+          return true;
+        }
+      }
+    } else if (result?.groups?.projType === "SH") {
+      if (project.startTime && project.serviceCycle) {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        let monthDiff = moment(today).diff(project.startTime, "month");
+        let yesterdayMonthDiff = moment(yesterday).diff(
+          project.startTime,
+          "month"
+        );
+        if (
+          project.serviceCycle - monthDiff <= 3 &&
+          project.serviceCycle - yesterdayMonthDiff > -3
+        ) {
+          return true;
+        }
+      }
+    }
+  });
+  return projects;
+};

@@ -121,8 +121,17 @@ REM 定义函数 改变版本
       del  values.yaml
       rename temp.yaml values.yaml
   cd ../..
+
+
+
+echo git add .
+echo git commit -m 'release '%MAJOR%.%MONOR%.%BUILD%
+echo git tag -a %MAJOR%.%MONOR%.%BUILD% -m 'release '%MAJOR%.%MONOR%.%BUILD%
+echo git push
+echo git push origin %MAJOR%.%MONOR%.%BUILD%
 git add .
-commit -m 'release '%MAJOR%.%MONOR%.%BUILD%
+git add .
+git commit -m 'release '%MAJOR%.%MONOR%.%BUILD%
 git tag -a %MAJOR%.%MONOR%.%BUILD% -m 'release '%MAJOR%.%MONOR%.%BUILD%
 git push
 git push origin %MAJOR%.%MONOR%.%BUILD%

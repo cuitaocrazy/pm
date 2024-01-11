@@ -1,30 +1,30 @@
-version: "1.0.115"  
-replicaCount: 2  
-oauth:  
-  issuer: https://auth.yadashuke.com/auth/realms/pm  
-  clientId: pm-app  
-  clientSecret: 0711ad1d-9053-4e3a-a6bb-db2b783e8eee  
-hostName: pm.yadashuke.com  
-gwService:  
-  type: NodePort  
-  nodePort: 32659  
-mongoUrl: mongodb://mongodb-arbiter-headless.dbs/pm  
-dnCronjob:   
-  schedule: "0 0 * * 1"  
-  keycloak:   
-    baseUrl: https://auth.yadashuke.com/auth  
-    realmName: pm  
-    clientId: pm-dn  
-    clientSecret: 01110e3d-00c6-4145-a650-161a2315d0ef  
-  email:  
-    host: smtp.263.net  
-    port: 465  
-    user: rjeb_service@bjyada.com  
-    password: test1111!  
-    subject: 日报未提交通知  
-prostgres:  
-  user: pm  
-  password: pm  
-  host: postgresql-postgresql-ha-pgpool.dbs  
-  db: pm  
-  port: 5432  
+version: "1.0.115"     
+replicaCount: 2     
+oauth:     
+  issuer: https://auth.yadashuke.com/auth/realms/pm     
+  clientId: pm-app     
+  clientSecret: 0711ad1d-9053-4e3a-a6bb-db2b783e8eee     
+hostName: pm.yadashuke.com     
+gwService:     
+  type: NodePort     
+  nodePort: 32659     
+mongoUrl: mongodb://mongodb-arbiter-headless.dbs/pm     
+dnCronjob:      
+  schedule: "0 0 * * 1"     
+  keycloak:      
+    baseUrl: https://auth.yadashuke.com/auth     
+    realmName: pm     
+    clientId: pm-dn     
+    clientSecret: 01110e3d-00c6-4145-a650-161a2315d0ef     
+  email:     
+    host: smtp.263.net     
+    port: 465     
+    user: rjeb_service@bjyada.com     
+    password: test1111!     
+    subject: 日报未提交通知     
+prostgres:     
+  user: pm     
+  password: pm     
+  host: postgresql-postgresql-ha-pgpool.dbs     
+  db: pm     
+  port: 5432     

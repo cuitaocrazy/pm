@@ -36,6 +36,7 @@ export default {
         confirmYear,
         group,
         status,
+        name,
       } = __;
       if (!page || page === 0) {
         page = 1;
@@ -59,6 +60,9 @@ export default {
       }
       if (group) {
         filter["group"] = group;
+      }
+      if (name) {
+        filter["name"] = new RegExp(name, "g");
       }
 
       for (let i = 0; i < regions.length; i++) {

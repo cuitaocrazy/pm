@@ -1,0 +1,26 @@
+.bgColorWhite{
+    background:#fff
+}
+.displayInlineBlock{
+    display:inline-block;
+}
+.width120{
+    width:120px
+}
+.width122{
+    width:122px;
+}
+.marginTop20{
+    margin-top:20px
+}
+.paddingBottom20{
+    padding-bottom:20px
+}
+.floatRight{
+    float:right;
+}
+.paginationCon::after {
+    content: "";
+    display: table;
+    clear: both;
+}

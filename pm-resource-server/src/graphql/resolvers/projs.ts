@@ -64,7 +64,7 @@ export default {
       for (let i = 0; i < regions.length; i++) {
         for (let j = 0; j < industries.length; j++) {
           for (let k = 0; k < projTypes.length; k++) {
-            const regexStr = `^${regions[i]}-${industries[j]}-${projTypes[k]}-.*`;
+            const regexStr = `^${industries[j]}-${regions[i]}-${projTypes[k]}-.*`;
             regexArray.push(new RegExp(regexStr));
           }
         }

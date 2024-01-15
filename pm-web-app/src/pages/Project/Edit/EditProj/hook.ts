@@ -4,7 +4,7 @@ import type {
   MutationPushProjectArgs,
   ProjectInput,
   Query,
-  QueryProjectArgs
+  QueryProjectArgs,
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
@@ -15,7 +15,7 @@ import { attachmentUpload, filterTodoProject, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
-    query ($isArchive: Boolean) {
+    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String) {
       subordinates {
         id
         name
@@ -41,8 +41,9 @@ const getGql = (proName: string) => {
           tags
         }
       }
-      ${ proName }(isArchive: $isArchive){
-        id
+      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name){
+        result{
+          id
         pId
         name
         contName
@@ -95,10 +96,13 @@ const getGql = (proName: string) => {
             thumbUrl
           }
         }
+        }
+        page
+        total
       }
     }
   `;
-}
+};
 
 const pushProjGql = gql`
   mutation ($proj: ProjectInput!) {
@@ -119,42 +123,52 @@ const deleteProjGql = gql`
 `;
 
 export function useProjStatus() {
-  const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
-  const queryGql = getGql( isAdmin ? 'superProjs' : 'iLeadProjs' )
+  const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false; //判断是全部项目还是项目维护
+  const queryGql = getGql(isAdmin ? 'superProjs' : 'iLeadProjs'); //全部项目走superProjs，项目维护走iLeadProjs
   const [archive, setArchive] = useState('0');
-  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryProjectArgs>(queryGql, {
-    variables: {
-      isArchive: archive === '1' ? true : false
+  let [query, setQuery] = useState({});
+  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
+    Query,
+    QueryProjectArgs
+  >(queryGql, {
+    variables:{
+      isArchive: archive === '1' ? true : false, //1：归档，0:项目，2:代办项目
+  ...query,
     },
     fetchPolicy: 'no-cache',
-  });
-
-  const [archiveProjHandle, { loading: archiveLoading }] = useMutation<Mutation, MutationDeleteProjectArgs>(
-    archiveProjGql
-  );
-  const [deleteProjHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteProjectArgs>(
-    deleteProjGql
-  );
+  }); //走后台获取数据，data为返回数据，refresh为函数，自己触发，variables为参数
+  const [archiveProjHandle, { loading: archiveLoading }] = useMutation<
+    Mutation,
+    MutationDeleteProjectArgs
+  >(archiveProjGql);
+  const [deleteProjHandle, { loading: deleteLoading }] = useMutation<
+    Mutation,
+    MutationDeleteProjectArgs
+  >(deleteProjGql);
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
     pushProjGql,
   );
 
-  const { refresh: initialRefresh } = useModel('@@initialState');
-  const { buildProjName } = useBaseState();
+  const { refresh: initialRefresh } = useModel('@@initialState'); //获取全局初始状态
+  const { buildProjName } = useBaseState(); //项目名字的工具函数
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
+    initialRefresh();
     refresh();
-    initialRefresh()
-  }, [refresh]);
+  }, [refresh, query]);
 
-  const tmpProjs = ((isAdmin ?  queryData?.superProjs : queryData?.iLeadProjs) || []).map(item => {
-    return { ...item }
+  const tmpProjs = (
+    (isAdmin ? queryData?.superProjs?.result : queryData?.iLeadProjs?.result) || []
+  ).map((item) => {
+    return { ...item };
   });
-  const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
-  const todoProjs = filterTodoProject(projs).filter(el => {
-    return buildProjName(el.id, el.name).indexOf(filter) > -1
-  })
+  const projs = projectClassify(
+    R.filter((el) => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs),
+  );
+  const todoProjs = filterTodoProject(projs).filter((el) => {
+    return buildProjName(el.id, el.name).indexOf(filter) > -1;
+  });
   // projs
   const subordinates = queryData?.subordinates || [];
   const customers = queryData?.customers || [];
@@ -179,10 +193,10 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      let reqProj = await attachmentUpload(proj, buildProjName)
+      let reqProj = await attachmentUpload(proj, buildProjName);
       await pushCostHandle({
         variables: {
-          proj: reqProj
+          proj: reqProj,
         },
       });
       refresh();
@@ -206,5 +220,8 @@ export function useProjStatus() {
     archiveProj,
     deleteProj,
     pushProj,
+    total: isAdmin ? queryData?.superProjs?.total : queryData?.iLeadProjs?.total,
+    setQuery,
+    query,
   };
 }

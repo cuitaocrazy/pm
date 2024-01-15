@@ -452,7 +452,13 @@ export type EventLog = {
   description?: Maybe<Scalars['String']>;
   information?: Maybe<Scalars['String']>;
 };
-
+//zhouyueyang===
+export type Result = {
+  result:Project[];
+  total:number;
+  page:number;
+}
+//zhouyueyang===
 export type Query = {
   __typename?: 'Query';
   me: User;
@@ -461,8 +467,8 @@ export type Query = {
   roleUsers: User[];
   myDailies?: Maybe<EmployeeOfDailies>;
   projs: Project[];
-  superProjs: Project[];
-  iLeadProjs: Project[];
+  superProjs: Result;
+  iLeadProjs: Result;
   filterProjs: Project[];
   filterProjsByType: Project[];
   expenses: Expense[];

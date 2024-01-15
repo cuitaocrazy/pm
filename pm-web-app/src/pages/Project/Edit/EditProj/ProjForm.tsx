@@ -116,6 +116,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       projId: data?.id || '',
     },
   });
+  console.log(data?.salesLeader)
+  // const {salesLeader,setSalesLeader}=
   const { status, dataForTree } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const [isDerive, setIsDerive] = useState(false);
@@ -321,6 +323,45 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     return tempFields;
   };
 
+  // 在组件状态中保存上一次选择的市场经理ID
+  const [lastSelectedSalesLeader, setLastSelectedSalesLeader] = useState<string | undefined>(undefined);
+
+  // 在组件状态中保存所有选择过的市场经理ID
+  const [selectedSalesLeaders, setSelectedSalesLeaders] = useState<string[]>([]);
+
+  const handleSalesLeaderChange = (value: string) => {
+    const oldSalesLeader = data?.salesLeader;
+    // 获取当前的参与者们
+    const currentParticipants = form.getFieldValue('participants') || [];
+
+    // 定义一个更新参与者的数组
+    let updatedParticipants: string[] = [];
+
+    // 从当前参与者中移除所有选择过的市场经理
+    updatedParticipants = currentParticipants.filter((participant: string) => !selectedSalesLeaders.includes(participant));
+    updatedParticipants = currentParticipants.filter((participant: string) => participant !== oldSalesLeader);
+
+    // 如果选择新的市场经理，那么添加到更新的参与人员数组中
+    if (value && !selectedSalesLeaders.includes(value)) {
+      updatedParticipants.push(value);
+      // 记录这次选择的市场经理ID
+      setSelectedSalesLeaders([...selectedSalesLeaders, value]);
+
+      // 如果上一次选择的市场经理存在，且不等于当前选择的市场经理，从更新数组中去掉
+      if (lastSelectedSalesLeader && lastSelectedSalesLeader !== value) {
+        updatedParticipants = updatedParticipants.filter((participant: string) => participant !== lastSelectedSalesLeader);
+      }
+
+      // 记录当前选择的市场经理ID
+      setLastSelectedSalesLeader(value);
+    }
+
+    // 设置更新参与人员到表单中
+    form.setFieldsValue({
+      participants: updatedParticipants,
+    });
+  };
+
   return (
     <Form
       {...layout}
@@ -437,7 +478,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
+          {/* <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
             <Select allowClear showSearch
               filterOption={(input, option) => {
                 const nameStr: any = option?.children || '';
@@ -446,6 +487,26 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 }
                 return true;
               }}>
+              {resData?.groupsUsers.map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item> */}
+          <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
+            <Select
+              allowClear
+              showSearch
+              filterOption={(input, option) => {
+                const nameStr: any = option?.children || '';
+                if (input && nameStr) {
+                  return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                }
+                return true;
+              }}
+              onChange={(value) => handleSalesLeaderChange(value)}// Add this onChange handler
+            >
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}

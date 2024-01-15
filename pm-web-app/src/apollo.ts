@@ -518,6 +518,8 @@ export type QueryEmpDailyArgs = {
 
 export type QueryProjDailyArgs = {
   projId: Scalars['String'];
+  startDate:Scalars['String'];
+  endDate:Scalars['String'];
 };
 
 export type QueryEmpCostsArgs = {

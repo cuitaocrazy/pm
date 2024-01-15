@@ -429,7 +429,11 @@ const dataTypeDef = gql`
     dailyUsers: [User!]!
     empDailys: [EmployeeDailies!]!
     empDaily(userId: String!): EmployeeOfDailies!
-    projDaily(projId: String!): ProjectOfDailies!
+    projDaily(
+      projId: String!
+      startDate: String
+      endDate: String
+    ): ProjectOfDailies!
     allProjDaily(projId: String!): ProjectOfDailies!
     workCalendar: [String!]!
     settleMonth: [String!]!

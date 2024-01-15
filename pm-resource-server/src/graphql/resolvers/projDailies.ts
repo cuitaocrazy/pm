@@ -11,7 +11,9 @@ import { dbid2id, getMaxGroup } from "../../util/utils";
 async function getParticipateProjectDailiesByLeader(
   leaderId: string | undefined,
   projId: string,
-  loginUser: UserInfo | undefined
+  loginUser: UserInfo | undefined,
+  startDate: string | undefined,
+  endDate: string | undefined
 ) {
   let filter = {};
   if (leaderId)
@@ -25,6 +27,16 @@ async function getParticipateProjectDailiesByLeader(
     const subordinate = await getUsersByGroups(loginUser, maxGroup);
     subordinateIds = subordinate.map((subordinate) => subordinate.id);
   }
+  if (!startDate) {
+    startDate = "19700101";
+    // startDate = "20231201";
+  }
+  if (!endDate) {
+    endDate = "99991231";
+    // endDate = "20231202";
+  }
+
+
   if (includes(projId)(projIds)) {
     const aggregateArray = [
       {
@@ -74,10 +86,16 @@ async function getParticipateProjectDailiesByLeader(
       },
       // 转换成平坦对象
       { $unwind: "$dailies" },
+      {
+        $match: {
+          "dailies.date": { $gte: startDate, $lte: endDate },
+        },
+      },
       { $unwind: "$dailies.dailyItems" },
       {
         $sort: { _id: 1 },
       },
+
       {
         $group: {
           _id: {
@@ -112,7 +130,9 @@ async function getParticipateProjectDailiesByLeader(
     if (subordinateIds == null) {
       aggregateArray.splice(1, 1);
     }
+
     const d = await EmployeeDaily.aggregate(aggregateArray).toArray();
+    console.log(d);
     if (!head(d)) {
       return getDeafultDailies(projId);
     }
@@ -134,15 +154,31 @@ function getDeafultDailies(projId: string) {
 
 export default {
   Query: {
-    projDaily: async (_: any, { projId }: any, context: AuthContext) => {
+    projDaily: async (
+      _: any,
+      { projId, startDate, endDate }: any,
+      context: AuthContext
+    ) => {
       const user = context.user!;
-      return getParticipateProjectDailiesByLeader(user.id, projId, undefined);
+      return getParticipateProjectDailiesByLeader(
+        user.id,
+        projId,
+        undefined,
+        startDate,
+        endDate
+      );
     },
-    allProjDaily: async (_: any, { projId }: any, context: AuthContext) => {
+    allProjDaily: async (
+      _: any,
+      { projId, startDate, endDate }: any,
+      context: AuthContext
+    ) => {
       return getParticipateProjectDailiesByLeader(
         undefined,
         projId,
-        context.user
+        context.user,
+        startDate,
+        endDate
       );
     },
   },

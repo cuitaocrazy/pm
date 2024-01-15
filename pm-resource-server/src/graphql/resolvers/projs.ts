@@ -206,8 +206,6 @@ export default {
         const subordinate = await getUsersByGroups(user, maxGroup);
         subordinateIds = subordinate.map((subordinate) => subordinate.id);
       }
-      console.log("filterProjs");
-      console.log(subordinateIds);
       const filter = {
         isArchive: false,
         $or: [
@@ -266,7 +264,6 @@ export default {
       }
 
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
-      console.log(filter);
       const result = await Project.find(filter)
         .sort({ createDate: -1 })
         .map(dbid2id)

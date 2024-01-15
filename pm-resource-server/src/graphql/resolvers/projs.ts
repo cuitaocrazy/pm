@@ -126,7 +126,7 @@ export default {
         subordinateIds = subordinate.map((subordinate) => subordinate.id);
       }
 
-      return Project.find({
+      const filter = {
         _id: { $not: /-ZH-/ },
         isArchive: __.isArchive ? __.isArchive : false,
         $or: [
@@ -134,10 +134,68 @@ export default {
           { salesLeader: context.user!.id },
           { leader: { $in: subordinateIds } },
         ],
-      })
+      };
+
+      let {
+        regions,
+        industries,
+        projTypes,
+        page,
+        pageSize,
+        confirmYear,
+        group,
+        status,
+        name,
+      } = __;
+
+      if (!page || page === 0) {
+        page = 1;
+      }
+      if (!pageSize || pageSize === 0) {
+        pageSize = 10;
+      }
+      const skip = (page - 1) * pageSize;
+
+      const regexArray: RegExp[] = [];
+      if (!regions || regions.length == 0) regions = ["\\w*"];
+      if (!industries || industries.length == 0) industries = ["\\w*"];
+      if (!projTypes || projTypes.length == 0) projTypes = ["\\w*"];
+
+      if (confirmYear) {
+        filter["confirmYear"] = confirmYear;
+      }
+      if (status) {
+        filter["status"] = status;
+      }
+      if (group) {
+        filter["group"] = group;
+      }
+      if (name) {
+        filter["name"] = new RegExp(name, "g");
+      }
+
+      for (let i = 0; i < regions.length; i++) {
+        for (let j = 0; j < industries.length; j++) {
+          for (let k = 0; k < projTypes.length; k++) {
+            const regexStr = `^${industries[j]}-${regions[i]}-${projTypes[k]}-.*`;
+            regexArray.push(new RegExp(regexStr));
+          }
+        }
+      }
+
+      const result = await Project.find(filter)
+        .skip(skip)
+        .limit(pageSize)
         .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
+
+      const total = await Project.find(filter).count();
+      return {
+        result,
+        page,
+        total,
+      };
     },
     filterProjs: async (_: any, __: any, context: AuthContext) => {
       const user = context.user!;
@@ -148,7 +206,9 @@ export default {
         const subordinate = await getUsersByGroups(user, maxGroup);
         subordinateIds = subordinate.map((subordinate) => subordinate.id);
       }
-      return Project.find({
+      console.log("filterProjs");
+      console.log(subordinateIds);
+      const filter = {
         isArchive: false,
         $or: [
           { leader: context.user!.id },
@@ -156,13 +216,69 @@ export default {
           { participants: { $elemMatch: { $eq: context.user!.id } } },
           { leader: { $in: subordinateIds } },
         ],
-        _id: {
-          $regex: `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`,
-        },
-      })
+      };
+      let {
+        regions,
+        industries,
+        projType,
+        page,
+        pageSize,
+        confirmYear,
+        group,
+        status,
+        name,
+      } = __;
+
+      if (confirmYear) {
+        filter["confirmYear"] = confirmYear;
+      }
+      if (status) {
+        filter["status"] = status;
+      }
+      if (group) {
+        filter["group"] = group;
+      }
+      if (name) {
+        filter["name"] = new RegExp(name, "g");
+      }
+
+      if (!page || page === 0) {
+        page = 1;
+      }
+      if (!pageSize || pageSize === 0) {
+        pageSize = 10;
+      }
+      const skip = (page - 1) * pageSize;
+      const regexArray: RegExp[] = [];
+      if (!regions || regions.length == 0) regions = ["\\w*"];
+      if (!industries || industries.length == 0) industries = ["\\w*"];
+      if (projType == null) {
+        projType = "SQ";
+      }
+      const projTypes = [projType];
+      for (let i = 0; i < regions.length; i++) {
+        for (let j = 0; j < industries.length; j++) {
+          for (let k = 0; k < projTypes.length; k++) {
+            const regexStr = `^${industries[j]}-${regions[i]}-${projTypes[k]}-.*`;
+            regexArray.push(new RegExp(regexStr));
+          }
+        }
+      }
+
+      filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+      console.log(filter);
+      const result = await Project.find(filter)
         .sort({ createDate: -1 })
         .map(dbid2id)
+        .skip(skip)
+        .limit(pageSize)
         .toArray();
+      const total = await Project.find(filter).count();
+      return {
+        result,
+        page,
+        total,
+      };
     },
     filterProjsByType: (_: any, __: any, context: AuthContext) =>
       Project.find({
@@ -178,10 +294,10 @@ export default {
       let or =
         __.type === "active"
           ? [
-            { leader: context.user!.id },
-            { salesLeader: context.user!.id },
-            { participants: { $elemMatch: { $eq: context.user!.id } } },
-          ]
+              { leader: context.user!.id },
+              { salesLeader: context.user!.id },
+              { participants: { $elemMatch: { $eq: context.user!.id } } },
+            ]
           : [{ leader: context.user!.id }, { salesLeader: context.user!.id }];
       let filter = __.isAdmin
         ? { isArchive: false }
@@ -192,8 +308,8 @@ export default {
           __.org && __.projType
             ? `^${__.org}+-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`
             : __.org
-              ? `^${__.org}+-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$`
-              : `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`;
+            ? `^${__.org}+-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$`
+            : `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`;
         filter["_id"] = { $regex: regex };
       }
       if (__.customerId) {
@@ -235,11 +351,11 @@ export default {
       if (!proj.participants.includes(context.user!.id)) {
         proj.participants = proj.participants.concat(
           context.user!.id,
-          proj.salesLeader,
-        )
+          proj.salesLeader
+        );
       }
       if (!proj.participants.includes(proj.salesLeader)) {
-        proj.participants = proj.participants.concat(proj.salesLeader)
+        proj.participants = proj.participants.concat(proj.salesLeader);
       }
       // 判断是否关联了合同，若关联则更新，没关联则删除（废除，项目内不控制合同关联关系）
       // if (proj.contName) {

@@ -393,9 +393,30 @@ const dataTypeDef = gql`
       status: String
       name: String
     ): ProjectPage
-
-    iLeadProjs(isArchive: Boolean): [Project!]!
-    filterProjs(projType: String!): [Project!]!
+    iLeadProjs(
+      isArchive: Boolean
+      regions: [String]
+      industries: [String]
+      projTypes: [String]
+      page: Int
+      pageSize: Int
+      confirmYear: String
+      group: String
+      status: String
+      name: String
+    ): ProjectPage
+    filterProjs(
+      isArchive: Boolean
+      regions: [String]
+      industries: [String]
+      projType: String
+      page: Int
+      pageSize: Int
+      confirmYear: String
+      group: String
+      status: String
+      name: String
+    ): ProjectPage
     filterProjsByApp(
       customerId: String
       org: String

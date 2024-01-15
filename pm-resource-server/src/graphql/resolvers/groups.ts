@@ -17,9 +17,8 @@ export default {
         console.log(e);
         groups = [];
       }
-      return groups
-        .map((group) => group.path)
-        .filter((str) => (str.match(/\//g) || []).length === 2);
+      return groups.map((group) => group.path);
+      // .filter((str) => (str.match(/\//g) || []).length === 2);
     },
     /**
      * 获取所有的group

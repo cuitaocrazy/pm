@@ -1,10 +1,24 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef } from 'react';
-import { Button, Table, Popconfirm, Tag, Input, Space, Radio, Badge } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Button,
+  Table,
+  Popconfirm,
+  Tag,
+  Input,
+  Space,
+  Radio,
+  Badge,
+  Row,
+  Col,
+  Select,
+  DatePicker,
+  Pagination,
+} from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
-import moment from 'moment';
+import moment  from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';
 import ProjActiveForm from './ProjActiveForm';
@@ -14,6 +28,7 @@ import DialogForm from '@/components/DialogForm';
 import { useBaseState } from '@/pages/utils/hook';
 import { getStatusDisplayName, projStatus } from './utils';
 import { history } from 'umi';
+import '@/common.css';
 
 const Project: React.FC<any> = () => {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
@@ -21,17 +36,32 @@ const Project: React.FC<any> = () => {
   const dailyRef = useRef<FormDialogHandle<Proj>>(null);
   const activeRef = useRef<FormDialogHandle<ProjectInput>>(null);
 
-  const { projs, todoProjs, subordinates, customers, projectAgreements, loading, archive,
-    setArchive, setFilter, archiveProj, deleteProj, pushProj } = useProjStatus();
+  const {
+    projs,
+    todoProjs,
+    subordinates,
+    customers,
+    projectAgreements,
+    loading,
+    archive,
+    setArchive,
+    setFilter,
+    archiveProj,
+    deleteProj,
+    pushProj,
+    setQuery,
+    query,
+    total,
+  } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
 
   const editHandle = (proj: Proj, openRef: any) => {
-    const agree = projectAgreements.filter(item => item.id === proj.id)
+    const agree = projectAgreements.filter((item) => item.id === proj.id);
     const { actives, ...pro } = proj;
     openRef.current?.showDialog({
       ...pro,
       contName: agree.length ? agree[0].agreementId : '',
-      actives: (actives as ActiveInput[]),
+      actives: actives as ActiveInput[],
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
@@ -41,7 +71,7 @@ const Project: React.FC<any> = () => {
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',
-      width: 120
+      width: 120,
     },
     {
       title: '项目ID',
@@ -52,25 +82,7 @@ const Project: React.FC<any> = () => {
           <a onClick={() => editHandle(record, ref)}>{buildProjName(record.id, record.name)} </a>
         </div>
       ),
-      filters: [
-        {
-          text: '行业',
-          value: 'orgCode',
-          children: Object.keys(orgCode).map((s) => ({ text: orgCode[s], value: s })),
-        },
-        {
-          text: '区域',
-          value: 'zoneCode',
-          children: Object.keys(zoneCode).map((s) => ({ text: zoneCode[s], value: s })),
-        },
-        {
-          text: '类型',
-          value: 'projType',
-          children: Object.keys(projType).map((s) => ({ text: projType[s], value: s })),
-        },
-      ],
-      onFilter: (value: string | number | boolean, record: Proj) => record.id.indexOf(value + '') > -1,
-      width: 250
+      width: 250,
     },
     {
       title: '项目经理',
@@ -95,9 +107,11 @@ const Project: React.FC<any> = () => {
       dataIndex: 'status',
       key: 'status',
       width: '120px',
-      render: (status: string) => <Tag color={status ? status === 'onProj' ? "success" : 'default' : 'warning'}>{getStatusDisplayName(status)}</Tag>,
-      filters: projStatus.map((s) => ({ text: s[1], value: s[0] })),
-      onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
+      render: (status: string) => (
+        <Tag color={status ? (status === 'onProj' ? 'success' : 'default') : 'warning'}>
+          {getStatusDisplayName(status)}
+        </Tag>
+      ),
     },
     {
       title: '项目部门',
@@ -108,14 +122,7 @@ const Project: React.FC<any> = () => {
         let name = status && status.split('/')[2];
         return name;
       },
-      filters: groupType.map((s) => ({ text: s.toString().split('/')[2], value: s })),
-      onFilter: (value: string | number | boolean, record: Proj) => record.group === value,
     },
-    //{
-    //   text: '部门',
-    //   value: 'groupType',
-    //   children: Object.keys(groupType).map((s) => ({ text: groupType[s], value: s })),
-    // },
     {
       title: '预算人天',
       dataIndex: 'estimatedWorkload',
@@ -128,8 +135,11 @@ const Project: React.FC<any> = () => {
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
       width: '80px',
-      render: (text: number, record: Proj) =>
-        <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{text ? ((text - 0) / 8).toFixed(2) : 0}</Tag></Button>,
+      render: (text: number, record: Proj) => (
+        <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}>
+          <Tag color="cyan">{text ? ((text - 0) / 8).toFixed(2) : 0}</Tag>
+        </Button>
+      ),
     },
     {
       title: '客户名称',
@@ -167,64 +177,6 @@ const Project: React.FC<any> = () => {
       },
       width: 100,
     },
-    // {
-    //   title: '合同金额(元)',
-    //   dataIndex: 'contAmount',
-    //   key: 'contAmount',
-    // },
-    // {
-    //   title: '确认收入金额(元)',
-    //   dataIndex: 'recoAmount',
-    //   key: 'recoAmount',
-    // },
-    // {
-    //   title: '项目预算(元)',
-    //   dataIndex: 'projBudget',
-    //   key: 'projBudget',
-    // },
-    // {
-    //   title: '预算费用(元)',
-    //   dataIndex: 'budgetFee',
-    //   key: 'budgetFee',
-    // },
-    // {
-    //   title: '预算成本(元)',
-    //   dataIndex: 'budgetCost',
-    //   key: 'budgetCost',
-    // },
-    // {
-    //   title: '实际费用(元)',
-    //   dataIndex: 'actualFee',
-    //   key: 'actualFee',
-    // },
-    // {
-    //   title: '采购成本(元)',
-    //   dataIndex: 'actualCost',
-    //   key: 'actualCost',
-    // },
-    // {
-    //   title: '税后金额(元)',
-    //   dataIndex: 'taxAmount',
-    //   key: 'taxAmount',
-    // },
-    // {
-    //   title: '创建日期',
-    //   dataIndex: 'createDate',
-    //   key: 'createDate',
-    //   render: (createDate: string) => {
-    //     return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
-    //   },
-    //   width: 150,
-    // },
-    // {
-    //   title: '更新时间',
-    //   dataIndex: 'updateTime',
-    //   key: 'updateTime',
-    //   render: (updateTime: string) => {
-    //     return moment(updateTime, 'YYYYMMDD HH:mm:ss').format('YYYY年MM月DD日 HH:mm:ss');
-    //   },
-    //   width: 200,
-    // },
     {
       title: '确认年度',
       dataIndex: 'confirmYear',
@@ -239,15 +191,30 @@ const Project: React.FC<any> = () => {
       key: 'action',
       render: (id: string, record: Proj) => (
         <Space>
-          <a key="archive" onClick={() => { editHandle(record, activeRef) }}>
+          <a
+            key="archive"
+            onClick={() => {
+              editHandle(record, activeRef);
+            }}
+          >
             添加项目活动
           </a>
-          <Popconfirm title="将项目数据归档，只能到归档列表查看！" okText="是" cancelText="否" onConfirm={() => archiveProj(record.id)}>
+          <Popconfirm
+            title="将项目数据归档，只能到归档列表查看！"
+            okText="是"
+            cancelText="否"
+            onConfirm={() => archiveProj(record.id)}
+          >
             <a key="archive" hidden={record.isArchive}>
               归档
             </a>
           </Popconfirm>
-          <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteProj(record.id)}>
+          <Popconfirm
+            title="将会彻底删除源数据，且无法恢复？"
+            okText="是"
+            cancelText="否"
+            onConfirm={() => deleteProj(record.id)}
+          >
             <a key="delete" hidden={record.isArchive}>
               删除
             </a>
@@ -259,7 +226,7 @@ const Project: React.FC<any> = () => {
     },
   ];
 
-  if (!isAdmin && archive === "2") {
+  if (!isAdmin && archive === '2') {
     columns.splice(2, 0, {
       title: '待办内容',
       dataIndex: 'todoTip',
@@ -268,42 +235,215 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => text,
     });
   }
-
-  return (
-    <PageContainer
-      extra={[
-        <Radio.Group key="archive" value={archive} onChange={e => setArchive(e.target.value)}>
-          <Radio.Button value="0">项目</Radio.Button>
-          {isAdmin ?
-            <Radio.Button value="1">归档项目</Radio.Button>
-            :
-            <Radio.Button value="2">
-              <Badge count={todoProjs.length}>
-                待办项目
-              </Badge>
-            </Radio.Button>
+  //=====zhouyueyang
+  const [params,setParams] = useState({
+    regions:[],
+  industries:[],
+  projTypes:[],
+  page: 1,
+  confirmYear:null,
+  group:'',
+  status:'',
+  name:'',
+  })
+  const handleChange = (value='', type:string) => {
+    setParams({
+      ...params,
+      [type]:type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
+      page:1
+    })
+  };
+  const onChange = (confirmYear) => {
+    setParams({
+      ...params,
+      confirmYear,
+      page:1
+    })
+  };
+  const handleChangeInput = (name:string)=>{
+    setParams({
+      ...params,
+      name,
+      page:1
+    })
+  }
+  const handleEnter = (name:string) => {
+    setParams({
+      ...params,
+      name,
+      page:1
+    })
+  };
+  const pageChange = (page)=>{
+    setParams({
+      ...params,
+      page
+    })
+  }
+  const searchBtn = ()=>{
+    setParams({
+      ...params,
+      page:1
+    })
+  }
+  const canaelBtn = ()=>{
+    // const propertiesToReset = ['key1', 'key2', 'key3'];
+    setParams(prevObject => {
+      let temp = JSON.parse(JSON.stringify(prevObject))
+      for (const key in temp) {
+        if (Object.prototype.hasOwnProperty.call(temp, key)) {
+          if(key === 'page'){
+            temp[key] = 1
+          }else if(key === 'regions' || key === 'industries' || key === 'projTypes'){
+            temp[key] = []
+          }else if(key === 'confirmYear'){
+            temp[key] = null
+          }else if(key === 'group' || key === 'status' || key === 'name'){
+            temp[key] = ''
           }
-        </Radio.Group>
-        ,
-        <Input
-          key="search"
-          addonBefore="项目名称"
-          allowClear
-          onChange={(e) => setFilter(e.target.value)}
-        />,
-        // <Button key="create" type="primary" onClick={() => ref.current?.showDialog()}>
-        //   新建
-        // </Button>
-      ]}
-    >
+
+        }
+      }
+      return temp
+    })
+
+  }
+  useEffect(() => {
+    // 在状态更新后执行的逻辑
+    setQuery({
+      ...query,
+      ...params
+    })
+  }, [params]);
+  const [orgCodeOptions] = useState(
+    Object.keys(orgCode).map((s) => ({ label: orgCode[s], value: s })),
+  );
+  const [zoneCodeOptions] = useState(
+    Object.keys(zoneCode).map((s) => ({ label: zoneCode[s], value: s })),
+  );
+  const [projTypeOptoins] = useState(
+    Object.keys(projType).map((s) => ({ label: projType[s], value: s })),
+  );
+  const [statusOptions] = useState(projStatus.map((s) => ({ label: s[1], value: s[0] })));
+  const [groupsOptions] = useState(
+    groupType.map((s) => ({ label: s.toString().split('/')[2], value: s })),
+  );
+  //=====zhouyueyang
+  return (
+    <PageContainer className="bgColorWhite paddingBottom20">
+      <Row gutter={16}>
+        <Col className="gutter-row">
+          <Input
+          value={params.name}
+            key="search"
+            addonBefore="项目名称"
+            allowClear
+            onChange={(e)=>handleChangeInput(e.target.value)}
+            onPressEnter={(e)=>{handleEnter(e.target.value)}}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>行业：</label>
+          <Select
+          value={params.industries}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => {
+              handleChange(value, 'industries');
+            }}
+            options={orgCodeOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>区域：</label>
+          <Select
+          value={params.regions}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'regions')}
+            options={zoneCodeOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>类型：</label>
+          <Select
+           value={params.projTypes}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'projTypes')}
+            options={projTypeOptoins}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>阶段状态：</label>
+          <Select
+          value={params.status}
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'status')}
+            options={statusOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>项目部门：</label>
+          <Select
+            value={params.group}
+            allowClear
+            className="width122"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'group')}
+            options={groupsOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>确认年度：</label>
+          <DatePicker format="YYYY" value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null} picker="year" onChange={(value,event)=>{onChange(event)}} />
+        </Col>
+        <Col>
+          <Radio.Group
+            className="gutter-row displayInlineBlock"
+            key="archive"
+            value={archive}
+            onChange={(e) => setArchive(e.target.value)}
+          >
+            <Radio.Button value="0">项目</Radio.Button>
+            {isAdmin ? (
+              <Radio.Button value="1">归档项目</Radio.Button>
+            ) : (
+              <Radio.Button value="2">
+                <Badge count={todoProjs.length}>待办项目</Badge>
+              </Radio.Button>
+            )}
+          </Radio.Group>
+        </Col>
+      </Row>
+<Row justify="center" className='marginTop20'>
+  <Col ><Button onClick={()=>searchBtn()} type="primary" className='marginRight10'>查询</Button>
+    <Button onClick={()=>canaelBtn()} >重置</Button></Col>
+</Row>
       <Table
+        className="marginTop20"
         loading={loading}
         rowKey={(record) => record.id}
         columns={columns}
-        dataSource={!isAdmin && archive === "2" ? todoProjs : projs}
+        dataSource={!isAdmin && archive === '2' ? todoProjs : projs}
         scroll={{ x: 1500 }}
+        pagination={false}
         size="middle"
       />
+      <div className="paginationCon marginTop20 lineHeight32">
+
+        <Pagination onChange={(page, pageSize)=>pageChange(page)} current={params.page} total={total} className="floatRight " />
+        <label className="floatRight ">一共{total}条</label>
+      </div>
+
       <DialogForm
         ref={ref}
         title="编辑项目"
@@ -312,11 +452,7 @@ const Project: React.FC<any> = () => {
       >
         {ProjForm}
       </DialogForm>
-      <DialogForm
-        ref={dailyRef}
-        title="查看日报"
-        width={1300}
-      >
+      <DialogForm ref={dailyRef} title="查看日报" width={1300}>
         {DailyModal}
       </DialogForm>
       <DialogForm

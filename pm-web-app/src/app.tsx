@@ -25,7 +25,7 @@ export async function getInitialState(): Promise<{
   status?: Statu[];
   industries?: Industry[];
   regions?: Region[];
-  groups?: string[];
+  groups?: Group[];
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
   const { status, industries, regions, groups } = await getCurrentBasics();
@@ -124,7 +124,7 @@ window.addEventListener('error', (event) => {
   // 检查是否是 404 错误
   if (type === 'error') {
     // 在这里可以添加处理 net::ERR_ABORTED 错误的逻辑
-    message.error('认证超时，正在为您请刷新页面')
-    setTimeout(() => { location.reload() }, 1000)
+    // message.error('认证超时，正在为您请刷新页面')
+    // setTimeout(() => { location.reload() }, 1000)
   }
 }, true);

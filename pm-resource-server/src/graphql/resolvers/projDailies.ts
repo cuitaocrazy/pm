@@ -36,7 +36,6 @@ async function getParticipateProjectDailiesByLeader(
     // endDate = "20231202";
   }
 
-
   if (includes(projId)(projIds)) {
     const aggregateArray = [
       {
@@ -132,7 +131,7 @@ async function getParticipateProjectDailiesByLeader(
     }
 
     const d = await EmployeeDaily.aggregate(aggregateArray).toArray();
-    console.log(d);
+
     if (!head(d)) {
       return getDeafultDailies(projId);
     }

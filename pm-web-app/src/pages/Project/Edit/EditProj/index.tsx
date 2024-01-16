@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {  useRef, useState } from 'react';
 import {
   Button,
   Table,
@@ -14,6 +14,7 @@ import {
   Select,
   DatePicker,
   Pagination,
+Cascader,
 } from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
@@ -45,7 +46,6 @@ const Project: React.FC<any> = () => {
     loading,
     archive,
     setArchive,
-    setFilter,
     archiveProj,
     deleteProj,
     pushProj,
@@ -242,7 +242,7 @@ const Project: React.FC<any> = () => {
   projTypes:[],
   page: 1,
   confirmYear:null,
-  group:'',
+  group:[],
   status:'',
   name:'',
   })
@@ -253,7 +253,14 @@ const Project: React.FC<any> = () => {
       page:1
     })
   };
-  const onChange = (confirmYear) => {
+  const handleChangeCas = (value:any,type:string)=>{
+setParams({
+  ...params,
+  group:value,
+  page:1,
+})
+  }
+  const onChange = (confirmYear:any) => {
     setParams({
       ...params,
       confirmYear,
@@ -267,54 +274,80 @@ const Project: React.FC<any> = () => {
       page:1
     })
   }
-  const handleEnter = (name:string) => {
-    setParams({
+  const pageChange = (page:any)=>{
+    setParams({...params,page})
+    setQuery({
+      ...query,
       ...params,
-      name,
-      page:1
-    })
-  };
-  const pageChange = (page)=>{
-    setParams({
-      ...params,
-      page
+      page,
+      group:''
     })
   }
   const searchBtn = ()=>{
     setParams({
       ...params,
-      page:1
+      page:1,
+    })
+    setQuery({
+      ...query,
+      ...params,
+      page:1,
+      group:params.group.length !== 0 ? params.group.reduce((accumulator:string, currentValue:string)=> {return `${accumulator}/${currentValue}`},'') : ''
     })
   }
   const canaelBtn = ()=>{
-    // const propertiesToReset = ['key1', 'key2', 'key3'];
-    setParams(prevObject => {
-      let temp = JSON.parse(JSON.stringify(prevObject))
-      for (const key in temp) {
-        if (Object.prototype.hasOwnProperty.call(temp, key)) {
-          if(key === 'page'){
-            temp[key] = 1
-          }else if(key === 'regions' || key === 'industries' || key === 'projTypes'){
-            temp[key] = []
-          }else if(key === 'confirmYear'){
-            temp[key] = null
-          }else if(key === 'group' || key === 'status' || key === 'name'){
-            temp[key] = ''
-          }
 
-        }
-      }
-      return temp
+    setParams({
+      ...params,
+      regions:[],
+  industries:[],
+  projTypes:[],
+  page: 1,
+  confirmYear:null,
+  group:[],
+  status:'',
+  name:'',
+    })
+    setQuery({
+      ...query,
+      ...params,
+      regions:[],
+  industries:[],
+  projTypes:[],
+  page: 1,
+  confirmYear:null,
+  group:'',
+  status:'',
+  name:'',
     })
 
   }
-  useEffect(() => {
-    // 在状态更新后执行的逻辑
-    setQuery({
-      ...query,
-      ...params
-    })
-  }, [params]);
+  const groupDatas = (inputArray:any)=>{
+    let result:any = []
+    inputArray.forEach((item:any) => {
+    const path = item.substring(1).split('/');
+    let currentLevel = result;
+    path.forEach((segment:any, index:number) => {
+      const existingSegment = currentLevel.find((el:any) => el.value === segment);
+
+      if (existingSegment) {
+        currentLevel = existingSegment.children || [];
+
+      } else {
+        const newSegment = {
+          value: segment,
+          label: segment,
+          children: index === path.length - 1 ? [] : [],
+        };
+
+        currentLevel.push(newSegment);
+        currentLevel = newSegment.children || [];
+
+      }
+    });
+  })
+  return result
+}
   const [orgCodeOptions] = useState(
     Object.keys(orgCode).map((s) => ({ label: orgCode[s], value: s })),
   );
@@ -326,20 +359,22 @@ const Project: React.FC<any> = () => {
   );
   const [statusOptions] = useState(projStatus.map((s) => ({ label: s[1], value: s[0] })));
   const [groupsOptions] = useState(
-    groupType.map((s) => ({ label: s.toString().split('/')[2], value: s })),
+    groupDatas(groupType)
   );
+
   //=====zhouyueyang
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
       <Row gutter={16}>
         <Col className="gutter-row">
           <Input
+          id="proName"
           value={params.name}
             key="search"
             addonBefore="项目名称"
             allowClear
-            onChange={(e)=>handleChangeInput(e.target.value)}
-            onPressEnter={(e)=>{handleEnter(e.target.value)}}
+            onChange={(e)=>{handleChangeInput(e.target.value)}}
+
           />
         </Col>
         <Col className="gutter-row">
@@ -350,7 +385,7 @@ const Project: React.FC<any> = () => {
             allowClear
             className="width120"
             placeholder="请选择"
-            onChange={(value, event) => {
+            onChange={(value:any, event) => {
               handleChange(value, 'industries');
             }}
             options={orgCodeOptions}
@@ -364,7 +399,7 @@ const Project: React.FC<any> = () => {
             allowClear
             className="width120"
             placeholder="请选择"
-            onChange={(value, event) => handleChange(value, 'regions')}
+            onChange={(value:any, event) => handleChange(value, 'regions')}
             options={zoneCodeOptions}
           />
         </Col>
@@ -376,7 +411,7 @@ const Project: React.FC<any> = () => {
             allowClear
             className="width120"
             placeholder="请选择"
-            onChange={(value, event) => handleChange(value, 'projTypes')}
+            onChange={(value:any, event) => handleChange(value, 'projTypes')}
             options={projTypeOptoins}
           />
         </Col>
@@ -393,14 +428,14 @@ const Project: React.FC<any> = () => {
         </Col>
         <Col className="gutter-row">
           <label>项目部门：</label>
-          <Select
-            value={params.group}
-            allowClear
-            className="width122"
-            placeholder="请选择"
-            onChange={(value, event) => handleChange(value, 'group')}
-            options={groupsOptions}
-          />
+          <Cascader
+          value={params.group}
+          allowClear
+          changeOnSelect
+          className="width122"
+          placeholder="请选择"
+          onChange={(value, event) => {handleChangeCas(value, 'group')}}
+           options={groupsOptions} />
         </Col>
         <Col className="gutter-row">
           <label>确认年度：</label>

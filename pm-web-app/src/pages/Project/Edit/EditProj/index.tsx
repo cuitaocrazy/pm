@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, {  useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Button,
   Table,
@@ -14,12 +14,12 @@ import {
   Select,
   DatePicker,
   Pagination,
-Cascader,
+  Cascader,
 } from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
-import moment  from 'moment';
+import moment from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';
 import ProjActiveForm from './ProjActiveForm';
@@ -232,118 +232,118 @@ const Project: React.FC<any> = () => {
     });
   }
   //=====zhouyueyang
-  const [params,setParams] = useState({
-    regions:[],
-  industries:[],
-  projTypes:[],
-  page: 1,
-  confirmYear:null,
-  group:[],
-  status:'',
-  name:'',
+  const [params, setParams] = useState({
+    regions: [],
+    industries: [],
+    projTypes: [],
+    page: 1,
+    confirmYear: null,
+    group: [],
+    status: '',
+    name: '',
   })
-  const handleChange = (value='', type:string) => {
+  const handleChange = (value = '', type: string) => {
     setParams({
       ...params,
-      [type]:type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
-      page:1
+      [type]: type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
+      page: 1
     })
   };
-  const handleChangeCas = (value:any,type:string)=>{
-setParams({
-  ...params,
-  group:value,
-  page:1,
-})
+  const handleChangeCas = (value: any, type: string) => {
+    setParams({
+      ...params,
+      group: value,
+      page: 1,
+    })
   }
-  const onChange = (confirmYear:any) => {
+  const onChange = (confirmYear: any) => {
     setParams({
       ...params,
       confirmYear,
-      page:1
+      page: 1
     })
   };
-  const handleChangeInput = (name:string)=>{
+  const handleChangeInput = (name: string) => {
     setParams({
       ...params,
       name,
-      page:1
+      page: 1
     })
   }
-  const pageChange = (page:any)=>{
-    setParams({...params,page})
+  const pageChange = (page: any) => {
+    setParams({ ...params, page })
     setQuery({
       ...query,
       ...params,
       page,
-      group:''
+      group: ''
     })
   }
-  const searchBtn = ()=>{
+  const searchBtn = () => {
     setParams({
       ...params,
-      page:1,
+      page: 1,
     })
     setQuery({
       ...query,
       ...params,
-      page:1,
-      group:params.group.length !== 0 ? params.group.reduce((accumulator:string, currentValue:string)=> {return `${accumulator}/${currentValue}`},'') : ''
+      page: 1,
+      group: params.group.length !== 0 ? params.group.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, '') : ''
     })
   }
-  const canaelBtn = ()=>{
+  const canaelBtn = () => {
 
     setParams({
       ...params,
-      regions:[],
-  industries:[],
-  projTypes:[],
-  page: 1,
-  confirmYear:null,
-  group:[],
-  status:'',
-  name:'',
+      regions: [],
+      industries: [],
+      projTypes: [],
+      page: 1,
+      confirmYear: null,
+      group: [],
+      status: '',
+      name: '',
     })
     setQuery({
       ...query,
       ...params,
-      regions:[],
-  industries:[],
-  projTypes:[],
-  page: 1,
-  confirmYear:null,
-  group:'',
-  status:'',
-  name:'',
+      regions: [],
+      industries: [],
+      projTypes: [],
+      page: 1,
+      confirmYear: null,
+      group: '',
+      status: '',
+      name: '',
     })
 
   }
-  const groupDatas = (inputArray:any)=>{
-    let result:any = []
-    inputArray.forEach((item:any) => {
-    const path = item.substring(1).split('/');
-    let currentLevel = result;
-    path.forEach((segment:any, index:number) => {
-      const existingSegment = currentLevel.find((el:any) => el.value === segment);
+  const groupDatas = (inputArray: any) => {
+    let result: any = []
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
 
-      if (existingSegment) {
-        currentLevel = existingSegment.children || [];
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
 
-      } else {
-        const newSegment = {
-          value: segment,
-          label: segment,
-          children: index === path.length - 1 ? [] : [],
-        };
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
 
-        currentLevel.push(newSegment);
-        currentLevel = newSegment.children || [];
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
 
-      }
-    });
-  })
-  return result
-}
+        }
+      });
+    })
+    return result
+  }
   const [orgCodeOptions] = useState(
     Object.keys(orgCode).map((s) => ({ label: orgCode[s], value: s })),
   );
@@ -364,24 +364,24 @@ setParams({
       <Row gutter={16}>
         <Col className="gutter-row">
           <Input
-          id="proName"
-          value={params.name}
+            id="proName"
+            value={params.name}
             key="search"
             addonBefore="项目名称"
             allowClear
-            onChange={(e)=>{handleChangeInput(e.target.value)}}
+            onChange={(e) => { handleChangeInput(e.target.value) }}
 
           />
         </Col>
         <Col className="gutter-row">
           <label>行业：</label>
           <Select
-          value={params.industries}
+            value={params.industries}
             mode="multiple"
             allowClear
             className="width120"
             placeholder="请选择"
-            onChange={(value:any, event) => {
+            onChange={(value: any, event) => {
               handleChange(value, 'industries');
             }}
             options={orgCodeOptions}
@@ -390,31 +390,31 @@ setParams({
         <Col className="gutter-row">
           <label>区域：</label>
           <Select
-          value={params.regions}
+            value={params.regions}
             mode="multiple"
             allowClear
             className="width120"
             placeholder="请选择"
-            onChange={(value:any, event) => handleChange(value, 'regions')}
+            onChange={(value: any, event) => handleChange(value, 'regions')}
             options={zoneCodeOptions}
           />
         </Col>
         <Col className="gutter-row">
           <label>类型：</label>
           <Select
-           value={params.projTypes}
+            value={params.projTypes}
             mode="multiple"
             allowClear
             className="width120"
             placeholder="请选择"
-            onChange={(value:any, event) => handleChange(value, 'projTypes')}
+            onChange={(value: any, event) => handleChange(value, 'projTypes')}
             options={projTypeOptoins}
           />
         </Col>
         <Col className="gutter-row">
           <label>阶段状态：</label>
           <Select
-          value={params.status}
+            value={params.status}
             allowClear
             className="width120"
             placeholder="请选择"
@@ -425,17 +425,17 @@ setParams({
         <Col className="gutter-row">
           <label>项目部门：</label>
           <Cascader
-          value={params.group}
-          allowClear
-          changeOnSelect
-          className="width122"
-          placeholder="请选择"
-          onChange={(value, event) => {handleChangeCas(value, 'group')}}
-           options={groupsOptions} />
+            value={params.group}
+            allowClear
+            changeOnSelect
+            className="width122"
+            placeholder="请选择"
+            onChange={(value, event) => { handleChangeCas(value, 'group') }}
+            options={groupsOptions} />
         </Col>
         <Col className="gutter-row">
           <label>确认年度：</label>
-          <DatePicker format="YYYY" value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null} picker="year" onChange={(value,event)=>{onChange(event)}} />
+          <DatePicker format="YYYY" value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null} picker="year" onChange={(value, event) => { onChange(event) }} />
         </Col>
         <Col>
           <Radio.Group
@@ -455,10 +455,10 @@ setParams({
           </Radio.Group>
         </Col>
       </Row>
-<Row justify="center" className='marginTop20'>
-  <Col ><Button onClick={()=>searchBtn()} type="primary" className='marginRight10'>查询</Button>
-    <Button onClick={()=>canaelBtn()} >重置</Button></Col>
-</Row>
+      <Row justify="center" className='marginTop20'>
+        <Col ><Button onClick={() => searchBtn()} type="primary" className='marginRight10'>查询</Button>
+          <Button onClick={() => canaelBtn()} >重置</Button></Col>
+      </Row>
       <Table
         className="marginTop20"
         loading={loading}
@@ -471,7 +471,7 @@ setParams({
       />
       <div className="paginationCon marginTop20 lineHeight32">
 
-        <Pagination onChange={(page, pageSize)=>pageChange(page)} current={params.page} total={total} className="floatRight " />
+        <Pagination onChange={(page, pageSize) => pageChange(page)} current={params.page} total={total} className="floatRight " />
         <label className="floatRight ">一共{total}条</label>
       </div>
 

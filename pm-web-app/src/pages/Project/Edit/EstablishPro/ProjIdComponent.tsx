@@ -14,6 +14,8 @@ type ProjIdComponentProps = {
   value?: string;
   onChange?: OnChangeHandler;
   disabled?: boolean;
+  // onRegionChange?: (regionID: string) => void;  // 添加行业属性
+  // onIndustrieChange?: (industrieId: string) => void; // 添加区域属性
 };
 
 const styles = {
@@ -39,7 +41,30 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
   const { status, orgCode, projType, zoneCode } = useBaseState();
   const [isZh, setIsZh] = useState(false)
 
-  const info = getIdInfo(value);
+  const info = getIdInfo(value); // 获取项目信息对象
+
+  // const orgValue = info.org; // 获取org的值
+  // const zoneValue = info.zone; // 获取zone的值
+  // console.log("orgValue----" + orgValue)
+  // console.log("zoneValue----" + zoneValue)
+
+
+  // const changeNewOrg = (org: string) => {
+  //   info.org = org;
+  //   change();
+  //   // 调用回调函数将 org 的值传递给父组件
+  //   onOrgChange && onOrgChange(org);
+  // };
+
+  // const changeNewZone = (zone: string) => {
+  //   info.zone = zone;
+  //   change();
+  //   // 调用回调函数将 zone 的值传递给父组件
+  //   onZoneChange && onZoneChange(zone);
+  // };
+
+
+
   const getId = () =>
     `${info.org}-${info.zone}-${info.projType}-${info.simpleName}-${info.dateCode}`;
   const change = () => onChange && onChange(getId());
@@ -132,7 +157,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
             </Option>
           ))}
         </Select>
-        <span hidden={disabled} className="status-remark">{ info.projType ? status.find(p => p.code === info.projType)?.remark : '' }</span>
+        <span hidden={disabled} className="status-remark">{info.projType ? status.find(p => p.code === info.projType)?.remark : ''}</span>
         <Input
           key="simpleName"
           addonBefore={'项目缩写'}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Form,
   Input,
@@ -21,6 +21,8 @@ import type {
   TreeStatu,
   QueryGroupsUsersArgs,
   QueryProjDailyArgs,
+  CustomersQuery,
+  QueryCustomersArgs
 } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
@@ -117,6 +119,9 @@ export default () => {
       ],
     },
   });
+
+
+
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
     fetchPolicy: 'no-cache',
     variables: {
@@ -325,6 +330,31 @@ export default () => {
     );
   };
 
+  const id = form.getFieldValue('id');
+  const resultId = reg.exec(id);
+  const region = resultId?.groups?.org;
+  const industrie = resultId?.groups?.zone;
+
+  // 获取客户信息
+  const getNewCustomers = (type: string, label: string) => {
+    let customersArr = customerQueryData?.customers.filter((item) => item.enable) || []
+    return (
+      <Form.Item label={label} name={type} rules={[{ required: true }]}>
+        {customersArr.length ? (
+          <Select allowClear>
+            {customersArr.map((s: Customer) => (
+              <Select.Option key={s.id} value={s.id}>
+                {s.name}
+              </Select.Option>
+            ))}
+          </Select>
+        ) : (
+          <Select loading={loading} />
+        )}
+      </Form.Item>
+    );
+  }
+
   const renderActiveNode = (fields: any) => {
     let tempFields = [];
     for (let i = fields.length - 1; i >= 0; i--) {
@@ -333,6 +363,49 @@ export default () => {
     }
     return tempFields;
   };
+
+
+  // // 创建两个状态变量
+  // const [region, setRegion] = useState('');
+  // const [industrie, setIndustrie] = useState('');
+
+  // // 回调函数，用于接收子组件传递的 regionID 值
+  // const handleOrgChange = (regionID: string) => {
+  //   setRegion(regionID);
+  // };
+
+  // // 回调函数，用于接收子组件传递的 industrieID 值
+  // const handleZoneChange = (industrieID: string) => {
+  //   setIndustrie(industrieID);
+  // };
+
+  const queryCustomerVariables: QueryCustomersArgs = {
+    region: '',
+    industry: '',
+    page: 1,
+    pageSize: 100000
+  };
+
+  const customerQuery = gql`
+  query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
+    customers(region: $region, industry: $industry,page:1,pageSize:100000) {
+      customerId
+      customerName
+      enable
+      result
+    }
+  }
+`;
+
+  const { data: customerQueryData } = useQuery<CustomersQuery, QueryCustomersArgs>(customerQuery, {
+    fetchPolicy: 'no-cache',
+    variables: queryCustomerVariables,
+  });
+
+  if (customerQueryData) {
+    console.log(customerQueryData)
+  }
+
 
   return (
     <Form
@@ -365,7 +438,11 @@ export default () => {
                   rules={[{ required: true }, { validator }]}
                 >
                   {/* disabled={!!data?.id && !isDerive} */}
-                  <ProjIdComponent onChange={onIdChange} />
+                  <ProjIdComponent
+                    onChange={onIdChange}        // 处理整个 ID 变化的回调
+                  // onRegionChange={handleOrgChange} // 处理 org 变化的回调
+                  // onIndustrieChange={handleZoneChange} // 处理 zone 变化的回调
+                  />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={4}>

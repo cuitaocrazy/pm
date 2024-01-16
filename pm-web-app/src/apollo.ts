@@ -454,10 +454,22 @@ export type EventLog = {
 };
 //zhouyueyang===
 export type Result = {
-  result:Project[];
-  total:number;
-  page:number;
+  result: Project[];
+  total: number;
+  page: number;
 }
+
+export type CustomersQuery = {
+  customers: Customer[];
+}
+
+export type QueryCustomersArgs = {
+  region: Scalars['String'];
+  industry: Scalars['String'];
+  page: Scalars['Int']
+  pageSize: Scalars['Int']
+};
+
 //zhouyueyang===
 export type Query = {
   __typename?: 'Query';
@@ -518,8 +530,8 @@ export type QueryEmpDailyArgs = {
 
 export type QueryProjDailyArgs = {
   projId: Scalars['String'];
-  startDate:Scalars['String'];
-  endDate:Scalars['String'];
+  startDate: Scalars['String'];
+  endDate: Scalars['String'];
 };
 
 export type QueryEmpCostsArgs = {

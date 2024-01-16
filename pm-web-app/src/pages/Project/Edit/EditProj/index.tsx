@@ -118,10 +118,6 @@ const Project: React.FC<any> = () => {
       dataIndex: 'group',
       key: 'group',
       width: '200px',
-      render: (status: string) => {
-        let name = status && status.split('/')[2];
-        return name;
-      },
     },
     {
       title: '预算人天',

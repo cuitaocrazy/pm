@@ -397,6 +397,7 @@ const dataTypeDef = gql`
       group: String
       status: String
       name: String
+      leaders: [String]
     ): ProjectPage
     iLeadProjs(
       isArchive: Boolean

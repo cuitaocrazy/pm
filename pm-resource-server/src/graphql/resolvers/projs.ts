@@ -168,7 +168,7 @@ export default {
         filter["status"] = status;
       }
       if (group) {
-        filter["group"] = group;
+        filter["group"] = new RegExp(group, "g");
       }
       if (name) {
         filter["name"] = new RegExp(name, "g");
@@ -234,7 +234,7 @@ export default {
         filter["status"] = status;
       }
       if (group) {
-        filter["group"] = group;
+        filter["group"] = new RegExp(group, "g");
       }
       if (name) {
         filter["name"] = new RegExp(name, "g");

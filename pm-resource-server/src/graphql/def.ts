@@ -108,6 +108,11 @@ const dataTypeDef = gql`
     page: Int!
     total: Int!
   }
+  type CustomerPage {
+    result: [Customer!]!
+    page: Int!
+    total: Int!
+  }
 
   type Contact {
     name: String!
@@ -444,7 +449,7 @@ const dataTypeDef = gql`
     treeStatus: [TreeStatu!]!
     industries: [Industry!]!
     regions: [Region!]!
-    customers: [Customer!]!
+    customers(region:String,industry: String): CustomerPage
     agreements: [Agreement!]!
     projectAgreements: [ProjectAgreement!]!
     attachments: [Attachment!]!

@@ -1,17 +1,20 @@
-import moment from 'moment'
-import { isNil } from 'ramda'
-import { AuthContext } from '../../auth/oauth'
-import { ObjectId } from 'mongodb'
-import { ProjectAgreement } from '../../mongodb'
-import { dbid2id } from '../../util/utils'
+import moment from "moment";
+import { isNil } from "ramda";
+import { AuthContext } from "../../auth/oauth";
+import { ObjectId } from "mongodb";
+import { ProjectAgreement } from "../../mongodb";
+import { dbid2id } from "../../util/utils";
 
 export default {
   Query: {
-    projectAgreements: (_: any, __: any, context: AuthContext) => ProjectAgreement
-      .find()
-      .map(dbid2id)
-      .toArray(),
+    projectAgreements: async (_: any, __: any, context: AuthContext) => {
+      let { id } = __;
+      let filter = {};
+      if (id) {
+        filter = { _id: id };
+      }
+      return ProjectAgreement.find(filter).map(dbid2id).toArray();
+    },
   },
-  Mutation: {
-  },
-}
+  Mutation: {},
+};

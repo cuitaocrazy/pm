@@ -449,9 +449,10 @@ const dataTypeDef = gql`
     treeStatus: [TreeStatu!]!
     industries: [Industry!]!
     regions: [Region!]!
-    customers(region:String,industry: String): CustomerPage
+    customers(region: String, industry: String): CustomerPage
     agreements: [Agreement!]!
     projectAgreements: [ProjectAgreement!]!
+    getAgreementsByProjectId(id: String): [Agreement!]!
     attachments: [Attachment!]!
     tags: [String]
     markets: [Market!]!

@@ -461,7 +461,7 @@ const dataTypeDef = gql`
       page: Int
       pageSize: Int
     ): CustomerPage
-    agreements: AgreementPage
+    agreements(page: Int, pageSize: Int, name: String): AgreementPage
     projectAgreements: [ProjectAgreement!]!
     getAgreementsByProjectId(id: String): [Agreement!]!
     attachments: [Attachment!]!

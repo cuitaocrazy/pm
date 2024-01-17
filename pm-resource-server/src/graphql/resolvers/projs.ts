@@ -65,7 +65,7 @@ export default {
       if (name) {
         filter["name"] = new RegExp(name, "g");
       }
-      if (leaders) {
+      if (leaders && leaders.length > 0) {
         filter["leader"] = { $in: leaders };
       }
 

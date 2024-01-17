@@ -338,6 +338,7 @@ export type Customer = {
   isDel: Scalars['Boolean'];
   createDate: Scalars['String'];
   officeAddress: Scalars['String'];
+  result: Customer;
 };
 
 export type CustomerContact = {
@@ -460,7 +461,8 @@ export type Result = {
 }
 
 export type CustomersQuery = {
-  customers: Customer[];
+  customers: Customer;
+  // result: Customer[];
 }
 
 export type QueryCustomersArgs = {

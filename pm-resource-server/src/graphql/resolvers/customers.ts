@@ -9,6 +9,8 @@ export default {
   Query: {
     customers: async (_: any, __: any, context: AuthContext) => {
       let { region, industry, page, pageSize } = __;
+      console.log("客户后端----")
+      console.log(region)
       if (!page || page === 0) {
         page = 1;
       }
@@ -23,7 +25,7 @@ export default {
       if (industry) {
         filter["industryCode"] = industry;
       }
-      const result = Customer.find({ isDel: false })
+      const result = await Customer.find(filter)
         .skip(skip)
         .limit(pageSize)
         .sort({ sort: 1 })

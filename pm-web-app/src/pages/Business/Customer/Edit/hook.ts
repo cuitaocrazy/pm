@@ -15,7 +15,7 @@ const queryGql = gql`
       name
     }
     customers {
-      id
+      result{id
       name
       industryCode
       regionCode
@@ -31,7 +31,9 @@ const queryGql = gql`
       remark
       enable
       isDel
-      createDate
+      createDate}
+      total
+      page
     }
     tags
   }
@@ -67,7 +69,7 @@ export function useCustomerState() {
     initialRefresh()
   }, [refresh]);
 
-  const customers = queryData?.customers || [];
+  const customers = queryData?.customers.result || [];
   const subordinates = queryData?.subordinates || [];
 
   const deleteCustomer = useCallback(

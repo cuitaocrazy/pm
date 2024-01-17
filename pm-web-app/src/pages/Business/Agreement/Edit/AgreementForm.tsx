@@ -17,8 +17,10 @@ const userQuery = gql`
       name
     }
     customers {
-      id
-      name
+      result{
+        id
+        name
+      }
     }
     projs {
       id
@@ -34,6 +36,7 @@ const layout = {
 };
 
 export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
+  console.log(data,"data++++======")
   const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
   const { buildProjName } = useBaseState();
 
@@ -172,7 +175,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
             return false;
           }}
         >
-          {resData?.customers.map((u) => (
+          {resData?.customers.result.map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {u.name}
             </Select.Option>

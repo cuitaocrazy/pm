@@ -338,7 +338,6 @@ export type Customer = {
   isDel: Scalars['Boolean'];
   createDate: Scalars['String'];
   officeAddress: Scalars['String'];
-  result: Customer;
 };
 
 export type CustomerContact = {
@@ -459,10 +458,11 @@ export type Result = {
   total: number;
   page: number;
 }
-
+// 客户信息的返回结果类型
 export type CustomersQuery = {
-  customers: Customer;
-  // result: Customer[];
+  result: Customer[];
+  page: Scalars['Int'];
+  pageSize: Scalars['Int'];
 }
 
 export type QueryCustomersArgs = {

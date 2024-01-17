@@ -517,6 +517,8 @@ export type Query = {
 
 export type QueryProjectArgs = {
   isArchive?: Scalars['Boolean'];
+  // page: Scalars['Int'];
+  pageSize: Scalars['Int'];
 };
 
 export type QueryFilterProjectArgs = {

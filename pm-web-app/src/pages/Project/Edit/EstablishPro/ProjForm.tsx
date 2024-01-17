@@ -16,7 +16,7 @@ import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import type {
   ProjectInput,
-  Customer,
+  // Customer,
   Query,
   TreeStatu,
   QueryGroupsUsersArgs,
@@ -24,7 +24,7 @@ import type {
   CustomersQuery,
   QueryCustomersArgs
 } from '@/apollo';
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
@@ -61,13 +61,6 @@ const userQuery = gql`
     subordinates {
       id
       name
-    }
-    customers {
-      id
-      name
-      industryCode
-      regionCode
-      enable
     }
     projs {
       id
@@ -302,58 +295,66 @@ export default () => {
   // };
 
   // 获取客户信息
-  const getCustomers = (type: string, label: string) => {
-    let customersArr = resData?.customers.filter((item) => item.enable) || [];
-    if (customersArr.length > 1) {
-      const id = form.getFieldValue('id');
-      const result = reg.exec(id);
-      customersArr = customersArr.filter((item) => {
-        return (
-          item.industryCode === result?.groups?.org && item.regionCode === result?.groups?.zone
-        );
-      });
-    }
-    return (
-      <Form.Item label={label} name={type} rules={[{ required: true }]}>
-        {customersArr.length ? (
-          <Select allowClear>
-            {customersArr.map((s: Customer) => (
-              <Select.Option key={s.id} value={s.id}>
-                {s.name}
-              </Select.Option>
-            ))}
-          </Select>
-        ) : (
-          <Select loading={loading} />
-        )}
-      </Form.Item>
-    );
-  };
+  // const getCustomers = (type: string, label: string) => {
+  //   let customersArr = resData?.customers.filter((item) => item.enable) || [];
+  //   if (customersArr.length > 1) {
+  //     const id = form.getFieldValue('id');
+  //     const result = reg.exec(id);
+  //     customersArr = customersArr.filter((item) => {
+  //       return (
+  //         item.industryCode === result?.groups?.org && item.regionCode === result?.groups?.zone
+  //       );
+  //     });
+  //   }
+  //   return (
+  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
+  //       {customersArr.length ? (
+  //         <Select allowClear>
+  //           {customersArr.map((s: Customer) => (
+  //             <Select.Option key={s.id} value={s.id}>
+  //               {s.name}
+  //             </Select.Option>
+  //           ))}
+  //         </Select>
+  //       ) : (
+  //         <Select loading={loading} />
+  //       )}
+  //     </Form.Item>
+  //   );
+  // };
+
+
+
+  // 获取客户信息
+  // const getNewCustomers = (type: string, label: string) => {
+  //   console.log("111111")
+  //   console.log("222" + customerQueryData)
+
+  //   let customersArr = customerQueryData?.customers.filter((item) => item.enable) || []
+  //   console.log("333" + customerQueryData)
+  //   return (
+  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
+  //       {customersArr.length ? (
+  //         <Select allowClear
+  //         >
+  //           {customersArr.map((s: Customer) => (
+  //             <Select.Option key={s.id} value={s.id}>
+  //               {s.name}
+  //             </Select.Option>
+  //           ))}
+  //         </Select>
+  //       ) : (
+  //         <Select loading={loading} />
+  //       )}
+  //     </Form.Item>
+  //   );
+  // }
+
 
   const id = form.getFieldValue('id');
   const resultId = reg.exec(id);
-  const region = resultId?.groups?.org;
-  const industrie = resultId?.groups?.zone;
-
-  // 获取客户信息
-  const getNewCustomers = (type: string, label: string) => {
-    let customersArr = customerQueryData?.customers.filter((item) => item.enable) || []
-    return (
-      <Form.Item label={label} name={type} rules={[{ required: true }]}>
-        {customersArr.length ? (
-          <Select allowClear>
-            {customersArr.map((s: Customer) => (
-              <Select.Option key={s.id} value={s.id}>
-                {s.name}
-              </Select.Option>
-            ))}
-          </Select>
-        ) : (
-          <Select loading={loading} />
-        )}
-      </Form.Item>
-    );
-  }
+  const region = resultId?.groups?.zone;
+  const industry = resultId?.groups?.org;
 
   const renderActiveNode = (fields: any) => {
     let tempFields = [];
@@ -380,30 +381,52 @@ export default () => {
   // };
 
   const queryCustomerVariables: QueryCustomersArgs = {
-    region: '',
-    industry: '',
+    region: region || '',
+    industry: industry || '',
     page: 1,
     pageSize: 100000
   };
 
   const customerQuery = gql`
-  query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
-    customers(region: $region, industry: $industry,page:1,pageSize:100000) {
-      customerId
-      customerName
-      enable
-      result
+    query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
+      customers(region: $region, industry: $industry,page:$page,pageSize:$pageSize) {
+        result{
+          id
+          name
+          enable
+        }
+        page
+        total
+      }
     }
-  }
-`;
+  `;
 
-  const { data: customerQueryData } = useQuery<CustomersQuery, QueryCustomersArgs>(customerQuery, {
+  // const customerQuery = gql`
+  //   query GetCustomers($region: String!, $industry: String!) {
+  //     customers(region: $region, industry: $industry) {
+  //       result{
+  //         id
+  //         name
+  //         enable
+  //       }
+  //       page
+  //       total
+  //     }
+  //   }
+  // `;
+
+
+
+
+  const [fetchCustomersData, { data: customerListData }] = useLazyQuery<CustomersQuery, QueryCustomersArgs>(customerQuery, {
     fetchPolicy: 'no-cache',
     variables: queryCustomerVariables,
   });
 
-  if (customerQueryData) {
-    console.log(customerQueryData)
+
+  if (customerListData) {
+    console.log("4444")
+    console.log("data.customers--------" + JSON.stringify(customerListData.customers.result))
   }
 
 
@@ -467,11 +490,21 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item dependencies={['id']} noStyle>
-            {() => {
-              return getCustomers('customer', '客户名称');
-            }}
+          <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
+            <Select allowClear
+              onFocus={() => fetchCustomersData()}>
+              {customerListData?.customers.result.map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
+          {/* <Form.Item dependencies={['id']} noStyle>
+            {() => {
+              return getNewCustomers('customer', '客户名称');
+            }}
+          </Form.Item> */}
         </Col>
         <Col span={7}>
           <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>

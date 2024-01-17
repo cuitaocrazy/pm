@@ -17,7 +17,7 @@ import { attachmentUpload, filterTodoProject, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
-    query ($isArchive: Boolean) {
+    query ($isArchive: Boolean,$pageSize:Int) {
       subordinates {
         id
         name
@@ -30,20 +30,9 @@ const getGql = (proName: string) => {
         id
         agreementId
       }
-      customers {
-        id
-        name
-        industryCode
-        regionCode
-        salesman
-        enable
-        contacts {
-          name
-          phone
-          tags
-        }
-      }
-      ${proName}(isArchive: $isArchive){
+     
+      ${proName}(isArchive: $isArchive,pageSize:$pageSize){
+      result{
         id
         pId
         name
@@ -97,6 +86,9 @@ const getGql = (proName: string) => {
             thumbUrl
           }
         }
+      }  
+      page
+      total
       }
     }
   `;
@@ -126,7 +118,9 @@ export function useProjStatus() {
   const [archive, setArchive] = useState('0');
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryProjectArgs>(queryGql, {
     variables: {
-      isArchive: archive === '1' ? true : false
+      isArchive: archive === '1' ? true : false,
+      // page: 1,
+      pageSize: 100000,
     },
     fetchPolicy: 'no-cache',
   });
@@ -150,7 +144,7 @@ export function useProjStatus() {
     initialRefresh()
   }, [refresh]);
 
-  const tmpProjs = ((isAdmin ? queryData?.superProjs : queryData?.iLeadProjs) || []).map(item => {
+  const tmpProjs = ((isAdmin ? queryData?.result?.superProjs : queryData?.result?.iLeadProjs) || []).map(item => {
     return { ...item }
   });
   const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
@@ -159,7 +153,7 @@ export function useProjStatus() {
   })
   // projs
   const subordinates = queryData?.subordinates || [];
-  const customers = queryData?.customers || [];
+  // const customers = queryData?.customers || [];
   const agreements = queryData?.agreements || [];
   const projectAgreements = queryData?.projectAgreements || [];
 
@@ -197,7 +191,7 @@ export function useProjStatus() {
     projs,
     todoProjs,
     subordinates,
-    customers,
+    // customers,
     agreements,
     projectAgreements,
     filter,

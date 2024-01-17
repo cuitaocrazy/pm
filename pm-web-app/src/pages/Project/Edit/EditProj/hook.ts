@@ -28,19 +28,7 @@ const getGql = (proName: string) => {
         id
         agreementId
       }
-      customers {
-        id
-        name
-        industryCode
-        regionCode
-        salesman
-        enable
-        contacts {
-          name
-          phone
-          tags
-        }
-      }
+      
       ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name){
         result{
           id
@@ -131,9 +119,9 @@ export function useProjStatus() {
     Query,
     QueryProjectArgs
   >(queryGql, {
-    variables:{
+    variables: {
       isArchive: archive === '1' ? true : false, //1：归档，0:项目，2:代办项目
-  ...query,
+      ...query,
     },
     fetchPolicy: 'no-cache',
   }); //走后台获取数据，data为返回数据，refresh为函数，自己触发，variables为参数

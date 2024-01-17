@@ -37,6 +37,7 @@ export default {
         group,
         status,
         name,
+        leaders,
       } = __;
       if (!page || page === 0) {
         page = 1;
@@ -63,6 +64,9 @@ export default {
       }
       if (name) {
         filter["name"] = new RegExp(name, "g");
+      }
+      if (leaders) {
+        filter["leader"] = { $in: leaders };
       }
 
       for (let i = 0; i < regions.length; i++) {

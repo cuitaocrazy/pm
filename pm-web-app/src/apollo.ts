@@ -458,11 +458,16 @@ export type Result = {
   total: number;
   page: number;
 }
-// 客户信息的返回结果类型
-export type CustomersQuery = {
+export type CustomersResult = {
   result: Customer[];
   page: Scalars['Int'];
   pageSize: Scalars['Int'];
+}
+
+
+// 客户信息查询返回的类型
+export type CustomersQuery = {
+  customers: CustomersResult
 }
 
 export type QueryCustomersArgs = {

@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Button,
   Table,
@@ -16,9 +16,11 @@ import {
   Pagination,
   Cascader,
 } from 'antd';
-import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
+import type {
+  Project as Proj, ProjectInput, ActiveInput, QueryCustomersArgs, CustomersQuery,
+} from '@/apollo';
 import { client } from '@/apollo';
-import { ApolloProvider } from '@apollo/client';
+import { ApolloProvider, useQuery } from '@apollo/client';
 import moment from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';
@@ -357,6 +359,40 @@ const Project: React.FC<any> = () => {
   const [groupsOptions] = useState(
     groupDatas(groupType)
   );
+
+
+  // const [customerListData, setCustomerListData] = useState({} as any);
+  // const queryCustomerVariables: QueryCustomersArgs = {
+  //   region: region || '',
+  //   industry: industry || '',
+  //   page: 1,
+  //   pageSize: 100000
+  // };
+  // const customerQuery = gql`
+  //   query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
+  //     customers(region: $region, industry: $industry,page:$page,pageSize:$pageSize) {
+  //       result{
+  //         id
+  //         name
+  //         enable
+  //       }
+  //       page
+  //       total
+  //     }
+  //   }
+  // `;
+  // const { data: customerListData1 } = useQuery<CustomersQuery, QueryCustomersArgs>(customerQuery, {
+  //   fetchPolicy: 'no-cache',
+  //   variables: queryCustomerVariables,
+  // });
+  // console.log('-------')
+  // console.log(customerListData)
+  // console.log(customerListData1)
+  // useEffect(() => {
+  //   console.log('useEffect')
+  //   // console.log(customerListData1?.result)
+  //   setCustomerListData(customerListData1?.result)
+  // }, [customerListData1])
 
   //=====zhouyueyang
   return (

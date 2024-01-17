@@ -16,7 +16,6 @@ import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import type {
   ProjectInput,
-  // Customer,
   Query,
   TreeStatu,
   QueryGroupsUsersArgs,

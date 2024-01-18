@@ -39,9 +39,13 @@ const userQuery = gql`
       name
     }
     agreements {
-      id
-      name
-      type
+      result{
+        id
+        name
+        type
+      }
+      page
+      total
     }
     projectClasses {
       id
@@ -442,6 +446,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     });
 
   };
+
   // 处理customerListData1.customers获取值
   const [customerListData, setCustomerListData] = useState({} as any);
   const { data: customerListData1 } = useQuery<CustomersQuery, QueryCustomersArgs>(customerQuery, {
@@ -534,7 +539,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         <Col span={8}>
           <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
             <Select disabled allowClear>
-              {resData?.agreements.map((u) => (
+              {resData?.agreements.result.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>

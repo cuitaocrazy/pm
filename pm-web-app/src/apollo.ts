@@ -373,6 +373,11 @@ export type Agreement = {
   contactProj: Scalars['String'][];
   time: any[];
 };
+export type AgreementResult = {
+  result: Agreement
+  page: Scalars['Int'];
+  total: Scalars['Int'];
+};
 
 export type ProjectAgreement = {
   __typename?: 'ProjectAgreement';
@@ -508,7 +513,7 @@ export type Query = {
   projectClasses: ProjectClass[];
   groups: Group[];
   customers: Customer[];
-  agreements: Agreement[];
+  agreements: AgreementResult;
   projectAgreements: ProjectAgreement[];
   tags: Scalars['String'][];
   markets: Market[];

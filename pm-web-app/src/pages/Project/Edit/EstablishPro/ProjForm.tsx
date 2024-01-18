@@ -34,6 +34,15 @@ import moment from 'moment';
 import { useForm } from 'antd/es/form/Form';
 import { useProjStatus } from './hook';
 
+// customers(region: $region, industry: $industry, page: $page, pageSize: $pageSize) {
+//         result{
+//     id
+//     name
+//     enable
+//   }
+//   page
+//   total
+// }
 
 const userQuery = gql`
   query ($groups: [String!]) {
@@ -42,9 +51,13 @@ const userQuery = gql`
       name
     }
     agreements {
-      id
-      name
-      type
+      result{
+        id
+        name
+        type
+      }
+      page
+      total
     }
     projectClasses {
       id
@@ -435,7 +448,7 @@ export default () => {
       {...layout}
       form={form}
       // initialValues={data || { leader: initialState?.currentUser?.id }}
-      initialValues={{ leader: initialState?.currentUser?.id }}
+      initialValues={{ leader: initialState?.currentUser?.id, group: initialState?.currentUser?.groups }}
     // disabled={data?.status === 'endProj'}
     >
       <Form.Item shouldUpdate noStyle>
@@ -508,7 +521,7 @@ export default () => {
         <Col span={7}>
           <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
             <Select disabled allowClear>
-              {resData?.agreements.map((u) => (
+              {resData?.agreements.result.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>

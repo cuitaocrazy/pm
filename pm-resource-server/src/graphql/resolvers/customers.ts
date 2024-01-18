@@ -9,8 +9,6 @@ export default {
   Query: {
     customers: async (_: any, __: any, context: AuthContext) => {
       let { region, industry, page, pageSize } = __;
-      console.log("客户后端----")
-      console.log(region)
       if (!page || page === 0) {
         page = 1;
       }

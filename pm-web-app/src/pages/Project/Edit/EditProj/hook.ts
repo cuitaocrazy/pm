@@ -21,9 +21,14 @@ const getGql = (proName: string) => {
         name
       }
       agreements {
+      result{
         id
         name
+        type
       }
+      page
+      total
+    }
       projectAgreements {
         id
         agreementId

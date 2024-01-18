@@ -12,7 +12,7 @@ import moment from 'moment';
 const userQuery = gql`
 {
     customers {
-      id
+      result{id
       name
       industryCode
       regionCode
@@ -25,7 +25,9 @@ const userQuery = gql`
       remark
       enable
       isDel
-      createDate
+      createDate}
+      total
+      page
     }
     tags
     agreements {
@@ -85,7 +87,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
     return tempFields;
   }
-  
+
   return (
     <Tabs defaultActiveKey="1" type="card">
       <Tabs.TabPane tab="项目信息" key="1">
@@ -143,37 +145,37 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               <Upload { ...props } fileList={agreement?.fileList as UploadFile[]}></Upload>
             </div>
           </Descriptions.Item> */}
-          <Descriptions.Item label="项目经理:">{ 
+          <Descriptions.Item label="项目经理:">{
             find(sub => sub.id === data?.leader, resData?.subordinates || [])?.name
           }</Descriptions.Item>
-          <Descriptions.Item label="市场经理:">{ 
+          <Descriptions.Item label="市场经理:">{
             find(sub => sub.id === data?.salesLeader, resData?.subordinates || [])?.name
           }</Descriptions.Item>
-          <Descriptions.Item label="参与人员:" span={3}>{ 
+          <Descriptions.Item label="参与人员:" span={3}>{
             map(lead => filter(sub => sub.id === lead, resData?.subordinates || [])[0]?.name, data?.participants || []).join(' ')
           }</Descriptions.Item>
 
-          <Descriptions.Item label="阶段状态:">{ 
+          <Descriptions.Item label="阶段状态:">{
             getStatusDisplayName(data?.status || '')
           }</Descriptions.Item>
-          <Descriptions.Item label="项目状态:">{ 
+          <Descriptions.Item label="项目状态:">{
             find(statu => statu.id === data?.projStatus, status)?.name
           }</Descriptions.Item>
 
-          <Descriptions.Item label="验收状态:">{ 
+          <Descriptions.Item label="验收状态:">{
             find(statu => statu.id === data?.acceStatus, status)?.name
           }</Descriptions.Item>
-          <Descriptions.Item label="合同状态:">{ 
+          <Descriptions.Item label="合同状态:">{
             find(statu => statu.id === data?.contStatus, status)?.name
           }</Descriptions.Item>
-        
-          <Descriptions.Item label="启动日期:">{ 
+
+          <Descriptions.Item label="启动日期:">{
             data?.startTime ? moment(data?.startTime).format('YYYY-MM-DD') : ''
           }</Descriptions.Item>
-          <Descriptions.Item label="关闭日期:">{ 
+          <Descriptions.Item label="关闭日期:">{
             data?.endTime ? moment(data?.endTime).format('YYYY-MM-DD') : ''
           }</Descriptions.Item>
-          
+
           {/* <Descriptions.Item label="合同金额:">{ data?.contAmount }</Descriptions.Item>
           <Descriptions.Item label="确认金额:">{ data?.recoAmount }</Descriptions.Item>
           <Descriptions.Item label="税后金额:">{ data?.taxAmount }</Descriptions.Item>

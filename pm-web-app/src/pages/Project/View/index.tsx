@@ -1,31 +1,65 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef } from 'react';
-import { Table, Tag, Input, ButtonProps } from 'antd';
-import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
+import React, { useEffect, useRef, useState, useContext, createContext } from 'react';
+import {
+  Table,
+  Tag,
+  Input,
+  ButtonProps,
+  DatePicker,
+  Col,
+  Row,
+  Button,
+  Select,
+  Pagination,
+  Cascader,
+  Space,
+} from 'antd';
+import type {
+  Project as Proj,
+  ProjectInput,
+  ActiveInput,
+  AgreementInput,
+  Agreement as AgreementType,
+} from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
-import { useProjStatus } from './hook';
+import { useAgreementState, useProjStatus } from './hook';
 import ProjDetail from './ProjDetail';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { useBaseState } from '@/pages/utils/hook';
 import { getStatusDisplayName, projStatus } from './utils';
+import '@/common.css';
+import AgreementForm from './AgreementForm';
 
-const Project: React.FC<any> = () => {
+const Project: React.FC<any> = (props) => {
+  const [queryDataState, setQueryDataState] = useState({});
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
-  const { projs, subordinates, customers, agreements, projectAgreements, loading, setFilter } = useProjStatus();
-  const { status, orgCode, zoneCode, projType, buildProjName,groupType } = useBaseState();
+  const {
+    projs,
+    subordinates,
+    customers,
+    agreements,
+    projectAgreements,
+    loading,
+    setQuery,
+    query,
+    total,
+    access,
+  } = useProjStatus(setQueryDataState);
+  const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj) => {
-    const agree = projectAgreements.filter(item => item.id === proj.id)
+    // let temp = JSON.parse(JSON.stringify(projectAgreements));
+    const agree = projectAgreements.filter((item) => item.id === proj.id);
     const { actives, ...pro } = proj;
-    detailRef.current?.showDialog({ 
+    detailRef.current?.showDialog({
       ...pro,
-      contName: agree.length ? agree[0].agreementId : '', 
-      actives: (actives as ActiveInput[])?.map(item => {
+      contName: agree.length ? agree[0].agreementId : '',
+      actives: (actives as ActiveInput[])?.map((item) => {
         // @ts-ignore
-        item.date = moment(item.date)
-        return item
+        item.date = moment(item.date);
+        return item;
       }),
       // @ts-ignore
       startTime: pro.startTime && moment(pro.startTime),
@@ -38,31 +72,148 @@ const Project: React.FC<any> = () => {
     });
   };
 
-  // const makeGroupProps = (children: any, row: Proj, index: number) => {
-  //   const obj = {
-  //     children,
-  //     props: {} as any,
-  //   };
-  //   if (index === 0) {
-  //     // @ts-ignore
-  //     obj.props.rowSpan = row.props.allIndex - row.props.index;
-  //   } else {
-  //     // @ts-ignore
-  //     obj.props.rowSpan = row.props.index === 0 ? row.props.allIndex : 0;
-  //   }
-  //   return obj;
-  // };
-  // const makeGroupRender = (value: string, row: Proj, index: number) => {
-  //   return makeGroupProps(value, row, index);
-  // };
-  // render: makeGroupRender,
+  //=====zhouyueyang
+  const groupDatas = (inputArray: any) => {
+    let result: any = [];
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
+
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
+        }
+      });
+    });
+    return result;
+  };
+  const [params, setParams] = useState({
+    regions: [],
+    industries: [],
+    projTypes: [],
+    page: 1,
+    confirmYear: null,
+    group: [],
+    status: '',
+    name: '',
+  });
+  const handleChange = (value = '', type: string) => {
+    setParams({
+      ...params,
+      [type]:
+        type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
+      page: 1,
+    });
+  };
+  const handleChangeCas = (value: any, type: string) => {
+    setParams({
+      ...params,
+      group: value,
+      page: 1,
+    });
+  };
+  const onChange = (confirmYear: any) => {
+    setParams({
+      ...params,
+      confirmYear,
+      page: 1,
+    });
+  };
+  const handleChangeInput = (name: string) => {
+    setParams({
+      ...params,
+      name,
+      page: 1,
+    });
+  };
+  const handleEnter = (name: string) => {
+    setParams({
+      ...params,
+      name,
+      page: 1,
+    });
+  };
+  const pageChange = (page: any) => {
+    setParams({ ...params, page });
+    setQuery({
+      ...query,
+      ...params,
+      page,
+      group: '',
+    });
+  };
+  const searchBtn = () => {
+    setParams({
+      ...params,
+      page: 1,
+    });
+    setQuery({
+      ...query,
+      ...params,
+      page: 1,
+      group:
+        params.group.length !== 0
+          ? params.group.reduce((accumulator: string, currentValue: string) => {
+              return `${accumulator}/${currentValue}`;
+            }, '')
+          : '',
+    });
+  };
+  const canaelBtn = () => {
+    setParams({
+      ...params,
+      regions: [],
+      industries: [],
+      projTypes: [],
+      page: 1,
+      confirmYear: null,
+      group: [],
+      status: '',
+      name: '',
+    });
+    setQuery({
+      ...query,
+      ...params,
+      regions: [],
+      industries: [],
+      projTypes: [],
+      page: 1,
+      confirmYear: null,
+      group: '',
+      status: '',
+      name: '',
+    });
+  };
+  const [orgCodeOptions] = useState(
+    Object.keys(orgCode).map((s) => ({ label: orgCode[s], value: s })),
+  );
+  const [zoneCodeOptions] = useState(
+    Object.keys(zoneCode).map((s) => ({ label: zoneCode[s], value: s })),
+  );
+  const [projTypeOptoins] = useState(
+    Object.keys(projType).map((s) => ({ label: projType[s], value: s })),
+  );
+  const [statusOptions] = useState(projStatus.map((s) => ({ label: s[1], value: s[0] })));
+  const [groupsOptions] = useState(groupDatas(groupType));
+  const ref = useRef<FormDialogHandle<AgreementInput>>(null);
+  const { pushAgreement, getArgByProId } = useAgreementState();
+  console.log(agreements, 'agreements====out!!!!');
   const columns = [
     {
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',
-      
-      width: 120
+      width: 120,
     },
     {
       title: '项目ID',
@@ -73,25 +224,7 @@ const Project: React.FC<any> = () => {
           <a onClick={() => editHandle(record)}>{buildProjName(record.id, record.name)} </a>
         </div>
       ),
-      filters: [
-        {
-          text: '行业',
-          value: 'orgCode',
-          children: Object.keys(orgCode).map((s) => ({ text: orgCode[s], value: s })),
-        },
-        {
-          text: '区域',
-          value: 'zoneCode',
-          children: Object.keys(zoneCode).map((s) => ({ text: zoneCode[s], value: s })),
-        },
-        {
-          text: '类型',
-          value: 'projType',
-          children: Object.keys(projType).map((s) => ({ text: projType[s], value: s })),
-        }
-      ],
-      onFilter: (value: string | number | boolean, record: Proj) => record.id.indexOf(value + '') > -1,
-      width: 250
+      width: 250,
     },
     {
       title: '项目经理',
@@ -116,10 +249,12 @@ const Project: React.FC<any> = () => {
       dataIndex: 'status',
       key: 'status',
       width: '120px',
-      render: (status: string) => <Tag color={ status ? status === 'onProj' ? "success" : 'default' : 'warning' }>{ getStatusDisplayName(status) }</Tag> ,
-      filters: projStatus.map((s) => ({ text: s[1], value: s[0] })),
-      onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
-    },  
+      render: (status: string) => (
+        <Tag color={status ? (status === 'onProj' ? 'success' : 'default') : 'warning'}>
+          {getStatusDisplayName(status)}
+        </Tag>
+      ),
+    },
     {
       title: '客户名称',
       dataIndex: 'customer',
@@ -127,17 +262,21 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return customers.find((cum) => cum.id === record.customer)?.name;
       },
-      width:150,
+      width: 150,
     },
     {
       title: '合同名称',
       dataIndex: 'contName',
       key: 'contName',
       render: (text: string, record: Proj) => {
-        const agree = projectAgreements.filter(item => item.id === record.id)
-        return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : ''
+        // let temp = JSON.parse(JSON.stringify(projectAgreements || {}));
+        // let temp1 = JSON.parse(JSON.stringify(agreements || {}));
+        // console.log(projectAgreements,'projectAgreements====')
+        console.log(agreements, 'agreements=====');
+        const agree = projectAgreements.filter((item) => item.id === record.id);
+        return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : '';
       },
-      width:150,
+      width: 150,
     },
     {
       title: '项目状态',
@@ -146,19 +285,13 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.projStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     {
       title: '项目部门',
       dataIndex: 'group',
       key: 'group',
       width: '200px',
-      render: (status: string) =>  {
-        let name = status&&status.split('/')[2];
-        return name;
-      },
-      filters: groupType.map((s) => ({ text: s.toString().split('/')[2], value: s })),
-      onFilter: (value: string | number | boolean, record: Proj) => record.group === value,
     },
     {
       title: '合同状态',
@@ -167,7 +300,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.contStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     {
       title: '验收状态',
@@ -176,7 +309,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.acceStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     {
       title: '确认年度',
@@ -188,42 +321,225 @@ const Project: React.FC<any> = () => {
       width: 100,
     },
   ];
+  if (access?.includes('realm:assistant')) {
+    columns.push({
+      title: '操作',
+      key: 'action',
+      render: (id: string, record: Proj) => (
+        <Space>
+          <a
+            key="archive"
+            onClick={async () => {
+              // 点击操作
+              let res = await getArgByProId(record.id);
+              if (res.data.getAgreementsByProjectId.length !== 0) {
+                res.data.getAgreementsByProjectId[0].contactProj = [record.id];
+                res.data.getAgreementsByProjectId[0].time = [
+                  moment(res.data.getAgreementsByProjectId[0].startTime),
+                  moment(res.data.getAgreementsByProjectId[0].endTime),
+                ];
+                ref.current?.showDialog({ ...res.data.getAgreementsByProjectId[0] });
+              } else {
+                ref.current?.showDialog({
+                  name: '',
+                  customer: record.customer,
+                  type: '',
+                  contactProj: [record.id],
+                  startTime: '',
+                  endTime: '',
+                  fileList: [],
+                  remark: '',
+                });
+              }
+            }}
+          >
+            添加合同
+          </a>
+        </Space>
+      ),
+      fixed: 'right' as 'right',
+      width: 120,
+    });
+  }
+
+  //=====zhouyueyang
+  // const [columns, setColumns] = useState<any>(originCols);
+  // let columns = []
+  // console.log('2222222')
+  // console.log(queryDataState, 'projectAgreements=========+++++++++');
+  useEffect(() => {
+    // console.log('1111111');
+    // console.log(projectAgreements,'projectAgreements=========');
+
+    console.log(queryDataState, 'queryDataState====)))))))');
+    console.log(agreements, 'agreements====)))))))');
+    console.log(projectAgreements, 'projectAgreements====)))))))');
+    if (Object.keys(queryDataState || { projectAgreements: [], agreements: [] }).length !== 0) {
+      columns[6] = {
+        title: '合同名称',
+        dataIndex: 'contName',
+        key: 'contName',
+        render: (text: string, record: Proj) => {
+          let temp = JSON.parse(JSON.stringify(queryDataState.projectAgreements || []));
+          let temp1 = JSON.parse(JSON.stringify(queryDataState.agreements || []));
+          const agree = temp.filter((item) => item.id === record.id);
+          return agree.length ? temp1.find((cum) => cum.id === agree[0].agreementId)?.name : '';
+        },
+        width: 150,
+      };
+      // console.log(copyCloumns, 'copyCloumns====');
+      // setColumns([...columns]);
+    }
+  }, [projectAgreements, agreements, queryDataState]);
+
   const onCancelButtonProps: ButtonProps = {
     style: { display: 'none' }, // 设置样式让按钮消失
   };
   return (
-    <PageContainer
-      extra={[
-        <Input
-          key="search"
-          addonBefore="项目名称"
-          allowClear
-          onChange={(e) => setFilter(e.target.value)}
-        />
-      ]}
-    >
+    <PageContainer className="bgColorWhite paddingBottom20">
+      <Row gutter={16}>
+        <Col className="gutter-row">
+          <Input
+            value={params.name}
+            key="search"
+            addonBefore="项目名称"
+            allowClear
+            onChange={(e) => handleChangeInput(e.target.value)}
+            onPressEnter={(e: any) => {
+              handleEnter(e.target.value);
+            }}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>行业：</label>
+          <Select
+            value={params.industries}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value: any, event) => {
+              handleChange(value, 'industries');
+            }}
+            options={orgCodeOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>区域：</label>
+          <Select
+            value={params.regions}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value: any, event) => handleChange(value, 'regions')}
+            options={zoneCodeOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>类型：</label>
+          <Select
+            value={params.projTypes}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value: any, event) => handleChange(value, 'projTypes')}
+            options={projTypeOptoins}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>阶段状态：</label>
+          <Select
+            value={params.status}
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'status')}
+            options={statusOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>项目部门：</label>
+          <Cascader
+            value={params.group}
+            allowClear
+            changeOnSelect
+            className="width122"
+            placeholder="请选择"
+            onChange={(value, event) => {
+              handleChangeCas(value, 'group');
+            }}
+            options={groupsOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>确认年度：</label>
+          <DatePicker
+            format="YYYY"
+            value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
+            picker="year"
+            onChange={(value, event) => {
+              onChange(event);
+            }}
+          />
+        </Col>
+      </Row>
+      <Row justify="center" className="marginTop20">
+        <Col>
+          <Button onClick={() => searchBtn()} type="primary" className="marginRight10">
+            查询
+          </Button>
+          <Button onClick={() => canaelBtn()}>重置</Button>
+        </Col>
+      </Row>
       <Table
+        className="marginTop20"
         loading={loading}
         scroll={{ x: 1700 }}
         rowKey={(record) => record.id}
         columns={columns}
         dataSource={projs}
+        pagination={false}
         size="middle"
       />
+      <div className="paginationCon marginTop20 lineHeight32">
+        <Pagination
+          onChange={(page, pageSize) => pageChange(page)}
+          current={params.page}
+          total={total}
+          className="floatRight "
+        />
+        <label className="floatRight ">一共{total}条</label>
+      </div>
       <DialogForm
-      cancelButtonProps={onCancelButtonProps}
+        cancelButtonProps={onCancelButtonProps}
         ref={detailRef}
         title="项目详情"
         width={1000}
       >
         {ProjDetail}
       </DialogForm>
+      <DialogForm
+        submitHandle={(v: AgreementInput) => {
+          let customerName = customers.find((item) => item.id === v.customer)?.name;
+          return pushAgreement({ ...v, customerName });
+        }}
+        ref={ref}
+        title="添加合同"
+      >
+        {AgreementForm}
+      </DialogForm>
     </PageContainer>
   );
 };
 
-export default () => (
-  <ApolloProvider client={client}>
-    <Project />
-  </ApolloProvider>
-);
+// const myContext = createContext({});
+export default () => {
+  // const context = useContext(myContext);
+  return (
+    <ApolloProvider client={client}>
+      <Project />
+    </ApolloProvider>
+  );
+};

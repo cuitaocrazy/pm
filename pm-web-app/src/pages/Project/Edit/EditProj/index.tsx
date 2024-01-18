@@ -144,7 +144,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-        return customers.find((cum) => cum.id === record.customer)?.name;
+        return customers?.result?.find((cum) => cum.id === record.customer)?.name;
       },
       width: 150,
     },

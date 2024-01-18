@@ -17,9 +17,9 @@ const Agreement: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<AgreementInput>>(null);
   const editHandle = (agreement: AgreementType) => {
     const projArr = projectAgreements.filter(item => {
-        return item.agreementId === agreement.id
-      }).map(pro => pro.id)
-      console.log(projArr)
+      return item.agreementId === agreement.id
+    }).map(pro => pro.id)
+    console.log(projArr)
     agreement.contactProj = projArr
     agreement.time = [moment(agreement.startTime), moment(agreement.endTime)]
     ref.current?.showDialog({ ...agreement });
@@ -61,8 +61,8 @@ const Agreement: React.FC<any> = () => {
           return item.agreementId === record.id
         })
         const nameArrTags = projArr.map(pro => {
-          const projName= projs?.find((item) => pro.id === item.id)?.name || ''
-          return <Tag color="processing" key={pro.id}>{ buildProjName(pro.id, projName)}</Tag>
+          const projName = projs?.find((item) => pro.id === item.id)?.name || ''
+          return <Tag color="processing" key={pro.id}>{buildProjName(pro.id, projName)}</Tag>
         })
         return nameArrTags
       },
@@ -144,7 +144,7 @@ const Agreement: React.FC<any> = () => {
       />
       <DialogForm submitHandle={(v: AgreementInput) => {
         let customerName = customers.find(item => item.id === v.customer)?.name
-        return pushAgreement({...v, customerName})
+        return pushAgreement({ ...v, customerName })
       }} ref={ref} title="编辑合同">
         {AgreementForm}
       </DialogForm>

@@ -5,6 +5,7 @@ import type {
   ProjectInput,
   Query,
   QueryProjectArgs,
+  CustomersResult
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
@@ -164,7 +165,7 @@ export function useProjStatus() {
   });
   // projs
   const subordinates = queryData?.subordinates || [];
-  const customers = queryData?.customers || [];
+  const customers = queryData?.customers as CustomersResult || [];
   const agreements = queryData?.agreements || [];
   const projectAgreements = queryData?.projectAgreements || [];
 

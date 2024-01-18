@@ -33,7 +33,8 @@ const queryGql = gql`
       page
     }
     agreements {
-      id
+      result{
+        id
       name
       customer
       type
@@ -48,6 +49,9 @@ const queryGql = gql`
       endTime
       isDel
       createDate
+      }
+      page
+      total
     }
   }
 `;
@@ -64,12 +68,12 @@ const deleteAgreementGql = gql`
   }
 `;
 
-async function attachmentUpload (agreement: AgreementInput) {
+async function attachmentUpload(agreement: AgreementInput) {
   const formData = new FormData();
   // 临时变量
-  let fileArr:any = []
+  let fileArr: any = []
   // 拼接附件存储路径
-  formData.append('directory',`/${agreement.customerName}/${agreementType[agreement.type]}/${agreement.name}_`);
+  formData.append('directory', `/${agreement.customerName}/${agreementType[agreement.type]}/${agreement.name}_`);
   agreement?.fileList?.forEach((file: any) => {
     if (file.originFileObj) {
       formData.append('uids[]', file.uid);
@@ -114,7 +118,7 @@ export function useAgreementState() {
     refresh();
   }, [refresh]);
 
-  const agreements = queryData?.agreements || [];
+  const agreements = queryData?.agreements.result || [];
   const subordinates = queryData?.subordinates || [];
   const customers = queryData?.customers.result || [];
   const projs = queryData?.projs || [];

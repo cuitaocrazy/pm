@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useEffect, useRef, useState, useContext, createContext } from 'react';
+import React, {  useRef, useState, } from 'react';
 import {
   Table,
   Tag,
@@ -24,7 +24,7 @@ import type {
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
-import { useAgreementState, useProjStatus } from './hook';
+import {  useProjStatus } from './hook';
 import ProjDetail from './ProjDetail';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
@@ -34,7 +34,6 @@ import '@/common.css';
 import AgreementForm from './AgreementForm';
 
 const Project: React.FC<any> = (props) => {
-  const [queryDataState, setQueryDataState] = useState({});
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
   const {
     projs,
@@ -47,10 +46,11 @@ const Project: React.FC<any> = (props) => {
     query,
     total,
     access,
-  } = useProjStatus(setQueryDataState);
+    pushAgreement, getArgByProId
+  } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj) => {
-    // let temp = JSON.parse(JSON.stringify(projectAgreements));
+
     const agree = projectAgreements.filter((item) => item.id === proj.id);
     const { actives, ...pro } = proj;
     detailRef.current?.showDialog({
@@ -206,8 +206,6 @@ const Project: React.FC<any> = (props) => {
   const [statusOptions] = useState(projStatus.map((s) => ({ label: s[1], value: s[0] })));
   const [groupsOptions] = useState(groupDatas(groupType));
   const ref = useRef<FormDialogHandle<AgreementInput>>(null);
-  const { pushAgreement, getArgByProId } = useAgreementState();
-  console.log(agreements, 'agreements====out!!!!');
   const columns = [
     {
       title: '项目名称',
@@ -269,10 +267,6 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'contName',
       key: 'contName',
       render: (text: string, record: Proj) => {
-        // let temp = JSON.parse(JSON.stringify(projectAgreements || {}));
-        // let temp1 = JSON.parse(JSON.stringify(agreements || {}));
-        // console.log(projectAgreements,'projectAgreements====')
-        console.log(agreements, 'agreements=====');
         const agree = projectAgreements.filter((item) => item.id === record.id);
         return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : '';
       },
@@ -363,34 +357,6 @@ const Project: React.FC<any> = (props) => {
   }
 
   //=====zhouyueyang
-  // const [columns, setColumns] = useState<any>(originCols);
-  // let columns = []
-  // console.log('2222222')
-  // console.log(queryDataState, 'projectAgreements=========+++++++++');
-  useEffect(() => {
-    // console.log('1111111');
-    // console.log(projectAgreements,'projectAgreements=========');
-
-    console.log(queryDataState, 'queryDataState====)))))))');
-    console.log(agreements, 'agreements====)))))))');
-    console.log(projectAgreements, 'projectAgreements====)))))))');
-    if (Object.keys(queryDataState || { projectAgreements: [], agreements: [] }).length !== 0) {
-      columns[6] = {
-        title: '合同名称',
-        dataIndex: 'contName',
-        key: 'contName',
-        render: (text: string, record: Proj) => {
-          let temp = JSON.parse(JSON.stringify(queryDataState.projectAgreements || []));
-          let temp1 = JSON.parse(JSON.stringify(queryDataState.agreements || []));
-          const agree = temp.filter((item) => item.id === record.id);
-          return agree.length ? temp1.find((cum) => cum.id === agree[0].agreementId)?.name : '';
-        },
-        width: 150,
-      };
-      // console.log(copyCloumns, 'copyCloumns====');
-      // setColumns([...columns]);
-    }
-  }, [projectAgreements, agreements, queryDataState]);
 
   const onCancelButtonProps: ButtonProps = {
     style: { display: 'none' }, // 设置样式让按钮消失
@@ -533,10 +499,7 @@ const Project: React.FC<any> = (props) => {
     </PageContainer>
   );
 };
-
-// const myContext = createContext({});
 export default () => {
-  // const context = useContext(myContext);
   return (
     <ApolloProvider client={client}>
       <Project />

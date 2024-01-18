@@ -31,7 +31,7 @@ const userQuery = gql`
     }
     tags
     agreements {
-      id
+      result{id
       name
       type
       remark
@@ -44,7 +44,9 @@ const userQuery = gql`
       startTime
       endTime
       isDel
-      createDate
+      createDate}
+      total
+      page
     }
     projectAgreements {
       id

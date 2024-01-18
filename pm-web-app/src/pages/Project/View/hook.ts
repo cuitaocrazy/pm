@@ -6,11 +6,10 @@ import type {
   MutationPushProjectArgs,
   ProjectInput,
   Query,
-  QueryArgByIdArgs,
   QueryProjectArgs,
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
-import { useCallback, useEffect, useState, useContext } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { agreementType, useBaseState } from '@/pages/utils/hook';
 import { useModel } from 'umi';
 import * as R from 'ramda';
@@ -30,14 +29,14 @@ const queryGql = gql`
     $status: String
     $name: String
     $pageSize: Int
-    $page1: Int
-    $pageSize1: Int
+    $pageAgreements: Int
+    $pageSizeAgreements: Int
   ) {
     subordinates {
       id
       name
     }
-    agreements(page: $page1, pageSize: $pageSize1) {
+    agreements(page: $pageAgreements, pageSize: $pageSizeAgreements) {
       result {
         id
         name
@@ -175,9 +174,7 @@ const pushAgreementGql = gql`
   }
 `;
 
-export function useProjStatus(setQueryDataState: any) {
-  console.log('useProjStatus');
-  console.log(setQueryDataState);
+export function useProjStatus() {
   const [archive, setArchive] = useState(false);
   let [query, setQuery] = useState({ page: 1, pageSize: 10000000 });
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
@@ -187,12 +184,11 @@ export function useProjStatus(setQueryDataState: any) {
     variables: {
       isArchive: archive,
       ...query,
-      page1: 1,
-      pageSize1: 10000000,
+      pageAgreements: 1,
+      pageSizeAgreements: 10000000,
     },
     fetchPolicy: 'no-cache',
   });
-  // console.log(queryData, 'queryData=======++++%%%%%%%%');
 
   const [deleteProjHandle, { loading: deleteLoading }] = useMutation<
     Mutation,
@@ -205,63 +201,11 @@ export function useProjStatus(setQueryDataState: any) {
   const { refresh: initialRefresh, initialState } = useModel('@@initialState');
   const { buildProjName } = useBaseState();
   const [filter, setFilter] = useState('');
-  // let [queryDataState, setQueryDataState] = useState({} as any);
-  //   function deepClone(obj) {
-  //     if (obj === null || typeof obj !== 'object') {
-  //         return obj;
-  //     }
-
-  //     let clonedObj = Array.isArray(obj) ? [] : {};
-
-  //     for (let key in obj) {
-  //         if (obj.hasOwnProperty(key)) {
-  //             clonedObj[key] = deepClone(obj[key]);
-  //         }
-  //     }
-
-  //     return clonedObj;
-  // }
 
   useEffect(() => {
-    // if (!queryDataState) {
-    //   queryDataState = { agreements: {}, projectAgreements: {} };
-    // }
-    // console.log('À');
-    // if (JSON.stringify(queryData) !== JSON.stringify(queryDataState)) {
-    //   console.log('0000');
-    //   console.log(queryData);
-    //   // queryDataState = queryData;
-    //   // queryDataState['AAAAA'] = '12345';
-
-    //   Object.keys(queryDataState).forEach((key) => delete queryDataState[key]);
-    //   if (queryData)
-    //     Object.keys(queryData).forEach((key) => (queryDataState[key] = queryData[key]));
-    //   // queryDataState =  deepClone(queryData)
-    //   console.log(queryDataState, 'queryDataState======');
-    //   setQueryDataState(queryDataState);
     refresh();
     initialRefresh();
-    // }
   }, [refresh, query]);
-
-  useEffect(() => {
-    console.log('À');
-    console.log(queryData);
-    console.log(setQueryDataState);
-    if (setQueryDataState) setQueryDataState(queryData);
-    // if (JSON.stringify(queryData) !== JSON.stringify(queryDataState)) {
-    //   console.log('0000');
-    //   console.log(queryData);
-    //   Object.keys(queryDataState).forEach((key) => delete queryDataState[key]);
-    //   if (queryData)
-    //     Object.keys(queryData).forEach((key) => (queryDataState[key] = queryData[key]));
-    //   console.log(queryDataState, 'queryDataState======');
-
-    //   context.result = queryDataState;
-    //   setQueryDataState(queryDataState);
-    // }
-  }, [queryData, setQueryDataState]);
-
   const tmpProjs = queryData?.superProjs.result || [];
 
   const projs = projectClassify(
@@ -271,15 +215,9 @@ export function useProjStatus(setQueryDataState: any) {
   const customers = queryData?.customers.result || [];
   const agreements = queryData?.agreements.result || [];
   const projectAgreements = queryData?.projectAgreements || [];
-  console.log(agreements, 'agreements====hook!!!!!');
-  // useEffect(()=>{
-  //   // console.log(',,,,,,')
-  //   setProjectAgreements(queryData?.projectAgreements || [])
-  //   console.log('//////',projectAgreements)
-  // },[queryData])
   const deleteProj = useCallback(
     async (id: string) => {
-      // await deleteProjHandle({ variables: { id } });
+
       refresh();
     },
     [deleteProjHandle, refresh],
@@ -287,20 +225,41 @@ export function useProjStatus(setQueryDataState: any) {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      // if (proj.status === 'endProj') { return }
-      // let reqProj = await attachmentUpload(proj, buildProjName)
-      // await pushCostHandle({
-      //   variables: {
-      //     proj: reqProj
-      //   },
-      // });
+
       refresh();
     },
     [pushCostHandle, refresh],
   );
+//zhouyueyang===
+const [pushAgreementHandle, { loading: pushLoading1 }] = useMutation<
+    Mutation,
+    MutationPushAgreementArgs
+  >(pushAgreementGql);
+  const getArgByProId = async (proId:string) => {
+    return await client.query({
+      query: getArgById,
+      fetchPolicy: 'no-cache',
+      variables: { id: proId },
+    });
+  };
 
+  const pushAgreement = useCallback(
+    async (agreement: AgreementInput) => {
+      let reqAgreement = await attachmentUpload(agreement);
+      delete reqAgreement.time;
+      delete reqAgreement.customerName;
+      await pushAgreementHandle({
+        variables: {
+          agreement: reqAgreement,
+        },
+      });
+      refresh();
+    },
+    [pushAgreementHandle],
+  );
+//zhouyueyang===
   return {
-    loading: queryLoading || deleteLoading || pushLoading,
+    loading: queryLoading || deleteLoading || pushLoading || pushLoading1,
     projs,
     subordinates,
     customers,
@@ -317,7 +276,8 @@ export function useProjStatus(setQueryDataState: any) {
     setQuery,
     query,
     access: initialState?.currentUser?.access,
-    // queryDataState: queryDataState || {},
+    pushAgreement,
+    getArgByProId,
   };
 }
 async function attachmentUpload(agreement: AgreementInput) {
@@ -355,39 +315,4 @@ async function attachmentUpload(agreement: AgreementInput) {
     }
   });
   return agreement;
-}
-export function useAgreementState() {
-  let { refresh } = useProjStatus();
-  // console.log(refresh,'refresh====')
-  const [pushAgreementHandle, { loading: pushLoading }] = useMutation<
-    Mutation,
-    MutationPushAgreementArgs
-  >(pushAgreementGql);
-  const getArgByProId = async (proId) => {
-    return await client.query({
-      query: getArgById,
-      fetchPolicy: 'no-cache',
-      variables: { id: proId },
-    });
-  };
-  const pushAgreement = useCallback(
-    async (agreement: AgreementInput) => {
-      let reqAgreement = await attachmentUpload(agreement);
-      delete reqAgreement.time;
-      delete reqAgreement.customerName;
-      await pushAgreementHandle({
-        variables: {
-          agreement: reqAgreement,
-        },
-      });
-      refresh();
-      location.reload()
-    },
-    [pushAgreementHandle, refresh],
-  );
-  return {
-    pushAgreement,
-    loading: pushLoading,
-    getArgByProId,
-  };
 }

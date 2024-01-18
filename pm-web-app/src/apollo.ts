@@ -513,7 +513,7 @@ export type Query = {
   projectClasses: ProjectClass[];
   groups: Group[];
   customers: CustomersResult;
-  agreements: AgreementResult;
+  agreements: AgreementsResult;
   projectAgreements: ProjectAgreement[];
   tags: Scalars['String'][];
   markets: Market[];
@@ -603,7 +603,7 @@ export type ProjectInput = {
   status?: ProjectStatus;
   startTime?: Scalars['String'];
   endTime?: Scalars['String'];
-
+  group?: Scalars['String'];
   estimatedWorkload?: Scalars['Int'];
   serviceCycle?: Scalars['Int'];
   productDate?: Scalars['String'];

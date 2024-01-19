@@ -75,6 +75,7 @@ async function main(year: number) {
       "yong.zhang@bjyada.com",
       "jiabin.fan@bjyada.com",
       "fengming.jiang@bjyada.com",
+      "kunhao.hou@bjyada.com",
     ];
     const users = (await getUsers()).filter(
       (user) => noSendEmailList.indexOf(user.email) == -1

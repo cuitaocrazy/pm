@@ -10,7 +10,8 @@ import {
   Col,
   DatePicker,
   Upload,
-  message
+  message,
+  Cascader
 } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
@@ -112,6 +113,7 @@ export default () => {
   //   role: 'engineer',
   // } });
   const [form] = useForm<ProjectInput>();
+  console.log("form" + form.getFieldsValue())
   const { pushProj } = useProjStatus();
   const [messageApi, contextHolder] = message.useMessage();
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
@@ -134,7 +136,7 @@ export default () => {
       projId: '',
     },
   });
-  const { status, dataForTree } = useBaseState();
+  const { status, dataForTree, groupType } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const [isDerive, setIsDerive] = useState(false);
   const treeStatus = dataForTree(status);
@@ -440,6 +442,209 @@ export default () => {
     console.log("4444")
     console.log("data.customers--------" + JSON.stringify(customerListData.customers.result))
   }
+  const groupDatas = (inputArray: any) => {
+    let result: any = []
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
+
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
+
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
+
+        }
+      });
+    })
+    return result
+  }
+
+
+  const [groupsOptions] = useState(
+    groupDatas(groupType)
+  );
+  const [newGroup, setNewGroup] = useState({
+    group: '',
+
+  })
+  const handleChangeGroup = (value: any, type: string) => {
+    setNewGroup({
+      ...newGroup,
+      group: value.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
+    })
+  }
+
+  const handleSubmit1 = () => {
+    handleChangeGroup(form.getFieldValue('group'), 'group');
+    // 获取处理后的group字段值
+    const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
+      return `${accumulator}/${currentValue}`;
+    }, '');
+    console.log("newGroup-----" + JSON.stringify(newGroup));
+    // 使用async/await语法确保异步操作的正确执行
+    (async () => {
+      try {
+        // 直接修改form中group字段的值
+        form.setFieldsValue({ group: processedGroup });
+        // 验证字段
+        await form.validateFields();
+        // 调用pushProj函数，传递处理后的group字段值
+        await pushProj(form.getFieldsValue());
+        // 弹出成功消息
+        await messageApi.open({
+          type: 'success',
+          content: '新增成功！',
+          duration: 2
+        });
+        // 重置字段
+        form.resetFields();
+      } catch (error) {
+        // 处理错误
+        console.error(error);
+      }
+    })();
+  };
+
+  // const handleSubmit1 = () => {
+  //   console.log("1111111")
+  //   handleChangeGroup(form.getFieldValue('group'), 'group')
+  //   console.log("newGroup-----" + JSON.stringify(newGroup))
+  //   async () => {
+  //     form
+  //       .validateFields()
+  //       .then(pushProj).then(() =>
+  //         messageApi.open({
+  //           type: 'success',
+  //           content: '新增成功！',
+  //           duration: 2
+  //         })).then(() => form.resetFields()).catch((error) => { })
+
+  //   }
+  // }
+  // const [newForm, setNewForm] = useState<ProjectInput>({
+  //   id: form.getFieldValue('id'),
+  //   pId: '',
+  //   leader: '',
+  //   salesLeader: '',
+  //   name: '',
+  //   customer: '',
+  //   contName: '',
+  //   projStatus: '',
+  //   contStatus: '',
+  //   acceStatus: '',
+  //   contAmount: 0,
+  //   recoAmount: 0,
+  //   projBudget: 0,
+  //   budgetFee: 0,
+  //   budgetCost: 0,
+  //   actualFee: 0,
+  //   humanFee: 0,
+  //   projectFee: 0,
+  //   actualCost: 0,
+  //   taxAmount: 0,
+  //   description: '',
+  //   participants: [],
+  //   contacts: [],
+  //   actives: [],
+  //   saleActives: [],
+  //   status: undefined,
+  //   startTime: '',
+  //   endTime: '',
+  //   group: '',
+  //   estimatedWorkload: 0,
+  //   serviceCycle: 0,
+  //   productDate: '',
+  //   acceptDate: '',
+  //   freePersonDays: 0,
+  //   usedPersonDays: 0,
+  //   requiredInspections: 0,
+  //   actualInspections: 0,
+  //   confirmYear: '',
+  //   doYear: '',
+  // })
+  // const handleChangeForm = () => {
+  //   setNewForm({
+  //     id: form.getFieldValue('id'),
+  //     pId: form.getFieldValue('pId'),
+  //     leader: form.getFieldValue('leader'),
+  //     salesLeader: form.getFieldValue('salesLeader'),
+  //     name: form.getFieldValue('name'),
+  //     customer: form.getFieldValue('customer'),
+  //     contName: form.getFieldValue('contName'),
+  //     projStatus: form.getFieldValue('projStatus'),
+  //     contStatus: form.getFieldValue('contStatus'),
+  //     acceStatus: form.getFieldValue('acceStatus'),
+  //     contAmount: form.getFieldValue('contAmount'),
+  //     recoAmount: form.getFieldValue('recoAmount'),
+  //     projBudget: form.getFieldValue('projBudget'),
+  //     budgetFee: form.getFieldValue('ibudgetFeed'),
+  //     budgetCost: form.getFieldValue('budgetCost'),
+  //     actualFee: form.getFieldValue('actualFee'),
+  //     humanFee: form.getFieldValue('humanFee'),
+  //     projectFee: form.getFieldValue('projectFee'),
+  //     actualCost: form.getFieldValue('actualCost'),
+  //     taxAmount: form.getFieldValue('taxAmount'),
+  //     description: form.getFieldValue('description'),
+  //     participants: form.getFieldValue('participants'),
+  //     contacts: form.getFieldValue('contacts'),
+  //     actives: form.getFieldValue('actives'),
+  //     saleActives: form.getFieldValue('saleActives'),
+  //     status: form.getFieldValue('status'),
+  //     startTime: form.getFieldValue('startTime'),
+  //     endTime: form.getFieldValue('endTime'),
+  //     group: newGroup.group,
+  //     estimatedWorkload: form.getFieldValue('estimatedWorkload'),
+  //     serviceCycle: form.getFieldValue('serviceCycle'),
+  //     productDate: form.getFieldValue('productDate'),
+  //     acceptDate: form.getFieldValue('acceptDate'),
+  //     freePersonDays: form.getFieldValue('freePersonDays'),
+  //     usedPersonDays: form.getFieldValue('usedPersonDays'),
+  //     requiredInspections: form.getFieldValue('requiredInspections'),
+  //     actualInspections: form.getFieldValue('actualInspections'),
+  //     confirmYear: form.getFieldValue('confirmYear'),
+  //     doYear: form.getFieldValue('doYear'),
+  //   })
+  // }
+
+  // const handleSubmit = () => {
+  //   console.log("1111111");
+
+
+  //   console.log("newGroup-----" + JSON.stringify(newGroup));
+  //   (async () => {
+  //     if (form.getFieldValue('group').length > 3) {
+  //       try {
+  //         // await newForm.validateFields();
+  //         // await pushProj(form.getFieldsValue());
+  //         await handleChangeGroup(form.getFieldValue('group'), 'group');
+  //         await handleChangeForm();
+  //         await pushProj(newForm);
+  //         await messageApi.open({
+  //           type: 'success',
+  //           content: '新增成功！',
+  //           duration: 2
+  //         });
+  //         form.resetFields();
+  //       } catch (error) {
+  //         // 处理错误
+  //         console.error(error);
+  //       }
+
+  //     }
+
+  //   })();
+  // };
+
 
 
   return (
@@ -544,6 +749,18 @@ export default () => {
         </Col>
         <Col span={7}>
           <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
+            <Cascader
+              // value={params.group}
+              allowClear
+              changeOnSelect
+              className="width122"
+              placeholder="请选择"
+              onChange={(value, event) => { handleChangeGroup(value, 'group') }}
+              options={groupsOptions} />
+          </Form.Item>
+        </Col>
+        {/* <Col span={7}>
+          <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.groups.map((u, index) => {
                 return (
@@ -554,7 +771,7 @@ export default () => {
               })}
             </Select>
           </Form.Item>
-        </Col>
+        </Col> */}
         <Col span={7}></Col>
       </Row>
       <Row>
@@ -1084,16 +1301,7 @@ export default () => {
       </Row>
       <div style={{ paddingBottom: '40px', paddingRight: '20px' }} >
         <Button onClick={() => form.resetFields()} style={{ float: 'right' }}>重置</Button>
-        <Button onClick={async () => {
-          form
-            .validateFields()
-            .then(pushProj).then(() =>
-              messageApi.open({
-                type: 'success',
-                content: '新增成功！',
-                duration: 2
-              })).then(() => form.resetFields()).catch((error) => { })
-        }} style={{ marginRight: '20px', float: 'right' }} type="primary">提交</Button>
+        <Button onClick={() => handleSubmit1()} style={{ marginRight: '20px', float: 'right' }} type="primary">提交</Button>
         <div style={{ clear: 'both' }}></div>
       </div>
       {contextHolder}

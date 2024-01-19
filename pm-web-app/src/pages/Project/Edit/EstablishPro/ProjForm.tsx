@@ -127,8 +127,6 @@ export default () => {
     },
   });
 
-
-
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
     fetchPolicy: 'no-cache',
     variables: {
@@ -299,72 +297,6 @@ export default () => {
     form.setFieldValue('doYear', dateString);
   };
 
-  // 派生一个新项目
-  // const deriveNewProject = () => {
-  //   setIsDerive(true);
-  //   form.setFieldValue('pId', data?.id);
-  //   // 生成派生项目id
-  //   let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('YYYY')}`) || '1';
-  //   onIdChange(newId);
-  // };
-
-  // 获取客户信息
-  // const getCustomers = (type: string, label: string) => {
-  //   let customersArr = resData?.customers.filter((item) => item.enable) || [];
-  //   if (customersArr.length > 1) {
-  //     const id = form.getFieldValue('id');
-  //     const result = reg.exec(id);
-  //     customersArr = customersArr.filter((item) => {
-  //       return (
-  //         item.industryCode === result?.groups?.org && item.regionCode === result?.groups?.zone
-  //       );
-  //     });
-  //   }
-  //   return (
-  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
-  //       {customersArr.length ? (
-  //         <Select allowClear>
-  //           {customersArr.map((s: Customer) => (
-  //             <Select.Option key={s.id} value={s.id}>
-  //               {s.name}
-  //             </Select.Option>
-  //           ))}
-  //         </Select>
-  //       ) : (
-  //         <Select loading={loading} />
-  //       )}
-  //     </Form.Item>
-  //   );
-  // };
-
-
-
-  // 获取客户信息
-  // const getNewCustomers = (type: string, label: string) => {
-  //   console.log("111111")
-  //   console.log("222" + customerQueryData)
-
-  //   let customersArr = customerQueryData?.customers.filter((item) => item.enable) || []
-  //   console.log("333" + customerQueryData)
-  //   return (
-  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
-  //       {customersArr.length ? (
-  //         <Select allowClear
-  //         >
-  //           {customersArr.map((s: Customer) => (
-  //             <Select.Option key={s.id} value={s.id}>
-  //               {s.name}
-  //             </Select.Option>
-  //           ))}
-  //         </Select>
-  //       ) : (
-  //         <Select loading={loading} />
-  //       )}
-  //     </Form.Item>
-  //   );
-  // }
-
-
   const id = form.getFieldValue('id');
   const resultId = reg.exec(id);
   const region = resultId?.groups?.zone;
@@ -378,21 +310,6 @@ export default () => {
     }
     return tempFields;
   };
-
-
-  // // 创建两个状态变量
-  // const [region, setRegion] = useState('');
-  // const [industrie, setIndustrie] = useState('');
-
-  // // 回调函数，用于接收子组件传递的 regionID 值
-  // const handleOrgChange = (regionID: string) => {
-  //   setRegion(regionID);
-  // };
-
-  // // 回调函数，用于接收子组件传递的 industrieID 值
-  // const handleZoneChange = (industrieID: string) => {
-  //   setIndustrie(industrieID);
-  // };
 
   const queryCustomerVariables: QueryCustomersArgs = {
     region: region || '',
@@ -414,23 +331,6 @@ export default () => {
       }
     }
   `;
-
-  // const customerQuery = gql`
-  //   query GetCustomers($region: String!, $industry: String!) {
-  //     customers(region: $region, industry: $industry) {
-  //       result{
-  //         id
-  //         name
-  //         enable
-  //       }
-  //       page
-  //       total
-  //     }
-  //   }
-  // `;
-
-
-
 
   const [fetchCustomersData, { data: customerListData }] = useLazyQuery<CustomersQuery, QueryCustomersArgs>(customerQuery, {
     fetchPolicy: 'no-cache',
@@ -484,7 +384,7 @@ export default () => {
     })
   }
 
-  const handleSubmit1 = () => {
+  const handleSubmit = () => {
     handleChangeGroup(form.getFieldValue('group'), 'group');
     // 获取处理后的group字段值
     const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
@@ -514,137 +414,6 @@ export default () => {
       }
     })();
   };
-
-  // const handleSubmit1 = () => {
-  //   console.log("1111111")
-  //   handleChangeGroup(form.getFieldValue('group'), 'group')
-  //   console.log("newGroup-----" + JSON.stringify(newGroup))
-  //   async () => {
-  //     form
-  //       .validateFields()
-  //       .then(pushProj).then(() =>
-  //         messageApi.open({
-  //           type: 'success',
-  //           content: '新增成功！',
-  //           duration: 2
-  //         })).then(() => form.resetFields()).catch((error) => { })
-
-  //   }
-  // }
-  // const [newForm, setNewForm] = useState<ProjectInput>({
-  //   id: form.getFieldValue('id'),
-  //   pId: '',
-  //   leader: '',
-  //   salesLeader: '',
-  //   name: '',
-  //   customer: '',
-  //   contName: '',
-  //   projStatus: '',
-  //   contStatus: '',
-  //   acceStatus: '',
-  //   contAmount: 0,
-  //   recoAmount: 0,
-  //   projBudget: 0,
-  //   budgetFee: 0,
-  //   budgetCost: 0,
-  //   actualFee: 0,
-  //   humanFee: 0,
-  //   projectFee: 0,
-  //   actualCost: 0,
-  //   taxAmount: 0,
-  //   description: '',
-  //   participants: [],
-  //   contacts: [],
-  //   actives: [],
-  //   saleActives: [],
-  //   status: undefined,
-  //   startTime: '',
-  //   endTime: '',
-  //   group: '',
-  //   estimatedWorkload: 0,
-  //   serviceCycle: 0,
-  //   productDate: '',
-  //   acceptDate: '',
-  //   freePersonDays: 0,
-  //   usedPersonDays: 0,
-  //   requiredInspections: 0,
-  //   actualInspections: 0,
-  //   confirmYear: '',
-  //   doYear: '',
-  // })
-  // const handleChangeForm = () => {
-  //   setNewForm({
-  //     id: form.getFieldValue('id'),
-  //     pId: form.getFieldValue('pId'),
-  //     leader: form.getFieldValue('leader'),
-  //     salesLeader: form.getFieldValue('salesLeader'),
-  //     name: form.getFieldValue('name'),
-  //     customer: form.getFieldValue('customer'),
-  //     contName: form.getFieldValue('contName'),
-  //     projStatus: form.getFieldValue('projStatus'),
-  //     contStatus: form.getFieldValue('contStatus'),
-  //     acceStatus: form.getFieldValue('acceStatus'),
-  //     contAmount: form.getFieldValue('contAmount'),
-  //     recoAmount: form.getFieldValue('recoAmount'),
-  //     projBudget: form.getFieldValue('projBudget'),
-  //     budgetFee: form.getFieldValue('ibudgetFeed'),
-  //     budgetCost: form.getFieldValue('budgetCost'),
-  //     actualFee: form.getFieldValue('actualFee'),
-  //     humanFee: form.getFieldValue('humanFee'),
-  //     projectFee: form.getFieldValue('projectFee'),
-  //     actualCost: form.getFieldValue('actualCost'),
-  //     taxAmount: form.getFieldValue('taxAmount'),
-  //     description: form.getFieldValue('description'),
-  //     participants: form.getFieldValue('participants'),
-  //     contacts: form.getFieldValue('contacts'),
-  //     actives: form.getFieldValue('actives'),
-  //     saleActives: form.getFieldValue('saleActives'),
-  //     status: form.getFieldValue('status'),
-  //     startTime: form.getFieldValue('startTime'),
-  //     endTime: form.getFieldValue('endTime'),
-  //     group: newGroup.group,
-  //     estimatedWorkload: form.getFieldValue('estimatedWorkload'),
-  //     serviceCycle: form.getFieldValue('serviceCycle'),
-  //     productDate: form.getFieldValue('productDate'),
-  //     acceptDate: form.getFieldValue('acceptDate'),
-  //     freePersonDays: form.getFieldValue('freePersonDays'),
-  //     usedPersonDays: form.getFieldValue('usedPersonDays'),
-  //     requiredInspections: form.getFieldValue('requiredInspections'),
-  //     actualInspections: form.getFieldValue('actualInspections'),
-  //     confirmYear: form.getFieldValue('confirmYear'),
-  //     doYear: form.getFieldValue('doYear'),
-  //   })
-  // }
-
-  // const handleSubmit = () => {
-  //   console.log("1111111");
-
-
-  //   console.log("newGroup-----" + JSON.stringify(newGroup));
-  //   (async () => {
-  //     if (form.getFieldValue('group').length > 3) {
-  //       try {
-  //         // await newForm.validateFields();
-  //         // await pushProj(form.getFieldsValue());
-  //         await handleChangeGroup(form.getFieldValue('group'), 'group');
-  //         await handleChangeForm();
-  //         await pushProj(newForm);
-  //         await messageApi.open({
-  //           type: 'success',
-  //           content: '新增成功！',
-  //           duration: 2
-  //         });
-  //         form.resetFields();
-  //       } catch (error) {
-  //         // 处理错误
-  //         console.error(error);
-  //       }
-
-  //     }
-
-  //   })();
-  // };
-
 
 
   return (
@@ -1301,7 +1070,7 @@ export default () => {
       </Row>
       <div style={{ paddingBottom: '40px', paddingRight: '20px' }} >
         <Button onClick={() => form.resetFields()} style={{ float: 'right' }}>重置</Button>
-        <Button onClick={() => handleSubmit1()} style={{ marginRight: '20px', float: 'right' }} type="primary">提交</Button>
+        <Button onClick={() => handleSubmit()} style={{ marginRight: '20px', float: 'right' }} type="primary">提交</Button>
         <div style={{ clear: 'both' }}></div>
       </div>
       {contextHolder}

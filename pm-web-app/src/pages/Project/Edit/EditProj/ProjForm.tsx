@@ -10,6 +10,7 @@ import {
   Col,
   DatePicker,
   Upload,
+  Cascader
 } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
@@ -116,7 +117,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     },
   });
   // const {salesLeader,setSalesLeader}=
-  const { status, dataForTree } = useBaseState();
+  const { status, dataForTree, groupType } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const [isDerive, setIsDerive] = useState(false);
   const treeStatus = dataForTree(status);
@@ -124,6 +125,25 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
+  console.log("initialState?.currentUser?.groups------" + initialState?.currentUser?.groups);
+  // const [myGroup, setMyGroup] = useState(initialState?.currentUser?.groups)
+  const myGroup = initialState?.currentUser?.groups;
+  console.log("myGroup-----" + myGroup);
+
+  // 定义需要检查的部门路径列表
+  const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
+
+  // 定义状态变量
+  const [getDatePickerDisable, setGetDatePickerDisable] = useState(true);
+
+  // 在组件挂载时进行初始化
+  useEffect(() => {
+    // 使用正则表达式检查 myGroup 是否匹配允许的部门路径
+    const shouldEnable = typeof myGroup === 'string' && allowedDepartmentsRegex.test(myGroup);
+
+    // 设置状态变量
+    setGetDatePickerDisable(!shouldEnable);
+  }, [myGroup]);
 
   // 获取填写日报人员id，禁止修改
   let employeeIds: string[] = [];
@@ -283,57 +303,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
 
 
-  // // 获取客户信息
-  // const getCustomers = (type: string, label: string) => {
-  //   let customersArr = resData?.customers.filter((item) => item.enable) || [];
-  //   if (customersArr.length > 1) {
-  //     const id = form.getFieldValue('id');
-  //     const result = reg.exec(id);
-  //     customersArr = customersArr.filter((item) => {
-  //       return (
-  //         item.industryCode === result?.groups?.org && item.regionCode === result?.groups?.zone
-  //       );
-  //     });
-  //   }
-  //   return (
-  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
-  //       {customersArr.length ? (
-  //         <Select allowClear>
-  //           {customersArr.map((s: Customer) => (
-  //             <Select.Option key={s.id} value={s.id}>
-  //               {s.name}
-  //             </Select.Option>
-  //           ))}
-  //         </Select>
-  //       ) : (
-  //         <Select loading={loading} />
-  //       )}
-  //     </Form.Item>
-  //   );
-  // };
-
-
-  // 获取客户信息
-  // const getCustomers = (type: string, label: string) => {
-  //   let customersArr = (customerListData?.result || []).filter((item) => item.enable);
-  //   console.log(customersArr)
-  //   return (
-  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
-  //       {customersArr.length ? (
-  //         <Select allowClear>
-  //           {customersArr.map((s: Customer) => (
-  //             <Select.Option key={s.id} value={s.id}>
-  //               {s.name}
-  //             </Select.Option>
-  //           ))}
-  //         </Select>
-  //       ) : (
-  //         <Select loading={loading} />
-  //       )}
-  //     </Form.Item>
-  //   );
-  // };
-
   const customerQuery = gql`
     query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
       customers(region: $region, industry: $industry,page:$page,pageSize:$pageSize) {
@@ -358,43 +327,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     page: 1,
     pageSize: 100000
   };
-
-
-  // const { data: customerListData, loading: loadingCustomer }: { data?: CustomersQuery; loading: boolean } = useQuery<CustomersQuery, QueryCustomersArgs>(customerQuery, {
-  //   fetchPolicy: 'no-cache',
-  //   variables: queryCustomerVariables,
-  // });
-
-
-
-
-
-  // console.log("customerListData-----" + enableCustomer)
-
-
-  // 获取客户信息
-  // const getNewCustomers = (type: string, label: string) => {
-
-  //   let customersArr = customerQueryData?.customers.filter((item) => item.enable) || []
-  //   return (
-  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
-  //       {customersArr.length ? (
-  //         <Select allowClear>
-  //           {customersArr.map((s: Customer) => (
-  //             <Select.Option key={s.id} value={s.id}>
-  //               {s.name}
-  //             </Select.Option>
-  //           ))}
-  //         </Select>
-  //       ) : (
-  //         <Select loading={loading} />
-  //       )}
-  //     </Form.Item>
-  //   );
-  // }
-
-
-
 
 
 
@@ -459,6 +391,81 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     console.log(customerListData1?.customers)
     setCustomerListData(customerListData1?.customers)
   }, [customerListData1])
+
+  const groupDatas = (inputArray: any) => {
+    let result: any = []
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
+
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
+
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
+
+        }
+      });
+    })
+    return result
+  }
+
+
+  const [groupsOptions] = useState(
+    groupDatas(groupType)
+  );
+  console.log("groupType------" + JSON.stringify(groupType))
+  console.log("groupsOptions--------" + JSON.stringify(groupsOptions))
+  const [newGroup, setNewGroup] = useState({
+    group: '',
+
+  })
+  const handleChangeGroup = (value: any, type: string) => {
+    setNewGroup({
+      ...newGroup,
+      group: value.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
+    })
+  }
+
+  // const handleSubmit = () => {
+  //   handleChangeGroup(form.getFieldValue('group'), 'group');
+  //   // 获取处理后的group字段值
+  //   const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
+  //     return `${accumulator}/${currentValue}`;
+  //   }, '');
+  //   console.log("newGroup-----" + JSON.stringify(newGroup));
+  //   // 使用async/await语法确保异步操作的正确执行
+  //   (async () => {
+  //     try {
+  //       // 直接修改form中group字段的值
+  //       form.setFieldsValue({ group: processedGroup });
+  //       // 验证字段
+  //       await form.validateFields();
+  //       // 调用pushProj函数，传递处理后的group字段值
+  //       await pushProj(form.getFieldsValue());
+  //       // 弹出成功消息
+  //       await messageApi.open({
+  //         type: 'success',
+  //         content: '新增成功！',
+  //         duration: 2
+  //       });
+  //       // 重置字段
+  //       form.resetFields();
+  //     } catch (error) {
+  //       // 处理错误
+  //       console.error(error);
+  //     }
+  //   })();
+  // };
 
   return (
     <Form
@@ -562,6 +569,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         </Col>
         <Col span={8}>
           <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
+            <Cascader
+              // value={params.group}
+              allowClear
+              changeOnSelect
+              className="width122"
+              placeholder="请选择"
+              onChange={(value, event) => { handleChangeGroup(value, 'group') }}
+              options={groupsOptions} />
+          </Form.Item>
+          {/* <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.groups.map((u, index) => {
                 return (
@@ -571,7 +588,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 );
               })}
             </Select>
-          </Form.Item>
+          </Form.Item> */}
         </Col>
         <Col span={8}></Col>
       </Row>
@@ -905,6 +922,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               format="YYYY"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
+              disabled={getDatePickerDisable}
             />
             {/* <Input /> */}
           </Form.Item>

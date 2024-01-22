@@ -16,12 +16,12 @@ import { attachmentUpload, filterTodoProject, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
-    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String) {
+    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int) {
       subordinates {
         id
         name
       }
-      agreements {
+      agreements(pageSize:$agreementPageSize) {
       result{
         id
         name
@@ -34,7 +34,7 @@ const getGql = (proName: string) => {
         id
         agreementId
       }
-      
+
       ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name){
         result{
           id
@@ -127,6 +127,7 @@ export function useProjStatus() {
   >(queryGql, {
     variables: {
       isArchive: archive === '1' ? true : false, //1：归档，0:项目，2:代办项目
+      agreementPageSize:10000000,
       ...query,
     },
     fetchPolicy: 'no-cache',

@@ -10,7 +10,6 @@ import {
   Col,
   DatePicker,
   Upload,
-  Cascader
 } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
@@ -24,7 +23,7 @@ import type {
   CustomersQuery,
   QueryCustomersArgs
 } from '@/apollo';
-import { gql, useQuery, useLazyQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
@@ -117,18 +116,19 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     },
   });
   // const {salesLeader,setSalesLeader}=
-  const { status, dataForTree, groupType } = useBaseState();
+  const { status, dataForTree } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const [isDerive, setIsDerive] = useState(false);
   const treeStatus = dataForTree(status);
+
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
-  console.log("initialState?.currentUser?.groups------" + initialState?.currentUser?.groups);
+  // console.log("initialState?.currentUser?.groups------" + initialState?.currentUser?.groups);
   // const [myGroup, setMyGroup] = useState(initialState?.currentUser?.groups)
   const myGroup = initialState?.currentUser?.groups;
-  console.log("myGroup-----" + myGroup);
+  // console.log("myGroup-----" + myGroup);
 
   // 定义需要检查的部门路径列表
   const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
@@ -154,6 +154,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       queryData.allProjDaily.dailies,
     );
     employeeIds = [...employeesSet];
+    // console.log(employeeIds,'employeeIds=====')
   }
 
   const props: UploadProps = {
@@ -386,61 +387,61 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     variables: queryCustomerVariables,
   });
   useEffect(() => {
-    console.log('effect')
-    console.log(customerListData1)
-    console.log(customerListData1?.customers)
+    // console.log('effect')
+    // console.log(customerListData1)
+    // console.log(customerListData1?.customers)
     setCustomerListData(customerListData1?.customers)
   }, [customerListData1])
 
-  const groupDatas = (inputArray: any) => {
-    let result: any = []
-    console.log("inputArray------" + JSON.stringify(inputArray))
-    inputArray.forEach((item: any) => {
-      const path = item.substring(1).split('/');
-      let currentLevel = result;
-      path.forEach((segment: any, index: number) => {
-        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+  // const groupDatas = (inputArray: any) => {
+  //   let result: any = []
+  //   // console.log("inputArray------" + JSON.stringify(inputArray))
+  //   inputArray.forEach((item: any) => {
+  //     const path = item.substring(1).split('/');
+  //     let currentLevel = result;
+  //     path.forEach((segment: any, index: number) => {
+  //       const existingSegment = currentLevel.find((el: any) => el.value === segment);
 
-        if (existingSegment) {
-          currentLevel = existingSegment.children || [];
+  //       if (existingSegment) {
+  //         currentLevel = existingSegment.children || [];
 
-        } else {
-          const newSegment = {
-            value: segment,
-            label: segment,
-            children: index === path.length - 1 ? [] : [],
-          };
+  //       } else {
+  //         const newSegment = {
+  //           value: segment,
+  //           label: segment,
+  //           children: index === path.length - 1 ? [] : [],
+  //         };
 
-          currentLevel.push(newSegment);
-          currentLevel = newSegment.children || [];
+  //         currentLevel.push(newSegment);
+  //         currentLevel = newSegment.children || [];
 
-        }
-      });
-    })
-    return result
-  }
+  //       }
+  //     });
+  //   })
+  //   return result
+  // }
 
 
-  const [groupsOptions] = useState(
-    groupDatas(groupType)
-  );
+  // const [groupsOptions] = useState(
+  //   groupDatas(groupType)
+  // );
   // const [myProjGroup] = useState(
   //   groupDatas(resData?.groups)
   // )
-  console.log("resData?.groups------" + JSON.stringify(resData?.groups))
+  // console.log("resData?.groups------" + JSON.stringify(resData?.groups))
 
-  console.log("groupType------" + JSON.stringify(groupType))
+  // console.log("groupType------" + JSON.stringify(groupType))
   // console.log("groupsOptions--------" + JSON.stringify(groupsOptions))
-  const [newGroup, setNewGroup] = useState({
-    group: '',
+  // const [newGroup, setNewGroup] = useState({
+  //   group: '',
 
-  })
-  const handleChangeGroup = (value: any, type: string) => {
-    setNewGroup({
-      ...newGroup,
-      group: value.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
-    })
-  }
+  // })
+  // const handleChangeGroup = (value: any, type: string) => {
+  //   setNewGroup({
+  //     ...newGroup,
+  //     group: value.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
+  //   })
+  // }
 
   // const handleSubmit = () => {
   //   handleChangeGroup(form.getFieldValue('group'), 'group');

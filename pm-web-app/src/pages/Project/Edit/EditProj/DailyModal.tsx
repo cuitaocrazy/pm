@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, Statistic, Tag, Row, Col} from 'antd';
-import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import type { Project, Query, QueryProjDailyArgs } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import type { FormInstance } from 'antd/lib/form';

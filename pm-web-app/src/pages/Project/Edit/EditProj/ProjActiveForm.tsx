@@ -11,7 +11,7 @@ import moment from 'moment';
 const userQuery = gql`
 {
     customers {
-      id
+      result{id
       name
       industryCode
       regionCode
@@ -24,11 +24,13 @@ const userQuery = gql`
       remark
       enable
       isDel
-      createDate
+      createDate}
+      total
+      page
     }
     tags
     agreements {
-      id
+      result{id
       name
       type
       remark
@@ -41,7 +43,9 @@ const userQuery = gql`
       startTime
       endTime
       isDel
-      createDate
+      createDate}
+      total
+      page
     }
     projectAgreements {
       id
@@ -121,12 +125,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
     return tempFields;
   }
-  
+
   return (
-    <Form 
-      {...layout} 
-      form={form} 
-      initialValues={data || { leader: initialState?.currentUser?.id }} 
+    <Form
+      {...layout}
+      form={form}
+      initialValues={data || { leader: initialState?.currentUser?.id }}
       disabled={data?.status === 'endProj'}
     >
       <Form.Item label="ID" name="id" hidden>
@@ -250,12 +254,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                           getValueFromEvent={normFile}
                           style={{ textAlign: 'left' }}
                         >
-                          <Upload 
+                          <Upload
                             className="upload-list-inline"
                             { ...props }
                             disabled={(field.name < (data?.actives?.length || 0))}
                             defaultFileList={
-                              form.getFieldValue('actives') ? 
+                              form.getFieldValue('actives') ?
                               form.getFieldValue('actives')[field.name]?.fileList as UploadFile[] : []
                             }
                           >

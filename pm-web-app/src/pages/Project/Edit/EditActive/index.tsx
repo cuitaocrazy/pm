@@ -18,7 +18,7 @@ const Project: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
   const { subordinates, customers, agreements, projectAgreements, routeProjType, loading, pushProj,setQuery,query,total,tmpProjsResult} = useProjStatus();
-  console.log(customers)
+  console.log(customers,'customers=====')
   const { status, orgCode, zoneCode, buildProjName,groupType } = useBaseState();
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
@@ -247,7 +247,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-        return customers.result.find((cum) => cum.id === record.customer)?.name;
+        return customers.find((cum) => cum.id === record.customer)?.name;
       },
       width:150,
     },
@@ -257,7 +257,7 @@ const Project: React.FC<any> = () => {
       key: 'contName',
       render: (text: string, record: Proj) => {
         const agree = projectAgreements.filter(item => item.id === record.id)
-        return agree.length ? agreements.result.find((cum) => cum.id === agree[0].agreementId)?.name : ''
+        return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : ''
       },
       width:150,
     },

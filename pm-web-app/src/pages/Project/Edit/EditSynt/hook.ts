@@ -9,7 +9,7 @@ import type {
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
-import { useModel, history } from 'umi';
+import { useModel } from 'umi';
 import { convert, attachmentUpload } from './utils';
 
 const queryGql = gql`
@@ -19,15 +19,17 @@ query ($projType: String!) {
       name
     }
     agreements {
-      id
-      name
+      result{id
+      name}
+      total
+      page
     }
     projectAgreements {
       id
       agreementId
     }
     customers {
-      id
+      result{id
       name
       industryCode
       regionCode
@@ -37,7 +39,9 @@ query ($projType: String!) {
         name
         phone
         tags
-      }
+      }}
+      total
+      page
     }
     filterProjsByType(projType: $projType) {
       id
@@ -112,8 +116,8 @@ export function useProjStatus() {
     return el.name.indexOf(filter) > -1
   })
   const subordinates = queryData?.subordinates || [];
-  const customers = queryData?.customers || [];
-  const agreements = queryData?.agreements || [];
+  const customers = queryData?.customers.result || [];
+  const agreements = queryData?.agreements.result || [];
   const projectAgreements = queryData?.projectAgreements || [];
 
   const deleteProj = useCallback(

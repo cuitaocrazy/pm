@@ -535,8 +535,8 @@ export type QueryProjectArgs = {
 };
 
 export type QueryFilterProjectArgs = {
-  projType: Scalars['String'];
-  pageSize: Scalars['Int'];
+  projType?: Scalars['String'];
+  pageSize?: Scalars['Int'];
 };
 export type QueryFilterProjectByIdArgs = {
   id: Scalars['String']
@@ -547,9 +547,9 @@ export type QueryEmpDailyArgs = {
 };
 
 export type QueryProjDailyArgs = {
-  projId: Scalars['String'];
-  startDate: Scalars['String'];
-  endDate: Scalars['String'];
+  projId?: Scalars['String'];
+  startDate?: Scalars['String'];
+  endDate?: Scalars['String'];
 };
 
 export type QueryEmpCostsArgs = {

@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Button,
   Table,
@@ -17,10 +17,10 @@ import {
   Cascader,
 } from 'antd';
 import type {
-  Project as Proj, ProjectInput, ActiveInput, QueryCustomersArgs, CustomersQuery,
+  Project as Proj, ProjectInput, ActiveInput
 } from '@/apollo';
 import { client } from '@/apollo';
-import { ApolloProvider, useQuery } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';

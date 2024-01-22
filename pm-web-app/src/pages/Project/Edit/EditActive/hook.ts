@@ -10,7 +10,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
 import { useModel, history } from 'umi';
-import { convert, attachmentUpload } from './utils';
+import {  attachmentUpload } from './utils';
 
 const queryGql = gql`
 query ($projType: String!$industries: [String],$regions:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$pageSize:Int) {
@@ -150,8 +150,8 @@ export function useProjStatus() {
 
   const tmpProjs = queryData?.filterProjs || {};
   const subordinates = queryData?.subordinates || [];
-  const customers = queryData?.customers || [];
-  const agreements = queryData?.agreements || [];
+  const customers = queryData?.customers.result || [];
+  const agreements = queryData?.agreements.result || [];
   const projectAgreements = queryData?.projectAgreements || [];
   const total = queryData?.filterProjs.total || undefined;
   const tmpProjsResult = queryData?.filterProjs.result || []

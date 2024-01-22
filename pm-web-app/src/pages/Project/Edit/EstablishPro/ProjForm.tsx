@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Form,
   Input,
@@ -27,13 +27,37 @@ import type {
 import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
-import type { FormInstance } from 'antd/lib/form';
+// import type { FormInstance } from 'antd/lib/form';
 import ProjIdComponent from './ProjIdComponent';
 import { projStatus } from './utils';
 import { forEach } from 'ramda';
 import moment from 'moment';
 import { useForm } from 'antd/es/form/Form';
 import { useProjStatus } from './hook';
+
+//TODO  agreements 可能不做查询了
+
+//TODO  projectClasses  项目分类
+// code
+// remark
+// enable
+// isDel
+// sort
+// createDate
+
+// TODO isExistID  projs 从后台走新接口
+
+/**
+ * agreements {
+      result{
+        id
+        name
+        type
+      }
+      page
+      total
+    }
+*/
 
 const userQuery = gql`
   query ($groups: [String!]) {
@@ -102,7 +126,7 @@ export default () => {
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
-      groups: [
+      groups: [//todo：后续需要从groups里获取
         '/软件事业部/软件一部/市场组',
         '/软件事业部/软件二部/市场组',
         '/软件事业部/创新业务部/市场组',
@@ -119,7 +143,7 @@ export default () => {
   });
   const { status, dataForTree, groupType } = useBaseState();
   const { initialState } = useModel('@@initialState');
-  const [isDerive, setIsDerive] = useState(false);
+  const [isDerive] = useState(false);
   const treeStatus = dataForTree(status);
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   // const result = reg.exec(data?.id || '');
@@ -137,8 +161,37 @@ export default () => {
     return match !== null;
   });
 
+
   // const isConfirmYearDisabled = shouldEnable?.includes(true);
   const isConfirmYearDisabled = shouldEnable?.some(enabled => enabled === true);
+
+
+  // 定义需要检查的部门路径列表
+  const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
+
+  // 定义状态变量
+  const [getDatePickerDisable, setGetDatePickerDisable] = useState(true);
+
+  // 在组件挂载时进行初始化
+  useEffect(() => {
+    // 使用正则表达式检查 myGroup 是否匹配允许的部门路径
+    const shouldEnable = typeof myGroup === 'string' && allowedDepartmentsRegex.test(myGroup);
+
+    // 设置状态变量
+    setGetDatePickerDisable(!shouldEnable);
+  }, [myGroup]);
+
+  // 获取填写日报人员id，禁止修改
+  let employeeIds: string[] = [];
+  if (queryData && queryData.allProjDaily.dailies.length) {
+    const employeesSet = new Set<string>([]);
+    forEach(
+      (item: any) => forEach((chItem: any) => employeesSet.add(chItem.employee.id), item.dailyItems),
+      queryData.allProjDaily.dailies,
+    );
+    employeeIds = [...employeesSet];
+  }
+  //上传材料
 
   const props: UploadProps = {
     listType: 'picture',
@@ -167,7 +220,7 @@ export default () => {
       }
     },
   };
-
+  //上传文件
   const normFile = (e: any) => {
     if (Array.isArray(e)) {
       return e;
@@ -209,7 +262,7 @@ export default () => {
     // return (!data?.id || isDerive) && resData!.projs.find((sp) => sp.id === value)
     //   ? Promise.reject(Error('id已存在'))
     //   : Promise.resolve();
-    return (!false || isDerive) && resData!.projs.find((sp) => sp.id === value)
+    return (!false || isDerive) && resData!.projs.find((sp) => sp.id === value)//当填完id时，需要从后台走接口看是不是id已存在
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
   };
@@ -410,7 +463,7 @@ export default () => {
                 {/* 暂时未使用 */}
                 <Form.Item
                   labelCol={{ span: 3, offset: 0 }}
-                  // hidden={!(isDerive || data?.pId)}
+                  // hidden={!(isDerive || data?.pId)} 和派生项目Id
                   hidden={!(isDerive)}
                   label="关联项目ID"
                   name="pId"
@@ -535,7 +588,9 @@ export default () => {
                 }
                 return true;
               }}>
+
               {resData?.realSubordinates.map((u) => (
+                //本级和下级
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
@@ -554,6 +609,7 @@ export default () => {
                 return true;
               }}>
               {resData?.groupsUsers.map((u) => (
+                //本级及下级
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
@@ -574,6 +630,7 @@ export default () => {
               }}
             >
               {resData?.realSubordinates.map((u) => (
+                //本级及下级
                 <Select.Option key={u.id} value={u.id} >
                   {u.name}
                 </Select.Option>

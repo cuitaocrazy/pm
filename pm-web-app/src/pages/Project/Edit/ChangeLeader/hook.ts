@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import type { ChangePmInput, Mutation, Query, MutationPushChangePmArgs } from '@/apollo';
 import type { User } from '@/apollo';
@@ -6,16 +6,25 @@ import { message } from 'antd';
 import { useModel } from 'umi';
 
 const QueryChangePmGql = gql`
-  {
+query($name: String, $leaders: [String!], $page: Int, $pageSize: Int) {
     dailyUsers {
       id
       name
       groups
     }
-    superProjs {
+    realSubordinates {
       id
       name
-      leader
+    }
+    
+    superProjs(name: $name, leaders:$leaders, page: $page, pageSize: $pageSize) {
+      result{
+        id
+        name
+        leader
+      }
+      page
+      total
     }
   }
 `;
@@ -27,12 +36,20 @@ const pushChangePmGql = gql`
 `;
 
 export function useChangePmState() {
+  let [query, setQuery] = useState({});
+
   const [refresh, { data: queryData }] = useLazyQuery<Query>(QueryChangePmGql, {
+    variables: {
+      ...query
+    },
     fetchPolicy: 'no-cache',
   });
+  // const { refresh: initialRefresh } = useModel('@@initialState');
+
   useEffect(() => {
     refresh();
-  }, [refresh]);
+  }, [refresh, query]);
+  console.log(queryData)
   const users: User[] = queryData?.dailyUsers || [];
   const { initialState } = useModel('@@initialState');
   if (initialState?.currentUser) {
@@ -50,7 +67,12 @@ export function useChangePmState() {
     return users.filter((user) => user.id === userId).length > 0;
   };
 
-  const projs = queryData?.superProjs.filter((proj) => isMember(proj.leader)) || [];
+  const projs = queryData?.superProjs.result.filter((proj) => isMember(proj.leader)) || [];
+  console.log(queryData, '-------------121312')
+  console.log(projs)
+  const realSubordinates = queryData?.realSubordinates
+  const page = queryData?.superProjs.page
+  const total = queryData?.superProjs.total
   const [pushChangePmHandle] = useMutation<Mutation, MutationPushChangePmArgs>(pushChangePmGql);
   const pushChangePm = useCallback(
     async (changePm: ChangePmInput) => {
@@ -69,5 +91,10 @@ export function useChangePmState() {
     pushChangePm,
     users,
     projs,
+    setQuery,
+    query,
+    realSubordinates,
+    page,
+    total
   };
 }

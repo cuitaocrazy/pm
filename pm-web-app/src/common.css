@@ -33,3 +33,9 @@
 .lineHeight32{
     line-height:32px
 }
+.width160 {
+    width: 160px;
+}
+.justfyCenter{
+    justify-content: center;
+}

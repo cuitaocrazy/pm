@@ -149,7 +149,7 @@ export function useProjStatus() {
     initialRefresh()
   }, [refresh]);
 
-  const tmpProjs = ((isAdmin ? queryData?.result?.superProjs : queryData?.result?.iLeadProjs) || []).map(item => {
+  const tmpProjs = ((isAdmin ? queryData?.superProjs?.result : queryData?.iLeadProjs.result) || []).map(item => {
     return { ...item }
   });
   const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))

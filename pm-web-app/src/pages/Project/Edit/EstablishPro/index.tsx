@@ -3,14 +3,14 @@ import { ApolloProvider } from '@apollo/client';
 import ProjForm from './ProjForm';
 
 const Project: React.FC<any> = () => {
-return(
+  return (
     <>
-    {ProjForm()}
+      {ProjForm()}
     </>
-)
+  )
 }
 export default () => (
-    <ApolloProvider client={client}>
-      <Project />
-    </ApolloProvider>
-  );
+  <ApolloProvider client={client}>
+    <Project />
+  </ApolloProvider>
+);

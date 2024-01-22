@@ -59,7 +59,7 @@ const userQuery = gql`
       createDate
     }
     groups
-    subordinates {
+    realSubordinates {
       id
       name
     }
@@ -125,10 +125,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
-  console.log("initialState?.currentUser?.groups------" + initialState?.currentUser?.groups);
   // const [myGroup, setMyGroup] = useState(initialState?.currentUser?.groups)
   const myGroup = initialState?.currentUser?.groups;
-  console.log("myGroup-----" + myGroup);
 
   // 定义需要检查的部门路径列表
   const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
@@ -394,7 +392,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   const groupDatas = (inputArray: any) => {
     let result: any = []
-    console.log("inputArray------" + JSON.stringify(inputArray))
     inputArray.forEach((item: any) => {
       const path = item.substring(1).split('/');
       let currentLevel = result;
@@ -427,10 +424,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const [myProjGroup] = useState(
   //   groupDatas(resData?.groups)
   // )
-  console.log("resData?.groups------" + JSON.stringify(resData?.groups))
-
-  console.log("groupType------" + JSON.stringify(groupType))
-  // console.log("groupsOptions--------" + JSON.stringify(groupsOptions))
   const [newGroup, setNewGroup] = useState({
     group: '',
 
@@ -448,7 +441,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   //   const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
   //     return `${accumulator}/${currentValue}`;
   //   }, '');
-  //   console.log("newGroup-----" + JSON.stringify(newGroup));
   //   // 使用async/await语法确保异步操作的正确执行
   //   (async () => {
   //     try {
@@ -610,7 +602,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 }
                 return true;
               }}>
-              {resData?.subordinates.map((u) => (
+              {resData?.realSubordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
@@ -668,7 +660,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 return true;
               }}
             >
-              {resData?.subordinates.map((u) => (
+              {resData?.realSubordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
                   {u.name}
                 </Select.Option>
@@ -1026,7 +1018,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                           rules={[{ required: true }]}
                         >
                           <Select disabled>
-                            {resData?.subordinates.map((u) => (
+                            {resData?.realSubordinates.map((u) => (
                               <Select.Option key={u.id} value={u.id}>
                                 {u.name}
                               </Select.Option>

@@ -35,19 +35,6 @@ import moment from 'moment';
 import { useForm } from 'antd/es/form/Form';
 import { useProjStatus } from './hook';
 
-//TODO  agreements 可能不做查询了
-
-//TODO  projectClasses  项目分类
-// code
-// remark
-// enable
-// isDel
-// sort
-// createDate
-
-// TODO isExistID  projs 从后台走新接口
-
-
 const userQuery = gql`
   query ($groups: [String!]) {
     groupsUsers(groups: $groups) {
@@ -58,23 +45,14 @@ const userQuery = gql`
       result{
         id
         name
-        type
       }
-      page
-      total
     }
     projectClasses {
       id
       name
-      code
-      remark
-      enable
-      isDel
-      sort
-      createDate
     }
     groups
-    subordinates {
+    realSubordinates {
       id
       name
     }
@@ -84,22 +62,24 @@ const userQuery = gql`
   }
 `;
 
+// 去掉dailies
+// {
+// date
+//         dailyItems {
+//           employee {
+//     id
+//     name
+//   }
+//   timeConsuming
+//   content
+// }
+//       }
+
 const QueryDaily = gql`
   query GetDaily($projId: String!) {
     allProjDaily(projId: $projId) {
       project {
         id
-      }
-      dailies {
-        date
-        dailyItems {
-          employee {
-            id
-            name
-          }
-          timeConsuming
-          content
-        }
       }
     }
   }
@@ -116,7 +96,6 @@ export default () => {
   //   role: 'engineer',
   // } });
   const [form] = useForm<ProjectInput>();
-  console.log("form" + form.getFieldsValue())
   const { pushProj } = useProjStatus();
   const [messageApi, contextHolder] = message.useMessage();
   // TODO groups换成动态参数，不能写死
@@ -148,33 +127,18 @@ export default () => {
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   // const [stageStatus, setStageStatus] = useState(data?.status || '');
   const [stageStatus, setStageStatus] = useState('');
+
+
+
   const myGroup = initialState?.currentUser?.groups;
+  const shouldEnable = myGroup?.map(item => {
+    // 使用正则表达式检查是否包含一个或两个斜杠
+    const match = item.match(/^\/[^/]+(\/[^/]+)?$/);
+    return match !== null;
+  });
 
-  // 定义需要检查的部门路径列表
-  const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
-
-  // 定义状态变量
-  const [getDatePickerDisable, setGetDatePickerDisable] = useState(true);
-
-  // 在组件挂载时进行初始化
-  useEffect(() => {
-    // 使用正则表达式检查 myGroup 是否匹配允许的部门路径
-    const shouldEnable = typeof myGroup === 'string' && allowedDepartmentsRegex.test(myGroup);
-
-    // 设置状态变量
-    setGetDatePickerDisable(!shouldEnable);
-  }, [myGroup]);
-
-  // 获取填写日报人员id，禁止修改
-  let employeeIds: string[] = [];
-  if (queryData && queryData.allProjDaily.dailies.length) {
-    const employeesSet = new Set<string>([]);
-    forEach(
-      (item: any) => forEach((chItem: any) => employeesSet.add(chItem.employee.id), item.dailyItems),
-      queryData.allProjDaily.dailies,
-    );
-    employeeIds = [...employeesSet];
-  }
+  // const isConfirmYearDisabled = shouldEnable?.includes(true);
+  const isConfirmYearDisabled = shouldEnable?.some(enabled => enabled === true);
 
   const props: UploadProps = {
     listType: 'picture',
@@ -186,7 +150,6 @@ export default () => {
       showDownloadIcon: true,
     },
     onChange: ({ file, fileList }) => {
-      // console.log(file, fileList)
       if (file.status !== 'uploading') {
         fileList.forEach((item) => {
           const { url, response } = item;
@@ -357,11 +320,6 @@ export default () => {
     variables: queryCustomerVariables,
   });
 
-
-  if (customerListData) {
-    console.log("4444")
-    console.log("data.customers--------" + JSON.stringify(customerListData.customers.result))
-  }
   const groupDatas = (inputArray: any) => {
     let result: any = []
     inputArray.forEach((item: any) => {
@@ -410,7 +368,6 @@ export default () => {
     const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
       return `${accumulator}/${currentValue}`;
     }, '');
-    console.log("newGroup-----" + JSON.stringify(newGroup));
     // 使用async/await语法确保异步操作的正确执行
     (async () => {
       try {
@@ -578,7 +535,7 @@ export default () => {
                 }
                 return true;
               }}>
-              {resData?.subordinates.map((u) => (
+              {resData?.realSubordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
@@ -616,8 +573,8 @@ export default () => {
                 return true;
               }}
             >
-              {resData?.subordinates.map((u) => (
-                <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
+              {resData?.realSubordinates.map((u) => (
+                <Select.Option key={u.id} value={u.id} >
                   {u.name}
                 </Select.Option>
               ))}
@@ -876,7 +833,7 @@ export default () => {
               format="YYYY"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
-              disabled={getDatePickerDisable}
+              disabled={!isConfirmYearDisabled}
             />
             {/* <Input /> */}
           </Form.Item>
@@ -976,7 +933,7 @@ export default () => {
                           rules={[{ required: true }]}
                         >
                           <Select disabled>
-                            {resData?.subordinates.map((u) => (
+                            {resData?.realSubordinates.map((u) => (
                               <Select.Option key={u.id} value={u.id}>
                                 {u.name}
                               </Select.Option>

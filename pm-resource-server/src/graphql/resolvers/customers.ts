@@ -69,6 +69,7 @@ export default {
           description: "修改市场客户",
         });
       }
+      // { $or: [{ _id: new ObjectId(id) }, { _id: id }] }, ID取值需要统一处理 TODO
       return Customer.updateOne(
         { $or: [{ _id: new ObjectId(id) }, { _id: id }] },
         { $set: customer },

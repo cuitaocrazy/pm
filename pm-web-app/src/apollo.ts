@@ -487,13 +487,14 @@ export type Query = {
   __typename?: 'Query';
   me: User;
   subordinates: User[];
+  realSubordinates: User[];
   groupsUsers: User[];
   roleUsers: User[];
   myDailies?: Maybe<EmployeeOfDailies>;
   projs: Project[];
   superProjs: Result;
   iLeadProjs: Result;
-  filterProjs: Project[];
+  filterProjs: Result;
   filterProjsByType: Project[];
   expenses: Expense[];
   dailyUsers: User[];
@@ -535,6 +536,7 @@ export type QueryProjectArgs = {
 
 export type QueryFilterProjectArgs = {
   projType: Scalars['String'];
+  pageSize: Scalars['Int'];
 };
 export type QueryFilterProjectByIdArgs = {
   id: Scalars['String']

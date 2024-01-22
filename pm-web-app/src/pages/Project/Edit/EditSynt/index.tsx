@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState } from 'react';
-import { Button, Table, Popconfirm, Tag, Input, Space, Radio } from 'antd';
+import React, { useRef } from 'react';
+import { Button, Table, Popconfirm, Tag, Space } from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -16,13 +16,11 @@ const Project: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
   const dailyRef = useRef<FormDialogHandle<Proj>>(null);
   const { projs, projectAgreements, loading, deleteProj, pushProj, isAdmin } = useProjStatus();
-  const { status, orgCode, zoneCode, projType, buildProjName } = useBaseState();
-  const [editProj, setEditProj] = useState<Proj>();
+  const {  orgCode, zoneCode, projType, buildProjName } = useBaseState();
 
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
-    setEditProj(proj)
     ref.current?.showDialog({ 
       ...pro,
       contName: agree.length ? agree[0].agreementId : '', 

@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { Form, Input, InputNumber, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
+import { Form, Input, Select, Button, Divider, Row, Col, DatePicker, Upload } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import type { ProjectInput, Customer, Query, TreeStatu, QueryGroupsUsersArgs, QueryProjDailyArgs } from '@/apollo';
+import type { ProjectInput, Query, QueryGroupsUsersArgs, QueryProjDailyArgs } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
-import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
 import ProjIdComponent from './ProjIdComponent';
-import { projStatus } from './utils';
 import { forEach } from 'ramda';
-import moment from 'moment';
 
 const userQuery = gql`
   query($groups: [String!]) {
@@ -18,21 +15,10 @@ const userQuery = gql`
       id
       name
     }
-    agreements {
-      id
-      name
-      type
-    }
+    
     subordinates {
       id
       name
-    }
-    customers {
-      id
-      name
-      industryCode
-      regionCode
-      enable
     }
     projs {
       id
@@ -45,6 +31,7 @@ const QueryDaily = gql`
     allProjDaily(projId: $projId) {
       project {
         id
+        
       }
       dailies {
         date
@@ -67,20 +54,16 @@ const layout = {
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
+  const {  data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
     groups: ['/软件事业部/软件一部/市场组', '/软件事业部/软件二部/市场组', '/软件事业部/创新业务部/市场组'],
   } });
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs >(QueryDaily, { fetchPolicy: 'no-cache', variables: {
     projId: data?.id || '',
   } });
-  const { status, dataForTree } = useBaseState();
   const { initialState } = useModel('@@initialState');
-  const [isDerive, setIsDerive] = useState(false);
-  const treeStatus = dataForTree(status);
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
-  const [stageStatus, setStageStatus] = useState(data?.status || '');
 
   // 获取填写日报人员id，禁止修改
   let employeeIds: string[] = [];
@@ -157,7 +140,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     if (id === pId) {
       return Promise.reject(Error('派生项目ID不能与关联项目ID相同'));
     }
-    return (!data?.id || isDerive) && resData!.projs.find((sp) => sp.id === value)
+    return (!data?.id ) && resData!.projs.find((sp) => sp.id === value)
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
   };
@@ -172,35 +155,35 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
   };
 
-  const getLeveTwoStatus = (type: string, label: string) => {
-    const id = form.getFieldValue('id');
-    const result = reg.exec(id);
-    let options: TreeStatu[] = [];
-    treeStatus.forEach((statu) => {
-      if (statu.code === result?.groups?.projType && statu.children) {
-        statu.children.map((s: TreeStatu) => {
-          if (s.code === type) {
-            options = s.children || [];
-          }
-        });
-      }
-    });
-    return (
-      <Form.Item label={label} name={type} rules={[{ required: true }]}>
-        {options.length ? (
-          <Select allowClear>
-            {options.map((s: TreeStatu) => (
-              <Select.Option key={s.id} value={s.id}>
-                {s.name}
-              </Select.Option>
-            ))}
-          </Select>
-        ) : (
-          <Select loading={loading} />
-        )}
-      </Form.Item>
-    );
-  };
+  // const getLeveTwoStatus = (type: string, label: string) => {
+  //   const id = form.getFieldValue('id');
+  //   const result = reg.exec(id);
+  //   let options: TreeStatu[] = [];
+  //   treeStatus.forEach((statu) => {
+  //     if (statu.code === result?.groups?.projType && statu.children) {
+  //       statu.children.map((s: TreeStatu) => {
+  //         if (s.code === type) {
+  //           options = s.children || [];
+  //         }
+  //       });
+  //     }
+  //   });
+  //   return (
+  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
+  //       {options.length ? (
+  //         <Select allowClear>
+  //           {options.map((s: TreeStatu) => (
+  //             <Select.Option key={s.id} value={s.id}>
+  //               {s.name}
+  //             </Select.Option>
+  //           ))}
+  //         </Select>
+  //       ) : (
+  //         <Select loading={loading} />
+  //       )}
+  //     </Form.Item>
+  //   );
+  // };
 
   // 当id有变动，重置状态字段
   const onIdChange = (value: string) => {
@@ -220,40 +203,40 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
 
   // 派生一个新项目
-  const deriveNewProject = () => {
-    setIsDerive(true)
-    form.setFieldValue('pId', data?.id);
-    // 生成派生项目id
-    let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('MMDD')}`) || '1'
-    onIdChange(newId);
-  };
+  // const deriveNewProject = () => {
+  //   setIsDerive(true)
+  //   form.setFieldValue('pId', data?.id);
+  //   // 生成派生项目id
+  //   let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('MMDD')}`) || '1'
+  //   onIdChange(newId);
+  // };
 
   // 获取客户信息
-  const getCustomers = (type: string, label: string) => {
-    let customersArr = resData?.customers.filter(item => item.enable) || []
-    if (customersArr.length > 1) {
-      const id = form.getFieldValue('id');
-      const result = reg.exec(id);
-      customersArr = customersArr.filter(item => {
-        return (item.industryCode === result?.groups?.org) && (item.regionCode === result?.groups?.zone)
-      })
-    }
-    return (
-      <Form.Item label={label} name={type} rules={[{ required: true }]}>
-        {customersArr.length ? (
-          <Select allowClear>
-            {customersArr.map((s: Customer) => (
-              <Select.Option key={s.id} value={s.id}>
-                {s.name}
-              </Select.Option>
-            ))}
-          </Select>
-        ) : (
-          <Select loading={loading} />
-        )}
-      </Form.Item>
-    );
-  }
+  // const getCustomers = (type: string, label: string) => {
+  //   let customersArr = resData?.customers.filter(item => item.enable) || []
+  //   if (customersArr.length > 1) {
+  //     const id = form.getFieldValue('id');
+  //     const result = reg.exec(id);
+  //     customersArr = customersArr.filter(item => {
+  //       return (item.industryCode === result?.groups?.org) && (item.regionCode === result?.groups?.zone)
+  //     })
+  //   }
+  //   return (
+  //     <Form.Item label={label} name={type} rules={[{ required: true }]}>
+  //       {customersArr.length ? (
+  //         <Select allowClear>
+  //           {customersArr.map((s: Customer) => (
+  //             <Select.Option key={s.id} value={s.id}>
+  //               {s.name}
+  //             </Select.Option>
+  //           ))}
+  //         </Select>
+  //       ) : (
+  //         <Select loading={loading} />
+  //       )}
+  //     </Form.Item>
+  //   );
+  // }
 
   const renderActiveNode = (fields: any) => {
     let tempFields = []
@@ -276,7 +259,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           return (
             <Row>
               <Col xs={24} sm={20}>
-                <Form.Item labelCol={{ span: 3, offset: 0 }} hidden={!(isDerive || data?.pId)} label="关联项目ID" name="pId">
+                <Form.Item labelCol={{ span: 3, offset: 0 }} hidden={!(  data?.pId)} label="关联项目ID" name="pId">
                   <Input disabled />
                 </Form.Item>
                 <Form.Item
@@ -285,7 +268,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >
-                  <ProjIdComponent disabled={!!data?.id && !isDerive} onChange={onIdChange} />
+                  <ProjIdComponent disabled={!!data?.id} onChange={onIdChange} />
                 </Form.Item>
               </Col>
             </Row>
@@ -300,7 +283,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         </Col>
         <Col span={8}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
-            <Select disabled={!!data?.id && !isDerive} allowClear>
+            <Select disabled={!!data?.id } allowClear>
               {resData?.subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}

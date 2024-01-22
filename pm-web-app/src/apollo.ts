@@ -535,8 +535,8 @@ export type QueryProjectArgs = {
 };
 
 export type QueryFilterProjectArgs = {
-  projType: Scalars['String'];
-  pageSize: Scalars['Int'];
+  projType?: Scalars['String'];
+  pageSize?: Scalars['Int'];
 };
 export type QueryFilterProjectByIdArgs = {
   id: Scalars['String']

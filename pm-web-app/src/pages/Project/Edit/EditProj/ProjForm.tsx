@@ -33,60 +33,60 @@ import { forEach } from 'ramda';
 import moment from 'moment';
 
 const userQuery = gql`
-  query ($groups: [String!]) {
-    groupsUsers(groups: $groups) {
-      id
-      name
-    }
-    agreements {
-      result{
-        id
-        name
-        type
-      }
-      page
-      total
-    }
-    projectClasses {
-      id
-      name
-      code
-      remark
-      enable
-      isDel
-      sort
-      createDate
-    }
-    groups
-    realSubordinates {
-      id
-      name
-    }
-    projs {
-      id
-    }
-  }
+query ($groups: [String!]) {
+groupsUsers(groups: $groups) {
+id
+name
+}
+agreements {
+result{
+id
+name
+type
+}
+page
+total
+}
+projectClasses {
+id
+name
+code
+remark
+enable
+isDel
+sort
+createDate
+}
+groups
+subordinates {
+id
+name
+}
+projs {
+id
+}
+}
 `;
 
 const QueryDaily = gql`
-  query GetDaily($projId: String!) {
-    allProjDaily(projId: $projId) {
-      project {
-        id
-      }
-      dailies {
-        date
-        dailyItems {
-          employee {
-            id
-            name
-          }
-          timeConsuming
-          content
-        }
-      }
-    }
-  }
+query GetDaily($projId: String!) {
+allProjDaily(projId: $projId) {
+project {
+id
+}
+dailies {
+date
+dailyItems {
+employee {
+id
+name
+}
+timeConsuming
+content
+}
+}
+}
+}
 `;
 
 const layout = {
@@ -97,7 +97,7 @@ const layout = {
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
-  //   role: 'engineer',
+  // role: 'engineer',
   // } });
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
@@ -125,14 +125,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
-
-
-
   // console.log("initialState?.currentUser?.groups------" + initialState?.currentUser?.groups);
   // const [myGroup, setMyGroup] = useState(initialState?.currentUser?.groups)
   const myGroup = initialState?.currentUser?.groups;
   // console.log("myGroup-----" + myGroup);
-
 
   // 定义需要检查的部门路径列表
   const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
@@ -307,20 +303,19 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     onIdChange(newId);
   };
 
-
   const customerQuery = gql`
-    query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
-      customers(region: $region, industry: $industry,page:$page,pageSize:$pageSize) {
-        result{
-          id
-          name
-          enable
-        }
-        page
-        total
-      }
-    }
-  `;
+query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
+customers(region: $region, industry: $industry,page:$page,pageSize:$pageSize) {
+result{
+id
+name
+enable
+}
+page
+total
+}
+}
+`;
   const id = form.getFieldValue('id');
   const resultId = reg.exec(id);
   const region = resultId?.groups?.zone;
@@ -332,7 +327,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     page: 1,
     pageSize: 100000
   };
-
 
 
   const renderActiveNode = (fields: any) => {
@@ -397,247 +391,215 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     setCustomerListData(customerListData1?.customers)
   }, [customerListData1])
 
+  // const groupDatas = (inputArray: any) => {
+  // let result: any = []
+  // // console.log("inputArray------" + JSON.stringify(inputArray))
+  // inputArray.forEach((item: any) => {
+  // const path = item.substring(1).split('/');
+  // let currentLevel = result;
+  // path.forEach((segment: any, index: number) => {
+  // const existingSegment = currentLevel.find((el: any) => el.value === segment);
 
-  const groupDatas = (inputArray: any) => {
-    let result: any = []
-    inputArray.forEach((item: any) => {
-      const path = item.substring(1).split('/');
-      let currentLevel = result;
-      path.forEach((segment: any, index: number) => {
-        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+  // if (existingSegment) {
+  // currentLevel = existingSegment.children || [];
 
-        // const groupDatas = (inputArray: any) => {
-        //   let result: any = []
-        //   // console.log("inputArray------" + JSON.stringify(inputArray))
-        //   inputArray.forEach((item: any) => {
-        //     const path = item.substring(1).split('/');
-        //     let currentLevel = result;
-        //     path.forEach((segment: any, index: number) => {
-        //       const existingSegment = currentLevel.find((el: any) => el.value === segment);
+  // } else {
+  // const newSegment = {
+  // value: segment,
+  // label: segment,
+  // children: index === path.length - 1 ? [] : [],
+  // };
 
+  // currentLevel.push(newSegment);
+  // currentLevel = newSegment.children || [];
 
-        //       if (existingSegment) {
-        //         currentLevel = existingSegment.children || [];
+  // }
+  // });
+  // })
+  // return result
+  // }
 
-        //       } else {
-        //         const newSegment = {
-        //           value: segment,
-        //           label: segment,
-        //           children: index === path.length - 1 ? [] : [],
-        //         };
+  // const [groupsOptions] = useState(
+  // groupDatas(groupType)
+  // );
+  // const [myProjGroup] = useState(
+  // groupDatas(resData?.groups)
+  // )
+  // console.log("resData?.groups------" + JSON.stringify(resData?.groups))
 
-        //         currentLevel.push(newSegment);
-        //         currentLevel = newSegment.children || [];
+  // console.log("groupType------" + JSON.stringify(groupType))
+  // console.log("groupsOptions--------" + JSON.stringify(groupsOptions))
+  // const [newGroup, setNewGroup] = useState({
+  // group: '',
 
-        //       }
-        //     });
-        //   })
-        //   return result
-        // }
+  // })
+  // const handleChangeGroup = (value: any, type: string) => {
+  // setNewGroup({
+  // ...newGroup,
+  // group: value.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
+  // })
+  // }
 
+  // const handleSubmit = () => {
+  // handleChangeGroup(form.getFieldValue('group'), 'group');
+  // // 获取处理后的group字段值
+  // const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
+  // return `${accumulator}/${currentValue}`;
+  // }, '');
+  // console.log("newGroup-----" + JSON.stringify(newGroup));
+  // // 使用async/await语法确保异步操作的正确执行
+  // (async () => {
+  // try {
+  // // 直接修改form中group字段的值
+  // form.setFieldsValue({ group: processedGroup });
+  // // 验证字段
+  // await form.validateFields();
+  // // 调用pushProj函数，传递处理后的group字段值
+  // await pushProj(form.getFieldsValue());
+  // // 弹出成功消息
+  // await messageApi.open({
+  // type: 'success',
+  // content: '新增成功！',
+  // duration: 2
+  // });
+  // // 重置字段
+  // form.resetFields();
+  // } catch (error) {
+  // // 处理错误
+  // console.error(error);
+  // }
+  // })();
+  // };
 
-        // const [groupsOptions] = useState(
-        //   groupDatas(groupType)
-        // );
-        // const [myProjGroup] = useState(
-        //   groupDatas(resData?.groups)
-        // )
+  return (
+    <Form
+      {...layout}
+      form={form}
+      initialValues={data || { leader: initialState?.currentUser?.id }}
+      disabled={data?.status === 'endProj'}
+    >
+      <Form.Item shouldUpdate noStyle>
+        {() => {
+          return (
+            <Row>
+              <Col xs={24} sm={20}>
+                <Form.Item
+                  labelCol={{ span: 3, offset: 0 }}
+                  hidden={!(isDerive || data?.pId)}
+                  label="关联项目ID"
+                  name="pId"
+                >
+                  <Input disabled />
+                </Form.Item>
+                <Form.Item
+                  labelCol={{ span: 3, offset: 0 }}
+                  label="ID"
+                  name="id"
+                  rules={[{ required: true }, { validator }]}
+                >
+                  <ProjIdComponent disabled={!!data?.id && !isDerive} onChange={onIdChange} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={4}>
+                <Button
+                  key="create"
+                  hidden={!data?.id || isDerive}
+                  type="primary"
+                  onClick={deriveNewProject}
+                >
+                  派生一个新项目
+                </Button>
+              </Col>
+            </Row>
+          );
+        }}
+      </Form.Item>
+      <Row>
+        <Col span={8}>
+          <Form.Item label="项目名称" name="name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
+            {customerListData?.result && (
+              <Select allowClear>
+                {customerListData.result.map((u: Customer) => (
+                  <Select.Option key={u.id} value={u.id}>
+                    {u.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
 
-
-        // console.log("resData?.groups------" + JSON.stringify(resData?.groups))
-
-        // console.log("groupType------" + JSON.stringify(groupType))
-        // console.log("groupsOptions--------" + JSON.stringify(groupsOptions))
-        // const [newGroup, setNewGroup] = useState({
-        //   group: '',
-
-
-        // })
-        // const handleChangeGroup = (value: any, type: string) => {
-        //   setNewGroup({
-        //     ...newGroup,
-        //     group: value.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
-        //   })
-        // }
-
-        // const handleSubmit = () => {
-        //   handleChangeGroup(form.getFieldValue('group'), 'group');
-        //   // 获取处理后的group字段值
-        //   const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
-        //     return `${accumulator}/${currentValue}`;
-        //   }, '');
-        //   // 使用async/await语法确保异步操作的正确执行
-        //   (async () => {
-        //     try {
-        //       // 直接修改form中group字段的值
-        //       form.setFieldsValue({ group: processedGroup });
-        //       // 验证字段
-        //       await form.validateFields();
-        //       // 调用pushProj函数，传递处理后的group字段值
-        //       await pushProj(form.getFieldsValue());
-        //       // 弹出成功消息
-        //       await messageApi.open({
-        //         type: 'success',
-        //         content: '新增成功！',
-        //         duration: 2
-        //       });
-        //       // 重置字段
-        //       form.resetFields();
-        //     } catch (error) {
-        //       // 处理错误
-        //       console.error(error);
-        //     }
-        //   })();
-        // };
-
-        return (
-          <Form
-            {...layout}
-            form={form}
-            initialValues={data || { leader: initialState?.currentUser?.id }}
-            disabled={data?.status === 'endProj'}
-          >
-            <Form.Item shouldUpdate noStyle>
-              {() => {
+          {/* <Select allowClear>
+{customersArr.map((s: Customer) => (
+<Select.Option key={s.id} value={s.id}>
+{s.name}
+</Select.Option>
+))}
+</Select> */}
+          {/* <Form.Item dependencies={['id']} noStyle>
+{() => {
+return getCustomers('customer', '客户名称');
+}}
+</Form.Item> */}
+        </Col>
+        <Col span={8}>
+          <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
+            <Select disabled allowClear>
+              {resData?.agreements.result.map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <Form.Item label="项目分类" name="projectClass" rules={[{ required: true }]}>
+            <Select allowClear>
+              {resData?.projectClasses.map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          {/* <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
+<Cascader
+value={[]}
+allowClear
+changeOnSelect
+className="width122"
+placeholder="请选择"
+onChange={(value, event) => { handleChangeGroup(value, 'group') }}
+options={groupsOptions} />
+</Form.Item> */}
+          <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
+            <Select allowClear>
+              {resData?.groups.map((u, index) => {
                 return (
-                  <Row>
-                    <Col xs={24} sm={20}>
-                      <Form.Item
-                        labelCol={{ span: 3, offset: 0 }}
-                        hidden={!(isDerive || data?.pId)}
-                        label="关联项目ID"
-                        name="pId"
-                      >
-                        <Input disabled />
-                      </Form.Item>
-                      <Form.Item
-                        labelCol={{ span: 3, offset: 0 }}
-                        label="ID"
-                        name="id"
-                        rules={[{ required: true }, { validator }]}
-                      >
-                        <ProjIdComponent disabled={!!data?.id && !isDerive} onChange={onIdChange} />
-                      </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={4}>
-                      <Button
-                        key="create"
-                        hidden={!data?.id || isDerive}
-                        type="primary"
-                        onClick={deriveNewProject}
-                      >
-                        派生一个新项目
-                      </Button>
-                    </Col>
-                  </Row>
+                  <Select.Option key={index} value={u}>
+                    {u.toString().split('/')[2]}
+                  </Select.Option>
                 );
-              }}
-            </Form.Item>
-            <Row>
-              <Col span={8}>
-                <Form.Item label="项目名称" name="name" rules={[{ required: true }]}>
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
-                  {customerListData?.result && (
-                    <Select allowClear>
-                      {customerListData.result.map((u: Customer) => (
-                        <Select.Option key={u.id} value={u.id}>
-                          {u.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  )}
-                </Form.Item>
-
-
-                {/* <Select allowClear>
-            {customersArr.map((s: Customer) => (
-              <Select.Option key={s.id} value={s.id}>
-                {s.name}
-              </Select.Option>
-            ))}
-          </Select> */}
-                {/* <Form.Item dependencies={['id']} noStyle>
-            {() => {
-              return getCustomers('customer', '客户名称');
-            }}
-          </Form.Item> */}
-              </Col>
-              <Col span={8}>
-                <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
-                  <Select disabled allowClear>
-                    {resData?.agreements.result.map((u) => (
-                      <Select.Option key={u.id} value={u.id}>
-                        {u.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={8}>
-                <Form.Item label="项目分类" name="projectClass" rules={[{ required: true }]}>
-                  <Select allowClear>
-                    {resData?.projectClasses.map((u) => (
-                      <Select.Option key={u.id} value={u.id}>
-                        {u.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                {/* <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
-            <Cascader
-              value={[]}
-              allowClear
-              changeOnSelect
-              className="width122"
-              placeholder="请选择"
-              onChange={(value, event) => { handleChangeGroup(value, 'group') }}
-              options={groupsOptions} />
-          </Form.Item> */}
-                <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
-                  <Select allowClear>
-                    {resData?.groups.map((u, index) => {
-                      return (
-                        <Select.Option key={index} value={u}>
-                          {u.toString().split('/')[2]}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={8}></Col>
-            </Row>
-            <Row>
-              <Col span={8}>
-                <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
-                  <Select disabled={!!data?.id && !isDerive} allowClear
-                    showSearch
-                    filterOption={(input, option) => {
-                      const nameStr: any = option?.children || '';
-                      if (input && nameStr) {
-                        return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-                      }
-                      return true;
-                    }}>
-                    {resData?.realSubordinates.map((u) => (
-                      <Select.Option key={u.id} value={u.id}>
-                        {u.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                {/* <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
-            <Select allowClear showSearch
+              })}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}></Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
+            <Select disabled={!!data?.id && !isDerive} allowClear
+              showSearch
               filterOption={(input, option) => {
                 const nameStr: any = option?.children || '';
                 if (input && nameStr) {
@@ -645,518 +607,538 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 }
                 return true;
               }}>
+              {resData?.subordinates.map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          {/* <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
+<Select allowClear showSearch
+filterOption={(input, option) => {
+const nameStr: any = option?.children || '';
+if (input && nameStr) {
+return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+}
+return true;
+}}>
+{resData?.groupsUsers.map((u) => (
+<Select.Option key={u.id} value={u.id}>
+{u.name}
+</Select.Option>
+))}
+</Select>
+</Form.Item> */}
+          <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
+            <Select
+              allowClear
+              showSearch
+              filterOption={(input, option) => {
+                const nameStr: any = option?.children || '';
+                if (input && nameStr) {
+                  return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                }
+                return true;
+              }}
+              onChange={(value) => handleSalesLeaderChange(value)}// Add this onChange handler
+            >
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
               ))}
             </Select>
-          </Form.Item> */}
-                <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
-                  <Select
-                    allowClear
-                    showSearch
-                    filterOption={(input, option) => {
-                      const nameStr: any = option?.children || '';
-                      if (input && nameStr) {
-                        return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-                      }
-                      return true;
-                    }}
-                    onChange={(value) => handleSalesLeaderChange(value)}// Add this onChange handler
-                  >
-                    {resData?.groupsUsers.map((u) => (
-                      <Select.Option key={u.id} value={u.id}>
-                        {u.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item label="参与人员" name="participants">
-                  <Select
-                    mode="multiple"
-                    filterOption={(input, option) => {
-                      const nameStr: any = option?.children || '';
-                      if (input && nameStr) {
-                        return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-                      }
-                      return true;
-                    }}
-                  >
-                    {resData?.realSubordinates.map((u) => (
-                      <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
-                        {u.name}
-                      </Select.Option>
-                    ))}
-                    x
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={8}>
-                <Form.Item dependencies={['id']} noStyle>
-                  {() => {
-                    return getLeveTwoStatus('projStatus', '项目状态');
-                  }}
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item dependencies={['id']} noStyle>
-                  {() => {
-                    return getLeveTwoStatus('acceStatus', '验收状态');
-                  }}
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item dependencies={['id']} noStyle>
-                  {() => {
-                    return getLeveTwoStatus('contStatus', '合同状态');
-                  }}
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={8}>
-                <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
-                  <Select disabled={false} loading={loading} onChange={(v) => setStageStatus(v)}>
-                    {projStatus.map((s) => (
-                      <Select.Option key={s[0]} value={s[0]}>
-                        {s[1]}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  label="启动日期"
-                  name="startTime"
-                  rules={[{ required: stageStatus ? true : false }]}
-                  getValueProps={(value) => ({
-                    value: value ? moment(value) : undefined,
-                  })}
-                >
-                  <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  label="结束日期"
-                  name="endTime"
-                  rules={[{ required: stageStatus === 'endProj' ? true : false }]}
-                  getValueProps={(value) => ({
-                    value: value ? moment(value) : undefined,
-                  })}
-                >
-                  <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={8}>
-                <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={8}>
-                <Form.Item
-                  label="项目预算"
-                  name="projBudget"
-                  rules={[{ required: false }]}
-                  tooltip={<span className="ant-form-text">客户心理的预算</span>}
-                >
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="参与人员" name="participants">
+            <Select
+              mode="multiple"
+              filterOption={(input, option) => {
+                const nameStr: any = option?.children || '';
+                if (input && nameStr) {
+                  return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                }
+                return true;
+              }}
+            >
+              {resData?.subordinates.map((u) => (
+                <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
+                  {u.name}
+                </Select.Option>
+              ))}
+              x
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <Form.Item dependencies={['id']} noStyle>
+            {() => {
+              return getLeveTwoStatus('projStatus', '项目状态');
+            }}
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item dependencies={['id']} noStyle>
+            {() => {
+              return getLeveTwoStatus('acceStatus', '验收状态');
+            }}
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item dependencies={['id']} noStyle>
+            {() => {
+              return getLeveTwoStatus('contStatus', '合同状态');
+            }}
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
+            <Select disabled={false} loading={loading} onChange={(v) => setStageStatus(v)}>
+              {projStatus.map((s) => (
+                <Select.Option key={s[0]} value={s[0]}>
+                  {s[1]}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            label="启动日期"
+            name="startTime"
+            rules={[{ required: stageStatus ? true : false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined,
+            })}
+          >
+            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            label="结束日期"
+            name="endTime"
+            rules={[{ required: stageStatus === 'endProj' ? true : false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined,
+            })}
+          >
+            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <Form.Item
+            label="项目预算"
+            name="projBudget"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">客户心理的预算</span>}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
 
-              <Col span={8}>
-                <Form.Item
-                  label="费用预算"
-                  name="budgetFee"
-                  rules={[{ required: false }]}
-                  tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
-                >
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  label="成本预算"
-                  name="budgetCost"
-                  rules={[{ required: false }]}
-                  tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
-                >
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={8}>
-                <Form.Item
-                  label="人力费用"
-                  name="humanFee"
-                  rules={[{ required: false }]}
-                  tooltip={<span className="ant-form-text">实际消耗费用</span>}
-                >
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  label="项目费用"
-                  name="projectFee"
-                  rules={[{ required: false }]}
-                  tooltip={<span className="ant-form-text">实际消耗费用</span>}
-                >
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  label="采购成本"
-                  name="actualCost"
-                  rules={[{ required: false }]}
-                  tooltip={<span className="ant-form-text">实际采购成本</span>}
-                >
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }]}>
-                  <InputNumber min={0} />
-                </Form.Item>
-              </Col>
-              {projType === 'SH' ? (
-                <>
-                  <Col span={8}>
-                    <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
-                      <InputNumber min={0} />
-                    </Form.Item>
-                  </Col>
-                  <Col span={8}>
-                    <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
-                      <InputNumber min={0} />
-                    </Form.Item>
-                  </Col>
-                  <Col span={8}></Col>
-                </>
-              ) : (
-                ''
-              )}
-            </Row>
-            {projType === 'SQ' || projType === 'SH' ? (
-              ''
-            ) : (
-              <Row>
-                <Col span={8}>
-                  <Form.Item
-                    label="投产日期"
-                    name="productDate"
-                    rules={[{ required: false }]}
-                    getValueProps={(value) => ({
-                      value: value ? moment(value) : undefined,
-                    })}
-                  >
-                    <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    label="验收日期"
-                    name="acceptDate"
-                    rules={[{ required: false }]}
-                    getValueProps={(value) => ({
-                      value: value ? moment(value) : undefined,
-                    })}
-                  >
-                    <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    label="免费维护期"
-                    name="serviceCycle"
-                    rules={[{ required: false }]}
-                    tooltip={<span className="ant-form-text">月</span>}
-                  >
-                    <InputNumber min={0} />
-                  </Form.Item>
-                </Col>
-              </Row>
-            )}
-            {projType === 'SH' ? (
-              <Row hidden={projType !== 'SH'}>
-                <Col span={8}>
-                  <Form.Item
-                    label="要求巡检次数"
-                    name="requiredInspections"
-                    rules={[{ required: false }]}
-                  >
-                    <InputNumber min={0} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }]}>
-                    <InputNumber min={0} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    label="服务周期"
-                    name="serviceCycle"
-                    rules={[{ required: false }]}
-                    tooltip={<span className="ant-form-text">月</span>}
-                  >
-                    <InputNumber min={0} />
-                  </Form.Item>
-                </Col>
-              </Row>
-            ) : (
-              ''
-            )}
+        <Col span={8}>
+          <Form.Item
+            label="费用预算"
+            name="budgetFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            label="成本预算"
+            name="budgetCost"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <Form.Item
+            label="人力费用"
+            name="humanFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际消耗费用</span>}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            label="项目费用"
+            name="projectFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际消耗费用</span>}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            label="采购成本"
+            name="actualCost"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际采购成本</span>}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }]}>
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+        {projType === 'SH' ? (
+          <>
+            <Col span={8}>
+              <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
+                <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+            <Col span={8}></Col>
+          </>
+        ) : (
+          ''
+        )}
+      </Row>
+      {projType === 'SQ' || projType === 'SH' ? (
+        ''
+      ) : (
+        <Row>
+          <Col span={8}>
+            <Form.Item
+              label="投产日期"
+              name="productDate"
+              rules={[{ required: false }]}
+              getValueProps={(value) => ({
+                value: value ? moment(value) : undefined,
+              })}
+            >
+              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="验收日期"
+              name="acceptDate"
+              rules={[{ required: false }]}
+              getValueProps={(value) => ({
+                value: value ? moment(value) : undefined,
+              })}
+            >
+              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="免费维护期"
+              name="serviceCycle"
+              rules={[{ required: false }]}
+              tooltip={<span className="ant-form-text">月</span>}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+        </Row>
+      )}
+      {projType === 'SH' ? (
+        <Row hidden={projType !== 'SH'}>
+          <Col span={8}>
+            <Form.Item
+              label="要求巡检次数"
+              name="requiredInspections"
+              rules={[{ required: false }]}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }]}>
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="服务周期"
+              name="serviceCycle"
+              rules={[{ required: false }]}
+              tooltip={<span className="ant-form-text">月</span>}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+        </Row>
+      ) : (
+        ''
+      )}
 
-            <Row>
-              <Col span={8}>
-                <Form.Item
-                  label="确认年度"
-                  name="confirmYear"
-                  rules={[{ required: false }]}
-                  getValueProps={(value) => ({
-                    value: value ? moment(value) : undefined,
-                  })}
-                >
-                  <DatePicker
-                    picker="year"
-                    format="YYYY"
-                    style={{ width: '100%' }}
-                    onChange={onConfirmYearChange}
-                    disabled={getDatePickerDisable}
-                  />
-                  {/* <Input /> */}
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  label="实施年度"
-                  name="doYear"
-                  rules={[{ required: false }]}
-                  getValueProps={(value) => ({
-                    value: value ? moment(value) : undefined,
-                  })}
-                >
-                  <DatePicker
-                    picker="year"
-                    format="YYYY"
-                    style={{ width: '100%' }}
-                    onChange={ondoYearChange}
-                  />
-                  {/* <Input /> */}
-                </Form.Item>
-              </Col>
-              <Col span={8}></Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
-                  <Input.TextArea />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <Form.List name="actives" rules={[{ validator: activeValidator }]}>
-                  {(fields, { add, remove }, { errors }) => (
-                    <>
-                      <Form.Item>
-                        {data?.status === 'endProj' ? (
-                          ''
-                        ) : (
-                          <Button
-                            type="dashed"
-                            onClick={() =>
-                              add({ recorder: initialState?.currentUser?.id }, fields.length)
-                            }
-                            icon={<PlusOutlined />}
-                          >
-                            添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '售后' : '项目'}活动
-                          </Button>
-                        )}
-                        <Form.ErrorList errors={errors} />
-                      </Form.Item>
-                      {renderActiveNode(fields).map((field, i) => (
-                        <div key={field.key} style={{ textAlign: 'left' }}>
-                          <Divider>
-                            <Form.Item
-                              labelCol={{ span: 1, offset: 0 }}
-                              key="name"
-                              label=" "
-                              colon={false}
-                              name={[field.name, 'name']}
-                              rules={[{ required: true, message: '请输入活动名称' }]}
-                            >
-                              <Input
-                                placeholder="请输入活动名称"
-                                style={{ width: '15vw', textAlign: 'center' }}
-                              />
-                            </Form.Item>
-                          </Divider>
-                          <Row>
-                            <Col span={12}>
-                              <Form.Item
-                                labelCol={{ span: 6, offset: 0 }}
-                                key="date"
-                                label="活动日期"
-                                name={[field.name, 'date']}
-                                rules={[{ required: true }]}
-                                getValueProps={(value) => ({
-                                  value: value ? moment(value) : undefined,
-                                })}
-                              >
-                                <DatePicker
-                                  showTime
-                                  format="YYYY-MM-DD HH:mm:ss"
-                                  style={{ width: '100%' }}
-                                />
-                              </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                              <Form.Item
-                                labelCol={{ span: 5, offset: 0 }}
-                                key="recorder"
-                                label="记录人"
-                                name={[field.name, 'recorder']}
-                                rules={[{ required: true }]}
-                              >
-                                <Select disabled>
-                                  {resData?.realSubordinates.map((u) => (
-                                    <Select.Option key={u.id} value={u.id}>
-                                      {u.name}
-                                    </Select.Option>
-                                  ))}
-                                </Select>
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col span={24}>
-                              <Form.Item
-                                labelCol={{ span: 3, offset: 0 }}
-                                key="content"
-                                label="活动内容"
-                                name={[field.name, 'content']}
-                                rules={[{ required: true }]}
-                              >
-                                <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" />
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col span={24}>
-                              <Form.Item
-                                labelCol={{ span: 3, offset: 0 }}
-                                key="fileList"
-                                label="活动材料"
-                                name={[field.name, 'fileList']}
-                                rules={[{ required: false }]}
-                                getValueFromEvent={normFile}
-                                style={{ textAlign: 'left' }}
-                              >
-                                <Upload
-                                  className="upload-list-inline"
-                                  {...props}
-                                  defaultFileList={
-                                    form.getFieldValue('actives')
-                                      ? (form.getFieldValue('actives')[field.name]
-                                        ?.fileList as UploadFile[])
-                                      : []
-                                  }
-                                >
-                                  <Button icon={<UploadOutlined />}>上传</Button>
-                                </Upload>
-                              </Form.Item>
-                            </Col>
-                          </Row>
-                          <div style={{ textAlign: 'center' }}>
-                            {data?.status === 'endProj' ? (
-                              ''
-                            ) : (
-                              <MinusCircleOutlined
-                                className="dynamic-delete-button"
-                                onClick={() => remove(field.name)}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </>
+      <Row>
+        <Col span={8}>
+          <Form.Item
+            label="确认年度"
+            name="confirmYear"
+            rules={[{ required: false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined,
+            })}
+          >
+            <DatePicker
+              picker="year"
+              format="YYYY"
+              style={{ width: '100%' }}
+              onChange={onConfirmYearChange}
+              disabled={getDatePickerDisable}
+            />
+            {/* <Input /> */}
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            label="实施年度"
+            name="doYear"
+            rules={[{ required: false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined,
+            })}
+          >
+            <DatePicker
+              picker="year"
+              format="YYYY"
+              style={{ width: '100%' }}
+              onChange={ondoYearChange}
+            />
+            {/* <Input /> */}
+          </Form.Item>
+        </Col>
+        <Col span={8}></Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
+            <Input.TextArea />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          <Form.List name="actives" rules={[{ validator: activeValidator }]}>
+            {(fields, { add, remove }, { errors }) => (
+              <>
+                <Form.Item>
+                  {data?.status === 'endProj' ? (
+                    ''
+                  ) : (
+                    <Button
+                      type="dashed"
+                      onClick={() =>
+                        add({ recorder: initialState?.currentUser?.id }, fields.length)
+                      }
+                      icon={<PlusOutlined />}
+                    >
+                      添加{projType === 'SQ' ? '销售' : projType === 'SH' ? '售后' : '项目'}活动
+                    </Button>
                   )}
-                </Form.List>
-              </Col>
-            </Row>
-            <Row hidden>
-              <Col span={24}>
-                <Form.List name="contacts">
-                  {(fields, { add, remove }) => (
-                    <>
-                      {fields.map((field, i) => (
-                        <div key={field.key} style={{ textAlign: 'center' }}>
-                          <Divider>联系人 {i + 1}</Divider>
-                          <Form.Item
-                            labelCol={{ span: 3, offset: 0 }}
-                            key="name"
-                            label="联系人"
-                            name={[field.name, 'name']}
-                            rules={[{ required: true }]}
-                          >
-                            <Input />
-                          </Form.Item>
-                          <Form.Item
-                            labelCol={{ span: 3, offset: 0 }}
-                            key="duties"
-                            label="职务"
-                            name={[field.name, 'duties']}
-                          >
-                            <Input />
-                          </Form.Item>
-                          <Form.Item
-                            labelCol={{ span: 3, offset: 0 }}
-                            key="phone"
-                            label="电话"
-                            name={[field.name, 'phone']}
-                          >
-                            <Input />
-                          </Form.Item>
-                          <MinusCircleOutlined
-                            className="dynamic-delete-button"
-                            onClick={() => remove(i)}
+                  <Form.ErrorList errors={errors} />
+                </Form.Item>
+                {renderActiveNode(fields).map((field, i) => (
+                  <div key={field.key} style={{ textAlign: 'left' }}>
+                    <Divider>
+                      <Form.Item
+                        labelCol={{ span: 1, offset: 0 }}
+                        key="name"
+                        label=" "
+                        colon={false}
+                        name={[field.name, 'name']}
+                        rules={[{ required: true, message: '请输入活动名称' }]}
+                      >
+                        <Input
+                          placeholder="请输入活动名称"
+                          style={{ width: '15vw', textAlign: 'center' }}
+                        />
+                      </Form.Item>
+                    </Divider>
+                    <Row>
+                      <Col span={12}>
+                        <Form.Item
+                          labelCol={{ span: 6, offset: 0 }}
+                          key="date"
+                          label="活动日期"
+                          name={[field.name, 'date']}
+                          rules={[{ required: true }]}
+                          getValueProps={(value) => ({
+                            value: value ? moment(value) : undefined,
+                          })}
+                        >
+                          <DatePicker
+                            showTime
+                            format="YYYY-MM-DD HH:mm:ss"
+                            style={{ width: '100%' }}
                           />
-                        </div>
-                      ))}
-                      <Form.Item>
-                        <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
-                          添加售前活动
-                        </Button>
-                      </Form.Item>
-                    </>
-                  )}
-                </Form.List>
-              </Col>
-            </Row>
-          </Form >
-        );
-      };
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          labelCol={{ span: 5, offset: 0 }}
+                          key="recorder"
+                          label="记录人"
+                          name={[field.name, 'recorder']}
+                          rules={[{ required: true }]}
+                        >
+                          <Select disabled>
+                            {resData?.subordinates.map((u) => (
+                              <Select.Option key={u.id} value={u.id}>
+                                {u.name}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={24}>
+                        <Form.Item
+                          labelCol={{ span: 3, offset: 0 }}
+                          key="content"
+                          label="活动内容"
+                          name={[field.name, 'content']}
+                          rules={[{ required: true }]}
+                        >
+                          <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={24}>
+                        <Form.Item
+                          labelCol={{ span: 3, offset: 0 }}
+                          key="fileList"
+                          label="活动材料"
+                          name={[field.name, 'fileList']}
+                          rules={[{ required: false }]}
+                          getValueFromEvent={normFile}
+                          style={{ textAlign: 'left' }}
+                        >
+                          <Upload
+                            className="upload-list-inline"
+                            {...props}
+                            defaultFileList={
+                              form.getFieldValue('actives')
+                                ? (form.getFieldValue('actives')[field.name]
+                                  ?.fileList as UploadFile[])
+                                : []
+                            }
+                          >
+                            <Button icon={<UploadOutlined />}>上传</Button>
+                          </Upload>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <div style={{ textAlign: 'center' }}>
+                      {data?.status === 'endProj' ? (
+                        ''
+                      ) : (
+                        <MinusCircleOutlined
+                          className="dynamic-delete-button"
+                          onClick={() => remove(field.name)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+          </Form.List>
+        </Col>
+      </Row>
+      <Row hidden>
+        <Col span={24}>
+          <Form.List name="contacts">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field, i) => (
+                  <div key={field.key} style={{ textAlign: 'center' }}>
+                    <Divider>联系人 {i + 1}</Divider>
+                    <Form.Item
+                      labelCol={{ span: 3, offset: 0 }}
+                      key="name"
+                      label="联系人"
+                      name={[field.name, 'name']}
+                      rules={[{ required: true }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Form.Item
+                      labelCol={{ span: 3, offset: 0 }}
+                      key="duties"
+                      label="职务"
+                      name={[field.name, 'duties']}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Form.Item
+                      labelCol={{ span: 3, offset: 0 }}
+                      key="phone"
+                      label="电话"
+                      name={[field.name, 'phone']}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button"
+                      onClick={() => remove(i)}
+                    />
+                  </div>
+                ))}
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                    添加售前活动
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        </Col>
+      </Row>
+    </Form>
+  );
+};
+
+

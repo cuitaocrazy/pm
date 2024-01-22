@@ -6,9 +6,9 @@ import {
   getGroupUsers,
   getUsersByGroups,
 } from "../../auth/oauth";
-import { ObjectId } from "mongodb";
-import { Project, ProjectAgreement } from "../../mongodb";
+import { Project, ProjectAgreement, Agreement } from "../../mongodb";
 import { dbid2id, id2dbid, getMaxGroup } from "../../util/utils";
+import { ObjectId } from "mongodb";
 export default {
   Query: {
     isExistProjID: async (_: any, __: any, context: AuthContext) => {
@@ -112,19 +112,29 @@ export default {
         .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
+
+      const projIds = result.map((proj) => proj.id);
+      const projAggrement = await ProjectAgreement.find({
+        _id: { $in: projIds },
+      }).toArray();
+      await Promise.all(
+        projAggrement.map(async (pa) => {
+          const agreement = await Agreement.find({
+            _id: new ObjectId(pa.agreementId),
+          })
+            .map((aggrement) => aggrement.name)
+            .toArray();
+          const oneResult = result.find((res) => res.id === pa._id);
+          oneResult.aggrementNames = agreement;
+        })
+      );
+
       const total = await Project.find(filter).count();
       return {
         result,
         page,
         total,
       };
-
-      // return Project.find(filter)
-      //   .skip(skip)
-      //   .limit(pageSize)
-      //   .sort({ createDate: -1 })
-      //   .map(dbid2id)
-      //   .toArray();
     },
     iLeadProjs: async (_: any, __: any, context: AuthContext) => {
       const user = context.user!;
@@ -137,7 +147,6 @@ export default {
       }
 
       const filter = {
-        _id: { $not: /-ZH-/ },
         isArchive: __.isArchive ? __.isArchive : false,
         $or: [
           { leader: context.user!.id },
@@ -196,15 +205,30 @@ export default {
           }
         }
       }
-
+      filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
         .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
+      const projIds = result.map((proj) => proj.id);
+      const projAggrement = await ProjectAgreement.find({
+        _id: { $in: projIds },
+      }).toArray();
+      await Promise.all(
+        projAggrement.map(async (pa) => {
+          const agreement = await Agreement.find({
+            _id: new ObjectId(pa.agreementId),
+          })
+            .map((aggrement) => aggrement.name)
+            .toArray();
+          const oneResult = result.find((res) => res.id === pa._id);
+          oneResult.aggrementNames = agreement;
+        })
+      );
 
-      const total = await Project.find(filter).count();
+      const total = await Project.countDocuments(filter);
       return {
         result,
         page,

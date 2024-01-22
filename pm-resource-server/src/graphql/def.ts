@@ -102,6 +102,7 @@ const dataTypeDef = gql`
     projectClass: String
     doYear: String
     group: String
+    aggrementNames: [String]
   }
   type ProjectPage {
     result: [Project!]!

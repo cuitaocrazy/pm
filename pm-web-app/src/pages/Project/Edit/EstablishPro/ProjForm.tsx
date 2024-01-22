@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Form,
   Input,
@@ -34,6 +34,18 @@ import { forEach } from 'ramda';
 import moment from 'moment';
 import { useForm } from 'antd/es/form/Form';
 import { useProjStatus } from './hook';
+
+//TODO  agreements 可能不做查询了
+
+//TODO  projectClasses  项目分类
+// code
+// remark
+// enable
+// isDel
+// sort
+// createDate
+
+// TODO isExistID  projs 从后台走新接口
 
 
 const userQuery = gql`
@@ -107,6 +119,7 @@ export default () => {
   console.log("form" + form.getFieldsValue())
   const { pushProj } = useProjStatus();
   const [messageApi, contextHolder] = message.useMessage();
+  // TODO groups换成动态参数，不能写死
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
@@ -135,6 +148,22 @@ export default () => {
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   // const [stageStatus, setStageStatus] = useState(data?.status || '');
   const [stageStatus, setStageStatus] = useState('');
+  const myGroup = initialState?.currentUser?.groups;
+
+  // 定义需要检查的部门路径列表
+  const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
+
+  // 定义状态变量
+  const [getDatePickerDisable, setGetDatePickerDisable] = useState(true);
+
+  // 在组件挂载时进行初始化
+  useEffect(() => {
+    // 使用正则表达式检查 myGroup 是否匹配允许的部门路径
+    const shouldEnable = typeof myGroup === 'string' && allowedDepartmentsRegex.test(myGroup);
+
+    // 设置状态变量
+    setGetDatePickerDisable(!shouldEnable);
+  }, [myGroup]);
 
   // 获取填写日报人员id，禁止修改
   let employeeIds: string[] = [];
@@ -421,6 +450,7 @@ export default () => {
           return (
             <Row>
               <Col xs={24} sm={20}>
+                {/* 暂时未使用 */}
                 <Form.Item
                   labelCol={{ span: 3, offset: 0 }}
                   // hidden={!(isDerive || data?.pId)}
@@ -430,6 +460,7 @@ export default () => {
                 >
                   <Input disabled />
                 </Form.Item>
+
                 <Form.Item
                   style={{ marginTop: '40px' }}
                   labelCol={{ span: 3, offset: 0 }}
@@ -845,6 +876,7 @@ export default () => {
               format="YYYY"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
+              disabled={getDatePickerDisable}
             />
             {/* <Input /> */}
           </Form.Item>

@@ -374,7 +374,7 @@ export type Agreement = {
   time: any[];
 };
 export type AgreementsResult = {
-  result: Agreement
+  result: Agreement[]
   page: Scalars['Int'];
   total: Scalars['Int'];
 };
@@ -528,7 +528,9 @@ export type Query = {
 export type QueryProjectArgs = {
   isArchive?: Scalars['Boolean'];
   // page: Scalars['Int'];
-  pageSize: Scalars['Int'];
+  pageSize?: Scalars['Int'];
+  agreementPageSize?:Scalars['Int'];
+
 };
 
 export type QueryFilterProjectArgs = {

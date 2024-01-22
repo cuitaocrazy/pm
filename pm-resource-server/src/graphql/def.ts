@@ -392,6 +392,7 @@ const dataTypeDef = gql`
     roleUsers(role: String!): [User!]!
     myDailies: EmployeeOfDailies
     projs(isArchive: Boolean): [Project!]!
+    isExistProjID(id: String!): Boolean!
     superProjs(
       isArchive: Boolean
       regions: [String]

@@ -6,10 +6,16 @@ import {
   getGroupUsers,
   getUsersByGroups,
 } from "../../auth/oauth";
+import { ObjectId } from "mongodb";
 import { Project, ProjectAgreement } from "../../mongodb";
 import { dbid2id, id2dbid, getMaxGroup } from "../../util/utils";
 export default {
   Query: {
+    isExistProjID: async (_: any, __: any, context: AuthContext) => {
+      let filter = { _id: __.id };
+      const proj = await Project.findOne(filter);
+      return proj ? true : false;
+    },
     projs: (_: any, __: any, context: AuthContext) => {
       let filter = {};
 

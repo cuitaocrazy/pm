@@ -387,6 +387,7 @@ const dataTypeDef = gql`
   type Query {
     me: User!
     subordinates: [User!]!
+    realSubordinates: [User!]!
     groupsUsers(groups: [String!]): [User!]!
     roleUsers(role: String!): [User!]!
     myDailies: EmployeeOfDailies

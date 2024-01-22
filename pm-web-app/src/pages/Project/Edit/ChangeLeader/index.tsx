@@ -8,7 +8,7 @@ import type { ChangePmInput } from '@/apollo';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { useChangePmState, } from './hook';
-import type { Project, User } from '@/apollo';
+import type { Project } from '@/apollo';
 import { useBaseState } from '@/pages/utils/hook';
 // import { SearchOutlined } from '@ant-design/icons';
 // import type { FilterDropdownProps } from 'antd/lib/table/interface';
@@ -76,15 +76,6 @@ const ChangePm: React.FC<any> = () => {
   const revertProjs = getShowProject().map((proj) => {
     return { ...proj, filters: '', onFilter: '' };
   });
-
-  const hasProj = (user: User) => {
-    return (
-      getShowProject().filter((proj) => {
-        return proj.leader === user.id;
-      }).length > 0
-    );
-  };
-
   const handleChangeInput = (name:string)=>{
     setParams({
       ...params,

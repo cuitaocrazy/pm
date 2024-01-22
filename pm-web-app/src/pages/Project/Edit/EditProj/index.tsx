@@ -346,6 +346,8 @@ const Project: React.FC<any> = () => {
     })
     return result
   }
+  // console.log("index-----groupType------" + JSON.stringify(groupType))
+  // console.log("index-----groupDatas------" + JSON.stringify(groupDatas(groupType)))
   const [orgCodeOptions] = useState(
     Object.keys(orgCode).map((s) => ({ label: orgCode[s], value: s })),
   );

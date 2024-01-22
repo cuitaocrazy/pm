@@ -35,15 +35,6 @@ import moment from 'moment';
 import { useForm } from 'antd/es/form/Form';
 import { useProjStatus } from './hook';
 
-// customers(region: $region, industry: $industry, page: $page, pageSize: $pageSize) {
-//         result{
-//     id
-//     name
-//     enable
-//   }
-//   page
-//   total
-// }
 
 const userQuery = gql`
   query ($groups: [String!]) {
@@ -422,7 +413,7 @@ export default () => {
       {...layout}
       form={form}
       // initialValues={data || { leader: initialState?.currentUser?.id }}
-      initialValues={{ leader: initialState?.currentUser?.id, group: initialState?.currentUser?.groups }}
+      initialValues={{ leader: initialState?.currentUser?.id }}
     // disabled={data?.status === 'endProj'}
     >
       <Form.Item shouldUpdate noStyle>

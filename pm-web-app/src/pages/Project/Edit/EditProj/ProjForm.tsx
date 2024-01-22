@@ -394,6 +394,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   const groupDatas = (inputArray: any) => {
     let result: any = []
+    console.log("inputArray------" + JSON.stringify(inputArray))
     inputArray.forEach((item: any) => {
       const path = item.substring(1).split('/');
       let currentLevel = result;
@@ -423,8 +424,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [groupsOptions] = useState(
     groupDatas(groupType)
   );
+  // const [myProjGroup] = useState(
+  //   groupDatas(resData?.groups)
+  // )
+  console.log("resData?.groups------" + JSON.stringify(resData?.groups))
+
   console.log("groupType------" + JSON.stringify(groupType))
-  console.log("groupsOptions--------" + JSON.stringify(groupsOptions))
+  // console.log("groupsOptions--------" + JSON.stringify(groupsOptions))
   const [newGroup, setNewGroup] = useState({
     group: '',
 
@@ -568,17 +574,17 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
+          {/* <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Cascader
-              // value={params.group}
+              value={[]}
               allowClear
               changeOnSelect
               className="width122"
               placeholder="请选择"
               onChange={(value, event) => { handleChangeGroup(value, 'group') }}
               options={groupsOptions} />
-          </Form.Item>
-          {/* <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
+          </Form.Item> */}
+          <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.groups.map((u, index) => {
                 return (
@@ -588,7 +594,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 );
               })}
             </Select>
-          </Form.Item> */}
+          </Form.Item>
         </Col>
         <Col span={8}></Col>
       </Row>

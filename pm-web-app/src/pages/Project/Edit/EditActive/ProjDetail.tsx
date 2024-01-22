@@ -12,37 +12,45 @@ import moment from 'moment';
 const userQuery = gql`
 {
     customers {
-      id
-      name
-      industryCode
-      regionCode
-      salesman
-      contacts {
+      result {
+        id
         name
-        phone
-        tags
+        industryCode
+        regionCode
+        salesman
+        contacts {
+          name
+          phone
+          tags
+        }
+        remark
+        enable
+        isDel
+        createDate
       }
-      remark
-      enable
-      isDel
-      createDate
+      page
+      total
     }
     tags
     agreements {
-      id
-      name
-      type
-      remark
-      fileList {
-        uid
+      result {
+        id
         name
-        status
-        url
+        type
+        remark
+        fileList {
+          uid
+          name
+          status
+          url
+        }
+        startTime
+        endTime
+        isDel
+        createDate
       }
-      startTime
-      endTime
-      isDel
-      createDate
+      page
+      total
     }
     projectAgreements {
       id
@@ -63,9 +71,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [projType] = useState(result?.groups?.projType || '');
 
   // 客户信息
-  const customer = find(sub => sub.id === data?.customer, resData?.customers || [])
+  const customer = find((sub:any) => sub.id === data?.customer, resData?.customers.result || [])
+
   // 合同信息
-  const agreement = find(proA => proA.id === find(a => a.id ===data?.id, resData?.projectAgreements|| [])?.agreementId, resData?.agreements || [])
+  console.log(data)
+  console.log(resData)
+  const agreement = find(proA => proA.id === find(a => a.id ===data?.id, resData?.projectAgreements|| [])?.agreementId, resData?.agreements.result || [])
+  console.log(agreement)
 
   const props: UploadProps = {
     listType: "picture",
@@ -112,7 +124,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 所属区域: { customer ? find(indu => indu.code === customer?.regionCode, regions || [])?.name : '' }
               </Col>
               <Col xs={24} sm={6}>
-                销售负责人: { customer ? find(indu => indu.id === customer?.salesman, resData?.subordinates || [])?.name : '' }
+                销售负责人: {customer ? find(indu => customer.salesman.includes(indu.id), resData?.subordinates || [])?.name : ''}
               </Col>
             </Row>
             {customer?.contacts.map((u) => (

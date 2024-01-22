@@ -13,84 +13,96 @@ import { useModel, history } from 'umi';
 import { convert, attachmentUpload } from './utils';
 
 const queryGql = gql`
-query ($projType: String!) {
+query ($projType: String!$industries: [String],$regions:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$pageSize:Int) {
     subordinates {
       id
       name
     }
     agreements {
-      id
-      name
+      result {
+        id
+        name
+      }
+      page
+      total
     }
     projectAgreements {
       id
       agreementId
     }
-    customers {
-      id
-      name
-      industryCode
-      regionCode
-      salesman
-      enable
-      contacts {
+    customers(pageSize:$pageSize) {
+      result{
+        id
         name
-        phone
-        tags
-      }
-    }
-    filterProjs(projType: $projType) {
-      id
-      pId
-      name
-      contName
-      customer
-      leader
-      group
-      confirmYear
-      salesLeader
-      projStatus
-      contStatus
-      acceStatus
-      contAmount
-      recoAmount
-      projBudget
-      budgetFee
-      budgetCost
-      humanFee
-      humanFee
-      projectFee
-      actualCost
-      taxAmount
-      description
-      createDate
-      updateTime
-      participants
-      status
-      startTime
-      endTime
-      estimatedWorkload
-      serviceCycle
-      productDate
-      acceptDate
-      freePersonDays
-      usedPersonDays
-      requiredInspections
-      actualInspections
-      timeConsuming
-      actives {
-        name
-        recorder
-        date
-        content
-        fileList {
-          uid
+        industryCode
+        regionCode
+        salesman
+        enable
+        contacts {
           name
-          url
-          status
-          thumbUrl
+          phone
+          tags
         }
       }
+      page
+      total
+    }
+    filterProjs(projType:$projType, industries:$industries, regions:$regions, page:$page,confirmYear:$confirmYear, group:$group, status:$status, name:$name) {
+      result {
+        id
+        pId
+        name
+        contName
+        customer
+        leader
+        group
+        confirmYear
+        salesLeader
+        projStatus
+        contStatus
+        acceStatus
+        contAmount
+        recoAmount
+        projBudget
+        budgetFee
+        budgetCost
+        humanFee
+        humanFee
+        projectFee
+        actualCost
+        taxAmount
+        description
+        createDate
+        updateTime
+        participants
+        status
+        startTime
+        endTime
+        estimatedWorkload
+        serviceCycle
+        productDate
+        acceptDate
+        freePersonDays
+        usedPersonDays
+        requiredInspections
+        actualInspections
+        timeConsuming
+        actives {
+          name
+          recorder
+          date
+          content
+          fileList {
+            uid
+            name
+            url
+            status
+            thumbUrl
+          }
+        }
+      }
+      page
+      total
     }
   }
 `;
@@ -109,12 +121,16 @@ const deleteProjGql = gql`
 
 export function useProjStatus() {
   const [routeProjType] = useState(history?.location.pathname.split('/').pop() === 'editSalesActive' ? 'SQ' : 'SH');
+  let [query, setQuery] = useState({});
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryFilterProjectArgs>(queryGql, {
     variables: {
-      projType: routeProjType
+      projType: routeProjType,
+      pageSize: 10000,
+      ...query,
     },
     fetchPolicy: 'no-cache',
   });
+  console.log(queryData)
   const [deleteProjHandle, { loading: deleteLoading }] = useMutation<
     Mutation,
     MutationDeleteProjectArgs
@@ -130,15 +146,16 @@ export function useProjStatus() {
   useEffect(() => {
     refresh();
     initialRefresh()
-  }, [refresh]);
-  const tmpProjs = queryData?.filterProjs || [];
-  const projs = convert(tmpProjs).filter(el => {
-    return el.name.indexOf(filter) > -1
-  })
+  }, [refresh, query]);
+
+  const tmpProjs = queryData?.filterProjs || {};
   const subordinates = queryData?.subordinates || [];
   const customers = queryData?.customers || [];
   const agreements = queryData?.agreements || [];
   const projectAgreements = queryData?.projectAgreements || [];
+  const total = queryData?.filterProjs.total || undefined;
+  const tmpProjsResult = queryData?.filterProjs.result || []
+  console.log(total)
 
   const deleteProj = useCallback(
     async (id: string) => {
@@ -164,7 +181,7 @@ export function useProjStatus() {
 
   return {
     loading: queryLoading || deleteLoading || pushLoading,
-    projs,
+    tmpProjs,
     subordinates,
     customers,
     agreements,
@@ -175,5 +192,9 @@ export function useProjStatus() {
     refresh,
     deleteProj,
     pushProj,
+    total,
+    setQuery,
+    tmpProjsResult,
+    query,
   };
 }

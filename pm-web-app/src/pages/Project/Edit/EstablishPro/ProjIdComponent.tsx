@@ -68,9 +68,6 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled, 
     }
   }, [IsExistProjIdData, onIsExistProjIdDataChange]);
 
-  console.log(IsExistProjIdData, "IsExistProjIdData------")
-
-
   const change = () => onChange && onChange(getId());
   const changeOrg = (org: string) => {
     info.org = org;

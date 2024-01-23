@@ -20,45 +20,17 @@ import type {
   Query,
   TreeStatu,
   QueryGroupsUsersArgs,
-  QueryProjDailyArgs,
   CustomersQuery,
   QueryCustomersArgs,
-  IsExistProjIdArgs
 } from '@/apollo';
 import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
-// import type { FormInstance } from 'antd/lib/form';
 import ProjIdComponent from './ProjIdComponent';
 import { projStatus } from './utils';
-import { forEach } from 'ramda';
 import moment from 'moment';
 import { useForm } from 'antd/es/form/Form';
 import { useProjStatus } from './hook';
-
-//TODO  agreements 可能不做查询了
-
-//TODO  projectClasses  项目分类
-// code
-// remark
-// enable
-// isDel
-// sort
-// createDate
-
-// TODO isExistID  projs 从后台走新接口
-
-/**
- * agreements {
-      result{
-        id
-        name
-        type
-      }
-      page
-      total
-    }
-*/
 
 const userQuery = gql`
   query ($groups: [String!]) {
@@ -87,28 +59,6 @@ const userQuery = gql`
   }
 `;
 
-// 去掉dailies
-// {
-// date
-//         dailyItems {
-//           employee {
-//     id
-//     name
-//   }
-//   timeConsuming
-//   content
-// }
-//       }
-
-const QueryDaily = gql`
-  query GetDaily($projId: String!) {
-    allProjDaily(projId: $projId) {
-      project {
-        id
-      }
-    }
-  }
-`;
 
 const layout = {
   labelCol: { span: 9 },
@@ -135,13 +85,6 @@ export default () => {
     },
   });
 
-  const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
-    fetchPolicy: 'no-cache',
-    variables: {
-      // projId: data?.id || '',
-      projId: '',
-    },
-  });
   const { status, dataForTree, groupType } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const [isDerive] = useState(false);
@@ -162,36 +105,9 @@ export default () => {
     return match !== null;
   });
 
-
-  // const isConfirmYearDisabled = shouldEnable?.includes(true);
   const isConfirmYearDisabled = shouldEnable?.some(enabled => enabled === true);
 
 
-  // 定义需要检查的部门路径列表
-  const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
-
-  // 定义状态变量
-  const [getDatePickerDisable, setGetDatePickerDisable] = useState(true);
-
-  // 在组件挂载时进行初始化
-  useEffect(() => {
-    // 使用正则表达式检查 myGroup 是否匹配允许的部门路径
-    const shouldEnable = typeof myGroup === 'string' && allowedDepartmentsRegex.test(myGroup);
-
-    // 设置状态变量
-    setGetDatePickerDisable(!shouldEnable);
-  }, [myGroup]);
-
-  // 获取填写日报人员id，禁止修改
-  // let employeeIds: string[] = [];
-  // if (queryData && queryData.allProjDaily.dailies.length) {
-  //   const employeesSet = new Set<string>([]);
-  //   forEach(
-  //     (item: any) => forEach((chItem: any) => employeesSet.add(chItem.employee.id), item.dailyItems),
-  //     queryData.allProjDaily.dailies,
-  //   );
-  //   employeeIds = [...employeesSet];
-  // }
   //上传材料
 
   const props: UploadProps = {
@@ -260,7 +176,7 @@ export default () => {
     if (id === pId) {
       return Promise.reject(Error('派生项目ID不能与关联项目ID相同'));
     }
-    console.log(isExistProjIdData, "isExistProjIdData========kk")
+
     return (!false || isDerive) && isExistProjIdData //当填完id时，需要从后台走接口看是不是id已存在
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
@@ -409,9 +325,11 @@ export default () => {
 
   })
   const handleChangeGroup = (value: any, type: string) => {
+    console.log(value, "value====")
+
     setNewGroup({
       ...newGroup,
-      group: value.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
+      group: value?.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
     })
   }
 
@@ -453,9 +371,6 @@ export default () => {
     }
 
   };
-
-
-
 
   return (
     <Form

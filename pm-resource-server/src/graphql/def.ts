@@ -102,7 +102,8 @@ const dataTypeDef = gql`
     projectClass: String
     doYear: String
     group: String
-    aggrementNames: [String]
+    customerObj: Customer
+    agreements: [Agreement]
   }
   type ProjectPage {
     result: [Project!]!

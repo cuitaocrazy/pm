@@ -6,7 +6,7 @@ import {
   getGroupUsers,
   getUsersByGroups,
 } from "../../auth/oauth";
-import { Project, ProjectAgreement, Agreement } from "../../mongodb";
+import { Project, ProjectAgreement, Agreement, Customer } from "../../mongodb";
 import { dbid2id, id2dbid, getMaxGroup } from "../../util/utils";
 import { ObjectId } from "mongodb";
 export default {
@@ -122,14 +122,26 @@ export default {
           const agreement = await Agreement.find({
             _id: new ObjectId(pa.agreementId),
           })
-            .map((aggrement) => aggrement.name)
+            .map(dbid2id)
             .toArray();
           const oneResult = result.find((res) => res.id === pa._id);
-          oneResult.aggrementNames = agreement;
+          oneResult.aggrements = agreement;
+        })
+      );
+      await Promise.all(
+        result.map(async (oneResult) => {
+          const customer = await Customer.findOne({
+            $or: [
+              { _id: new ObjectId(oneResult.customer) },
+              { _id: oneResult.customer },
+            ],
+          });
+          if (customer) oneResult.customerObj = dbid2id(customer);
         })
       );
 
       const total = await Project.find(filter).count();
+
       return {
         result,
         page,
@@ -221,10 +233,22 @@ export default {
           const agreement = await Agreement.find({
             _id: new ObjectId(pa.agreementId),
           })
-            .map((aggrement) => aggrement.name)
+            .map(dbid2id)
             .toArray();
           const oneResult = result.find((res) => res.id === pa._id);
-          oneResult.aggrementNames = agreement;
+          oneResult.aggrements = agreement;
+        })
+      );
+
+      await Promise.all(
+        result.map(async (oneResult) => {
+          const customer = await Customer.findOne({
+            $or: [
+              { _id: new ObjectId(oneResult.customer) },
+              { _id: oneResult.customer },
+            ],
+          });
+          if (customer) oneResult.customerObj = dbid2id(customer);
         })
       );
 
@@ -308,6 +332,33 @@ export default {
         .skip(skip)
         .limit(pageSize)
         .toArray();
+      const projIds = result.map((proj) => proj.id);
+      const projAggrement = await ProjectAgreement.find({
+        _id: { $in: projIds },
+      }).toArray();
+      await Promise.all(
+        projAggrement.map(async (pa) => {
+          const agreement = await Agreement.find({
+            _id: new ObjectId(pa.agreementId),
+          })
+            .map(dbid2id)
+            .toArray();
+          const oneResult = result.find((res) => res.id === pa._id);
+          oneResult.aggrements = agreement;
+        })
+      );
+      await Promise.all(
+        result.map(async (oneResult) => {
+          const customer = await Customer.findOne({
+            $or: [
+              { _id: new ObjectId(oneResult.customer) },
+              { _id: oneResult.customer },
+            ],
+          });
+          if (customer) oneResult.customerObj = dbid2id(customer);
+        })
+      );
+
       const total = await Project.find(filter).count();
       return {
         result,

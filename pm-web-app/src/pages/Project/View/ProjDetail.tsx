@@ -1,5 +1,5 @@
 import React, { useState, Fragment } from 'react';
-import { Tabs, Tag, Row, Col, Upload, Descriptions, Timeline } from 'antd';
+import { Tabs, Row, Col, Upload, Descriptions, Timeline } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { map, filter, find } from 'ramda'
 import type { ProjectInput, Query } from '@/apollo';
@@ -61,7 +61,7 @@ const userQuery = gql`
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
-  const { status, industries, regions, buildProjName } = useBaseState();
+  const { status, buildProjName } = useBaseState();
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType] = useState(result?.groups?.projType || '');

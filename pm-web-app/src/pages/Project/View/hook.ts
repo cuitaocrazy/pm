@@ -176,7 +176,7 @@ const pushAgreementGql = gql`
 
 export function useProjStatus() {
   const [archive, setArchive] = useState(false);
-  let [query, setQuery] = useState({ page: 1, pageSize: 10000000 });
+  let [query, setQuery] = useState({ page: 1, pageSize: 10000000,});
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
     Query,
     QueryProjectArgs

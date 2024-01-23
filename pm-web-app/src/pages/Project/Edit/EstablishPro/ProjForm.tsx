@@ -182,15 +182,15 @@ export default () => {
   }, [myGroup]);
 
   // 获取填写日报人员id，禁止修改
-  let employeeIds: string[] = [];
-  if (queryData && queryData.allProjDaily.dailies.length) {
-    const employeesSet = new Set<string>([]);
-    forEach(
-      (item: any) => forEach((chItem: any) => employeesSet.add(chItem.employee.id), item.dailyItems),
-      queryData.allProjDaily.dailies,
-    );
-    employeeIds = [...employeesSet];
-  }
+  // let employeeIds: string[] = [];
+  // if (queryData && queryData.allProjDaily.dailies.length) {
+  //   const employeesSet = new Set<string>([]);
+  //   forEach(
+  //     (item: any) => forEach((chItem: any) => employeesSet.add(chItem.employee.id), item.dailyItems),
+  //     queryData.allProjDaily.dailies,
+  //   );
+  //   employeeIds = [...employeesSet];
+  // }
   //上传材料
 
   const props: UploadProps = {

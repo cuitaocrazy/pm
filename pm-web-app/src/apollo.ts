@@ -530,7 +530,7 @@ export type QueryProjectArgs = {
   isArchive?: Scalars['Boolean'];
   // page: Scalars['Int'];
   pageSize?: Scalars['Int'];
-  agreementPageSize?:Scalars['Int'];
+  agreementPageSize?: Scalars['Int'];
 
 };
 
@@ -567,6 +567,13 @@ export type QueryChartsArgs = {
 export type QueryGroupsUsersArgs = {
   groups: Scalars['String'][];
 };
+
+export type IsExistProjIdArgs = {
+  id: Scalars['String'];
+}
+export type IsExistProjIdQuery = {
+  isExistProjID: Scalars['Boolean'];
+}
 
 export type QueryRoleUsersArgs = {
   role: Scalars['String'];

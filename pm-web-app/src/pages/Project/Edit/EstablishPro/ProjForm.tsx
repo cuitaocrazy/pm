@@ -22,7 +22,8 @@ import type {
   QueryGroupsUsersArgs,
   QueryProjDailyArgs,
   CustomersQuery,
-  QueryCustomersArgs
+  QueryCustomersArgs,
+  IsExistProjIdArgs
 } from '@/apollo';
 import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import { useModel } from 'umi';
@@ -259,13 +260,12 @@ export default () => {
     if (id === pId) {
       return Promise.reject(Error('派生项目ID不能与关联项目ID相同'));
     }
-    // return (!data?.id || isDerive) && resData!.projs.find((sp) => sp.id === value)
-    //   ? Promise.reject(Error('id已存在'))
-    //   : Promise.resolve();
-    return (!false || isDerive) && resData!.projs.find((sp) => sp.id === value)//当填完id时，需要从后台走接口看是不是id已存在
+    console.log(isExistProjIdData, "isExistProjIdData========kk")
+    return (!false || isDerive) && isExistProjIdData //当填完id时，需要从后台走接口看是不是id已存在
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
   };
+
 
   const activeValidator = async (_: any) => {
     const actives = form.getFieldValue(_.field);
@@ -444,6 +444,17 @@ export default () => {
       }
     })();
   };
+  const [isExistProjIdData, setIsExistProjIdData] = useState<Boolean>();
+
+  // 回调函数，用于在子组件中 IsExistProjIdData 发生变化时更新父组件的状态
+  const handleIsExistProjIdDataChange = (data: Boolean) => {
+    if (data !== undefined) {
+      setIsExistProjIdData(data);
+    }
+
+  };
+
+
 
 
   return (
@@ -481,8 +492,7 @@ export default () => {
                   {/* disabled={!!data?.id && !isDerive} */}
                   <ProjIdComponent
                     onChange={onIdChange}        // 处理整个 ID 变化的回调
-                  // onRegionChange={handleOrgChange} // 处理 org 变化的回调
-                  // onIndustrieChange={handleZoneChange} // 处理 zone 变化的回调
+                    onIsExistProjIdDataChange={handleIsExistProjIdDataChange} // 将回调函数传递给子组件
                   />
                 </Form.Item>
               </Col>

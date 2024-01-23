@@ -385,12 +385,11 @@ const Project: React.FC<any> = () => {
   //   fetchPolicy: 'no-cache',
   //   variables: queryCustomerVariables,
   // });
-  // console.log('-------')
-  // console.log(customerListData)
-  // console.log(customerListData1)
+  
+  
   // useEffect(() => {
-  //   console.log('useEffect')
-  //   // console.log(customerListData1?.result)
+  
+  
   //   setCustomerListData(customerListData1?.result)
   // }, [customerListData1])
 

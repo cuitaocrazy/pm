@@ -125,10 +125,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
-  // console.log("initialState?.currentUser?.groups------" + initialState?.currentUser?.groups);
+  
   // const [myGroup, setMyGroup] = useState(initialState?.currentUser?.groups)
   const myGroup = initialState?.currentUser?.groups;
-  // console.log("myGroup-----" + myGroup);
+  
 
   // 定义需要检查的部门路径列表
   const allowedDepartmentsRegex =
@@ -155,7 +155,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       queryData.allProjDaily.dailies,
     );
     employeeIds = [...employeesSet];
-    // console.log(employeeIds,'employeeIds=====')
+    
   }
 
   const props: UploadProps = {
@@ -392,15 +392,15 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     variables: queryCustomerVariables,
   });
   useEffect(() => {
-    // console.log('effect')
-    // console.log(customerListData1)
-    // console.log(customerListData1?.customers)
+    
+    
+    
     setCustomerListData(customerListData1?.customers);
   }, [customerListData1]);
 
   // const groupDatas = (inputArray: any) => {
   // let result: any = []
-  // // console.log("inputArray------" + JSON.stringify(inputArray))
+  
   // inputArray.forEach((item: any) => {
   // const path = item.substring(1).split('/');
   // let currentLevel = result;
@@ -432,10 +432,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const [myProjGroup] = useState(
   // groupDatas(resData?.groups)
   // )
-  // console.log("resData?.groups------" + JSON.stringify(resData?.groups))
+  
 
-  // console.log("groupType------" + JSON.stringify(groupType))
-  // console.log("groupsOptions--------" + JSON.stringify(groupsOptions))
+  
   // const [newGroup, setNewGroup] = useState({
   // group: '',
 
@@ -453,7 +452,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
   // return `${accumulator}/${currentValue}`;
   // }, '');
-  // console.log("newGroup-----" + JSON.stringify(newGroup));
+  
   // // 使用async/await语法确保异步操作的正确执行
   // (async () => {
   // try {

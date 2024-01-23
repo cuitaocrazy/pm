@@ -63,7 +63,7 @@ const Customer: React.FC<any> = () => {
       dataIndex: 'salesman',
       key: 'salesman',
       render: (text: string, record: CustomerType) => {
-        // console.log(typeof record.salesman)
+        
         let name = ''
         if (typeof record.salesman === 'string') {
           record.salesman = [record.salesman]

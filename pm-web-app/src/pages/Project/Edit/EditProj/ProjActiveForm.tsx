@@ -63,7 +63,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       showDownloadIcon: true
     },
     onChange: ({ file, fileList }) => {
-      // console.log(file, fileList)
+      
       if (file.status !== 'uploading') {
         fileList.forEach(item => {
           const { url, response } = item

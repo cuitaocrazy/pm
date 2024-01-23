@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as R from 'ramda';
 import { gql, useLazyQuery } from '@apollo/client';
-import type { Query, QueryDailyArgs } from '@/apollo';
+import type { Query, QueryEmpDailyArgs } from '@/apollo';
 
 const QueryUsers = gql`
   {
@@ -19,7 +19,7 @@ export function useUsersState() {
     fetchPolicy: 'no-cache',
   });
 
-  useEffect(() => queryUsers(), [queryUsers]);
+  useEffect(() => {queryUsers()}, [queryUsers]);
   const users = queryData?.dailyUsers || [];
   const workCalendar = queryData?.workCalendar || [];
 
@@ -54,7 +54,7 @@ const QueryDaily = gql`
 export function useDailyState() {
   const [userId, setUserId] = useState<string>();
 
-  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryDailyArgs>(
+  const [query, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryEmpDailyArgs>(
     QueryDaily,
     {
       fetchPolicy: 'no-cache',

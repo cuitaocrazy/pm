@@ -346,7 +346,7 @@ export type CustomerContact = {
   phone: Maybe<Scalars['String']>;
   tags: Scalars['String'][];
   recorder?: Scalars['String'];
-  remark: Scalars['String'];
+  remark?: Scalars['String'];
 };
 
 export type File = {
@@ -572,7 +572,7 @@ export type QueryChartsArgs = {
 export type QueryGroupsUsersArgs = {
   groups?: Scalars['String'][];
   customersPageSize?:Scalars['Float'];
-  QueryGroupsUsersArgs?:Scalars['Float'];
+  pageSizeAgreements?:Scalars['Float'];
 };
 
 export type IsExistProjIdArgs = {

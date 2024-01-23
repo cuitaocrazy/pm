@@ -140,7 +140,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
           <Form.List name="contacts">
             {(fields, { add, remove }) => (
               <>
-                {fields.map((field, i) => (
+                {fields.map((field:any, i) => (
                   <div key={field.key} style={{ textAlign: 'center' }}>
                     <Divider>联系人 {i + 1}</Divider>
                     <Form.Item

@@ -19,7 +19,7 @@ export function useProjsState() {
     fetchPolicy: 'no-cache',
   });
 
-  useEffect(() => queryUsers(), [queryUsers]);
+  useEffect(() => {queryUsers()}, [queryUsers]);
   const projs = queryData?.filterProjsByType || [];
 
   return {

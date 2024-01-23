@@ -39,7 +39,7 @@ export function useDaysStatus() {
     MutationPushWorkCalendarArgs
   >(pushDaysGql);
 
-  useEffect(() => refresh(), [refresh]);
+  useEffect(() => {refresh()}, [refresh]);
   const days = queryData?.workCalendar || [];
   const months = queryData?.settleMonth || [];
 

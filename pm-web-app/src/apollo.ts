@@ -530,7 +530,9 @@ export type QueryProjectArgs = {
   isArchive?: Scalars['Boolean'];
   // page: Scalars['Int'];
   pageSize?: Scalars['Int'];
-  agreementPageSize?: Scalars['Int'];
+  agreementPageSize?:Scalars['Int'];
+  pageAgreements?:Scalars['Int'];
+  pageSizeAgreements?:Scalars['Int'];
 
 };
 

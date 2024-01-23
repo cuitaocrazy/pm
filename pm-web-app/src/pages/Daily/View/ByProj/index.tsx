@@ -13,7 +13,7 @@ import { useProjsState, useDailyState } from './hook';
 
 const ProjectsDailyPage = () => {
   const { loading: queryUsersLoading, projs } = useProjsState();
-  const { loading: queryDailyLoading, queryDaily, projId, daily } = useDailyState();
+  const { loading: queryDailyLoading, queryDaily, projId, daily,setProjId } = useDailyState();
 
   const [date, setDate] = useState<Moment>(moment().day(1));
 
@@ -33,14 +33,16 @@ const ProjectsDailyPage = () => {
         }
       >
         <Row>
+          {/**项目列表*/}
           <Col md={24} lg={10} xl={8} xxl={6}>
             <ProCard collapsible title="项目列表" loading={queryUsersLoading}>
-              <ProjectsPage projs={projs} handleClick={queryDaily} />
+              <ProjectsPage projs={projs} handleClick={(key)=>{setProjId(key);queryDaily(key,moment())}} />
             </ProCard>
           </Col>
+           {/**日历展示*/}
           <Col md={24} lg={14} xl={9} xxl={9}>
             <ProCard
-              collapsible
+              collapsible={false}
               bordered
               extra={
                 <DatePicker
@@ -48,13 +50,15 @@ const ProjectsDailyPage = () => {
                   picker="month"
                   value={date}
                   disabledDate={(d) => d.isAfter(moment(), 'd')}
-                  onChange={(d) => setDate(d || moment())}
+                  onChange={(d) => {setDate(d || moment());queryDaily(projId,moment(d))}}
+
                 />
               }
             >
-              <CalendarPage date={date} setDate={setDate} dailies={daily.dailies} />
+              <CalendarPage projId={projId}  date={date} setDate={setDate} dailies={daily.dailies} />
             </ProCard>
           </Col>
+          {/**日报展示*/}
           <Col md={24} xl={7} xxl={9}>
             <ProCard loading={queryDailyLoading}>
               <DailiesPage date={date} dailies={daily.dailies} />

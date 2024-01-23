@@ -10,8 +10,8 @@ import { getStatusDisplayName } from './utils';
 import moment from 'moment';
 
 const userQuery = gql`
-{
-    customers {
+query($customersPageSize:Int,$pageSizeAgreements:Int){
+    customers(pageSize:$customersPageSize) {
       result{id
       name
       industryCode
@@ -30,7 +30,7 @@ const userQuery = gql`
       page
     }
     tags
-    agreements {
+    agreements(pageSize:$pageSizeAgreements) {
       result{id
       name
       type
@@ -60,7 +60,7 @@ const userQuery = gql`
 `;
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
+  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' ,variables:{customersPageSize:10000000,pageSizeAgreements:10000000}});
   const { status, buildProjName } = useBaseState();
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');

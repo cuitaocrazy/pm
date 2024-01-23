@@ -186,6 +186,7 @@ export function useProjStatus() {
       ...query,
       pageAgreements: 1,
       pageSizeAgreements: 10000000,
+      pageSize:100000000
     },
     fetchPolicy: 'no-cache',
   });

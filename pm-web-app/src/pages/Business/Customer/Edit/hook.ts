@@ -9,12 +9,12 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect } from 'react';
 import { useModel } from 'umi';
 const queryGql = gql`
-  {
+  query($customersPageSize:Int){
     subordinates {
       id
       name
     }
-    customers {
+    customers(pageSize:$customersPageSize) {
       result{id
       name
       industryCode
@@ -54,6 +54,9 @@ const deleteCustomerGql = gql`
 export function useCustomerState() {
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(queryGql, {
     fetchPolicy: 'no-cache',
+    variables:{
+      customersPageSize:10000000
+    }
   });
   const [deleteCustomerHandle, { loading: deleteLoading }] = useMutation<
     Mutation,

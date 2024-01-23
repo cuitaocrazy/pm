@@ -533,12 +533,15 @@ export type QueryProjectArgs = {
   agreementPageSize?:Scalars['Int'];
   pageAgreements?:Scalars['Int'];
   pageSizeAgreements?:Scalars['Int'];
-
+  customersPageSize?:Scalars['Int'];
+  superProjsPageSize?:Scalars['Int'];
 };
 
 export type QueryFilterProjectArgs = {
   projType?: Scalars['String'];
   pageSize?: Scalars['Int'];
+  customersPageSize?:Scalars['Int'];
+  pageSizeAgreements?:Scalars['Int'];
 };
 export type QueryFilterProjectByIdArgs = {
   id: Scalars['String']
@@ -568,6 +571,8 @@ export type QueryChartsArgs = {
 
 export type QueryGroupsUsersArgs = {
   groups?: Scalars['String'][];
+  customersPageSize?:Scalars['Float'];
+  QueryGroupsUsersArgs?:Scalars['Float'];
 };
 
 export type IsExistProjIdArgs = {

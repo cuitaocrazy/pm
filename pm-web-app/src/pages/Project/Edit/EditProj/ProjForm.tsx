@@ -21,7 +21,7 @@ import type {
   QueryGroupsUsersArgs,
   QueryProjDailyArgs,
   CustomersQuery,
-  QueryCustomersArgs
+  QueryCustomersArgs,
 } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
@@ -33,60 +33,60 @@ import { forEach } from 'ramda';
 import moment from 'moment';
 
 const userQuery = gql`
-query ($groups: [String!]) {
-groupsUsers(groups: $groups) {
-id
-name
-}
-agreements {
-result{
-id
-name
-type
-}
-page
-total
-}
-projectClasses {
-id
-name
-code
-remark
-enable
-isDel
-sort
-createDate
-}
-groups
-subordinates {
-id
-name
-}
-projs {
-id
-}
-}
+  query ($groups: [String!], $pageSizeAgreements: Int) {
+    groupsUsers(groups: $groups) {
+      id
+      name
+    }
+    agreements(pageSize: $pageSizeAgreements) {
+      result {
+        id
+        name
+        type
+      }
+      page
+      total
+    }
+    projectClasses {
+      id
+      name
+      code
+      remark
+      enable
+      isDel
+      sort
+      createDate
+    }
+    groups
+    subordinates {
+      id
+      name
+    }
+    projs {
+      id
+    }
+  }
 `;
 
 const QueryDaily = gql`
-query GetDaily($projId: String!) {
-allProjDaily(projId: $projId) {
-project {
-id
-}
-dailies {
-date
-dailyItems {
-employee {
-id
-name
-}
-timeConsuming
-content
-}
-}
-}
-}
+  query GetDaily($projId: String!) {
+    allProjDaily(projId: $projId) {
+      project {
+        id
+      }
+      dailies {
+        date
+        dailyItems {
+          employee {
+            id
+            name
+          }
+          timeConsuming
+          content
+        }
+      }
+    }
+  }
 `;
 
 const layout = {
@@ -95,7 +95,6 @@ const layout = {
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
@@ -107,6 +106,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         '/软件事业部/软件二部/市场组',
         '/软件事业部/创新业务部/市场组',
       ],
+      pageSizeAgreements: 10000000,
     },
   });
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
@@ -131,7 +131,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // console.log("myGroup-----" + myGroup);
 
   // 定义需要检查的部门路径列表
-  const allowedDepartmentsRegex = /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
+  const allowedDepartmentsRegex =
+    /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
 
   // 定义状态变量
   const [getDatePickerDisable, setGetDatePickerDisable] = useState(true);
@@ -304,18 +305,18 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
 
   const customerQuery = gql`
-query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
-customers(region: $region, industry: $industry,page:$page,pageSize:$pageSize) {
-result{
-id
-name
-enable
-}
-page
-total
-}
-}
-`;
+    query GetCustomers($region: String!, $industry: String!, $page: Int!, $pageSize: Int!) {
+      customers(region: $region, industry: $industry, page: $page, pageSize: $pageSize) {
+        result {
+          id
+          name
+          enable
+        }
+        page
+        total
+      }
+    }
+  `;
   const id = form.getFieldValue('id');
   const resultId = reg.exec(id);
   const region = resultId?.groups?.zone;
@@ -325,9 +326,8 @@ total
     region: region || '',
     industry: industry || '',
     page: 1,
-    pageSize: 100000
+    pageSize: 100000,
   };
-
 
   const renderActiveNode = (fields: any) => {
     let tempFields = [];
@@ -339,7 +339,9 @@ total
   };
 
   // 在组件状态中保存上一次选择的市场经理ID
-  const [lastSelectedSalesLeader, setLastSelectedSalesLeader] = useState<string | undefined>(undefined);
+  const [lastSelectedSalesLeader, setLastSelectedSalesLeader] = useState<string | undefined>(
+    undefined,
+  );
 
   // 在组件状态中保存所有选择过的市场经理ID
   const [selectedSalesLeaders, setSelectedSalesLeaders] = useState<string[]>([]);
@@ -353,8 +355,12 @@ total
     let updatedParticipants: string[] = [];
 
     // 从当前参与者中移除所有选择过的市场经理
-    updatedParticipants = currentParticipants.filter((participant: string) => !selectedSalesLeaders.includes(participant));
-    updatedParticipants = currentParticipants.filter((participant: string) => participant !== oldSalesLeader);
+    updatedParticipants = currentParticipants.filter(
+      (participant: string) => !selectedSalesLeaders.includes(participant),
+    );
+    updatedParticipants = currentParticipants.filter(
+      (participant: string) => participant !== oldSalesLeader,
+    );
 
     // 如果选择新的市场经理，那么添加到更新的参与人员数组中
     if (value && !selectedSalesLeaders.includes(value)) {
@@ -364,7 +370,9 @@ total
 
       // 如果上一次选择的市场经理存在，且不等于当前选择的市场经理，从更新数组中去掉
       if (lastSelectedSalesLeader && lastSelectedSalesLeader !== value) {
-        updatedParticipants = updatedParticipants.filter((participant: string) => participant !== lastSelectedSalesLeader);
+        updatedParticipants = updatedParticipants.filter(
+          (participant: string) => participant !== lastSelectedSalesLeader,
+        );
       }
 
       // 记录当前选择的市场经理ID
@@ -375,7 +383,6 @@ total
     form.setFieldsValue({
       participants: updatedParticipants,
     });
-
   };
 
   // 处理customerListData1.customers获取值
@@ -388,8 +395,8 @@ total
     // console.log('effect')
     // console.log(customerListData1)
     // console.log(customerListData1?.customers)
-    setCustomerListData(customerListData1?.customers)
-  }, [customerListData1])
+    setCustomerListData(customerListData1?.customers);
+  }, [customerListData1]);
 
   // const groupDatas = (inputArray: any) => {
   // let result: any = []
@@ -598,7 +605,9 @@ options={groupsOptions} />
       <Row>
         <Col span={8}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
-            <Select disabled={!!data?.id && !isDerive} allowClear
+            <Select
+              disabled={!!data?.id && !isDerive}
+              allowClear
               showSearch
               filterOption={(input, option) => {
                 const nameStr: any = option?.children || '';
@@ -606,7 +615,8 @@ options={groupsOptions} />
                   return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
                 }
                 return true;
-              }}>
+              }}
+            >
               {resData?.subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -643,7 +653,7 @@ return true;
                 }
                 return true;
               }}
-              onChange={(value) => handleSalesLeaderChange(value)}// Add this onChange handler
+              onChange={(value) => handleSalesLeaderChange(value)} // Add this onChange handler
             >
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
@@ -1062,7 +1072,7 @@ return true;
                             defaultFileList={
                               form.getFieldValue('actives')
                                 ? (form.getFieldValue('actives')[field.name]
-                                  ?.fileList as UploadFile[])
+                                    ?.fileList as UploadFile[])
                                 : []
                             }
                           >
@@ -1140,5 +1150,3 @@ return true;
     </Form>
   );
 };
-
-

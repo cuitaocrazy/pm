@@ -11,7 +11,7 @@ import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
 
 const queryGql = gql`
-  {
+  query($customersPageSize:Int,$pageSizeAgreements:Int){
     projectAgreements {
       id
       agreementId
@@ -24,7 +24,7 @@ const queryGql = gql`
       id
       name
     }
-    customers {
+    customers(pageSize:$customersPageSize) {
       result{
         id
         name
@@ -32,7 +32,7 @@ const queryGql = gql`
       total
       page
     }
-    agreements {
+    agreements(pageSize:$pageSizeAgreements) {
       result{
         id
       name
@@ -105,6 +105,10 @@ async function attachmentUpload(agreement: AgreementInput) {
 export function useAgreementState() {
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(queryGql, {
     fetchPolicy: 'no-cache',
+    variables:{
+      customersPageSize:10000000,
+      pageSizeAgreements:10000000
+    }
   });
   const [deleteAgreementHandle, { loading: deleteLoading }] = useMutation<
     Mutation,

@@ -4,10 +4,10 @@ import { gql, useLazyQuery } from '@apollo/client';
 import type { Query, QueryProjCostsArgs } from '@/apollo';
 
 const QueryProjs = gql`
-  {
-    iLeadProjs {
-      id
-      name
+  query($pageSize:Int){
+    iLeadProjs(pageSize:$pageSize) {
+      result{id
+      name}
     }
   }
 `;
@@ -15,10 +15,13 @@ const QueryProjs = gql`
 export function useProjsState() {
   const [queryUsers, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(QueryProjs, {
     fetchPolicy: 'no-cache',
+    variables:{
+      pageSize:10000000
+    }
   });
 
-  useEffect(() => queryUsers(), [queryUsers]);
-  const projs = queryData?.iLeadProjs || [];
+  useEffect(() => {queryUsers()}, [queryUsers]);
+  const projs = queryData?.iLeadProjs.result || [];
 
   return {
     loading: queryLoading,

@@ -73,19 +73,24 @@ export default () => {
   const [form] = useForm<ProjectInput>();
   const { pushProj } = useProjStatus();
   const [messageApi, contextHolder] = message.useMessage();
-  // TODO groups换成动态参数，不能写死
+  const { status, dataForTree, groupType } = useBaseState();
+
+  // 使用 filter() 方法过滤出符合条件的元素
+  const filteredGroupsToString = groupType.filter(group => group.includes('/市场组')).toString();
+  const filteredGroups = groupType.map(group => {
+    const match = group.toString().match(/\/市场组/);
+    if (match)
+      return `${match.input}`;
+  }).filter(Boolean);
+
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
-      groups: [//todo：后续需要从groups里获取
-        '/软件事业部/软件一部/市场组',
-        '/软件事业部/软件二部/市场组',
-        '/软件事业部/创新业务部/市场组',
-      ],
+      groups: filteredGroups
     },
   });
 
-  const { status, dataForTree, groupType } = useBaseState();
+
   const { initialState } = useModel('@@initialState');
   const [isDerive] = useState(false);
   const treeStatus = dataForTree(status);
@@ -181,7 +186,13 @@ export default () => {
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
   };
-
+  // 公共的整数验证函数
+  const validateInteger = (_: any, value: any) => {
+    if (!Number.isInteger(value)) {
+      return Promise.reject(new Error('请输入整数'));
+    }
+    return Promise.resolve();
+  };
 
   const activeValidator = async (_: any) => {
     const actives = form.getFieldValue(_.field);
@@ -315,8 +326,7 @@ export default () => {
     })
     return result
   }
-
-
+  // 项目部门下拉菜单的数据源
   const [groupsOptions] = useState(
     groupDatas(groupType)
   );
@@ -707,20 +717,22 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }]}>
+          <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }, { validator: validateInteger, },]}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
           <>
             <Col span={7}>
-              <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
+              <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }, { validator: validateInteger, },]}>
                 <InputNumber min={0} />
+
               </Form.Item>
             </Col>
             <Col span={7}>
-              <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
+              <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }, { validator: validateInteger, },]}>
                 <InputNumber min={0} />
+
               </Form.Item>
             </Col>
             <Col span={7}></Col>
@@ -775,13 +787,13 @@ export default () => {
             <Form.Item
               label="要求巡检次数"
               name="requiredInspections"
-              rules={[{ required: false }]}
+              rules={[{ required: false }, { validator: validateInteger, },]}
             >
               <InputNumber min={0} />
             </Form.Item>
           </Col>
           <Col span={7}>
-            <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }]}>
+            <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }, { validator: validateInteger, },]}>
               <InputNumber min={0} />
             </Form.Item>
           </Col>
@@ -789,7 +801,7 @@ export default () => {
             <Form.Item
               label="服务周期"
               name="serviceCycle"
-              rules={[{ required: false }]}
+              rules={[{ required: false }, { validator: validateInteger, },]}
               tooltip={<span className="ant-form-text">月</span>}
             >
               <InputNumber min={0} />

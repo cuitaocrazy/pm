@@ -565,7 +565,7 @@ export type QueryChartsArgs = {
 };
 
 export type QueryGroupsUsersArgs = {
-  groups: Scalars['String'][];
+  groups?: Scalars['String'][];
 };
 
 export type IsExistProjIdArgs = {

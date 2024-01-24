@@ -1,9 +1,14 @@
 import { Input, Form, Select } from 'antd';
 import type { FC } from 'react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import { orgCode, projType, zoneCode } from '../../utils/hook';
 import { useBaseState } from '@/pages/utils/hook';
 import moment from 'moment';
+import { gql, useLazyQuery } from '@apollo/client';
+import type {
+  IsExistProjIdArgs,
+  IsExistProjIdQuery
+} from '@/apollo';
 
 const { Option } = Select;
 
@@ -14,6 +19,7 @@ type ProjIdComponentProps = {
   value?: string;
   onChange?: OnChangeHandler;
   disabled?: boolean;
+  onIsExistProjIdDataChange: (data: Boolean) => void; // 新增回调函数类型
 };
 
 const styles = {
@@ -35,13 +41,32 @@ function getIdInfo(id?: string) {
     dateCode: result?.groups?.dateCode || moment().format('YYYY'),
   };
 }
-const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }) => {
+
+const queryIsExistProjID = gql`
+  query GetIsExistProjID($id: String!){
+    isExistProjID(id: $id)
+  }
+`;
+
+const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled, onIsExistProjIdDataChange }) => {
   const { status, orgCode, projType, zoneCode } = useBaseState();
   const [isZh, setIsZh] = useState(false)
-
-  const info = getIdInfo(value);
+  const info = getIdInfo(value); // 获取项目信息对象
   const getId = () =>
     `${info.org}-${info.zone}-${info.projType}-${info.simpleName}-${info.dateCode}`;
+  const [fetchIsExistProjID, { data: IsExistProjIdData }] = useLazyQuery<IsExistProjIdQuery, IsExistProjIdArgs>(queryIsExistProjID, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      id: getId(),
+    }
+  });
+  useEffect(() => {
+    // 在 IsExistProjIdData 发生变化时调用回调函数
+    if (onIsExistProjIdDataChange && IsExistProjIdData !== undefined) {
+      onIsExistProjIdDataChange(IsExistProjIdData.isExistProjID);
+    }
+  }, [IsExistProjIdData, onIsExistProjIdDataChange]);
+
   const change = () => onChange && onChange(getId());
   const changeOrg = (org: string) => {
     info.org = org;
@@ -132,15 +157,16 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
             </Option>
           ))}
         </Select>
-        <span hidden={disabled} className="status-remark">{ info.projType ? status.find(p => p.code === info.projType)?.remark : '' }</span>
+        <span hidden={disabled} className="status-remark">{info.projType ? status.find(p => p.code === info.projType)?.remark : ''}</span>
         <Input
           key="simpleName"
           addonBefore={'项目缩写'}
           placeholder='只允许填写拼音或数字'
           onCompositionStart={(e) => setIsZh(true)}
-          onBlur={(e) => setIsZh(false)}
+          // onBlur={(e) => setIsZh(false)}
           onKeyDown={(e) => handleOnKeyDown(e)}
           onChange={(e) => changeSimpleName(e.target.value)}
+          onBlur={() => fetchIsExistProjID()}
           value={info.simpleName}
           disabled={disabled}
         />

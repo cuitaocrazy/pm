@@ -470,6 +470,15 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // }
   // })();
   // };
+  const [isExistProjIdData, setIsExistProjIdData] = useState<Boolean>();
+
+  // 回调函数，用于在子组件中 IsExistProjIdData 发生变化时更新父组件的状态
+  const handleIsExistProjIdDataChange = (data: Boolean) => {
+    if (data !== undefined) {
+      setIsExistProjIdData(data);
+    }
+
+  };
 
   return (
     <Form
@@ -497,7 +506,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >
-                  <ProjIdComponent disabled={!!data?.id && !isDerive} onChange={onIdChange} />
+                  <ProjIdComponent disabled={!!data?.id && !isDerive}
+                    onChange={onIdChange}        // 处理整个 ID 变化的回调
+                    onIsExistProjIdDataChange={handleIsExistProjIdDataChange} // 将回调函数传递给子组件
+                  />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={4}>

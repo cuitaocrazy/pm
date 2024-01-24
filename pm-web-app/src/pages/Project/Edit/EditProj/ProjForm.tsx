@@ -33,7 +33,6 @@ import { forEach } from 'ramda';
 import moment from 'moment';
 
 const userQuery = gql`
-<<<<<<< HEAD
 query ($groups: [String!]) {
 groupsUsers(groups: $groups) {
 id
@@ -58,41 +57,6 @@ projs {
 id
 }
 }
-=======
-  query ($groups: [String!], $pageSizeAgreements: Int) {
-    groupsUsers(groups: $groups) {
-      id
-      name
-    }
-    agreements(pageSize: $pageSizeAgreements) {
-      result {
-        id
-        name
-        type
-      }
-      page
-      total
-    }
-    projectClasses {
-      id
-      name
-      code
-      remark
-      enable
-      isDel
-      sort
-      createDate
-    }
-    groups
-    subordinates {
-      id
-      name
-    }
-    projs {
-      id
-    }
-  }
->>>>>>> ca9ac9f3ccf63936278a9a76609bb59a22e280fc
 `;
 
 const QueryDaily = gql`
@@ -138,16 +102,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
-<<<<<<< HEAD
-      groups: filteredGroups
-=======
-      groups: [
-        '/软件事业部/软件一部/市场组',
-        '/软件事业部/软件二部/市场组',
-        '/软件事业部/创新业务部/市场组',
-      ],
+      groups: filteredGroups,
+      // groups: [
+      //   '/软件事业部/软件一部/市场组',
+      //   '/软件事业部/软件二部/市场组',
+      //   '/软件事业部/创新业务部/市场组',
+      // ],
       pageSizeAgreements: 10000000,
->>>>>>> ca9ac9f3ccf63936278a9a76609bb59a22e280fc
     },
   });
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
@@ -166,10 +127,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
-  
+
   // const [myGroup, setMyGroup] = useState(initialState?.currentUser?.groups)
   const myGroup = initialState?.currentUser?.groups;
-  
+
 
   // 定义需要检查的部门路径列表
   const allowedDepartmentsRegex =
@@ -196,7 +157,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       queryData.allProjDaily.dailies,
     );
     employeeIds = [...employeesSet];
-    
+
   }
 
   const props: UploadProps = {
@@ -440,15 +401,15 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     variables: queryCustomerVariables,
   });
   useEffect(() => {
-    
-    
-    
+
+
+
     setCustomerListData(customerListData1?.customers);
   }, [customerListData1]);
 
   // const groupDatas = (inputArray: any) => {
   // let result: any = []
-  
+
   // inputArray.forEach((item: any) => {
   // const path = item.substring(1).split('/');
   // let currentLevel = result;
@@ -480,9 +441,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const [myProjGroup] = useState(
   // groupDatas(resData?.groups)
   // )
-  
 
-  
+
+
   // const [newGroup, setNewGroup] = useState({
   // group: '',
 
@@ -500,7 +461,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
   // return `${accumulator}/${currentValue}`;
   // }, '');
-  
+
   // // 使用async/await语法确保异步操作的正确执行
   // (async () => {
   // try {
@@ -1119,7 +1080,7 @@ return true;
                             defaultFileList={
                               form.getFieldValue('actives')
                                 ? (form.getFieldValue('actives')[field.name]
-                                    ?.fileList as UploadFile[])
+                                  ?.fileList as UploadFile[])
                                 : []
                             }
                           >

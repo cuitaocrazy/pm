@@ -111,12 +111,6 @@ const archiveProjGql = gql`
   }
 `;
 
-const deleteProjGql = gql`
-  mutation ($id: ID!) {
-    deleteProject(id: $id)
-  }
-`;
-
 export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
   const queryGql = getGql(isAdmin ? 'superProjs' : 'iLeadProjs')
@@ -132,9 +126,6 @@ export function useProjStatus() {
 
   const [archiveProjHandle, { loading: archiveLoading }] = useMutation<Mutation, MutationDeleteProjectArgs>(
     archiveProjGql
-  );
-  const [deleteProjHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteProjectArgs>(
-    deleteProjGql
   );
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
     pushProjGql,
@@ -170,14 +161,6 @@ export function useProjStatus() {
     [archiveProjHandle, refresh],
   );
 
-  const deleteProj = useCallback(
-    async (id: string) => {
-      await deleteProjHandle({ variables: { id } });
-      refresh();
-    },
-    [deleteProjHandle, refresh],
-  );
-
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
       let reqProj = await attachmentUpload(proj, buildProjName)
@@ -192,7 +175,7 @@ export function useProjStatus() {
   );
 
   return {
-    loading: queryLoading || deleteLoading || pushLoading || archiveLoading,
+    loading: queryLoading || pushLoading || archiveLoading,
     projs,
     todoProjs,
     subordinates,
@@ -205,7 +188,6 @@ export function useProjStatus() {
     setFilter,
     refresh,
     archiveProj,
-    deleteProj,
     pushProj,
   };
 }

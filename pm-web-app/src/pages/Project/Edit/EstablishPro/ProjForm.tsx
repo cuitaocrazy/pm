@@ -187,10 +187,21 @@ export default () => {
       : Promise.resolve();
   };
   // 公共的整数验证函数
+  // const validateInteger = (_: any, value: any) => {
+  //   if (!Number.isInteger(value)) {
+  //     return Promise.reject(new Error('请输入整数'));
+  //   }
+  //   return Promise.resolve();
+  // };
   const validateInteger = (_: any, value: any) => {
+    if (value === undefined || value === null || value === '') {
+      return Promise.resolve(); // Return resolve for empty values
+    }
+
     if (!Number.isInteger(value)) {
       return Promise.reject(new Error('请输入整数'));
     }
+
     return Promise.resolve();
   };
 

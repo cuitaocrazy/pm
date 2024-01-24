@@ -92,7 +92,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { status, dataForTree, groupType } = useBaseState();
 
   // 使用 filter() 方法过滤出符合条件的元素
-  const filteredGroupsToString = groupType.filter(group => group.includes('/市场组')).toString();
   const filteredGroups = groupType.map(group => {
     const match = group.toString().match(/\/市场组/);
     if (match)
@@ -217,6 +216,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
   // 公共的整数验证函数
   const validateInteger = (_: any, value: any) => {
+    if (value === undefined || value === null || value === '') {
+      return Promise.resolve(); // Return resolve for empty values
+    }
     if (!Number.isInteger(value)) {
       return Promise.reject(new Error('请输入整数'));
     }

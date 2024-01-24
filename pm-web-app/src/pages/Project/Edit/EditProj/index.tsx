@@ -57,12 +57,10 @@ const Project: React.FC<any> = () => {
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
 
   const editHandle = (proj: Proj, openRef: any) => {
-    const agree = projectAgreements.filter((item) => item.id === proj.id);
-    // const agree =proj.agreements
     const { actives, ...pro } = proj;
     openRef.current?.showDialog({
       ...pro,
-      contName: agree.length ? agree[0].agreementId : '',
+      contName: proj.agreements[0].name ? proj.agreements[0].name : '',
       actives: actives as ActiveInput[],
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
@@ -144,7 +142,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-       return record.customerObj.name
+        return record.customerObj.name
       },
       width: 150,
     },
@@ -385,11 +383,11 @@ const Project: React.FC<any> = () => {
   //   fetchPolicy: 'no-cache',
   //   variables: queryCustomerVariables,
   // });
-  
-  
+
+
   // useEffect(() => {
-  
-  
+
+
   //   setCustomerListData(customerListData1?.result)
   // }, [customerListData1])
 

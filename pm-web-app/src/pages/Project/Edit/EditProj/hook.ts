@@ -73,6 +73,10 @@ const getGql = (proName: string) => {
         doYear
         projectClass
         group
+        agreements{
+          id
+          name
+        }
         actives {
           name
           recorder
@@ -177,6 +181,7 @@ export function useProjStatus() {
   ).map((item) => {
     return { ...item };
   });
+  console.log(tmpProjs, "tmpProjs ===== ")
   const projs = projectClassify(
     R.filter((el) => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs),
   );
@@ -188,6 +193,9 @@ export function useProjStatus() {
   // projs
   const subordinates = queryData?.realSubordinates || []; //realSubordinates拿到同部门及以下的人员
   const agreements = queryData?.agreements || [];
+  // const agreements = isAdmin ? queryData?.superProjs?.result.agreenemts : queryData?.iLeadProjs?.result.agreenemts
+  // const agreements = tmpProjs
+  console.log(agreements, "agreements====")
   const projectAgreements = queryData?.projectAgreements || [];
 
   const archiveProj = useCallback(

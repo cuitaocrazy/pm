@@ -562,13 +562,14 @@ return getCustomers('customer', '客户名称');
         </Col>
         <Col span={8}>
           <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
-            <Select disabled allowClear>
+            <Input />
+            {/* <Select disabled allowClear>
               {resData?.agreements.result.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
               ))}
-            </Select>
+            </Select> */}
           </Form.Item>
         </Col>
       </Row>

@@ -123,25 +123,15 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
 
-  // const [myGroup, setMyGroup] = useState(initialState?.currentUser?.groups)
+
   const myGroup = initialState?.currentUser?.groups;
+  const shouldEnable = myGroup?.map(item => {
+    // 使用正则表达式检查是否包含一个或两个斜杠
+    const match = item.match(/^\/[^/]+(\/[^/]+)?$/);
+    return match !== null;
+  });
 
-
-  // 定义需要检查的部门路径列表
-  const allowedDepartmentsRegex =
-    /^(\/软件事业部|\/软件事业部\/创新业务部|\/软件事业部\/软件一部|\/软件事业部\/软件二部)$/;
-
-  // 定义状态变量
-  const [getDatePickerDisable, setGetDatePickerDisable] = useState(true);
-
-  // 在组件挂载时进行初始化
-  useEffect(() => {
-    // 使用正则表达式检查 myGroup 是否匹配允许的部门路径
-    const shouldEnable = typeof myGroup === 'string' && allowedDepartmentsRegex.test(myGroup);
-
-    // 设置状态变量
-    setGetDatePickerDisable(!shouldEnable);
-  }, [myGroup]);
+  const isConfirmYearDisabled = shouldEnable?.some(enabled => enabled === true);
 
   // 获取填写日报人员id，禁止修改
   let employeeIds: string[] = [];
@@ -938,7 +928,7 @@ return true;
               format="YYYY"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
-              disabled={getDatePickerDisable}
+              disabled={!isConfirmYearDisabled}
             />
             {/* <Input /> */}
           </Form.Item>

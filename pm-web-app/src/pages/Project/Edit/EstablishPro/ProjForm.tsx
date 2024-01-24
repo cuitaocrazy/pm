@@ -330,21 +330,8 @@ export default () => {
   const [groupsOptions] = useState(
     groupDatas(groupType)
   );
-  const [newGroup, setNewGroup] = useState({
-    group: '',
-
-  })
-  const handleChangeGroup = (value: any, type: string) => {
-    console.log(value, "value====")
-
-    setNewGroup({
-      ...newGroup,
-      group: value?.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
-    })
-  }
 
   const handleSubmit = () => {
-    handleChangeGroup(form.getFieldValue('group'), 'group');
     // 获取处理后的group字段值
     const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
       return `${accumulator}/${currentValue}`;
@@ -491,23 +478,9 @@ export default () => {
               changeOnSelect
               className="width122"
               placeholder="请选择"
-              onChange={(value, event) => { handleChangeGroup(value, 'group') }}
               options={groupsOptions} />
           </Form.Item>
         </Col>
-        {/* <Col span={7}>
-          <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
-            <Select allowClear>
-              {resData?.groups.map((u, index) => {
-                return (
-                  <Select.Option key={index} value={u}>
-                    {u.toString().split('/')[2]}
-                  </Select.Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-        </Col> */}
         <Col span={7}></Col>
       </Row>
       <Row>

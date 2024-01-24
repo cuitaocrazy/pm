@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Form,
   Input,
@@ -66,17 +66,12 @@ const layout = {
 };
 
 export default () => {
-
-  // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
-  //   role: 'engineer',
-  // } });
   const [form] = useForm<ProjectInput>();
   const { pushProj } = useProjStatus();
   const [messageApi, contextHolder] = message.useMessage();
   const { status, dataForTree, groupType } = useBaseState();
 
   // 使用 filter() 方法过滤出符合条件的元素
-  const filteredGroupsToString = groupType.filter(group => group.includes('/市场组')).toString();
   const filteredGroups = groupType.map(group => {
     const match = group.toString().match(/\/市场组/);
     if (match)
@@ -95,14 +90,9 @@ export default () => {
   const [isDerive] = useState(false);
   const treeStatus = dataForTree(status);
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
-  // const result = reg.exec(data?.id || '');
   const result = reg.exec('');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
-  // const [stageStatus, setStageStatus] = useState(data?.status || '');
   const [stageStatus, setStageStatus] = useState('');
-
-
-
   const myGroup = initialState?.currentUser?.groups;
   const shouldEnable = myGroup?.map(item => {
     // 使用正则表达式检查是否包含一个或两个斜杠
@@ -112,9 +102,7 @@ export default () => {
 
   const isConfirmYearDisabled = shouldEnable?.some(enabled => enabled === true);
 
-
   //上传材料
-
   const props: UploadProps = {
     listType: 'picture',
     action: '/api/upload/tmp',

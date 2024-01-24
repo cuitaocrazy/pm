@@ -216,7 +216,15 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      let reqProj = await attachmentUpload(proj, buildProjName);
+      console.log("12345=======");
+      console.log(proj.group + "proj.group======");
+      const groupPath = proj.group?.length !== 0
+        ? proj.group?.reduce((accumulator: string, currentValue: string) => {
+          return `${accumulator}/${currentValue}`;
+        }, '')
+        : '';
+
+      let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
       await pushCostHandle({
         variables: {
           proj: reqProj,

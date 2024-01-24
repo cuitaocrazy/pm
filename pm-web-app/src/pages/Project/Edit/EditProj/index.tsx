@@ -60,7 +60,8 @@ const Project: React.FC<any> = () => {
     const { actives, ...pro } = proj;
     openRef.current?.showDialog({
       ...pro,
-      contName: proj.agreements[0].name ? proj.agreements[0].name : '',
+      // contName: proj.agreements[0].name ? proj.agreements[0].name : '',
+      contName: proj.agreements && proj.agreements.length > 0 ? proj.agreements[0].name : '',
       actives: actives as ActiveInput[],
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),

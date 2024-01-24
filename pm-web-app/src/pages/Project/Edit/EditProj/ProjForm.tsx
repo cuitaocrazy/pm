@@ -10,6 +10,7 @@ import {
   Col,
   DatePicker,
   Upload,
+  Cascader,
 } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
@@ -210,7 +211,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     if (id === pId) {
       return Promise.reject(Error('派生项目ID不能与关联项目ID相同'));
     }
-    return (!data?.id || isDerive) && resData!.projs.find((sp) => sp.id === value)
+    return (!false || isDerive) && isExistProjIdData //当填完id时，需要从后台走接口看是不是id已存在
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
   };
@@ -482,6 +483,37 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   };
 
+  const groupDatas = (inputArray: any) => {
+    let result: any = []
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
+
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
+
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
+
+        }
+      });
+    })
+    return result
+  }
+  // 项目部门下拉菜单的数据源
+  const [groupsOptions] = useState(
+    groupDatas(groupType)
+  );
+
   return (
     <Form
       {...layout}
@@ -546,23 +578,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               </Select>
             )}
           </Form.Item>
-
-          {/* <Select allowClear>
-{customersArr.map((s: Customer) => (
-<Select.Option key={s.id} value={s.id}>
-{s.name}
-</Select.Option>
-))}
-</Select> */}
-          {/* <Form.Item dependencies={['id']} noStyle>
-{() => {
-return getCustomers('customer', '客户名称');
-}}
-</Form.Item> */}
         </Col>
         <Col span={8}>
           <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
-            <Input />
+            <Input disabled />
             {/* <Select disabled allowClear>
               {resData?.agreements.result.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
@@ -586,17 +605,17 @@ return getCustomers('customer', '客户名称');
           </Form.Item>
         </Col>
         <Col span={8}>
-          {/* <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
-<Cascader
-value={[]}
-allowClear
-changeOnSelect
-className="width122"
-placeholder="请选择"
-onChange={(value, event) => { handleChangeGroup(value, 'group') }}
-options={groupsOptions} />
-</Form.Item> */}
           <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
+            <Cascader
+              // value={}
+              allowClear
+              changeOnSelect
+              className="width122"
+              placeholder="请选择"
+              options={groupsOptions} />
+
+          </Form.Item>
+          {/* <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Select allowClear>
               {resData?.groups.map((u, index) => {
                 return (
@@ -606,7 +625,7 @@ options={groupsOptions} />
                 );
               })}
             </Select>
-          </Form.Item>
+          </Form.Item> */}
         </Col>
         <Col span={8}></Col>
       </Row>

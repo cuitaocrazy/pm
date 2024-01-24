@@ -103,11 +103,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     fetchPolicy: 'no-cache',
     variables: {
       groups: filteredGroups,
-      // groups: [
-      //   '/软件事业部/软件一部/市场组',
-      //   '/软件事业部/软件二部/市场组',
-      //   '/软件事业部/创新业务部/市场组',
-      // ],
       pageSizeAgreements: 10000000,
     },
   });

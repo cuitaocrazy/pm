@@ -77,10 +77,6 @@ const getGql = (proName: string) => {
         doYear
         projectClass
         group
-        agreements{
-          id
-          name
-        }
         actives {
           name
           recorder

@@ -252,7 +252,7 @@ const ChangePm: React.FC<any> = () => {
             />
         </Col>
         <Col className="gutter-row">
-          <label>当前项目经理：</label> 
+          <label>项目经理：</label> 
             <Select
               value={params.leaders}
               allowClear

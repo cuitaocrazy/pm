@@ -11,9 +11,30 @@ import type { FormInstance } from 'antd/lib/form';
 import { getStatusDisplayName } from './utils';
 import moment from 'moment';
 
+// customers {
+//   result {
+//     id
+//     name
+//     industryCode
+//     regionCode
+//     salesman
+//     contacts {
+//       name
+//       phone
+//       tags
+//     }
+//     remark
+//     enable
+//     isDel
+//     createDate
+//   }
+//   page
+//   total
+// }
+// tags
 const userQuery = gql`
 {
-    customers {
+  customers {
       result {
         id
         name

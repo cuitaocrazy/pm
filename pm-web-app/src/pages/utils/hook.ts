@@ -100,11 +100,12 @@ export function useBaseState() {
   const status = initialState?.status || [];
   const industries = initialState?.industries || [];
   const regions = initialState?.regions || [];
-   let groupType = initialState?.groups || [];
+  let groupType = initialState?.groups || [];
+  const subordinates = initialState?.subordinates || [];
   let orgCode = {}
   let zoneCode = {}
   let projType = {}
-  
+
 
   status.forEach(statu => {
     if (statu.pId === '0') {
@@ -131,6 +132,7 @@ export function useBaseState() {
     status,
     industries,
     regions,
+    subordinates,
     groupType,
     orgCode,
     zoneCode,

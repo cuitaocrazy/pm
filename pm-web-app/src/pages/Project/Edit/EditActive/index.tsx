@@ -17,9 +17,10 @@ import '@/common.css';
 const Project: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
-  const { subordinates, customers, agreements, projectAgreements, routeProjType, loading, pushProj,setQuery,query,total,tmpProjsResult} = useProjStatus();
-  console.log(customers,'customers=====')
-  const { status, orgCode, zoneCode, buildProjName,groupType } = useBaseState();
+  const { projectAgreements, routeProjType, loading, pushProj,setQuery,query,total,tmpProjsResult} = useProjStatus();
+  const { status, orgCode, zoneCode, buildProjName,groupType, subordinates } = useBaseState();
+  console.log(subordinates)
+  console.log(projectAgreements)
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
@@ -247,7 +248,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-        return customers.find((cum) => cum.id === record.customer)?.name;
+        return record.customerObj.name
       },
       width:150,
     },
@@ -256,8 +257,9 @@ const Project: React.FC<any> = () => {
       dataIndex: 'contName',
       key: 'contName',
       render: (text: string, record: Proj) => {
-        const agree = projectAgreements.filter(item => item.id === record.id)
-        return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : ''
+        // const agree = projectAgreements.filter(item => item.id === record.id)
+        // return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : ''
+        return record.agreements ? record.agreements[0].name : ''
       },
       width:150,
     },

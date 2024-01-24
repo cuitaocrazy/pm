@@ -38,6 +38,11 @@ export async function getCurrentBasics() {
             createDate
           }
           groups
+          subordinates{
+            id
+            name
+            groups
+          }
         }
       `,
       fetchPolicy: 'no-cache'

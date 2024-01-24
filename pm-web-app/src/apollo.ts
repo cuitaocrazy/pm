@@ -45,6 +45,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  name: string;
 };
 
 export type User = {
@@ -153,7 +154,8 @@ export type Project = {
   status?: ProjectStatus;
   startTime?: Scalars['String'];
   endTime?: Scalars['String'];
-  agreements?: Scalars['String'][];
+  customerObj: CustomerObj;
+  agreements: Agreements[];
   estimatedWorkload?: Scalars['Int'];
   serviceCycle?: Scalars['Int'];
   productDate?: Scalars['String'];
@@ -184,6 +186,21 @@ export type Active = {
   recorder?: Scalars['String'];
 };
 
+export type CustomerObj = {
+  __typename?: 'CustomerObj';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  contacts: CustomerContact[];
+  industryCode: Scalars['String'];
+  regionCode: Scalars['String'];
+  salesman: Scalars['String'][];
+}
+
+export type Agreements = {
+  __typename?: 'Agreements';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+}
 
 export enum ProjectStatus {
   OnProj = 'onProj',
@@ -529,18 +546,18 @@ export type QueryProjectArgs = {
   isArchive?: Scalars['Boolean'];
   // page: Scalars['Int'];
   pageSize?: Scalars['Int'];
-  agreementPageSize?:Scalars['Int'];
-  pageAgreements?:Scalars['Int'];
-  pageSizeAgreements?:Scalars['Int'];
-  customersPageSize?:Scalars['Int'];
-  superProjsPageSize?:Scalars['Int'];
+  agreementPageSize?: Scalars['Int'];
+  pageAgreements?: Scalars['Int'];
+  pageSizeAgreements?: Scalars['Int'];
+  customersPageSize?: Scalars['Int'];
+  superProjsPageSize?: Scalars['Int'];
 };
 
 export type QueryFilterProjectArgs = {
   projType?: Scalars['String'];
   pageSize?: Scalars['Int'];
-  customersPageSize?:Scalars['Int'];
-  pageSizeAgreements?:Scalars['Int'];
+  customersPageSize?: Scalars['Int'];
+  pageSizeAgreements?: Scalars['Int'];
 };
 export type QueryFilterProjectByIdArgs = {
   id: Scalars['String']
@@ -570,8 +587,8 @@ export type QueryChartsArgs = {
 
 export type QueryGroupsUsersArgs = {
   groups?: Scalars['String'][];
-  customersPageSize?:Scalars['Float'];
-  pageSizeAgreements?:Scalars['Float'];
+  customersPageSize?: Scalars['Float'];
+  pageSizeAgreements?: Scalars['Float'];
 };
 
 export type IsExistProjIdArgs = {
@@ -598,6 +615,7 @@ export type ProjectInput = {
   salesLeader: Scalars['String'];
   name: Scalars['String'];
   customer: Scalars['String'];
+  customerObj: CustomerObj;
   contName?: Scalars['String'];
   projStatus: Scalars['String'];
   contStatus: Scalars['String'];

@@ -69,13 +69,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType] = useState(result?.groups?.projType || '');
-
-  // 客户信息
-  const customer = find((sub:any) => sub.id === data?.customer, resData?.customers.result || [])
-
-  // 合同信息
   console.log(data)
   console.log(resData)
+
+
+  // 客户信息
+  // const customer = find((sub:any) => sub.id === data?.customer, resData?.customers.result || [])
+  // console.log(customer)
+  const customer = data?.customerObj
+
+  // 合同信息
   const agreement = find(proA => proA.id === find(a => a.id ===data?.id, resData?.projectAgreements|| [])?.agreementId, resData?.agreements.result || [])
   console.log(agreement)
 

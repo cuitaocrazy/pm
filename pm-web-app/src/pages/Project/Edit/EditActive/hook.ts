@@ -10,43 +10,23 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
 import { useModel, history } from 'umi';
-import {  attachmentUpload } from './utils';
+import { attachmentUpload } from './utils';
 
 const queryGql = gql`
-query ($projType: String!$industries: [String],$regions:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$pageSize:Int) {
+query ($projType: String!$industries: [String],$regions:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String) {
     subordinates {
       id
       name
     }
-    agreements {
-      result {
-        id
-        name
-      }
-      page
-      total
+    realSubordinates {
+      id
+      name
     }
     projectAgreements {
       id
       agreementId
     }
-    customers(pageSize:$pageSize) {
-      result{
-        id
-        name
-        industryCode
-        regionCode
-        salesman
-        enable
-        contacts {
-          name
-          phone
-          tags
-        }
-      }
-      page
-      total
-    }
+    
     filterProjs(projType:$projType, industries:$industries, regions:$regions, page:$page,confirmYear:$confirmYear, group:$group, status:$status, name:$name) {
       result {
         id
@@ -87,6 +67,26 @@ query ($projType: String!$industries: [String],$regions:[String],$page:Int,$conf
         requiredInspections
         actualInspections
         timeConsuming
+        agreements{
+          id
+          name
+        }
+        customerObj{
+          id
+          name
+          createDate
+          enable
+          industryCode
+          isDel
+          regionCode
+          remark
+          salesman
+          contacts {
+            name
+            phone
+            tags
+          }
+        }
         actives {
           name
           recorder
@@ -130,7 +130,6 @@ export function useProjStatus() {
     },
     fetchPolicy: 'no-cache',
   });
-  console.log(queryData)
   const [deleteProjHandle, { loading: deleteLoading }] = useMutation<
     Mutation,
     MutationDeleteProjectArgs
@@ -148,15 +147,14 @@ export function useProjStatus() {
     initialRefresh()
   }, [refresh, query]);
 
-  const tmpProjs = queryData?.filterProjs || {};
   const subordinates = queryData?.subordinates || [];
-  const customers = queryData?.customers.result || [];
-  const agreements = queryData?.agreements.result || [];
+  console.log(subordinates)
+  const realSubordinates = queryData?.realSubordinates || [];
+  console.log(realSubordinates)
   const projectAgreements = queryData?.projectAgreements || [];
   const total = queryData?.filterProjs.total || undefined;
   const tmpProjsResult = queryData?.filterProjs.result || []
-  console.log(total)
-
+  console.log(queryData)
   const deleteProj = useCallback(
     async (id: string) => {
       await deleteProjHandle({ variables: { id } });
@@ -181,10 +179,7 @@ export function useProjStatus() {
 
   return {
     loading: queryLoading || deleteLoading || pushLoading,
-    tmpProjs,
     subordinates,
-    customers,
-    agreements,
     projectAgreements,
     filter,
     routeProjType,

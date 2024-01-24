@@ -7,7 +7,7 @@ import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import type { ResponseError } from 'umi-request';
-import type { Statu, Industry, Region, Group } from '@/apollo';
+import type { Statu, Industry, Region, Group, User } from '@/apollo';
 import { getCurrentUser } from './services/user';
 import { getCurrentBasics } from './services/basic';
 import defaultSettings from '../config/defaultSettings';
@@ -26,9 +26,10 @@ export async function getInitialState(): Promise<{
   industries?: Industry[];
   regions?: Region[];
   groups?: Group[];
+  subordinates?: User[]
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
-  const { status, industries, regions, groups } = await getCurrentBasics();
+  const { status, industries, regions, groups, subordinates } = await getCurrentBasics();
 
   const fetchUserInfo = async () => {
     try {
@@ -47,6 +48,7 @@ export async function getInitialState(): Promise<{
     industries,
     regions,
     groups,
+    subordinates,
     settings: defaultSettings,
   };
 }

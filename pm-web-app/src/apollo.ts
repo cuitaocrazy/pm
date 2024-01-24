@@ -153,7 +153,7 @@ export type Project = {
   status?: ProjectStatus;
   startTime?: Scalars['String'];
   endTime?: Scalars['String'];
-
+  agreements?: Scalars['String'][];
   estimatedWorkload?: Scalars['Int'];
   serviceCycle?: Scalars['Int'];
   productDate?: Scalars['String'];
@@ -523,7 +523,6 @@ export type Query = {
   marketPlansBySuper: MarketPlan[];
   eventLogs: EventLog[];
   findOneProjectById: Project;
-
 };
 
 export type QueryProjectArgs = {

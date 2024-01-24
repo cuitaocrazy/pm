@@ -21,7 +21,7 @@ import type {
   QueryGroupsUsersArgs,
   QueryProjDailyArgs,
   CustomersQuery,
-  QueryCustomersArgs
+  QueryCustomersArgs,
 } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import { useModel } from 'umi';
@@ -42,20 +42,11 @@ agreements {
 result{
 id
 name
-type
 }
-page
-total
 }
 projectClasses {
 id
 name
-code
-remark
-enable
-isDel
-sort
-createDate
 }
 groups
 subordinates {
@@ -99,14 +90,20 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
+  const { status, dataForTree, groupType } = useBaseState();
+
+  // 使用 filter() 方法过滤出符合条件的元素
+  const filteredGroupsToString = groupType.filter(group => group.includes('/市场组')).toString();
+  const filteredGroups = groupType.map(group => {
+    const match = group.toString().match(/\/市场组/);
+    if (match)
+      return `${match.input}`;
+  }).filter(Boolean);
+
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
-      groups: [
-        '/软件事业部/软件一部/市场组',
-        '/软件事业部/软件二部/市场组',
-        '/软件事业部/创新业务部/市场组',
-      ],
+      groups: filteredGroups
     },
   });
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
@@ -116,7 +113,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     },
   });
   // const {salesLeader,setSalesLeader}=
-  const { status, dataForTree } = useBaseState();
+
   const { initialState } = useModel('@@initialState');
   const [isDerive, setIsDerive] = useState(false);
   const treeStatus = dataForTree(status);
@@ -226,6 +223,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     return (!data?.id || isDerive) && resData!.projs.find((sp) => sp.id === value)
       ? Promise.reject(Error('id已存在'))
       : Promise.resolve();
+  };
+  // 公共的整数验证函数
+  const validateInteger = (_: any, value: any) => {
+    if (!Number.isInteger(value)) {
+      return Promise.reject(new Error('请输入整数'));
+    }
+    return Promise.resolve();
   };
 
   const activeValidator = async (_: any) => {
@@ -817,19 +821,19 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }]}>
+          <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }, { validator: validateInteger, },]}>
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
           <>
             <Col span={8}>
-              <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }]}>
+              <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }, { validator: validateInteger, },]}>
                 <InputNumber min={0} />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }]}>
+              <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }, { validator: validateInteger, },]}>
                 <InputNumber min={0} />
               </Form.Item>
             </Col>
@@ -885,13 +889,13 @@ return true;
             <Form.Item
               label="要求巡检次数"
               name="requiredInspections"
-              rules={[{ required: false }]}
+              rules={[{ required: false }, { validator: validateInteger, },]}
             >
               <InputNumber min={0} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }]}>
+            <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }, { validator: validateInteger, },]}>
               <InputNumber min={0} />
             </Form.Item>
           </Col>
@@ -899,7 +903,7 @@ return true;
             <Form.Item
               label="服务周期"
               name="serviceCycle"
-              rules={[{ required: false }]}
+              rules={[{ required: false }, { validator: validateInteger, },]}
               tooltip={<span className="ant-form-text">月</span>}
             >
               <InputNumber min={0} />

@@ -59,6 +59,7 @@ const Project: React.FC<any> = () => {
 
   const editHandle = (proj: Proj, openRef: any) => {
     const agree = projectAgreements.filter((item) => item.id === proj.id);
+    // const agree =proj.agreements
     const { actives, ...pro } = proj;
     openRef.current?.showDialog({
       ...pro,

@@ -77,6 +77,10 @@ const getGql = (proName: string) => {
         doYear
         projectClass
         group
+        agreements{
+          id
+          name
+        }
         actives {
           name
           recorder
@@ -127,7 +131,7 @@ export function useProjStatus() {
   >(queryGql, {
     variables: {
       isArchive: archive === '1' ? true : false, //1：归档，0:项目，2:代办项目
-      agreementPageSize:10000000,
+      agreementPageSize: 10000000,
       ...query,
     },
     fetchPolicy: 'no-cache',

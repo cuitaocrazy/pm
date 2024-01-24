@@ -33,30 +33,30 @@ import { forEach } from 'ramda';
 import moment from 'moment';
 
 const userQuery = gql`
-query ($groups: [String!]) {
-groupsUsers(groups: $groups) {
-id
-name
-}
-agreements {
-result{
-id
-name
-}
-}
-projectClasses {
-id
-name
-}
-groups
-subordinates {
-id
-name
-}
-projs {
-id
-}
-}
+  query ($groups: [String!]) {
+    groupsUsers(groups: $groups) {
+      id
+      name
+    }
+    agreements {
+      result{
+        id
+        name
+      }
+    }
+    projectClasses {
+      id
+      name
+    }
+    groups
+    realSubordinates {
+      id
+      name
+    }
+    projs {
+      id
+    }
+  }
 `;
 
 const QueryDaily = gql`
@@ -610,7 +610,7 @@ options={groupsOptions} />
                 return true;
               }}
             >
-              {resData?.subordinates.map((u) => (
+              {resData?.realSubordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
@@ -668,7 +668,7 @@ return true;
                 return true;
               }}
             >
-              {resData?.subordinates.map((u) => (
+              {resData?.realSubordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
                   {u.name}
                 </Select.Option>
@@ -1026,7 +1026,7 @@ return true;
                           rules={[{ required: true }]}
                         >
                           <Select disabled>
-                            {resData?.subordinates.map((u) => (
+                            {resData?.realSubordinates.map((u) => (
                               <Select.Option key={u.id} value={u.id}>
                                 {u.name}
                               </Select.Option>

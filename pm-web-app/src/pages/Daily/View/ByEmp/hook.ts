@@ -31,7 +31,7 @@ export function useUsersState() {
     fetchPolicy: 'no-cache',
   });
 
-  useEffect(() => queryUsers(), [queryUsers]);
+  useEffect(() => {queryUsers()}, [queryUsers]);
   const users = queryData?.dailyUsers || [];
   const workCalendar = queryData?.workCalendar || [];
   const userDailiys = {};
@@ -100,21 +100,21 @@ export function useDailyState() {
 }
 //为了做员工日报加项目详情而从项目查询里copy出来的
 const queryGql = gql`
-query ($isArchive: Boolean) {
+query ($isArchive: Boolean,$customersPageSize:Int,$pageSizeAgreements:Int,$superProjsPageSize:Int) {
     subordinates {
       id
       name
     }
-    agreements {
-      id
-      name
+    agreements(pageSize:$pageSizeAgreements) {
+      result{id
+      name}
     }
     projectAgreements {
       id
       agreementId
     }
-    customers {
-      id
+    customers(pageSize:$customersPageSize) {
+      result{id
       name
       industryCode
       regionCode
@@ -124,10 +124,10 @@ query ($isArchive: Boolean) {
         name
         phone
         tags
-      }
+      }}
     }
-    superProjs(isArchive: $isArchive){
-      id
+    superProjs(isArchive: $isArchive,pageSize:$superProjsPageSize){
+      result{id
       pId
       name
       contName
@@ -179,7 +179,7 @@ query ($isArchive: Boolean) {
           status
           thumbUrl
         }
-      }
+      }}
     }
   }
 `;
@@ -199,7 +199,10 @@ export function useProjStatus() {
   const [archive, setArchive] = useState(false);
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryProjectArgs>(queryGql, {
     variables: {
-      isArchive: archive
+      isArchive: archive,
+      customersPageSize:10000000,
+      pageSizeAgreements:10000000,
+      superProjsPageSize:10000000
     },
     fetchPolicy: 'no-cache',
   });
@@ -214,17 +217,17 @@ export function useProjStatus() {
   const { refresh: initialRefresh } = useModel('@@initialState');
   const { buildProjName } = useBaseState();
   const [filter, setFilter] = useState('');
-    
+
   useEffect(() => {
     refresh();
     initialRefresh()
   }, [refresh]);
-  const tmpProjs = queryData?.superProjs || [];
+  const tmpProjs = queryData?.superProjs.result || [];
 
   const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
   const subordinates = queryData?.subordinates || [];
-  const customers = queryData?.customers || [];
-  const agreements = queryData?.agreements || [];
+  const customers = queryData?.customers.result || [];
+  const agreements = queryData?.agreements.result || [];
   const projectAgreements = queryData?.projectAgreements || [];
 
   const deleteProj = useCallback(
@@ -256,8 +259,8 @@ export function useProjStatus() {
     customers,
     agreements,
     projectAgreements,
-    filter, 
-    archive, 
+    filter,
+    archive,
     setArchive,
     setFilter,
     refresh,

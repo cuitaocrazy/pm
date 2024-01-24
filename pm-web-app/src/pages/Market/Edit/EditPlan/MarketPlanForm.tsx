@@ -43,7 +43,7 @@ const layout = {
 };
 
 export default (form: FormInstance<MarketPlanInput>, data?: MarketPlanInput) => {
-  const { loading, data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
+  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
   const { initialState } = useModel('@@initialState');
   const [seletMarkets, setSeletMarkets] = useState<Market[]>([]);
   // const [seletProject, setSeletProject] = useState<MarketProject[]>([]);

@@ -125,7 +125,7 @@ export default {
             .map(dbid2id)
             .toArray();
           const oneResult = result.find((res) => res.id === pa._id);
-          oneResult.aggrements = agreement;
+          oneResult.agreements = agreement;
         })
       );
       await Promise.all(
@@ -236,7 +236,7 @@ export default {
             .map(dbid2id)
             .toArray();
           const oneResult = result.find((res) => res.id === pa._id);
-          oneResult.aggrements = agreement;
+          oneResult.agreements = agreement;
         })
       );
 
@@ -344,7 +344,7 @@ export default {
             .map(dbid2id)
             .toArray();
           const oneResult = result.find((res) => res.id === pa._id);
-          oneResult.aggrements = agreement;
+          oneResult.agreements = agreement;
         })
       );
       await Promise.all(

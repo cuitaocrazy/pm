@@ -13,7 +13,7 @@ export const getStatusDisplayName = (stage: string) => {
 
 // 附件上传
 export const  attachmentUpload = async (market: MarketInput) => {
-  for (let [index, act] of (market.projects || []).entries()) {
+  for (let [, act] of (market.projects || []).entries()) {
     const formData = new FormData();
     // 临时变量
     let fileArr:any = []

@@ -5,8 +5,10 @@ import type { Query, QueryProjDailyArgs } from '@/apollo';
 const QueryProjs = gql`
   {
     iLeadProjs {
-      id
-      name
+      result{id
+      name}
+      total
+      page
     }
   }
 `;
@@ -19,7 +21,7 @@ export function useProjsState() {
   useEffect(() => {
     queryUsers();
   }, [queryUsers]);
-  const projs = queryData?.iLeadProjs || [];
+  const projs = queryData?.iLeadProjs.result || [];
 
   return {
     loading: queryLoading,

@@ -41,12 +41,12 @@ export function useChartsState() {
   );
 
   useEffect(
-    () =>
+    () =>{
       query({
         variables: {
           year: year.toString(),
         },
-      }),
+      })},
     [query, year],
   );
 

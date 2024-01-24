@@ -7,7 +7,7 @@ import { useModel } from 'umi';
 import type { FormInstance } from 'antd/lib/form';
 
 const userQuery = gql`
-  query($groups: [String!]) {
+  query($groups: [String!],$customersPageSize:Int) {
     groupsUsers(groups: $groups) {
       id
       name
@@ -16,12 +16,12 @@ const userQuery = gql`
       id
       name
     }
-    customers {
-      id
+    customers(pageSize:$customersPageSize) {
+      result{id
       name
       industryCode
       regionCode
-      enable
+      enable}
     }
     projs {
       id
@@ -35,8 +35,9 @@ const layout = {
 };
 
 export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
-  const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
+  const {  data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
     groups: ['/软件事业部/软件一部/市场组', '/软件事业部/软件二部/市场组', '/软件事业部/创新业务部/市场组'],
+    customersPageSize:10000000,
   } });
   const { initialState } = useModel('@@initialState');
 

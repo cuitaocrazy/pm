@@ -346,7 +346,7 @@ export type CustomerContact = {
   phone: Maybe<Scalars['String']>;
   tags: Scalars['String'][];
   recorder?: Scalars['String'];
-  remark: Scalars['String'];
+  remark?: Scalars['String'];
 };
 
 export type File = {
@@ -529,13 +529,18 @@ export type QueryProjectArgs = {
   isArchive?: Scalars['Boolean'];
   // page: Scalars['Int'];
   pageSize?: Scalars['Int'];
-  agreementPageSize?: Scalars['Int'];
-
+  agreementPageSize?:Scalars['Int'];
+  pageAgreements?:Scalars['Int'];
+  pageSizeAgreements?:Scalars['Int'];
+  customersPageSize?:Scalars['Int'];
+  superProjsPageSize?:Scalars['Int'];
 };
 
 export type QueryFilterProjectArgs = {
   projType?: Scalars['String'];
   pageSize?: Scalars['Int'];
+  customersPageSize?:Scalars['Int'];
+  pageSizeAgreements?:Scalars['Int'];
 };
 export type QueryFilterProjectByIdArgs = {
   id: Scalars['String']
@@ -565,6 +570,8 @@ export type QueryChartsArgs = {
 
 export type QueryGroupsUsersArgs = {
   groups?: Scalars['String'][];
+  customersPageSize?:Scalars['Float'];
+  pageSizeAgreements?:Scalars['Float'];
 };
 
 export type IsExistProjIdArgs = {

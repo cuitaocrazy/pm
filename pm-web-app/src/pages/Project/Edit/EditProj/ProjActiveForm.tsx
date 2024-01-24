@@ -10,24 +10,6 @@ import moment from 'moment';
 
 const userQuery = gql`
 {
-    customers {
-      result{id
-      name
-      industryCode
-      regionCode
-      salesman
-      contacts {
-        name
-        phone
-        tags
-      }
-      remark
-      enable
-      isDel
-      createDate}
-      total
-      page
-    }
     tags
     agreements {
       result{id
@@ -81,7 +63,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       showDownloadIcon: true
     },
     onChange: ({ file, fileList }) => {
-      // console.log(file, fileList)
+      
       if (file.status !== 'uploading') {
         fileList.forEach(item => {
           const { url, response } = item

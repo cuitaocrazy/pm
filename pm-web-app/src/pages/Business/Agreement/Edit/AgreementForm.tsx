@@ -11,12 +11,12 @@ const { RangePicker } = DatePicker;
 const dateFormat = 'YYYYMMDD';
 
 const userQuery = gql`
-  {
+  query($customersPageSize:Int){
     subordinates {
       id
       name
     }
-    customers {
+    customers(pageSize:$customersPageSize) {
       result{
         id
         name
@@ -36,8 +36,10 @@ const layout = {
 };
 
 export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
-  console.log(data,"data++++======")
-  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
+
+  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache',variables: {
+    customersPageSize:10000000,
+  } });
   const { buildProjName } = useBaseState();
 
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -64,6 +66,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
         message.warning('请不要上传相同名字的文件');
         return Upload.LIST_IGNORE
       }
+      return
     },
     iconRender: (file, listType) => {
       const fileType = file.name.split('.').slice(-1)[0]

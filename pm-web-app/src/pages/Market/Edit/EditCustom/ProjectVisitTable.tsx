@@ -1,5 +1,5 @@
 import React, { forwardRef, useState, useImperativeHandle, useEffect } from 'react';
-import { Table, DatePicker, Space, Input } from 'antd';
+import { Table, } from 'antd';
 import type { MarketProject, MarketProjectVisit, User } from '@/apollo';
 import moment from 'moment';
 
@@ -36,8 +36,7 @@ const ProjVisitTable: React.ForwardRefRenderFunction<ProjVisitHandle, ProjVisitP
 
   useImperativeHandle(ref, () => ({
     addVisit() {
-      console.log('addVisit')
-      console.log(props)
+      
       // let temData = R.clone(tableData);
       // temData.unshift({ index: -1, date: '', content: '', isEdite: false })
       // const data = temData.map((visit, index) => {
@@ -48,7 +47,7 @@ const ProjVisitTable: React.ForwardRefRenderFunction<ProjVisitHandle, ProjVisitP
   }));
 
   // const saveVisit = (index: number) => {
-  //   console.log(props.proj, tableData)
+  
   //   // saveProjectVisit(props.proj, tableData)
   // }
 

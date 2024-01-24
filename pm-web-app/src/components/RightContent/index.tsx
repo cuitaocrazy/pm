@@ -50,7 +50,7 @@ const GlobalHeaderRight: React.FC<{}> = () => {
           },
         ]}
         // onSearch={value => {
-        //   console.log('input', value);
+        
         // }}
       />
       <HeaderDropdown

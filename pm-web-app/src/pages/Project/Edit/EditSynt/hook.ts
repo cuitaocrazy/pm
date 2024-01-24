@@ -13,12 +13,12 @@ import { useModel } from 'umi';
 import { convert, attachmentUpload } from './utils';
 
 const queryGql = gql`
-query ($projType: String!) {
+query ($projType: String!,$customersPageSize:Int,$pageSizeAgreements:Int) {
     subordinates {
       id
       name
     }
-    agreements {
+    agreements(pageSize:$pageSizeAgreements) {
       result{id
       name}
       total
@@ -28,7 +28,7 @@ query ($projType: String!) {
       id
       agreementId
     }
-    customers {
+    customers(pageSize:$customersPageSize) {
       result{id
       name
       industryCode
@@ -92,7 +92,9 @@ export function useProjStatus() {
   const isAdmin = initialState?.currentUser?.access?.includes('realm:supervisor')
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryFilterProjectArgs>(queryGql, {
     variables: {
-      projType: 'ZH'
+      projType: 'ZH',
+      customersPageSize:10000000,
+      pageSizeAgreements:10000000
     },
     fetchPolicy: 'no-cache',
   });
@@ -106,7 +108,7 @@ export function useProjStatus() {
 
   const { buildProjName } = useBaseState();
   const [filter, setFilter] = useState('');
-    
+
   useEffect(() => {
     refresh();
     initialRefresh()
@@ -150,7 +152,7 @@ export function useProjStatus() {
     customers,
     agreements,
     projectAgreements,
-    filter, 
+    filter,
     setFilter,
     refresh,
     deleteProj,

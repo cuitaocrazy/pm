@@ -18,7 +18,7 @@ export function useUsersState() {
     fetchPolicy: 'no-cache',
   });
 
-  useEffect(() => queryUsers(), [queryUsers]);
+  useEffect(() => {queryUsers()}, [queryUsers]);
   const users = queryData?.dailyUsers || [];
 
   return {

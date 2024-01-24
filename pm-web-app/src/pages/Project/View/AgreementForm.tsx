@@ -60,11 +60,12 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
     },
     defaultFileList: files,
     beforeUpload: (file) => {
-      let fileList = form.getFieldValue('fileList')
-      if (fileList.filter((item: any) => item.name === file.name).length) {
-        message.warning('请不要上传相同名字的文件');
-        return Upload.LIST_IGNORE
-      }
+        let fileList = form.getFieldValue('fileList')
+        if (fileList.filter((item: any) => item.name === file.name).length) {
+          message.warning('请不要上传相同名字的文件');
+           return Upload.LIST_IGNORE
+        }
+        return undefined;
     },
     iconRender: (file, listType) => {
       const fileType = file.name.split('.').slice(-1)[0]
@@ -118,11 +119,11 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   const projectOptions = () => {
     const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
     let resProj = resData?.projs || []
-    
+
     resProj = resProj.filter(proj => {
       if (proj.customer === selectCustomer) {
         const result = reg.exec(proj?.id);
-        
+
         if (selectType === 'XMHT') {
           // return result?.groups?.projType === 'SZ' || result?.groups?.projType === 'YF'
           return result?.groups?.projType === 'SZ' || result?.groups?.projType === 'SH'

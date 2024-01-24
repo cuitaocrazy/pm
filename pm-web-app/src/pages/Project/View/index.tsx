@@ -19,7 +19,7 @@ import type {
   ProjectInput,
   ActiveInput,
   AgreementInput,
-  Agreement as AgreementType,
+
 } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -32,6 +32,7 @@ import { useBaseState } from '@/pages/utils/hook';
 import { getStatusDisplayName, projStatus } from './utils';
 import '@/common.css';
 import AgreementForm from './AgreementForm';
+
 
 const Project: React.FC<any> = (props) => {
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
@@ -145,11 +146,12 @@ const Project: React.FC<any> = (props) => {
   };
   const pageChange = (page: any) => {
     setParams({ ...params, page });
+    let obj = {group: ''}
     setQuery({
       ...query,
       ...params,
       page,
-      group: '',
+      ...obj
     });
   };
   const searchBtn = () => {
@@ -157,16 +159,17 @@ const Project: React.FC<any> = (props) => {
       ...params,
       page: 1,
     });
+
     setQuery({
       ...query,
       ...params,
       page: 1,
-      group:
+      ...{group:
         params.group.length !== 0
           ? params.group.reduce((accumulator: string, currentValue: string) => {
               return `${accumulator}/${currentValue}`;
             }, '')
-          : '',
+          : '',}
     });
   };
   const canaelBtn = () => {
@@ -184,14 +187,14 @@ const Project: React.FC<any> = (props) => {
     setQuery({
       ...query,
       ...params,
-      regions: [],
+      ...{regions: [],
       industries: [],
       projTypes: [],
       page: 1,
       confirmYear: null,
       group: '',
       status: '',
-      name: '',
+      name: '',}
     });
   };
   const [orgCodeOptions] = useState(
@@ -313,6 +316,7 @@ const Project: React.FC<any> = (props) => {
         return confirmYear;
       },
       width: 100,
+
     },
   ];
   if (access?.includes('realm:assistant')) {
@@ -351,9 +355,9 @@ const Project: React.FC<any> = (props) => {
           </a>
         </Space>
       ),
-      fixed: 'right' as 'right',
+      fixed: 'right',
       width: 120,
-    });
+    }as any);
   }
 
   //=====zhouyueyang

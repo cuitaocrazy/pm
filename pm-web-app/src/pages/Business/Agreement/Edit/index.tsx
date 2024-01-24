@@ -19,7 +19,7 @@ const Agreement: React.FC<any> = () => {
     const projArr = projectAgreements.filter(item => {
       return item.agreementId === agreement.id
     }).map(pro => pro.id)
-    console.log(projArr)
+    
     agreement.contactProj = projArr
     agreement.time = [moment(agreement.startTime), moment(agreement.endTime)]
     ref.current?.showDialog({ ...agreement });

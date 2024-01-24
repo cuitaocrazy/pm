@@ -43,7 +43,6 @@ const Project: React.FC<any> = () => {
     projs,
     todoProjs,
     subordinates,
-    customers,
     projectAgreements,
     loading,
     archive,
@@ -92,7 +91,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user) => user.id === record.leader)?.name;
+        return subordinates.find((user: { id: string; }) => user.id === record.leader)?.name;
       },
       width: 110,
     },
@@ -101,7 +100,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'salesLeader',
       key: 'salesLeader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user) => user.id === record.salesLeader)?.name;
+        return subordinates.find((user: { id: string; }) => user.id === record.salesLeader)?.name;
       },
       width: 110,
     },
@@ -145,7 +144,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-        return customers?.result?.find((cum) => cum.id === record.customer)?.name;
+       return record.customerObj.name
       },
       width: 150,
     },

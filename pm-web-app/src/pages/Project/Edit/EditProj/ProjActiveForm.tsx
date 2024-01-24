@@ -2,43 +2,12 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Divider, Row, Col, DatePicker, Upload, Select } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import type { ProjectInput, Query } from '@/apollo';
-import { gql, useQuery } from '@apollo/client';
+import type { ProjectInput } from '@/apollo';
 import { useModel } from 'umi';
 import type { FormInstance } from 'antd/lib/form';
 import moment from 'moment';
 
-const userQuery = gql`
-{
-    tags
-    agreements {
-      result{id
-      name
-      type
-      remark
-      fileList {
-        uid
-        name
-        status
-        url
-      }
-      startTime
-      endTime
-      isDel
-      createDate}
-      total
-      page
-    }
-    projectAgreements {
-      id
-      agreementId
-    }
-    subordinates {
-      id
-      name
-    }
-  }
-`;
+
 
 const layout = {
   labelCol: { span: 9 },
@@ -46,8 +15,6 @@ const layout = {
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
-  // const { status, industries, regions, buildProjName } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
@@ -73,7 +40,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           delete item.percent
           delete item.size
           delete item.type
-          // delete item.originFileObj
           delete item.response
           delete item.xhr
           delete item.lastModifiedDate
@@ -153,6 +119,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 <div style={{ maxHeight: '48vh', overflowY: 'auto' }}>
                 {renderActiveNode(fields).map((field, i) => (
                   <div key={field.key} style={{ textAlign: 'left' }}>
+                    
                     <Divider>
                       <Form.Item
                         labelCol={{ span: 1, offset: 0 }}
@@ -163,7 +130,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                         rules={[{ required: true }]}
                       >
                         <Input
-                          // disabled={(field.name < (data?.actives?.length || 0))}
                           placeholder="请输入活动名称"
                           style={{ width: '15vw', textAlign: 'center' }}
                         />
@@ -196,10 +162,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                           label="记录人"
                           name={[field.name, 'recorder']}
                           rules={[{ required: true }]}
-                          // initialValue={initialState?.currentUser?.id}
                         >
                           <Select disabled >
-                            {resData?.subordinates.map((u) => (
+                            {initialState?.subordinates&&initialState?.subordinates.map((u) => (
                               <Select.Option key={u.id} value={u.id}>
                                 {u.name}
                               </Select.Option>
@@ -252,6 +217,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                         </Form.Item>
                       </Col>
                     </Row>
+                    {/**下面的删除活动的按钮*/}
                     <div style={{ textAlign: 'center' }}>
                       <MinusCircleOutlined
                         hidden={(field.name < (data?.actives?.length || 0))}

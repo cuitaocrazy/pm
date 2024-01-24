@@ -5,7 +5,6 @@ import type {
   ProjectInput,
   Query,
   QueryProjectArgs,
-  CustomersResult
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
@@ -90,9 +89,32 @@ const getGql = (proName: string) => {
             thumbUrl
           }
         }
+        customerObj{
+          id
+          name
+          industryCode
+          regionCode
+          salesman
+          contacts{
+            name
+            phone
+            tags
+            recorder
+            remark
+          }
+          officeAddress
+          enable
+          remark
+          isDel
+          createDate
+        }
         }
         page
         total
+      }
+      realSubordinates{
+        id
+        name
       }
     }
   `;
@@ -161,12 +183,13 @@ export function useProjStatus() {
   const projs = projectClassify(
     R.filter((el) => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs),
   );
+
   const todoProjs = filterTodoProject(projs).filter((el) => {
     return buildProjName(el.id, el.name).indexOf(filter) > -1;
   });
+
   // projs
-  const subordinates = queryData?.subordinates || [];
-  const customers = queryData?.customers as CustomersResult || [];
+  const subordinates = queryData?.realSubordinates || []; //realSubordinates拿到同部门及以下的人员
   const agreements = queryData?.agreements || [];
   const projectAgreements = queryData?.projectAgreements || [];
 
@@ -204,7 +227,6 @@ export function useProjStatus() {
     projs,
     todoProjs,
     subordinates,
-    customers,
     agreements,
     projectAgreements,
     filter,

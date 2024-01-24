@@ -14,14 +14,6 @@ import { attachmentUpload } from './utils';
 
 const queryGql = gql`
 query ($projType: String!$industries: [String],$regions:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String) {
-    subordinates {
-      id
-      name
-    }
-    realSubordinates {
-      id
-      name
-    }
     projectAgreements {
       id
       agreementId
@@ -70,6 +62,20 @@ query ($projType: String!$industries: [String],$regions:[String],$page:Int,$conf
         agreements{
           id
           name
+          id
+          name
+          type
+          remark
+          fileList {
+            uid
+            name
+            status
+            url
+          }
+          startTime
+          endTime
+          isDel
+          createDate
         }
         customerObj{
           id
@@ -147,14 +153,9 @@ export function useProjStatus() {
     initialRefresh()
   }, [refresh, query]);
 
-  const subordinates = queryData?.subordinates || [];
-  console.log(subordinates)
-  const realSubordinates = queryData?.realSubordinates || [];
-  console.log(realSubordinates)
   const projectAgreements = queryData?.projectAgreements || [];
   const total = queryData?.filterProjs.total || undefined;
   const tmpProjsResult = queryData?.filterProjs.result || []
-  console.log(queryData)
   const deleteProj = useCallback(
     async (id: string) => {
       await deleteProjHandle({ variables: { id } });
@@ -179,7 +180,6 @@ export function useProjStatus() {
 
   return {
     loading: queryLoading || deleteLoading || pushLoading,
-    subordinates,
     projectAgreements,
     filter,
     routeProjType,

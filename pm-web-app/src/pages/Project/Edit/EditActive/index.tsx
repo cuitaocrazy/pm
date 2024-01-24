@@ -18,13 +18,12 @@ const Project: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
   const { projectAgreements, routeProjType, loading, pushProj,setQuery,query,total,tmpProjsResult} = useProjStatus();
-  const { status, orgCode, zoneCode, buildProjName,groupType, subordinates } = useBaseState();
-  console.log(subordinates)
-  console.log(projectAgreements)
+  const { status, orgCode, zoneCode, buildProjName,groupType, subordinates, } = useBaseState();
   const editHandle = (proj: Proj) => {
     const agree = projectAgreements.filter(item => item.id === proj.id)
     const { actives, ...pro } = proj;
     ref.current?.showDialog({ 
+      subordinates,
       ...pro,
       contName: agree.length ? agree[0].agreementId : '', 
       actives: (actives as ActiveInput[]),

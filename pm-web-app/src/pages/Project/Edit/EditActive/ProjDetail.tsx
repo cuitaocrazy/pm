@@ -2,85 +2,23 @@ import React, { useState, Fragment } from 'react';
 import { Tabs, Tag, Row, Col, Upload, Descriptions, Timeline } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { map, filter, find } from 'ramda'
-import type { ProjectInput, Query } from '@/apollo';
-import { gql, useQuery } from '@apollo/client';
+import type { ProjectInput,} from '@/apollo';
 import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
 import { getStatusDisplayName } from './utils';
 import moment from 'moment';
 
-const userQuery = gql`
-{
-    customers {
-      result {
-        id
-        name
-        industryCode
-        regionCode
-        salesman
-        contacts {
-          name
-          phone
-          tags
-        }
-        remark
-        enable
-        isDel
-        createDate
-      }
-      page
-      total
-    }
-    tags
-    agreements {
-      result {
-        id
-        name
-        type
-        remark
-        fileList {
-          uid
-          name
-          status
-          url
-        }
-        startTime
-        endTime
-        isDel
-        createDate
-      }
-      page
-      total
-    }
-    projectAgreements {
-      id
-      agreementId
-    }
-    subordinates {
-      id
-      name
-    }
-  }
-`;
-
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' });
-  const { status, industries, regions, buildProjName } = useBaseState();
+  const { status, industries, regions, buildProjName,subordinates } = useBaseState();
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType] = useState(result?.groups?.projType || '');
-  console.log(data)
-  console.log(resData)
-
 
   // 客户信息
-  // const customer = find((sub:any) => sub.id === data?.customer, resData?.customers.result || [])
-  // console.log(customer)
-  const customer = data?.customerObj
+  const customer = data?.customerObj ? data?.customerObj : undefined
 
   // 合同信息
-  const agreement = find(proA => proA.id === find(a => a.id ===data?.id, resData?.projectAgreements|| [])?.agreementId, resData?.agreements.result || [])
-  console.log(agreement)
+  const agreement = data?.agreements ? data?.agreements[0] : undefined
 
   const props: UploadProps = {
     listType: "picture",
@@ -127,7 +65,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 所属区域: { customer ? find(indu => indu.code === customer?.regionCode, regions || [])?.name : '' }
               </Col>
               <Col xs={24} sm={6}>
-                销售负责人: {customer ? find(indu => customer.salesman.includes(indu.id), resData?.subordinates || [])?.name : ''}
+                销售负责人: {customer ? find(indu => customer.salesman.includes(indu.id), subordinates || [])?.name : ''}
               </Col>
             </Row>
             {customer?.contacts.map((u) => (
@@ -159,13 +97,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             </div>
           </Descriptions.Item>
           <Descriptions.Item label="项目经理:">{ 
-            find(sub => sub.id === data?.leader, resData?.subordinates || [])?.name
+            find(sub => sub.id === data?.leader, subordinates || [])?.name
           }</Descriptions.Item>
           <Descriptions.Item label="市场经理:">{ 
-            find(sub => sub.id === data?.salesLeader, resData?.subordinates || [])?.name
+            find(sub => sub.id === data?.salesLeader, subordinates || [])?.name
           }</Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>{ 
-            map(lead => filter(sub => sub.id === lead, resData?.subordinates || [])[0]?.name, data?.participants || []).join(' ')
+            map(lead => filter(sub => sub.id === lead, subordinates || [])[0]?.name, data?.participants || []).join(' ')
           }</Descriptions.Item>
 
           <Descriptions.Item label="阶段状态:">{ 
@@ -233,7 +171,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                     活动名称: { act.name }
                   </div>
                   <div>
-                    活动记录人: { act.recorder ? find(indu => indu.id === act.recorder, resData?.subordinates || [])?.name : '' }
+                    活动记录人: { act.recorder ? find(indu => indu.id === act.recorder, subordinates || [])?.name : '' }
                   </div>
                   <div>
                     活动内容: {act.content}

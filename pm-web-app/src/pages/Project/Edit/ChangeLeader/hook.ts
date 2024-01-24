@@ -49,7 +49,6 @@ export function useChangePmState() {
   useEffect(() => {
     refresh();
   }, [refresh, query]);
-  console.log(queryData)
   const users: User[] = queryData?.dailyUsers || [];
   const { initialState } = useModel('@@initialState');
   if (initialState?.currentUser) {
@@ -68,8 +67,6 @@ export function useChangePmState() {
   };
 
   const projs = queryData?.superProjs.result.filter((proj) => isMember(proj.leader)) || [];
-  console.log(queryData, '-------------121312')
-  console.log(projs)
   const realSubordinates = queryData?.realSubordinates
   const page = queryData?.superProjs.page
   const total = queryData?.superProjs.total

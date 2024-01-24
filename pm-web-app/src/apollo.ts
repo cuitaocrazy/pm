@@ -616,6 +616,7 @@ export type ProjectInput = {
   name: Scalars['String'];
   customer: Scalars['String'];
   customerObj: CustomerObj;
+  agreements: AgreementsResult;
   contName?: Scalars['String'];
   projStatus: Scalars['String'];
   contStatus: Scalars['String'];

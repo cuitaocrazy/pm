@@ -85,7 +85,6 @@ export default () => {
     },
   });
 
-
   const { initialState } = useModel('@@initialState');
   const [isDerive] = useState(false);
   const treeStatus = dataForTree(status);

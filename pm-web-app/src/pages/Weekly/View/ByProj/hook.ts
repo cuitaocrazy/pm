@@ -3,8 +3,8 @@ import { gql, useLazyQuery } from '@apollo/client';
 import type { Query, QueryProjDailyArgs } from '@/apollo';
 
 const QueryProjs = gql`
-  {
-    iLeadProjs {
+  query($pageSize:Int){
+    iLeadProjs(pageSize:$pageSize) {
       result{id
       name}
       total
@@ -16,6 +16,9 @@ const QueryProjs = gql`
 export function useProjsState() {
   const [queryUsers, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(QueryProjs, {
     fetchPolicy: 'no-cache',
+    variables:{
+      pageSize:10000000
+    }
   });
 
   useEffect(() => {

@@ -32,7 +32,7 @@ const queryGql = gql`
     $pageAgreements: Int
     $pageSizeAgreements: Int
   ) {
-    subordinates {
+    realSubordinates {
       id
       name
     }
@@ -130,6 +130,43 @@ const queryGql = gql`
             thumbUrl
           }
         }
+        customerObj{
+          id
+          name
+          industryCode
+          regionCode
+          salesman
+          contacts{
+            name
+            phone
+            tags
+            recorder
+            remark
+          }
+          officeAddress
+          enable
+          remark
+          isDel
+          createDate
+        }
+        agreements{
+          id
+          name
+          customer
+          type
+          fileList{
+            uid
+            name
+            status
+            url
+            thumbUrl
+          }
+          startTime
+          endTime
+          remark
+          isDel
+          createDate
+        }
       }
       page
       total
@@ -212,7 +249,7 @@ export function useProjStatus() {
   const projs = projectClassify(
     R.filter((el) => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs),
   );
-  const subordinates = queryData?.subordinates || [];
+  const subordinates = queryData?.realSubordinates || [];
   const customers = queryData?.customers.result || [];
   const agreements = queryData?.agreements.result || [];
   const projectAgreements = queryData?.projectAgreements || [];

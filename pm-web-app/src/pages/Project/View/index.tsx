@@ -40,7 +40,6 @@ const Project: React.FC<any> = (props) => {
     projs,
     subordinates,
     customers,
-    agreements,
     projectAgreements,
     loading,
     setQuery,
@@ -261,7 +260,7 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-        return customers.find((cum) => cum.id === record.customer)?.name;
+        return record.customerObj.name;
       },
       width: 150,
     },
@@ -270,8 +269,7 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'contName',
       key: 'contName',
       render: (text: string, record: Proj) => {
-        const agree = projectAgreements.filter((item) => item.id === record.id);
-        return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : '';
+        return record.agreements ? record.agreements[0].name : ''
       },
       width: 150,
     },

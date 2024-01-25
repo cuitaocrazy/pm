@@ -2,75 +2,20 @@ import React, { useState, Fragment } from 'react';
 import { Tabs, Row, Col, Upload, Descriptions, Timeline } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { map, filter, find } from 'ramda'
-import type { ProjectInput, Query } from '@/apollo';
-import { gql, useQuery } from '@apollo/client';
+import type { ProjectInput } from '@/apollo';
 import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
 import { getStatusDisplayName } from './utils';
 import moment from 'moment';
+import { useModel } from 'umi';
 
-const userQuery = gql`
-query($customersPageSize:Int,$pageSizeAgreements:Int){
-    customers(pageSize:$customersPageSize) {
-      result{id
-      name
-      industryCode
-      regionCode
-      salesman
-      contacts {
-        name
-        phone
-        tags
-      }
-      remark
-      enable
-      isDel
-      createDate}
-      total
-      page
-    }
-    tags
-    agreements(pageSize:$pageSizeAgreements) {
-      result{id
-      name
-      type
-      remark
-      fileList {
-        uid
-        name
-        status
-        url
-      }
-      startTime
-      endTime
-      isDel
-      createDate}
-      total
-      page
-    }
-    projectAgreements {
-      id
-      agreementId
-    }
-    subordinates {
-      id
-      name
-    }
-  }
-`;
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' ,variables:{customersPageSize:10000000,pageSizeAgreements:10000000}});
+  const { initialState } =  useModel('@@initialState');
   const { status, buildProjName } = useBaseState();
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType] = useState(result?.groups?.projType || '');
-
-  // // 客户信息
-  // const customer = find(sub => sub.id === data?.customer, resData?.customers || [])
-  // // 合同信息
-  // const agreement = find(proA => proA.id === find(a => a.id ===data?.id, resData?.projectAgreements|| [])?.agreementId, resData?.agreements || [])
-
   const props: UploadProps = {
     listType: "picture",
     defaultFileList: [],
@@ -148,13 +93,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             </div>
           </Descriptions.Item> */}
           <Descriptions.Item label="项目经理:">{
-            find(sub => sub.id === data?.leader, resData?.subordinates || [])?.name
+            find(sub => sub.id === data?.leader, initialState?.subordinates || [])?.name
           }</Descriptions.Item>
           <Descriptions.Item label="市场经理:">{
-            find(sub => sub.id === data?.salesLeader, resData?.subordinates || [])?.name
+            find(sub => sub.id === data?.salesLeader, initialState?.subordinates || [])?.name
           }</Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>{
-            map(lead => filter(sub => sub.id === lead, resData?.subordinates || [])[0]?.name, data?.participants || []).join(' ')
+            map(lead => filter(sub => sub.id === lead, initialState?.subordinates || [])[0]?.name, data?.participants || []).join(' ')
           }</Descriptions.Item>
 
           <Descriptions.Item label="阶段状态:">{
@@ -220,7 +165,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                     活动名称: { act.name }
                   </div>
                   <div>
-                    活动记录人: { act.recorder ? find(indu => indu.id === act.recorder, resData?.subordinates || [])?.name : '' }
+                    活动记录人: { act.recorder ? find(indu => indu.id === act.recorder, initialState?.subordinates || [])?.name : '' }
                   </div>
                   <div>
                     活动内容: {act.content}

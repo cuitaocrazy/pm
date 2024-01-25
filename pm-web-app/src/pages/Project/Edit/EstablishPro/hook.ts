@@ -11,9 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
 import { useModel, history } from 'umi';
 import * as R from 'ramda';
-import { attachmentUpload, filterTodoProject, projectClassify } from './utils';
-
-
+import { attachmentUpload, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
@@ -144,12 +142,7 @@ export function useProjStatus() {
     return { ...item }
   });
   const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
-  const todoProjs = filterTodoProject(projs).filter(el => {
-    return buildProjName(el.id, el.name).indexOf(filter) > -1
-  })
-  // projs
   const subordinates = queryData?.subordinates || [];
-  // const customers = queryData?.customers || [];
   const agreements = queryData?.agreements || [];
   const projectAgreements = queryData?.projectAgreements || [];
 
@@ -177,7 +170,6 @@ export function useProjStatus() {
   return {
     loading: queryLoading || pushLoading || archiveLoading,
     projs,
-    todoProjs,
     subordinates,
     // customers,
     agreements,

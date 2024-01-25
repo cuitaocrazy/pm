@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState } from 'react';
+import React, {  useRef, useState } from 'react';
 import {
   Button,
   Table,
@@ -53,9 +53,9 @@ const Project: React.FC<any> = () => {
     setQuery,
     query,
     total,
+    todoProjsTotal
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
-
   const editHandle = (proj: Proj, openRef: any) => {
     const { actives, ...pro } = proj;
     openRef.current?.showDialog({
@@ -222,7 +222,7 @@ const Project: React.FC<any> = () => {
       width: 180,
     },
   ];
-
+  
   if (!isAdmin && archive === '2') {
     columns.splice(2, 0, {
       title: '待办内容',
@@ -483,7 +483,7 @@ const Project: React.FC<any> = () => {
               <Radio.Button value="1">归档项目</Radio.Button>
             ) : (
               <Radio.Button value="2">
-                <Badge count={todoProjs.length}>待办项目</Badge>
+                <Badge count={todoProjsTotal}>待办项目</Badge>
               </Radio.Button>
             )}
           </Radio.Group>

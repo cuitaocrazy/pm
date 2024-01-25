@@ -170,10 +170,10 @@ export function useProjStatus() {
   return {
     loading: queryLoading || pushLoading || archiveLoading,
     projs,
-    subordinates,
+    // subordinates,
     // customers,
-    agreements,
-    projectAgreements,
+    // agreements,
+    // projectAgreements,
     filter,
     archive,
     setArchive,

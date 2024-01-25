@@ -326,7 +326,7 @@ export default () => {
 
   const handleSubmit = () => {
     // 获取处理后的group字段值
-    const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
+    const processedGroup = typeof form.getFieldValue('group') === 'string' ? form.getFieldValue('group') : form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
       return `${accumulator}/${currentValue}`;
     }, '');
     // 使用async/await语法确保异步操作的正确执行

@@ -10,8 +10,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
 import { useModel, history } from 'umi';
-import * as R from 'ramda';
-import { attachmentUpload, projectClassify } from './utils';
+import { attachmentUpload } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
@@ -131,20 +130,11 @@ export function useProjStatus() {
 
   const { refresh: initialRefresh } = useModel('@@initialState');
   const { buildProjName } = useBaseState();
-  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     refresh();
     initialRefresh()
   }, [refresh]);
-
-  const tmpProjs = ((isAdmin ? queryData?.superProjs?.result : queryData?.iLeadProjs.result) || []).map(item => {
-    return { ...item }
-  });
-  const projs = projectClassify(R.filter(el => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs))
-  const subordinates = queryData?.subordinates || [];
-  const agreements = queryData?.agreements || [];
-  const projectAgreements = queryData?.projectAgreements || [];
 
   const archiveProj = useCallback(
     async (id: string) => {
@@ -169,15 +159,8 @@ export function useProjStatus() {
 
   return {
     loading: queryLoading || pushLoading || archiveLoading,
-    projs,
-    // subordinates,
-    // customers,
-    // agreements,
-    // projectAgreements,
-    filter,
     archive,
     setArchive,
-    setFilter,
     refresh,
     archiveProj,
     pushProj,

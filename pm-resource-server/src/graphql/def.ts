@@ -104,11 +104,13 @@ const dataTypeDef = gql`
     group: String
     customerObj: Customer
     agreements: [Agreement]
+    todoTip: String
   }
   type ProjectPage {
     result: [Project!]!
     page: Int!
     total: Int!
+    todoTotal: Int
   }
   type CustomerPage {
     result: [Customer!]!
@@ -409,6 +411,18 @@ const dataTypeDef = gql`
       leaders: [String]
     ): ProjectPage
     iLeadProjs(
+      isArchive: Boolean
+      regions: [String]
+      industries: [String]
+      projTypes: [String]
+      page: Int
+      pageSize: Int
+      confirmYear: String
+      group: String
+      status: String
+      name: String
+    ): ProjectPage
+    iLeadTodoProjs(
       isArchive: Boolean
       regions: [String]
       industries: [String]

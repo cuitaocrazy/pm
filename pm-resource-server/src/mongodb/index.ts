@@ -169,6 +169,12 @@ export interface IProject {
   group: string;
 
   projectClass: string;
+
+  startTime: string;
+
+  acceptDate: string;
+
+  serviceCycle: number;
 }
 
 export const Project = client.db().collection<IProject>(pluralize("Project"));
@@ -388,8 +394,8 @@ export interface ICustomer {
    */
   salesman: string[];
   /**
- * 办公地址
- */
+   * 办公地址
+   */
   officeAddress: string;
   /**
    * 客户联系人
@@ -413,8 +419,8 @@ export interface ICustomer {
        */
       recorder?: string;
       /**
-      * 备注
-      */
+       * 备注
+       */
       remark: string;
     }
   ];

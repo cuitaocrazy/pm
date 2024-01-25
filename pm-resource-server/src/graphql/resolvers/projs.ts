@@ -6,9 +6,45 @@ import {
   getGroupUsers,
   getUsersByGroups,
 } from "../../auth/oauth";
-import { Project, ProjectAgreement, Agreement, Customer } from "../../mongodb";
+import {
+  Project,
+  ProjectAgreement,
+  Agreement,
+  Customer,
+  IProject,
+} from "../../mongodb";
 import { dbid2id, id2dbid, getMaxGroup } from "../../util/utils";
 import { ObjectId } from "mongodb";
+
+const getTodoProjects = (projects: any[]) => {
+  const projectResult = projects.filter((project) => {
+    const reg =
+      /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
+    const result = reg.exec(project.id || "");
+    if (result?.groups?.projType === "SZ") {
+      // 售中
+      if (project.acceptDate) {
+        const dayDiff = moment(project.acceptDate).diff(new Date(), "day");
+        if (dayDiff <= 90 && dayDiff > 0) {
+          return true;
+        }
+      }
+    } else if (result?.groups?.projType === "SH") {
+      if (project.startTime && project.serviceCycle) {
+        const today = new Date();
+        const monthDiff = moment(today).diff(project.startTime, "month");
+        if (
+          project.serviceCycle - monthDiff <= 3 &&
+          project.serviceCycle - monthDiff > -1
+        ) {
+          return true;
+        }
+      }
+    }
+  });
+  return projectResult;
+};
+
 export default {
   Query: {
     isExistProjID: async (_: any, __: any, context: AuthContext) => {
@@ -83,6 +119,7 @@ export default {
           }
         }
       }
+
       // filter = { _id: { $not: /-ZH-/ } };
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
 
@@ -146,6 +183,125 @@ export default {
         result,
         page,
         total,
+      };
+    },
+    iLeadTodoProjs: async (_: any, __: any, context: AuthContext) => {
+      const user = context.user!;
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
+      }
+
+      const filter = {
+        isArchive: __.isArchive ? __.isArchive : false,
+        $or: [
+          { leader: context.user!.id },
+          { salesLeader: context.user!.id },
+          { leader: { $in: subordinateIds } },
+        ],
+      };
+
+      let todoTotalResult = await Project.find(filter).map(dbid2id).toArray();
+      todoTotalResult = getTodoProjects(todoTotalResult);
+
+      let {
+        regions,
+        industries,
+        projTypes,
+        page,
+        pageSize,
+        confirmYear,
+        group,
+        status,
+        name,
+        leaders,
+      } = __;
+
+      if (!page || page === 0) {
+        page = 1;
+      }
+      if (!pageSize || pageSize === 0) {
+        pageSize = 10;
+      }
+      const skip = (page - 1) * pageSize;
+
+      const regexArray: RegExp[] = [];
+      if (!regions || regions.length == 0) regions = ["\\w*"];
+      if (!industries || industries.length == 0) industries = ["\\w*"];
+      if (!projTypes || projTypes.length == 0) projTypes = ["SH", "SZ"];
+
+      projTypes = projTypes.filter(
+        (projType) => projType === "SH" || projType === "SZ"
+      );
+      if (confirmYear) {
+        filter["confirmYear"] = confirmYear;
+      }
+      if (status) {
+        filter["status"] = status;
+      }
+      if (group) {
+        filter["group"] = new RegExp(group, "g");
+      }
+      if (name) {
+        filter["name"] = new RegExp(name, "g");
+      }
+      if (leaders) {
+        filter["leader"] = { $in: leaders };
+      }
+
+      for (let i = 0; i < regions.length; i++) {
+        for (let j = 0; j < industries.length; j++) {
+          for (let k = 0; k < projTypes.length; k++) {
+            const regexStr = `^${industries[j]}-${regions[i]}-${projTypes[k]}-.*`;
+            regexArray.push(new RegExp(regexStr));
+          }
+        }
+      }
+      filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+      let result = await Project.find(filter)
+        .sort({ createDate: -1 })
+        .map(dbid2id)
+        .toArray();
+      result = getTodoProjects(result);
+
+      const projIds = result.map((proj) => proj.id);
+      const projAggrement = await ProjectAgreement.find({
+        _id: { $in: projIds },
+      }).toArray();
+      await Promise.all(
+        projAggrement.map(async (pa) => {
+          const agreement = await Agreement.find({
+            _id: new ObjectId(pa.agreementId),
+          })
+            .map(dbid2id)
+            .toArray();
+          const oneResult = result.find((res) => res.id === pa._id);
+          oneResult.agreements = agreement;
+        })
+      );
+
+      await Promise.all(
+        result.map(async (oneResult) => {
+          const customer = await Customer.findOne({
+            $or: [
+              { _id: new ObjectId(oneResult.customer) },
+              { _id: oneResult.customer },
+            ],
+          });
+          if (customer) oneResult.customerObj = dbid2id(customer);
+        })
+      );
+
+      const total = result.length;
+      result = result.slice(skip, pageSize + skip);
+      return {
+        result,
+        page,
+        total,
+        todoTotal: todoTotalResult.length,
       };
     },
     iLeadProjs: async (_: any, __: any, context: AuthContext) => {
@@ -253,12 +409,14 @@ export default {
       );
 
       const total = await Project.countDocuments(filter);
+
       return {
         result,
         page,
         total,
       };
     },
+
     filterProjs: async (_: any, __: any, context: AuthContext) => {
       const user = context.user!;
       const maxGroup = getMaxGroup(user.groups);

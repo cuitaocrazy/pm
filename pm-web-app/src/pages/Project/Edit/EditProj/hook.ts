@@ -267,7 +267,7 @@ const [todoProjs,setTodoProjs] = useState<any>({})
     }else{
       refresh();
     }
-    
+
   }, [refresh, query]);
   const tmpProjs = (
     (isAdmin ? queryData?.superProjs?.result : queryData?.iLeadProjs?.result) || []
@@ -302,8 +302,8 @@ const [todoProjs,setTodoProjs] = useState<any>({})
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      
-      
+
+
       const groupPath = proj.group?.length !== 0
         ? proj.group?.reduce((accumulator: string, currentValue: string) => {
           return `${accumulator}/${currentValue}`;
@@ -330,9 +330,11 @@ const [todoProjs,setTodoProjs] = useState<any>({})
   }
   let [todoProjsTotal,setTodoProjsTotal] = useState(0)
   useEffect( ()=>{
-    getTodoList({page:1}).then((res)=>{
-      setTodoProjsTotal(res.data.iLeadTodoProjs.todoTotal)
-    })
+    if(!isAdmin){
+      getTodoList({page:1}).then((res)=>{
+        setTodoProjsTotal(res.data.iLeadTodoProjs.todoTotal)
+      })
+    }
   })
 
   return {

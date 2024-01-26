@@ -90,14 +90,18 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  const { status, dataForTree, groupType } = useBaseState();
+  const { status, dataForTree, groupType, subordinates } = useBaseState(); // subordinates是指公司的全部人员
 
-  // 使用 filter() 方法过滤出符合条件的元素
-  const filteredGroups = groupType.map(group => {
-    const match = group.toString().match(/\/市场组/);
-    if (match)
-      return `${match.input}`;
-  }).filter(Boolean);
+  // 使用正则表达式匹配出公司所有市场组的人员
+  const filteredGroups: string[] = groupType
+    .map(group => {
+      const match = group.toString().match(/\/市场组/);
+      if (match) {
+        return `${match.input}`;
+      }
+      return undefined; // 如果没有匹配，返回 undefined
+    })
+    .filter((value): value is string => value !== undefined);
 
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
@@ -296,6 +300,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const deriveNewProject = () => {
     setIsDerive(true);
     form.setFieldValue('pId', data?.id);
+    form.setFieldValue('contName', '');
     // 生成派生项目id
     let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('YYYY')}`) || '1';
     onIdChange(newId);
@@ -395,84 +400,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     setCustomerListData(customerListData1?.customers);
   }, [customerListData1]);
 
-  // const groupDatas = (inputArray: any) => {
-  // let result: any = []
 
-  // inputArray.forEach((item: any) => {
-  // const path = item.substring(1).split('/');
-  // let currentLevel = result;
-  // path.forEach((segment: any, index: number) => {
-  // const existingSegment = currentLevel.find((el: any) => el.value === segment);
-
-  // if (existingSegment) {
-  // currentLevel = existingSegment.children || [];
-
-  // } else {
-  // const newSegment = {
-  // value: segment,
-  // label: segment,
-  // children: index === path.length - 1 ? [] : [],
-  // };
-
-  // currentLevel.push(newSegment);
-  // currentLevel = newSegment.children || [];
-
-  // }
-  // });
-  // })
-  // return result
-  // }
-
-  // const [groupsOptions] = useState(
-  // groupDatas(groupType)
-  // );
-  // const [myProjGroup] = useState(
-  // groupDatas(resData?.groups)
-  // )
-
-
-
-  // const [newGroup, setNewGroup] = useState({
-  // group: '',
-
-  // })
-  // const handleChangeGroup = (value: any, type: string) => {
-  // setNewGroup({
-  // ...newGroup,
-  // group: value.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, ''),
-  // })
-  // }
-
-  // const handleSubmit = () => {
-  // handleChangeGroup(form.getFieldValue('group'), 'group');
-  // // 获取处理后的group字段值
-  // const processedGroup = form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
-  // return `${accumulator}/${currentValue}`;
-  // }, '');
-
-  // // 使用async/await语法确保异步操作的正确执行
-  // (async () => {
-  // try {
-  // // 直接修改form中group字段的值
-  // form.setFieldsValue({ group: processedGroup });
-  // // 验证字段
-  // await form.validateFields();
-  // // 调用pushProj函数，传递处理后的group字段值
-  // await pushProj(form.getFieldsValue());
-  // // 弹出成功消息
-  // await messageApi.open({
-  // type: 'success',
-  // content: '新增成功！',
-  // duration: 2
-  // });
-  // // 重置字段
-  // form.resetFields();
-  // } catch (error) {
-  // // 处理错误
-  // console.error(error);
-  // }
-  // })();
-  // };
   const [isExistProjIdData, setIsExistProjIdData] = useState<Boolean>();
 
   // 回调函数，用于在子组件中 IsExistProjIdData 发生变化时更新父组件的状态
@@ -702,7 +630,7 @@ return true;
                 return true;
               }}
             >
-              {resData?.realSubordinates.map((u) => (
+              {subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
                   {u.name}
                 </Select.Option>

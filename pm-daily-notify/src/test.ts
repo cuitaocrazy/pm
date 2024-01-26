@@ -1,14 +1,27 @@
 import moment from "moment";
 import { getWorkDays } from "./util/utils";
 import { Users } from "./keycloak";
+import { DailyInfo, ProjectMailInfo, UserInfo } from "./data";
+import { Project } from "./mongodb";
+import * as R from "ramda";
+import { remindsUsersProject } from "./remind";
 
-const month = moment().year(2020).year();
-console.log(month);
-console.log(moment("20240107", "YYYYMMDD").valueOf());
-// Users()
-//   .then((test) => {
-//     console.log("test");
-//   })
-//   .then((user) => {
-//     console.log(user);
-//   });
+import {
+  transporter,
+  sendEmails,
+  sendWeiHuEmail,
+  sendYanShouEmail,
+  closeTransporter,
+} from "./emailer";
+
+
+
+remindsUsersProject().then(() => {
+  // closeTransporter();
+
+  setTimeout(() => {
+    console.log("发送完毕，关闭邮箱");
+    closeTransporter();
+    Promise.reject(new Error("结束"));
+  }, 30 * 1000);
+});

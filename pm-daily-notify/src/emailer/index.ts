@@ -49,7 +49,7 @@ export const sendEmails = (infos: MailInfo[]) => {
       }
     );
   } else {
-    transporter.close();
+    // transporter.close();
   }
 };
 
@@ -77,7 +77,7 @@ const yanShouTemplate = `<!DOCTYPE html>
 <body>
 <h3>{{name}}</h3>
 <h3>项目{{projectName}}验收日期不足三个月，请及时签署维护合同</h3>
-{{dates}}
+验收日期：{{acceptDate}}
 <br>
 </body>
 </html>`;
@@ -94,39 +94,34 @@ const genYanShouEmailHtml = (args: { [key: string]: string }) => {
  * 使用Promise.al时会导致部分发送失败,改为递归发送
  * @param infos 需要发送邮件的信息数组
  */
-export const sendYanShouEmails = (infos: ProjectMailInfo[]) => {
-  if (infos.length > 0) {
-    const info = infos[0];
-    transporter.sendMail(
-      {
-        from: config.user, // Sender address
-        to: info.email, // List of recipients
-        subject: config.yanShouSubject, // Subject line
-        html: genYanShouEmailHtml({
-          name: info.name,
-          projectName: info.projectName,
-          dates: R.join(
-            "",
-            R.map(
-              (date) =>
-                `<li>${moment(date, "YYYYMMDD").format("YYYY-MM-DD")}</li>`,
-              info.dates
-            )
-          ),
-        }),
-      },
-      (err) => {
-        if (err) {
-          console.log(err, info);
-          sendEmails(R.append(info, R.tail(infos)));
-        } else {
-          sendEmails(R.tail(infos));
-        }
+export const sendYanShouEmail = (info: ProjectMailInfo, acceptDate: string) => {
+  transporter.sendMail(
+    {
+      from: config.user, // Sender address
+      to: info.email, // List of recipients
+      subject: config.yanShouSubject || "验收时间提醒通知", // Subject line
+      html: genYanShouEmailHtml({
+        name: info.name,
+        projectName: info.projectName,
+        acceptDate,
+        // dates: R.join(
+        //   "",
+        //   R.map(
+        //     (date) =>
+        //       `<li>${moment(date, "YYYYMMDD").format("YYYY-MM-DD")}</li>`,
+        //     info.dates
+        //   )
+        // ),
+      }),
+    },
+    (err) => {
+      if (err) {
+        console.log(err, info);
+        sendYanShouEmail(info, acceptDate);
       }
-    );
-  } else {
-    transporter.close();
-  }
+    }
+  );
+  // transporter.close();
 };
 
 const weiHuTemplate = `<!DOCTYPE html>
@@ -134,7 +129,7 @@ const weiHuTemplate = `<!DOCTYPE html>
 <body>
 <h3>{{name}}</h3>
 <h3>项目--{{projectName}}--维护服务即将不足三个月，请及时巡检</h3>
-{{dates}}
+项目维护周期{{serviceCycle}}月，项目开始时间{{startTime}}
 <br>
 </body>
 </html>`;
@@ -151,37 +146,32 @@ const genWeiHuEmailHtml = (args: { [key: string]: string }) => {
  * 使用Promise.al时会导致部分发送失败,改为递归发送
  * @param infos 需要发送邮件的信息数组
  */
-export const sendWeiHuEmails = (infos: ProjectMailInfo[]) => {
-  if (infos.length > 0) {
-    const info = infos[0];
-    transporter.sendMail(
-      {
-        from: config.user, // Sender address
-        to: info.email, // List of recipients
-        subject: config.weiHuSubject, // Subject line
-        html: genWeiHuEmailHtml({
-          name: info.name,
-          projectName: info.projectName,
-          dates: R.join(
-            "",
-            R.map(
-              (date) =>
-                `<li>${moment(date, "YYYYMMDD").format("YYYY-MM-DD")}</li>`,
-              info.dates
-            )
-          ),
-        }),
-      },
-      (err) => {
-        if (err) {
-          console.log(err, info);
-          sendEmails(R.append(info, R.tail(infos)));
-        } else {
-          sendEmails(R.tail(infos));
-        }
+export const sendWeiHuEmail = (
+  info: ProjectMailInfo,
+  serviceCycle: string,
+  startTime: string
+) => {
+  transporter.sendMail(
+    {
+      from: config.user, // Sender address
+      to: info.email, // List of recipients
+      subject: config.weiHuSubject || "维护时间提醒通知", // Subject line
+      html: genWeiHuEmailHtml({
+        name: info.name,
+        projectName: info.projectName,
+        serviceCycle,
+        startTime,
+      }),
+    },
+    (err) => {
+      if (err) {
+        console.log(err, info);
+        sendWeiHuEmail(info, serviceCycle, startTime);
       }
-    );
-  } else {
-    transporter.close();
-  }
+    }
+  );
+};
+
+export const closeTransporter = () => {
+  transporter.close();
 };

@@ -10,7 +10,7 @@ gwService:
   nodePort: 32659
 mongoUrl: mongodb://mongodb-arbiter-headless.dbs/pm
 dnCronjob:
-  schedule: "0 0 * * 1"
+  schedule: "0 0 * * *"
   keycloak:
     baseUrl: https://auth.yadashuke.com/auth
     realmName: pm

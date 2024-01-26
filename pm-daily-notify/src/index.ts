@@ -10,13 +10,15 @@ import {
 } from "./mongodb";
 import { Users } from "./keycloak";
 import { getWorkDays } from "./util/utils";
-import { DailyInfo, UserInfo } from "./data";
+import { DailyInfo, ProjectMailInfo, UserInfo } from "./data";
 import {
   transporter,
   sendEmails,
-  sendWeiHuEmails,
-  sendYanShouEmails,
+  sendWeiHuEmail,
+  sendYanShouEmail,
+  closeTransporter,
 } from "./emailer";
+import { remindsUsersProject } from "./remind";
 // console.log(moment('20240107', 'YYYYMMDD').valueOf())
 const afterTimestamp = 1704556800000; //2024年1月07日的时间戳，忽略2024年1月7日之前的日报
 
@@ -56,6 +58,7 @@ export const getUsers = async (): Promise<UserInfo[]> => {
         name: u.lastName + u.firstName,
         email: u.email,
         createdTimestamp: u.createdTimestamp,
+        enabled: u.enabled,
       }))
     )
     .then(R.filter((u: any) => R.not(R.isNil(u.email))));
@@ -77,9 +80,9 @@ async function main(year: number) {
       "fengming.jiang@bjyada.com",
       "kunhao.hou@bjyada.com",
     ];
-    const users = (await getUsers()).filter(
-      (user) => noSendEmailList.indexOf(user.email) == -1
-    );
+    const users = (await getUsers())
+      .filter((user) => noSendEmailList.indexOf(user.email) == -1)
+      .filter((user) => user.enabled);
     const mails = users
       .map((user) => ({
         name: user.name,
@@ -118,55 +121,31 @@ async function main(year: number) {
 // async function sendProjectRemind(today: string) {
 //   const users = await getUsers();
 //   const mails = [];
-//   users.forEach(user=>{
-//     let projects = await getUsersProject(user)
-//   })
-//   .filter((mail) => R.not(R.isNil(mail.email)))
-//   .filter((mail) => R.not(R.isEmpty(mail.dates)));
 
+//   users
+//     .forEach(async (user) => {
+//       let userProjects = await getUsersProject(user);
+//       userProjects.map(async (project) => {
+//           if(project._id)
+//       });
+//     })
+//     .filter((mail) => R.not(R.isNil(mail.email)))
+//     .filter((mail) => R.not(R.isEmpty(mail.dates)));
 // }
 
 const args = arg({ "--year": Number });
 const year = args["--year"] || moment().year();
-main(year);
-// const today = new Date();
-// const dayOfWeek = today.getDay();
-// if (dayOfWeek === 1) {
-//   main(year);
-// }
 
-const getUsersProject = async (user: UserInfo) => {
-  const projects = await Project.find({ leader: user.id }).filter((project) => {
-    const reg =
-      /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
-    const result = reg.exec(project.id || "");
-    if (result?.groups?.projType === "SZ") {
-      // 售中
-      if (project.acceptDate) {
-        let dayDiff = moment(project.acceptDate).diff(new Date(), "day");
-        console.log(project.id + "  " + dayDiff);
-        if (dayDiff == 90) {
-          return true;
-        }
-      }
-    } else if (result?.groups?.projType === "SH") {
-      if (project.startTime && project.serviceCycle) {
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
-        let monthDiff = moment(today).diff(project.startTime, "month");
-        let yesterdayMonthDiff = moment(yesterday).diff(
-          project.startTime,
-          "month"
-        );
-        if (
-          project.serviceCycle - monthDiff <= 3 &&
-          project.serviceCycle - yesterdayMonthDiff > -3
-        ) {
-          return true;
-        }
-      }
-    }
-  });
-  return projects;
-};
+if (new Date().getDay() === 1) {
+  main(year);
+}
+
+remindsUsersProject().then(() => {
+  // closeTransporter();
+
+  setTimeout(() => {
+    console.log("发送完毕，关闭邮箱");
+    closeTransporter();
+    Promise.reject(new Error("结束"));
+  }, 3600 * 1000);
+});

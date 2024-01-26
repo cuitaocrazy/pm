@@ -1,11 +1,11 @@
-import KcAdminClient from 'keycloak-admin'
-import { GrantTypes } from 'keycloak-admin/lib/utils/auth'
-import config from '../config/keycloak'
+import KcAdminClient from "keycloak-admin";
+import { GrantTypes } from "keycloak-admin/lib/utils/auth";
+import config from "../config/keycloak";
 
 export const client = new KcAdminClient({
   baseUrl: config.baseUrl,
   realmName: config.realmName,
-})
+});
 
 /**
  * https://www.keycloak.org/docs/latest/server_development/index.html#admin-rest-api
@@ -18,6 +18,6 @@ export const Users = async () => {
     password: config.password,
     clientId: config.clientId,
     clientSecret: config.clientSecret,
-  })
-  return client.users
-}
+  });
+  return client.users;
+};

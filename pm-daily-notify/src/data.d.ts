@@ -10,6 +10,7 @@ export interface UserInfo {
   name: string;
   email: string;
   createdTimestamp: number;
+  enabled: boolean;
 }
 
 export interface MailInfo {
@@ -20,6 +21,6 @@ export interface MailInfo {
 export interface ProjectMailInfo {
   name: string;
   email: string;
-  dates: string[];
+  dates: string;
   projectName: string;
 }

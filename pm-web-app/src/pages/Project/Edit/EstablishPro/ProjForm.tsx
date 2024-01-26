@@ -361,6 +361,54 @@ export default () => {
     }
   };
 
+  // 在组件状态中保存上一次选择的市场经理ID
+  const [lastSelectedSalesLeader, setLastSelectedSalesLeader] = useState<string | undefined>(
+    undefined,
+  );
+
+  // 在组件状态中保存所有选择过的市场经理ID
+  const [selectedSalesLeaders, setSelectedSalesLeaders] = useState<string[]>([]);
+
+  const handleSalesLeaderChange = (value: string) => {
+    // const oldSalesLeader = data?.salesLeader;
+    const oldSalesLeader = form.getFieldValue('salesLeader')
+    // 获取当前的参与者们
+    const currentParticipants = form.getFieldValue('participants') || [];
+
+    // 定义一个更新参与者的数组
+    let updatedParticipants: string[] = [];
+
+    // 从当前参与者中移除所有选择过的市场经理
+    updatedParticipants = currentParticipants.filter(
+      (participant: string) => !selectedSalesLeaders.includes(participant),
+    );
+    updatedParticipants = currentParticipants.filter(
+      (participant: string) => participant !== oldSalesLeader,
+    );
+
+    // 如果选择新的市场经理，那么添加到更新的参与人员数组中
+    if (value && !selectedSalesLeaders.includes(value)) {
+      updatedParticipants.push(value);
+      // 记录这次选择的市场经理ID
+      setSelectedSalesLeaders([...selectedSalesLeaders, value]);
+
+      // 如果上一次选择的市场经理存在，且不等于当前选择的市场经理，从更新数组中去掉
+      if (lastSelectedSalesLeader && lastSelectedSalesLeader !== value) {
+        updatedParticipants = updatedParticipants.filter(
+          (participant: string) => participant !== lastSelectedSalesLeader,
+        );
+      }
+
+      // 记录当前选择的市场经理ID
+      setLastSelectedSalesLeader(value);
+    }
+
+    // 设置更新参与人员到表单中
+    form.setFieldsValue({
+      participants: updatedParticipants,
+    });
+  };
+
   return (
     <Form
       style={{ background: '#fff' }}
@@ -477,7 +525,9 @@ export default () => {
                   return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
                 }
                 return true;
-              }}>
+              }}
+              onChange={(value) => handleSalesLeaderChange(value)}
+            >
               {resData?.groupsUsers.map((u) => (
                 //本级及下级
                 <Select.Option key={u.id} value={u.id}>

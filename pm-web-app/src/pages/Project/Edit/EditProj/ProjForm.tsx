@@ -608,7 +608,7 @@ return true;
                 }
                 return true;
               }}
-              onChange={(value) => handleSalesLeaderChange(value)} // Add this onChange handler
+              onChange={(value) => handleSalesLeaderChange(value)}
             >
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>

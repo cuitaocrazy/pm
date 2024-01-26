@@ -296,6 +296,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const deriveNewProject = () => {
     setIsDerive(true);
     form.setFieldValue('pId', data?.id);
+    form.setFieldValue('contName', '');
     // 生成派生项目id
     let newId = data?.id.replace(/-(\w+)$/, `-${moment().format('YYYY')}`) || '1';
     onIdChange(newId);

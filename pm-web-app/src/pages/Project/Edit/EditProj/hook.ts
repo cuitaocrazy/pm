@@ -268,7 +268,7 @@ export function useProjStatus() {
       refresh();
     }
 
-  }, [refresh, query]);
+  }, [refresh, query,archive]);
   const tmpProjs = (
     (isAdmin ? queryData?.superProjs?.result : queryData?.iLeadProjs?.result) || []
   ).map((item) => {

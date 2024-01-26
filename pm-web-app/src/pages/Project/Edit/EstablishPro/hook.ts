@@ -8,13 +8,11 @@ import { useCallback, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
 import { attachmentUpload } from './utils';
 
-
 const pushProjGql = gql`
   mutation ($proj: ProjectInput!) {
     pushProject(proj: $proj)
   }
 `;
-
 export function useProjStatus() {
   const [archive, setArchive] = useState('0');
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(

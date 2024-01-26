@@ -90,7 +90,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  const { status, dataForTree, groupType } = useBaseState();
+  const { status, dataForTree, groupType, subordinates } = useBaseState(); // subordinates是指公司的全部人员
 
   // 使用 filter() 方法过滤出符合条件的元素
   const filteredGroups = groupType.map(group => {
@@ -702,7 +702,7 @@ return true;
                 return true;
               }}
             >
-              {resData?.realSubordinates.map((u) => (
+              {subordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
                   {u.name}
                 </Select.Option>

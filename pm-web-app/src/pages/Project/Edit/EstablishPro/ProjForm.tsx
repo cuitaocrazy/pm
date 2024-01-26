@@ -69,7 +69,7 @@ export default () => {
   const [form] = useForm<ProjectInput>();
   const { pushProj } = useProjStatus();
   const [messageApi, contextHolder] = message.useMessage();
-  const { status, dataForTree, groupType } = useBaseState();
+  const { status, dataForTree, groupType, subordinates } = useBaseState(); // subordinates是指公司的全部人员
 
   // 使用 filter() 方法过滤出符合条件的元素
   const filteredGroups = groupType.map(group => {
@@ -529,7 +529,7 @@ export default () => {
                 return true;
               }}
             >
-              {resData?.realSubordinates.map((u) => (
+              {subordinates.map((u) => (
                 //本级及下级
                 <Select.Option key={u.id} value={u.id} >
                   {u.name}

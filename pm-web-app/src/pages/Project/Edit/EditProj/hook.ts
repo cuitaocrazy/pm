@@ -316,7 +316,10 @@ export function useProjStatus() {
           proj: reqProj,
         },
       });
-      refresh();
+        getTodoList(query).then((res) => {
+          setTodoProjs(res.data.iLeadTodoProjs)
+        })
+        refresh();
     },
     [pushCostHandle, refresh],
   );

@@ -6,7 +6,7 @@ import type {
   Query,
   QueryProjectArgs,
 } from '@/apollo';
-import {client} from '@/apollo'
+import { client } from '@/apollo'
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
@@ -257,14 +257,14 @@ export function useProjStatus() {
   const { refresh: initialRefresh } = useModel('@@initialState'); //获取全局初始状态
   const { buildProjName } = useBaseState(); //项目名字的工具函数
   const [filter, setFilter] = useState('');
-const [todoProjs,setTodoProjs] = useState<any>({})
+  const [todoProjs, setTodoProjs] = useState<any>({})
   useEffect(() => {
     initialRefresh();
-    if(archive === '2'){
-       getTodoList(query).then((res)=>{
+    if (archive === '2') {
+      getTodoList(query).then((res) => {
         setTodoProjs(res.data.iLeadTodoProjs)
-       })
-    }else{
+      })
+    } else {
       refresh();
     }
 
@@ -304,11 +304,11 @@ const [todoProjs,setTodoProjs] = useState<any>({})
     async (proj: ProjectInput) => {
 
 
-      const groupPath = proj.group?.length !== 0
-        ? proj.group?.reduce((accumulator: string, currentValue: string) => {
+      const groupPath = typeof proj.group === 'string'
+        ? proj.group
+        : proj.group?.reduce((accumulator: string, currentValue: string) => {
           return `${accumulator}/${currentValue}`;
-        }, '')
-        : '';
+        }, '');
 
       let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
       await pushCostHandle({
@@ -321,17 +321,17 @@ const [todoProjs,setTodoProjs] = useState<any>({})
     [pushCostHandle, refresh],
   );
   //获取代办项目
-  const getTodoList = async(params:any)=>{
+  const getTodoList = async (params: any) => {
     return await client.query({
       query: queryTodoProjs,
       fetchPolicy: 'no-cache',
-      variables: { isArchiveTodo: false,...params },
+      variables: { isArchiveTodo: false, ...params },
     })
   }
-  let [todoProjsTotal,setTodoProjsTotal] = useState(0)
-  useEffect( ()=>{
-    if(!isAdmin){
-      getTodoList({page:1}).then((res)=>{
+  let [todoProjsTotal, setTodoProjsTotal] = useState(0)
+  useEffect(() => {
+    if (!isAdmin) {
+      getTodoList({ page: 1 }).then((res) => {
         setTodoProjsTotal(res.data.iLeadTodoProjs.todoTotal)
       })
     }
@@ -340,7 +340,7 @@ const [todoProjs,setTodoProjs] = useState<any>({})
   return {
     loading: queryLoading || deleteLoading || pushLoading || archiveLoading,
     projs,
-    todoProjs:todoProjs.result,
+    todoProjs: todoProjs.result,
     subordinates,
     agreements,
     projectAgreements,

@@ -1,8 +1,6 @@
 import type { ProjectInput } from '@/apollo';
 import axios from 'axios';
 import * as R from 'ramda';
-import moment from 'moment';
-
 
 export const projStatus: [string, string][] = [
   ['onProj', '启动'],

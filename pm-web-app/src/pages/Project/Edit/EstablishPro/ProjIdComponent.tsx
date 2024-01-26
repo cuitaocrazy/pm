@@ -1,7 +1,6 @@
 import { Input, Form, Select } from 'antd';
 import type { FC } from 'react';
 import React, { useState, useEffect } from 'react';
-// import { orgCode, projType, zoneCode } from '../../utils/hook';
 import { useBaseState } from '@/pages/utils/hook';
 import moment from 'moment';
 import type {

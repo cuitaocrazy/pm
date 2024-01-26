@@ -71,7 +71,7 @@ export default () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { status, dataForTree, groupType, subordinates } = useBaseState(); // subordinates是指公司的全部人员
 
-  // 使用 filter() 方法过滤出符合条件的元素
+  // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
     .map(group => {
       const match = group.toString().match(/\/市场组/);
@@ -182,11 +182,9 @@ export default () => {
     if (value === undefined || value === null || value === '') {
       return Promise.resolve();
     }
-
     if (!Number.isInteger(value)) {
       return Promise.reject(new Error('请输入整数'));
     }
-
     return Promise.resolve();
   };
 
@@ -234,7 +232,6 @@ export default () => {
 
   // 当id有变动，重置状态字段
   const onIdChange = (value: string) => {
-    // const result = reg.exec(value);
     if (value) {
       form.setFieldsValue({
         id: value,
@@ -362,7 +359,6 @@ export default () => {
     if (data !== undefined) {
       setIsExistProjIdData(data);
     }
-
   };
 
   return (
@@ -370,26 +366,13 @@ export default () => {
       style={{ background: '#fff' }}
       {...layout}
       form={form}
-      // initialValues={data || { leader: initialState?.currentUser?.id }}
       initialValues={{ leader: initialState?.currentUser?.id }}
-    // disabled={data?.status === 'endProj'}
     >
       <Form.Item shouldUpdate noStyle>
         {() => {
           return (
             <Row>
               <Col xs={24} sm={20}>
-                {/* 暂时未使用 */}
-                <Form.Item
-                  labelCol={{ span: 3, offset: 0 }}
-                  // hidden={!(isDerive || data?.pId)} 和派生项目Id
-                  hidden={!(isDerive)}
-                  label="关联项目ID"
-                  name="pId"
-                >
-                  <Input disabled />
-                </Form.Item>
-
                 <Form.Item
                   style={{ marginTop: '40px' }}
                   labelCol={{ span: 3, offset: 0 }}
@@ -397,23 +380,11 @@ export default () => {
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >
-                  {/* disabled={!!data?.id && !isDerive} */}
                   <ProjIdComponent
                     onChange={onIdChange}        // 处理整个 ID 变化的回调
                     onIsExistProjIdDataChange={handleIsExistProjIdDataChange} // 将回调函数传递给子组件
                   />
                 </Form.Item>
-              </Col>
-              <Col xs={24} sm={4}>
-                <Button
-                  key="create"
-                  // hidden={!data?.id || isDerive}
-                  hidden={!false || isDerive}
-                  type="primary"
-                // onClick={deriveNewProject}
-                >
-                  派生一个新项目
-                </Button>
               </Col>
             </Row>
           );
@@ -436,11 +407,6 @@ export default () => {
               ))}
             </Select>
           </Form.Item>
-          {/* <Form.Item dependencies={['id']} noStyle>
-            {() => {
-              return getNewCustomers('customer', '客户名称');
-            }}
-          </Form.Item> */}
         </Col>
         <Col span={7}>
           <Form.Item label="合同名称" name="contName" rules={[{ required: false }]}>
@@ -798,7 +764,6 @@ export default () => {
               onChange={onConfirmYearChange}
               disabled={!isConfirmYearDisabled}
             />
-            {/* <Input /> */}
           </Form.Item>
         </Col>
         <Col span={7}>
@@ -816,7 +781,6 @@ export default () => {
               style={{ width: '100%' }}
               onChange={ondoYearChange}
             />
-            {/* <Input /> */}
           </Form.Item>
         </Col>
         <Col span={7}></Col>
@@ -834,7 +798,6 @@ export default () => {
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Form.Item>
-                  {/* data?.status === 'endProj' */}
                   {false ? (
                     ''
                   ) : (
@@ -945,7 +908,6 @@ export default () => {
                       </Col>
                     </Row>
                     <div style={{ textAlign: 'center' }}>
-                      {/* data?.status === 'endProj' */}
                       {false ? (
                         ''
                       ) : (

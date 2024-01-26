@@ -288,6 +288,9 @@ export function useProjStatus() {
     async (id: string) => {
       await archiveProjHandle({ variables: { id } });
       refresh();
+      getTodoList(query).then((res) => {
+        setTodoProjs(res.data.iLeadTodoProjs)
+      })
     },
     [archiveProjHandle, refresh],
   );

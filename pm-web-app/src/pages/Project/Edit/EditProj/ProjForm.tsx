@@ -92,12 +92,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // } });
   const { status, dataForTree, groupType, subordinates } = useBaseState(); // subordinates是指公司的全部人员
 
-  // 使用 filter() 方法过滤出符合条件的元素
-  const filteredGroups = groupType.map(group => {
-    const match = group.toString().match(/\/市场组/);
-    if (match)
-      return `${match.input}`;
-  }).filter(Boolean);
+  // 使用正则表达式匹配出公司所有市场组的人员
+  const filteredGroups: string[] = groupType
+    .map(group => {
+      const match = group.toString().match(/\/市场组/);
+      if (match) {
+        return `${match.input}`;
+      }
+      return undefined; // 如果没有匹配，返回 undefined
+    })
+    .filter((value): value is string => value !== undefined);
 
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',

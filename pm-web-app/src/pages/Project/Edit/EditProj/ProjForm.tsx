@@ -390,9 +390,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
 
 
-  // 初始化项目经理
+  // 初始化项目经理‘’
   const [leader, setLeader] = useState<string>('');
-  // 初始化更新的参与人员
+  // 初始化更新的参与人员[]
   const [updatedParticipants, setUpdatedParticipants] = useState<string[]>([]);
   // 组件渲染完成后，获取项目经理的值
   useEffect(() => {
@@ -410,6 +410,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     setUpdatedParticipants(initParticipants.filter(participant => participant !== leader));
   }, [leader, form]);
 
+  // 选择项目经理
   const handleLeaderChange = (value: string) => {
     if (value !== undefined && value !== leader) {
       setLeader(value);

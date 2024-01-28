@@ -72,7 +72,7 @@ export default () => {
   const { status, dataForTree, groupType, subordinates } = useBaseState(); // subordinates是指公司的全部人员
 
   // 使用正则表达式匹配出公司所有市场组的人员
-  const filteredGroups: string[] = groupType
+  const salesGroups: string[] = groupType
     .map(group => {
       const match = group.toString().match(/\/市场组/);
       if (match) {
@@ -85,7 +85,7 @@ export default () => {
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
-      groups: filteredGroups
+      groups: salesGroups
     },
   });
 
@@ -361,60 +361,99 @@ export default () => {
     }
   };
 
-  // 在组件状态中保存上一次选择的市场经理ID
-  const [lastSelectedSalesLeader, setLastSelectedSalesLeader] = useState<string | undefined>(
-    undefined,
-  );
+  // // 在组件状态中保存上一次选择的市场经理ID
+  // const [lastSelectedSalesLeader, setLastSelectedSalesLeader] = useState<string | undefined>(
+  //   undefined,
+  // );
 
-  // 在组件状态中保存所有选择过的市场经理ID
-  const [selectedSalesLeaders, setSelectedSalesLeaders] = useState<string[]>([]);
+  // // 在组件状态中保存所有选择过的市场经理ID
+  // const [selectedSalesLeaders, setSelectedSalesLeaders] = useState<string[]>([]);
 
-  const handleSalesLeaderChange = (value: string) => {
-    // const oldSalesLeader = data?.salesLeader;
-    const oldSalesLeader = form.getFieldValue('salesLeader')
-    // 获取当前的参与者们
-    const currentParticipants = form.getFieldValue('participants') || [];
+  // const handleSalesLeaderChange = (value: string) => {
+  //   // const oldSalesLeader = data?.salesLeader;
+  //   const oldSalesLeader = form.getFieldValue('salesLeader')
+  //   // 获取当前的参与者们
+  //   const participantsValue = form.getFieldValue('participants');
+  //   const currentParticipants: string[] = typeof participantsValue === 'string' ? [participantsValue] : [];
 
-    // 定义一个更新参与者的数组
-    let updatedParticipants: string[] = [];
+  //   // const currentParticipants: string[] = form.getFieldValue('participants') || [];
+  //   console.log(currentParticipants, "currentParticipants====")
 
-    // 从当前参与者中移除所有选择过的市场经理
-    updatedParticipants = currentParticipants.filter(
-      (participant: string) => !selectedSalesLeaders.includes(participant),
-    );
-    updatedParticipants = currentParticipants.filter(
-      (participant: string) => participant !== oldSalesLeader,
-    );
+  //   // 定义一个更新参与者的数组
+  //   let updatedParticipants: string[] = [];
 
-    // 如果选择新的市场经理，那么添加到更新的参与人员数组中
-    if (value && !selectedSalesLeaders.includes(value)) {
-      updatedParticipants.push(value);
-      // 记录这次选择的市场经理ID
-      setSelectedSalesLeaders([...selectedSalesLeaders, value]);
+  //   // 从当前参与者中移除所有选择过的市场经理
+  //   updatedParticipants = currentParticipants.filter(
+  //     (participant: string) => !selectedSalesLeaders.includes(participant),
+  //   );
+  //   updatedParticipants = currentParticipants.filter(
+  //     (participant: string) => participant !== oldSalesLeader,
+  //   );
 
-      // 如果上一次选择的市场经理存在，且不等于当前选择的市场经理，从更新数组中去掉
-      if (lastSelectedSalesLeader && lastSelectedSalesLeader !== value) {
-        updatedParticipants = updatedParticipants.filter(
-          (participant: string) => participant !== lastSelectedSalesLeader,
-        );
+  //   // 如果选择新的市场经理，那么添加到更新的参与人员数组中
+  //   if (value && !selectedSalesLeaders.includes(value)) {
+  //     updatedParticipants.push(value);
+  //     // 记录这次选择的市场经理ID
+  //     setSelectedSalesLeaders([...selectedSalesLeaders, value]);
+
+  //     // 如果上一次选择的市场经理存在，且不等于当前选择的市场经理，从更新数组中去掉
+  //     if (lastSelectedSalesLeader && lastSelectedSalesLeader !== value) {
+  //       updatedParticipants = updatedParticipants.filter(
+  //         (participant: string) => participant !== lastSelectedSalesLeader,
+  //       );
+  //     }
+
+  //     // 记录当前选择的市场经理ID
+  //     setLastSelectedSalesLeader(value);
+  //   }
+
+  //   // 设置更新参与人员到表单中
+  //   form.setFieldsValue({
+  //     participants: updatedParticipants,
+  //   });
+  // };
+
+
+  // 获取当前的参与者们
+  const participantsValue = form.getFieldValue('participants');
+  const initParticipants: string[] = typeof participantsValue === 'string' ? [participantsValue] : [];
+
+  // 定义一个更新参与者的数组
+  let updatedParticipants: string[] = [...initParticipants];
+
+  // 定义 handleLeaderChange 函数
+  const [leader, setLeader] = useState<string | string[] | undefined>(undefined);
+
+  const handleLeaderChange = (value: string | string[] | undefined) => {
+    // 如果选择了某个值或者值发生了变化
+    if (value !== undefined && value !== leader) {
+      // 先去掉 updatedParticipants 数组中的 currentParticipants 值
+      updatedParticipants = updatedParticipants.filter(participant => !initParticipants.includes(participant));
+
+      // 然后将 value 添加到 updatedParticipants 数组中
+      if (typeof value === 'string') {
+        updatedParticipants.push(value);
+      } else if (Array.isArray(value)) {
+        updatedParticipants.push(...value);
       }
 
-      // 记录当前选择的市场经理ID
-      setLastSelectedSalesLeader(value);
-    }
+      // 设置更新参与人员到表单中
+      form.setFieldsValue({
+        participants: updatedParticipants,
+      });
 
-    // 设置更新参与人员到表单中
-    form.setFieldsValue({
-      participants: updatedParticipants,
-    });
+      // 更新 leader 状态
+      setLeader(value);
+    }
   };
+
 
   return (
     <Form
       style={{ background: '#fff' }}
       {...layout}
       form={form}
-      initialValues={{ leader: initialState?.currentUser?.id }}
+      initialValues={{ leader: initialState?.currentUser?.id, participants: initialState?.currentUser?.id }}
     >
       <Form.Item shouldUpdate noStyle>
         {() => {
@@ -505,7 +544,9 @@ export default () => {
                   return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
                 }
                 return true;
-              }}>
+              }}
+              onChange={(value) => handleLeaderChange(value)}
+            >
 
               {resData?.realSubordinates.map((u) => (
                 //本级和下级
@@ -526,7 +567,7 @@ export default () => {
                 }
                 return true;
               }}
-              onChange={(value) => handleSalesLeaderChange(value)}
+            // onChange={(value) => handleSalesLeaderChange(value)}
             >
               {resData?.groupsUsers.map((u) => (
                 //本级及下级

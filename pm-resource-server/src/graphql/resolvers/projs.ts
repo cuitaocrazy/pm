@@ -538,10 +538,10 @@ export default {
       let or =
         __.type === "active"
           ? [
-              { leader: context.user!.id },
-              { salesLeader: context.user!.id },
-              { participants: { $elemMatch: { $eq: context.user!.id } } },
-            ]
+            { leader: context.user!.id },
+            { salesLeader: context.user!.id },
+            { participants: { $elemMatch: { $eq: context.user!.id } } },
+          ]
           : [{ leader: context.user!.id }, { salesLeader: context.user!.id }];
       let filter = __.isAdmin
         ? { isArchive: false }
@@ -552,8 +552,8 @@ export default {
           __.org && __.projType
             ? `^${__.org}+-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`
             : __.org
-            ? `^${__.org}+-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$`
-            : `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`;
+              ? `^${__.org}+-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$`
+              : `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`;
         filter["_id"] = { $regex: regex };
       }
       if (__.customerId) {
@@ -592,15 +592,15 @@ export default {
         .utcOffset(8 * 60)
         .format("YYYY-MM-DD HH:mm:ss");
       // 判断参与人员里是否有操作人/市场经理，没有则添加进去
-      if (!proj.participants.includes(context.user!.id)) {
-        proj.participants = proj.participants.concat(
-          context.user!.id,
-          proj.salesLeader
-        );
-      }
-      if (!proj.participants.includes(proj.salesLeader)) {
-        proj.participants = proj.participants.concat(proj.salesLeader);
-      }
+      // if (!proj.participants.includes(context.user!.id)) {
+      //   proj.participants = proj.participants.concat(
+      //     context.user!.id,
+      //     proj.salesLeader
+      //   );
+      // }
+      // if (!proj.participants.includes(proj.salesLeader)) {
+      //   proj.participants = proj.participants.concat(proj.salesLeader);
+      // }
       // 判断是否关联了合同，若关联则更新，没关联则删除（废除，项目内不控制合同关联关系）
       // if (proj.contName) {
       //   await ProjectAgreement.updateOne({ _id: proj.id }, { $set: { agreementId: proj.contName } }, { upsert: true })

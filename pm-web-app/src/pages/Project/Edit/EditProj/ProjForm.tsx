@@ -340,52 +340,91 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     return tempFields;
   };
 
-  // 在组件状态中保存上一次选择的市场经理ID
-  const [lastSelectedSalesLeader, setLastSelectedSalesLeader] = useState<string | undefined>(
-    undefined,
-  );
+  // // 在组件状态中保存上一次选择的市场经理ID
+  // const [lastSelectedSalesLeader, setLastSelectedSalesLeader] = useState<string | undefined>(
+  //   undefined,
+  // );
 
-  // 在组件状态中保存所有选择过的市场经理ID
-  const [selectedSalesLeaders, setSelectedSalesLeaders] = useState<string[]>([]);
+  // // 在组件状态中保存所有选择过的市场经理ID
+  // const [selectedSalesLeaders, setSelectedSalesLeaders] = useState<string[]>([]);
 
-  const handleSalesLeaderChange = (value: string) => {
-    const oldSalesLeader = data?.salesLeader;
-    // 获取当前的参与者们
-    const currentParticipants = form.getFieldValue('participants') || [];
+  // const handleSalesLeaderChange = (value: string) => {
+  //   const oldSalesLeader = data?.salesLeader;
+  //   // 获取当前的参与者们
+  //   const currentParticipants = form.getFieldValue('participants') || [];
 
-    // 定义一个更新参与者的数组
-    let updatedParticipants: string[] = [];
+  //   // 定义一个更新参与者的数组
+  //   let updatedParticipants: string[] = [];
 
-    // 从当前参与者中移除所有选择过的市场经理
-    updatedParticipants = currentParticipants.filter(
-      (participant: string) => !selectedSalesLeaders.includes(participant),
-    );
-    updatedParticipants = currentParticipants.filter(
-      (participant: string) => participant !== oldSalesLeader,
-    );
+  //   // 从当前参与者中移除所有选择过的市场经理
+  //   updatedParticipants = currentParticipants.filter(
+  //     (participant: string) => !selectedSalesLeaders.includes(participant),
+  //   );
+  //   updatedParticipants = currentParticipants.filter(
+  //     (participant: string) => participant !== oldSalesLeader,
+  //   );
 
-    // 如果选择新的市场经理，那么添加到更新的参与人员数组中
-    if (value && !selectedSalesLeaders.includes(value)) {
-      updatedParticipants.push(value);
-      // 记录这次选择的市场经理ID
-      setSelectedSalesLeaders([...selectedSalesLeaders, value]);
+  //   // 如果选择新的市场经理，那么添加到更新的参与人员数组中
+  //   if (value && !selectedSalesLeaders.includes(value)) {
+  //     updatedParticipants.push(value);
+  //     // 记录这次选择的市场经理ID
+  //     setSelectedSalesLeaders([...selectedSalesLeaders, value]);
 
-      // 如果上一次选择的市场经理存在，且不等于当前选择的市场经理，从更新数组中去掉
-      if (lastSelectedSalesLeader && lastSelectedSalesLeader !== value) {
-        updatedParticipants = updatedParticipants.filter(
-          (participant: string) => participant !== lastSelectedSalesLeader,
-        );
-      }
+  //     // 如果上一次选择的市场经理存在，且不等于当前选择的市场经理，从更新数组中去掉
+  //     if (lastSelectedSalesLeader && lastSelectedSalesLeader !== value) {
+  //       updatedParticipants = updatedParticipants.filter(
+  //         (participant: string) => participant !== lastSelectedSalesLeader,
+  //       );
+  //     }
 
-      // 记录当前选择的市场经理ID
-      setLastSelectedSalesLeader(value);
+  //     // 记录当前选择的市场经理ID
+  //     setLastSelectedSalesLeader(value);
+  //   }
+
+  //   // 设置更新参与人员到表单中
+  //   form.setFieldsValue({
+  //     participants: updatedParticipants,
+  //   });
+  // };
+
+
+
+
+  // 初始化项目经理
+  const [leader, setLeader] = useState<string>('');
+  // 初始化更新的参与人员
+  const [updatedParticipants, setUpdatedParticipants] = useState<string[]>([]);
+  // 组件渲染完成后，获取项目经理的值
+  useEffect(() => {
+    // 在 useEffect 中获取 form.getFieldValue('leader') 的值
+    const leaderValue = form.getFieldValue('leader');
+    // 更新组件的状态
+    setLeader(leaderValue);
+  }, []); // 空数组作为第二个参数表示仅在组件挂载时执行一次
+
+  // 组件渲染完成后，获取参与人员的值
+  useEffect(() => {
+    const participantsValue: string[] = form.getFieldValue('participants');
+    const initParticipants: string[] = Array.isArray(participantsValue) ? participantsValue : [];
+    // 更新参与人员的数组
+    setUpdatedParticipants(initParticipants.filter(participant => participant !== leader));
+  }, [leader, form]);
+
+  const handleLeaderChange = (value: string) => {
+    if (value !== undefined && value !== leader) {
+      setLeader(value);
     }
-
+    if (typeof value === 'string') {
+      updatedParticipants.push(value);
+    }
     // 设置更新参与人员到表单中
     form.setFieldsValue({
       participants: updatedParticipants,
     });
+
   };
+
+
 
   // 处理customerListData1.customers获取值
   const [customerListData, setCustomerListData] = useState({} as any);
@@ -446,7 +485,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     <Form
       {...layout}
       form={form}
-      initialValues={data || { leader: initialState?.currentUser?.id }}
+      initialValues={data}
       disabled={data?.status === 'endProj'}
     >
       <Form.Item shouldUpdate noStyle>
@@ -571,6 +610,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 }
                 return true;
               }}
+              onChange={(value) => handleLeaderChange(value)}
             >
               {resData?.realSubordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
@@ -608,7 +648,6 @@ return true;
                 }
                 return true;
               }}
-              onChange={(value) => handleSalesLeaderChange(value)}
             >
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>

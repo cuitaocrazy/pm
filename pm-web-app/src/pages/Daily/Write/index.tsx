@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, DatePicker, Input, Calendar, Row, Col, message, Badge, Radio } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import ProCard from '@ant-design/pro-card';
@@ -18,6 +18,7 @@ import { isWeekend } from '@/utils/utils';
 const dateFormat = 'YYYYMMDD';
 
 function Dailies(prop: { date?: string }) {
+  const [cheackInp,setCheackInp] = useState('')
   const hookStatus = useDailiesStatus(prop.date);
   const involvedProj = hookStatus.currentDaily?.dailyItems?.filter(d =>
     !(d.project.id.indexOf('-ZH-') > -1) && (d.project.participants.includes(hookStatus.userId || '')))
@@ -214,10 +215,11 @@ function Dailies(prop: { date?: string }) {
                 <Row>
                   <Col span={8}>
                     <Input
+                    value={cheackInp}
                       key="search"
                       addonBefore="检索"
                       allowClear
-                      onChange={(e) => hookStatus.setFilter(e.target.value)}
+                      onChange={(e) => {setCheackInp(e.target.value);hookStatus.setFilter(e.target.value)}}
                     />
                   </Col>
                   <Col span={6}></Col>

@@ -426,24 +426,26 @@ export default () => {
 
     // 更新组件的状态
     setLeader(leaderValue);
-  }, [leader]); // 数组中的leader作为第二个参数表示不仅在组件挂载时执、leader的值发生变化就执行
-  console.log(leader, "leader======")
+  }, [leader, form]); // 数组中的leader作为第二个参数表示不仅在组件挂载时执行、leader的值发生变化也会执行
+
   // 组件渲染完成后，获取参与人员的值
   useEffect(() => {
     const participantsValue: string[] = form.getFieldValue('participants');
-    console.log(participantsValue, "participantsValue======")
     const initParticipants: string[] = Array.isArray(participantsValue) ? participantsValue : [];
-    console.log(initParticipants, "initParticipants======")
+    console.log(initParticipants, "initParticipants====")
     // 更新参与人员的数组
     setUpdatedParticipants(initParticipants.filter(participant => participant !== leader));
-  }, [leader]);
-  console.log(updatedParticipants, "updatedParticipants======")
+  }, [leader, form]);
+
   // 选择项目经理
   const handleLeaderChange = (value: string) => {
     if (value !== undefined && value !== leader) {
       setLeader(value);
     }
+
     if (typeof value === 'string') {
+      console.log(updatedParticipants, "项目经理updatedParticipants")
+      updatedParticipants.filter(participant => participant.includes(value))
       updatedParticipants.push(value);
     }
     // 设置更新参与人员到表单中
@@ -455,39 +457,13 @@ export default () => {
 
 
 
+  // 选择参与人员
+  const handleParticipantsChange = (value: string[]) => {
+    console.log(value, "选择参与人员value====")
+    setUpdatedParticipants(value)
+    console.log(updatedParticipants, "选择参与人员updatedParticipants======")
+  }
 
-  // // 获取当前的参与者们
-  // const participantsValue = form.getFieldValue('participants');
-  // const initParticipants: string[] = typeof participantsValue === 'string' ? [participantsValue] : [];
-
-  // // 定义一个更新参与者的数组
-  // let updatedParticipants: string[] = [...initParticipants];
-
-  // // 定义 handleLeaderChange 函数
-  // const [leader, setLeader] = useState<string | string[] | undefined>(undefined);
-
-  // const handleLeaderChange = (value: string | string[] | undefined) => {
-  //   // 如果选择了某个值或者值发生了变化
-  //   if (value !== undefined && value !== leader) {
-  //     // 先去掉 updatedParticipants 数组中的 currentParticipants 值
-  //     updatedParticipants = updatedParticipants.filter(participant => !initParticipants.includes(participant));
-
-  //     // 然后将 value 添加到 updatedParticipants 数组中
-  //     if (typeof value === 'string') {
-  //       updatedParticipants.push(value);
-  //     } else if (Array.isArray(value)) {
-  //       updatedParticipants.push(...value);
-  //     }
-
-  //     // 设置更新参与人员到表单中
-  //     form.setFieldsValue({
-  //       participants: updatedParticipants,
-  //     });
-
-  //     // 更新 leader 状态
-  //     setLeader(value);
-  //   }
-  // };
 
 
   return (
@@ -630,6 +606,11 @@ export default () => {
                   return nameStr.toLowerCase().indexOf(input.toLowerCase()) >= 0;
                 }
                 return true;
+              }}
+              onChange={(value) => {
+                // 处理字符串或字符串数组
+                const participantsArray = Array.isArray(value) ? value : [value];
+                handleParticipantsChange(participantsArray);
               }}
             >
               {subordinates.map((u) => (

@@ -58,7 +58,6 @@ const Project: React.FC<any> = () => {
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
     const { actives, ...pro } = proj;
-    console.log(actives,'actives=====')
     openRef.current?.showDialog({
       ...pro,
       // contName: proj.agreements[0].name ? proj.agreements[0].name : '',
@@ -230,7 +229,17 @@ const Project: React.FC<any> = () => {
       dataIndex: 'todoTip',
       key: 'todoTip',
       width: 180,
-      render: (text: string, record: Proj) => text,
+      render: (text: string, record: Proj) => {
+        let proType = record.id.split('-')[2]
+        if(proType === 'SZ'){
+          return '免费维护期不足三个月，请及时签署维护合同'
+        }else if(proType === 'SH'){
+          return '维护服务即将不足三个月，请及时巡检'
+        }else{
+          return '-----'
+        }
+
+      },
     });
   }
   //=====zhouyueyang

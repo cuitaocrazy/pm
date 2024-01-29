@@ -6,7 +6,7 @@ import type {
   Query,
   QueryProjectArgs,
 } from '@/apollo';
-import { client } from '@/apollo'
+import { client } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
@@ -122,92 +122,112 @@ const getGql = (proName: string) => {
   `;
 };
 const queryTodoProjs = gql`
-query ($isArchiveTodo: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String){
-  iLeadTodoProjs(isArchive: $isArchiveTodo,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name){
-    result{
-      id
-    pId
-    name
-    contName
-    customer
-    leader
-    salesLeader
-    projStatus
-    contStatus
-    acceStatus
-    contAmount
-    recoAmount
-    projBudget
-    budgetFee
-    budgetCost
-    humanFee
-    projectFee
-    actualCost
-    taxAmount
-    description
-    createDate
-    updateTime
-    participants
-    status
-    isArchive
-    startTime
-    endTime
-    estimatedWorkload
-    serviceCycle
-    productDate
-    acceptDate
-    freePersonDays
-    usedPersonDays
-    requiredInspections
-    actualInspections
-    timeConsuming
-    confirmYear
-    doYear
-    projectClass
-    group
-    agreements{
-      id
-      name
-    }
-    actives {
-      name
-      recorder
-      date
-      content
-      fileList {
-        uid
+  query (
+    $isArchiveTodo: Boolean
+    $industries: [String]
+    $regions: [String]
+    $projTypes: [String]
+    $page: Int
+    $confirmYear: String
+    $group: String
+    $status: String
+    $name: String
+  ) {
+    iLeadTodoProjs(
+      isArchive: $isArchiveTodo
+      industries: $industries
+      regions: $regions
+      projTypes: $projTypes
+      page: $page
+      confirmYear: $confirmYear
+      group: $group
+      status: $status
+      name: $name
+    ) {
+      result {
+        id
+        pId
         name
-        url
+        contName
+        customer
+        leader
+        salesLeader
+        projStatus
+        contStatus
+        acceStatus
+        contAmount
+        recoAmount
+        projBudget
+        budgetFee
+        budgetCost
+        humanFee
+        projectFee
+        actualCost
+        taxAmount
+        description
+        createDate
+        updateTime
+        participants
         status
-        thumbUrl
+        isArchive
+        startTime
+        endTime
+        estimatedWorkload
+        serviceCycle
+        productDate
+        acceptDate
+        freePersonDays
+        usedPersonDays
+        requiredInspections
+        actualInspections
+        timeConsuming
+        confirmYear
+        doYear
+        projectClass
+        group
+        agreements {
+          id
+          name
+        }
+        actives {
+          name
+          recorder
+          date
+          content
+          fileList {
+            uid
+            name
+            url
+            status
+            thumbUrl
+          }
+        }
+        customerObj {
+          id
+          name
+          industryCode
+          regionCode
+          salesman
+          contacts {
+            name
+            phone
+            tags
+            recorder
+            remark
+          }
+          officeAddress
+          enable
+          remark
+          isDel
+          createDate
+        }
       }
+      page
+      total
+      todoTotal
     }
-    customerObj{
-      id
-      name
-      industryCode
-      regionCode
-      salesman
-      contacts{
-        name
-        phone
-        tags
-        recorder
-        remark
-      }
-      officeAddress
-      enable
-      remark
-      isDel
-      createDate
-    }
-    }
-    page
-    total
-    todoTotal
   }
-}
-`
+`;
 const pushProjGql = gql`
   mutation ($proj: ProjectInput!) {
     pushProject(proj: $proj)
@@ -257,18 +277,17 @@ export function useProjStatus() {
   const { refresh: initialRefresh } = useModel('@@initialState'); //获取全局初始状态
   const { buildProjName } = useBaseState(); //项目名字的工具函数
   const [filter, setFilter] = useState('');
-  const [todoProjs, setTodoProjs] = useState<any>({})
+  const [todoProjs, setTodoProjs] = useState<any>({});
   useEffect(() => {
     initialRefresh();
     if (archive === '2') {
       getTodoList(query).then((res) => {
-        setTodoProjs(res.data.iLeadTodoProjs)
-      })
+        setTodoProjs(res.data.iLeadTodoProjs);
+      });
     } else {
       refresh();
     }
-
-  }, [refresh, query,archive]);
+  }, [refresh, query, archive]);
   const tmpProjs = (
     (isAdmin ? queryData?.superProjs?.result : queryData?.iLeadProjs?.result) || []
   ).map((item) => {
@@ -289,8 +308,8 @@ export function useProjStatus() {
       await archiveProjHandle({ variables: { id } });
       refresh();
       getTodoList(query).then((res) => {
-        setTodoProjs(res.data.iLeadTodoProjs)
-      })
+        setTodoProjs(res.data.iLeadTodoProjs);
+      });
     },
     [archiveProjHandle, refresh],
   );
@@ -299,19 +318,21 @@ export function useProjStatus() {
     async (id: string) => {
       await deleteProjHandle({ variables: { id } });
       refresh();
+      getTodoList(query).then((res) => {
+        setTodoProjs(res.data.iLeadTodoProjs);
+      });
     },
     [deleteProjHandle, refresh],
   );
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-
-
-      const groupPath = typeof proj.group === 'string'
-        ? proj.group
-        : proj.group?.reduce((accumulator: string, currentValue: string) => {
-          return `${accumulator}/${currentValue}`;
-        }, '');
+      const groupPath =
+        typeof proj.group === 'string'
+          ? proj.group
+          : proj.group?.reduce((accumulator: string, currentValue: string) => {
+              return `${accumulator}/${currentValue}`;
+            }, '');
 
       let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
       await pushCostHandle({
@@ -319,10 +340,10 @@ export function useProjStatus() {
           proj: reqProj,
         },
       });
-        getTodoList(query).then((res) => {
-          setTodoProjs(res.data.iLeadTodoProjs)
-        })
-        refresh();
+      getTodoList(query).then((res) => {
+        setTodoProjs(res.data.iLeadTodoProjs);
+      });
+      refresh();
     },
     [pushCostHandle, refresh],
   );
@@ -332,16 +353,16 @@ export function useProjStatus() {
       query: queryTodoProjs,
       fetchPolicy: 'no-cache',
       variables: { isArchiveTodo: false, ...params },
-    })
-  }
-  let [todoProjsTotal, setTodoProjsTotal] = useState(0)
+    });
+  };
+  let [todoProjsTotal, setTodoProjsTotal] = useState(0);
   useEffect(() => {
     if (!isAdmin) {
       getTodoList({ page: 1 }).then((res) => {
-        setTodoProjsTotal(res.data.iLeadTodoProjs.todoTotal)
-      })
+        setTodoProjsTotal(res.data.iLeadTodoProjs.todoTotal);
+      });
     }
-  })
+  });
 
   return {
     loading: queryLoading || deleteLoading || pushLoading || archiveLoading,
@@ -358,10 +379,14 @@ export function useProjStatus() {
     archiveProj,
     deleteProj,
     pushProj,
-    total: isAdmin ? queryData?.superProjs?.total : (archive !== '2' ? queryData?.iLeadProjs?.total : todoProjs.total),
+    total: isAdmin
+      ? queryData?.superProjs?.total
+      : archive !== '2'
+      ? queryData?.iLeadProjs?.total
+      : todoProjs.total,
     setQuery,
     query,
     getTodoList,
-    todoProjsTotal
+    todoProjsTotal,
   };
 }

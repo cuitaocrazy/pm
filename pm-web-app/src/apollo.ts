@@ -1,23 +1,25 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
-import { onError } from '@apollo/client/link/error'
+import { onError } from '@apollo/client/link/error';
 import { message } from 'antd';
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.map(({ message: eorrMessage, path }) => {
-      if (path?.includes('charts')) return
-      message.error(eorrMessage)
-    })
+      if (path?.includes('charts')) return;
+      message.error(eorrMessage).then((res)=>{
+        location.reload();
+      });
+    });
   if (networkError) {
-    const errorObj = JSON.parse(JSON.stringify(networkError))
+    const errorObj = JSON.parse(JSON.stringify(networkError));
     if (errorObj.statusCode === 401 || errorObj.statusCode === 404) {
-      message.error('认证超时，正在为您请刷新页面')
-      location.reload()
+      message.error('认证超时，正在为您请刷新页面');
+      location.reload();
     } else if (errorObj.statusCode === 500) {
-      message.error('服务器发生错误，请检查服务器。')
+      message.error('服务器发生错误，请检查服务器。');
     }
   }
-})
+});
 
 const cache = new InMemoryCache({
   addTypename: false,
@@ -30,7 +32,7 @@ const link = createHttpLink({
 export const client = new ApolloClient({
   // Provide required constructor fields
   cache,
-  link: errorLink.concat(link)
+  link: errorLink.concat(link),
 });
 
 // gen code by https://graphql-code-generator.com/
@@ -194,13 +196,13 @@ export type CustomerObj = {
   industryCode: Scalars['String'];
   regionCode: Scalars['String'];
   salesman: Scalars['String'][];
-}
+};
 
 export type Agreements = {
   __typename?: 'Agreements';
   id: Scalars['ID'];
   name: Scalars['String'];
-}
+};
 
 export enum ProjectStatus {
   OnProj = 'onProj',
@@ -391,7 +393,7 @@ export type Agreement = {
   time: any[];
 };
 export type AgreementsResult = {
-  result: Agreement[]
+  result: Agreement[];
   page: Scalars['Int'];
   total: Scalars['Int'];
 };
@@ -418,7 +420,7 @@ export type MarketProject = {
   introduct: Scalars['String'];
   scale: Scalars['String'];
   plan: Scalars['String'];
-  status: MarketProjectStatus
+  status: MarketProjectStatus;
   fileList: Maybe<FileInput[]>;
   visitRecord: Maybe<MarketProjectVisit[]>;
   leader?: Scalars['String'];
@@ -479,24 +481,23 @@ export type Result = {
   result: Project[];
   total: number;
   page: number;
-}
+};
 export type CustomersResult = {
   result: Customer[];
   page: Scalars['Int'];
   pageSize: Scalars['Int'];
-}
-
+};
 
 // 客户信息查询返回的类型
 export type CustomersQuery = {
-  customers: CustomersResult
-}
+  customers: CustomersResult;
+};
 
 export type QueryCustomersArgs = {
   region: Scalars['String'];
   industry: Scalars['String'];
-  page: Scalars['Int']
-  pageSize: Scalars['Int']
+  page: Scalars['Int'];
+  pageSize: Scalars['Int'];
 };
 
 //zhouyueyang===
@@ -560,8 +561,8 @@ export type QueryFilterProjectArgs = {
   pageSizeAgreements?: Scalars['Int'];
 };
 export type QueryFilterProjectByIdArgs = {
-  id: Scalars['String']
-}
+  id: Scalars['String'];
+};
 
 export type QueryEmpDailyArgs = {
   userId: Scalars['String'];
@@ -593,10 +594,10 @@ export type QueryGroupsUsersArgs = {
 
 export type IsExistProjIdArgs = {
   id: Scalars['String'];
-}
+};
 export type IsExistProjIdQuery = {
   isExistProjID: Scalars['Boolean'];
-}
+};
 
 export type QueryRoleUsersArgs = {
   role: Scalars['String'];
@@ -791,7 +792,7 @@ export type MarketProjectInput = {
   introduct: Scalars['String'];
   scale: Scalars['String'];
   plan: Scalars['String'];
-  status: MarketProjectStatus
+  status: MarketProjectStatus;
   fileList: Maybe<FileInput[]>;
   visitRecord: Maybe<MarketProjectVisitInput[]>;
   leader?: Scalars['String'];

@@ -43,7 +43,6 @@ const Project: React.FC<any> = () => {
     projs,
     todoProjs,
     subordinates,
-    projectAgreements,
     loading,
     archive,
     setArchive,

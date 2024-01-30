@@ -140,7 +140,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
           <Form.List name="contacts">
             {(fields, { add, remove }) => (
               <>
-                {fields.map((field:any, i) => (
+                {fields.map((field: any, i) => (
                   <div key={field.key} style={{ textAlign: 'center' }}>
                     <Divider>联系人 {i + 1}</Divider>
                     <Form.Item
@@ -196,7 +196,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                       labelCol={{ span: 6, offset: 0 }}
                       key="remark"
                       label="备注"
-                      name={[field.remark, 'remark']}
+                      name={[field.name, 'remark']}
                       rules={[{ required: false }]}
                       extra="可以填写该联系人所在地等信息"
                     >

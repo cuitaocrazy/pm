@@ -621,13 +621,14 @@ const dataTypeDef = gql`
     officeAddress: String
     contacts: [CustomerContactInput!]
     enable: Boolean!
-    remark: String!
+    remark: String
   }
   input CustomerContactInput {
     name: String!
     phone: String!
     tags: [String!]
     recorder: String
+    remark: String
   }
 
   input FileInput {

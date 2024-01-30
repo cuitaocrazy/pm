@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { gql, useLazyQuery } from '@apollo/client';
 import type { Query, QueryProjDailyArgs } from '@/apollo';
+import { Moment } from 'moment';
 
 const QueryProjs = gql`
   query($pageSize:Int){
     iLeadProjs(pageSize:$pageSize) {
       result{id
-      name}
-      total
-      page
+      name
+      participants
+      timeConsuming}
     }
   }
 `;
@@ -33,8 +34,8 @@ export function useProjsState() {
 }
 
 const QueryDaily = gql`
-  query GetDaily($projId: String!) {
-    projDaily(projId: $projId) {
+  query GetDaily($projId: String!,$startDate:String,$endDate:String) {
+    projDaily(projId: $projId,startDate:$startDate,endDate:$endDate) {
       project {
         id
       }
@@ -68,11 +69,13 @@ export function useDailyState() {
     dailies: [],
   };
 
-  const queryDaily = (id: string) => {
+  const queryDaily = (id: string='',time:Moment) => {
     setProjId(id);
     query({
       variables: {
         projId: id,
+        startDate:time.format('YYYYMMDD'),
+        endDate:time.endOf('week').format('YYYYMMDD')
       },
     });
   };

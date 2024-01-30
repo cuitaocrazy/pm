@@ -14,7 +14,7 @@ import { useProjsState, useDailyState } from './hook';
 const ProjectsDailyPage = () => {
   const { loading: queryUsersLoading, projs } = useProjsState();
   const { queryDaily, projId, daily } = useDailyState();
-  
+  const [proPartAndTime,setProPartAndTime] = useState({})
   let projAllTime = 0
   const developer = new Map();
   if (daily.project) {
@@ -53,11 +53,11 @@ const ProjectsDailyPage = () => {
                   picker="week"
                   value={date}
                   disabledDate={(d) => d.isAfter(moment(), 'd')}
-                  onChange={(d) => setDate(moment(d).weekday(0) || moment())}
+                  onChange={(d) => {setDate(moment(d).weekday(0) || moment());queryDaily(projId,d!)}}
                 />
               }
             >
-              <ProjectsPage projs={projs} handleClick={queryDaily} />
+              <ProjectsPage projs={projs} handleClick={(key,proPartAndTime)=>{queryDaily(key,date);setProPartAndTime(proPartAndTime)}} />
             </ProCard>
           </Col>
           <Col xs={24} md={24} lg={14} xl={16} xxl={18}>
@@ -66,12 +66,12 @@ const ProjectsDailyPage = () => {
                 <Col xs={2} sm={2}></Col>
                 <Col xs={10} sm={10}>
                   <Card>
-                    <Statistic title="项目总参与人" value={developer.size} suffix="人" />
+                    <Statistic title="项目总参与人" value={proPartAndTime[projId].participants.length} suffix="人" />
                   </Card>
                 </Col>
                 <Col xs={10} sm={10}>
                   <Card>
-                    <Statistic title="项目总工时" value={projAllTime} suffix="h" />
+                    <Statistic title="项目总工时" value={proPartAndTime[projId].timeConsuming} suffix="h" />
                   </Card>
                 </Col>
                 <Col xs={2} sm={2}></Col>
@@ -83,7 +83,7 @@ const ProjectsDailyPage = () => {
                 <DailiesPage date={date} dailies={daily.dailies} />
               </Col>
               <Col xs={2} sm={2}></Col>
-            </Row> 
+            </Row>
           </Col>
         </Row>
       </ProCard>

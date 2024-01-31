@@ -39,7 +39,7 @@ const Projects: React.FC<ProjectsProps> = (props) => {
           <Input.Search placeholder="检索项目" onChange={(e) => setSearch(e.target.value)} />
         </Col>
       </Row>
-      <Menu onSelect={(e: any) =>{ console.log(proPartAndTime,'proPartAndTime=====');handleClick(e.key,proPartAndTime)}}
+      <Menu onSelect={(e: any) =>{handleClick(e.key,proPartAndTime)}}
       >
         {R.filter((proj: Project) => R.includes(search, buildProjName(proj.id, proj.name)))(
           projs,

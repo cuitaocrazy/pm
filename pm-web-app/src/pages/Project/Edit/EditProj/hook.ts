@@ -327,12 +327,13 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
+      let temp = JSON.parse(JSON.stringify(proj))
       const groupPath =
-        typeof proj.group === 'string'
-          ? proj.group
-          : proj.group?.reduce((accumulator: string, currentValue: string) => {
+        typeof temp.group === 'string'
+          ? temp.group
+          : temp.group.length > 0 ? temp.group?.reduce((accumulator: string, currentValue: string) => {
               return `${accumulator}/${currentValue}`;
-            }, '');
+            }, '') : '';
 
       let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
       await pushCostHandle({
@@ -358,6 +359,7 @@ export function useProjStatus() {
   let [todoProjsTotal, setTodoProjsTotal] = useState(0);
   useEffect(() => {
     if (!isAdmin) {
+      
       getTodoList({ page: 1 }).then((res) => {
         setTodoProjsTotal(res.data.iLeadTodoProjs.todoTotal);
       });

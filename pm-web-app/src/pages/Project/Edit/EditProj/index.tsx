@@ -256,28 +256,28 @@ const Project: React.FC<any> = () => {
     setParams({
       ...params,
       [type]: type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
-      page: 1
+      
     })
   };
   const handleChangeCas = (value: any, type: string) => {
     setParams({
       ...params,
       group: value,
-      page: 1,
+      
     })
   }
   const onChange = (confirmYear: any) => {
     setParams({
       ...params,
       confirmYear,
-      page: 1
+      
     })
   };
   const handleChangeInput = (name: string) => {
     setParams({
       ...params,
       name,
-      page: 1
+      
     })
   }
   const pageChange = (page: any) => {
@@ -485,7 +485,12 @@ const Project: React.FC<any> = () => {
             className="gutter-row displayInlineBlock"
             key="archive"
             value={archive}
-            onChange={(e) => setArchive(e.target.value)}
+            onChange={(e) => {setArchive(e.target.value);setQuery({
+              ...query,
+              ...params,
+              page: 1,
+              group: params.group.length !== 0 ? params.group.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, '') : ''
+            });setParams({...params,page: 1})}}
           >
             <Radio.Button value="0">项目</Radio.Button>
             {isAdmin ? (

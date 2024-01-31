@@ -326,9 +326,9 @@ export default () => {
 
   const handleSubmit = () => {
     // 获取处理后的group字段值
-    const processedGroup = typeof form.getFieldValue('group') === 'string' ? form.getFieldValue('group') : form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
+    const processedGroup = form.getFieldValue('group') && (typeof form.getFieldValue('group') === 'string' ? form.getFieldValue('group') : form.getFieldValue('group').length > 0 ? form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
       return `${accumulator}/${currentValue}`;
-    }, '');
+    }, '') : '');
     // 使用async/await语法确保异步操作的正确执行
     (async () => {
       try {
@@ -377,7 +377,7 @@ export default () => {
   //   const currentParticipants: string[] = typeof participantsValue === 'string' ? [participantsValue] : [];
 
   //   // const currentParticipants: string[] = form.getFieldValue('participants') || [];
-  //   console.log(currentParticipants, "currentParticipants====")
+
 
   //   // 定义一个更新参与者的数组
   //   let updatedParticipants: string[] = [];
@@ -432,7 +432,7 @@ export default () => {
   useEffect(() => {
     const participantsValue: string[] = form.getFieldValue('participants');
     const initParticipants: string[] = Array.isArray(participantsValue) ? participantsValue : [];
-    console.log(initParticipants, "initParticipants====")
+
     // 更新参与人员的数组
     setUpdatedParticipants(initParticipants.filter(participant => participant !== leader));
   }, [leader, form]);
@@ -444,7 +444,7 @@ export default () => {
     }
 
     if (typeof value === 'string') {
-      console.log(updatedParticipants, "项目经理updatedParticipants")
+      
       updatedParticipants.filter(participant => participant.includes(value))
       updatedParticipants.push(value);
     }
@@ -459,9 +459,9 @@ export default () => {
 
   // 选择参与人员
   const handleParticipantsChange = (value: string[]) => {
-    console.log(value, "选择参与人员value====")
+    
     setUpdatedParticipants(value)
-    console.log(updatedParticipants, "选择参与人员updatedParticipants======")
+    
   }
 
 

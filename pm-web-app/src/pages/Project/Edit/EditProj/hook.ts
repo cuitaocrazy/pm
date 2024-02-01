@@ -329,12 +329,11 @@ export function useProjStatus() {
     async (proj: ProjectInput) => {
       let temp = JSON.parse(JSON.stringify(proj))
       const groupPath =
-        typeof temp.group === 'string'
+      temp.group && (typeof temp.group === 'string'
           ? temp.group
           : temp.group.length > 0 ? temp.group?.reduce((accumulator: string, currentValue: string) => {
               return `${accumulator}/${currentValue}`;
-            }, '') : '';
-
+            }, '') : '');
       let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
       await pushCostHandle({
         variables: {

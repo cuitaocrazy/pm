@@ -142,7 +142,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-        return record.customerObj.name
+        return record.customerObj ? record.customerObj.name : ''
       },
       width: 150,
     },

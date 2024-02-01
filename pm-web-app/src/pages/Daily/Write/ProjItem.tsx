@@ -16,6 +16,7 @@ type ProjItemProps = {
   onHoursChange: (hours: number) => void;
   onContentOfWorkChange: (content: string) => void;
   visibleFilter: string;
+  getProIdAndContent: (id:string,content:string)=>void
 };
 
 const marks = ((vs) =>
@@ -63,18 +64,18 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
   }, [props.content]);
 
   useEffect(() => {
-    const delay = 300; // 设置防抖延迟时间
-    const debounceTimeout = setTimeout(() => {
-      props.onContentOfWorkChange(contentValue)
-    }, delay);
-    return () => {
-      clearTimeout(debounceTimeout);
-    };
+    // const delay = 300; // 设置防抖延迟时间
+    // const debounceTimeout = setTimeout(() => {
+      // props.onContentOfWorkChange(contentValue)
+    // }, delay);
+    // return () => {
+      // clearTimeout(debounceTimeout);
+    // };
   }, [contentValue]);
 
-  const onContentChange = (e: string) => {
-    setContentValue(e)
-  };
+   const onContentChange = (e: string) => {
+      setContentValue(e)
+   };
 
   return (
     <Card
@@ -115,7 +116,8 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
         <Col span={24}>
           <Input.TextArea
             autoSize={{ minRows: 2, maxRows: 6 }}
-            onChange={(e) => onContentChange(e.currentTarget.value)}
+            onChange={(e) => {onContentChange(e.currentTarget.value)}}
+            onBlur={(e)=>{props.getProIdAndContent(props.projId,e.target.value)}}
             value={contentValue || ''}
           />
         </Col>

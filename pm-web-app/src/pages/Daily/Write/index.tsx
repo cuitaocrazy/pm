@@ -47,6 +47,9 @@ function Dailies(prop: { date?: string }) {
       ),
     );
   }
+  const getProIdAndContent = (id:string,value:string)=>{
+    onContentOfWorkChange(id)(value)
+  }
 
   const list = (type: string) =>
     (type === '0' ? involvedProj : type === '1' ? unInvolvedProj : syntPro).map((d, i) => (
@@ -62,6 +65,7 @@ function Dailies(prop: { date?: string }) {
         visibleFilter={hookStatus.filter}
         involvedProj={d.project.participants.includes(hookStatus.userId || '')}
         endedProj={d.project.status === 'endProj'}
+        getProIdAndContent={getProIdAndContent}
       />
     ));
 
@@ -98,6 +102,7 @@ function Dailies(prop: { date?: string }) {
         <Button
           key="submit"
           onClick={() => {
+
             let noneLen = hookStatus.currentDaily.dailyItems.filter((p) => !!p.timeConsuming !== !!p.content).length
             if (noneLen) {
               message.info('工时和工作内容请填写完整')

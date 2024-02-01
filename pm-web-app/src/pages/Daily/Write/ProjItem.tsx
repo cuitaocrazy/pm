@@ -71,10 +71,10 @@ const ProjItem: React.ForwardRefRenderFunction<ProjItemHandle, ProjItemProps> = 
       clearTimeout(debounceTimeout);
     };
   }, [contentValue]);
-   
-   const onContentChange = (e: string) => {
-      setContentValue(e)
-   };
+
+  const onContentChange = (e: string) => {
+    setContentValue(e)
+  };
 
   return (
     <Card

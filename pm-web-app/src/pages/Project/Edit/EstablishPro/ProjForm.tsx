@@ -444,7 +444,7 @@ export default () => {
     }
 
     if (typeof value === 'string') {
-      
+
       updatedParticipants.filter(participant => participant.includes(value))
       updatedParticipants.push(value);
     }
@@ -459,9 +459,7 @@ export default () => {
 
   // 选择参与人员
   const handleParticipantsChange = (value: string[]) => {
-    
     setUpdatedParticipants(value)
-    
   }
 
 
@@ -540,7 +538,7 @@ export default () => {
         <Col span={7}>
           <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Cascader
-              // value={params.group}
+              defaultValue={[]}  // 或者使用 value={[]}
               allowClear
               changeOnSelect
               className="width122"

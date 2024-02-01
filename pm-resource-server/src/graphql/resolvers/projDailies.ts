@@ -15,12 +15,12 @@ async function getParticipateProjectDailiesByLeader(
   startDate: string | undefined,
   endDate: string | undefined
 ) {
-  let filter = {};
-  if (leaderId)
-    filter = { $or: [{ leader: leaderId }, { salesLeader: leaderId }] };
-  const projIds = await Project.find(filter)
-    .map((proj) => proj._id)
-    .toArray();
+  // let filter = {};
+  // if (leaderId)
+  //   filter = { $or: [{ leader: leaderId }, { salesLeader: leaderId }] };
+  // const projIds = await Project.find(filter)
+  //   .map((proj) => proj._id)
+  //   .toArray();
   let subordinateIds = null as String[] | null;
   if (loginUser) {
     const maxGroup = getMaxGroup(loginUser.groups);
@@ -36,7 +36,7 @@ async function getParticipateProjectDailiesByLeader(
     // endDate = "20231202";
   }
 
-  if (includes(projId)(projIds)) {
+  if (true) {
     const aggregateArray = [
       {
         $match: {

@@ -125,11 +125,11 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
         const result = reg.exec(proj?.id);
         if (selectType === 'XMHT') {
           // return result?.groups?.projType === 'SZ' || result?.groups?.projType === 'YF'
-          return result?.groups?.projType === 'SZ' || result?.groups?.projType === 'SH'
+          return result?.groups?.projType !== 'ZH' && result?.groups?.projType !== 'SQ'
         } else if (selectType === 'DGHT') {
-          return result?.groups?.projType === 'SZ' || result?.groups?.projType === 'SH'
+          return result?.groups?.projType !== 'ZH' && result?.groups?.projType !== 'SQ'
         } else if (selectType === 'WHHT') {
-          return result?.groups?.projType === 'SZ' || result?.groups?.projType === 'SH'
+          return result?.groups?.projType !== 'ZH' && result?.groups?.projType !== 'SQ'
           // return result?.groups?.projType === 'SZ' || result?.groups?.projType === 'SH' || result?.groups?.projType === 'YF'
         } else {
           return true

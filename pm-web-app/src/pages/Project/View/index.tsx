@@ -321,8 +321,10 @@ const Project: React.FC<any> = (props) => {
     columns.push({
       title: '操作',
       key: 'action',
-      render: (id: string, record: Proj) => (
-        <Space>
+      render: (id: string, record: Proj) =>{ 
+        console.log(record,'record=======')
+        let proType = record.id.split('-')[2]
+        return proType !== 'SQ' && <Space>
           <a
             key="archive"
             onClick={async () => {
@@ -352,7 +354,7 @@ const Project: React.FC<any> = (props) => {
             添加合同
           </a>
         </Space>
-      ),
+      },
       fixed: 'right',
       width: 120,
     }as any);

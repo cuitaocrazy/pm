@@ -322,7 +322,6 @@ const Project: React.FC<any> = (props) => {
       title: '操作',
       key: 'action',
       render: (id: string, record: Proj) =>{ 
-        console.log(record,'record=======')
         let proType = record.id.split('-')[2]
         return proType !== 'SQ' && <Space>
           <a

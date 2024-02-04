@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, {  useRef, useState, } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Table,
   Tag,
@@ -14,17 +14,11 @@ import {
   Cascader,
   Space,
 } from 'antd';
-import type {
-  Project as Proj,
-  ProjectInput,
-  ActiveInput,
-  AgreementInput,
-
-} from '@/apollo';
+import type { Project as Proj, ProjectInput, ActiveInput, AgreementInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
-import {  useProjStatus } from './hook';
+import { useProjStatus } from './hook';
 import ProjDetail from './ProjDetail';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
@@ -32,7 +26,6 @@ import { useBaseState } from '@/pages/utils/hook';
 import { getStatusDisplayName, projStatus } from './utils';
 import '@/common.css';
 import AgreementForm from './AgreementForm';
-
 
 const Project: React.FC<any> = (props) => {
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
@@ -46,11 +39,11 @@ const Project: React.FC<any> = (props) => {
     query,
     total,
     access,
-    pushAgreement, getArgByProId
+    pushAgreement,
+    getArgByProId,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj) => {
-
     const agree = projectAgreements.filter((item) => item.id === proj.id);
     const { actives, ...pro } = proj;
     detailRef.current?.showDialog({
@@ -145,12 +138,12 @@ const Project: React.FC<any> = (props) => {
   };
   const pageChange = (page: any) => {
     setParams({ ...params, page });
-    let obj = {group: ''}
+    let obj = { group: '' };
     setQuery({
       ...query,
       ...params,
       page,
-      ...obj
+      ...obj,
     });
   };
   const searchBtn = () => {
@@ -163,12 +156,14 @@ const Project: React.FC<any> = (props) => {
       ...query,
       ...params,
       page: 1,
-      ...{group:
-        params.group.length !== 0
-          ? params.group.reduce((accumulator: string, currentValue: string) => {
-              return `${accumulator}/${currentValue}`;
-            }, '')
-          : '',}
+      ...{
+        group:
+          params.group.length !== 0
+            ? params.group.reduce((accumulator: string, currentValue: string) => {
+                return `${accumulator}/${currentValue}`;
+              }, '')
+            : '',
+      },
     });
   };
   const canaelBtn = () => {
@@ -186,14 +181,16 @@ const Project: React.FC<any> = (props) => {
     setQuery({
       ...query,
       ...params,
-      ...{regions: [],
-      industries: [],
-      projTypes: [],
-      page: 1,
-      confirmYear: null,
-      group: '',
-      status: '',
-      name: '',}
+      ...{
+        regions: [],
+        industries: [],
+        projTypes: [],
+        page: 1,
+        confirmYear: null,
+        group: '',
+        status: '',
+        name: '',
+      },
     });
   };
   const [orgCodeOptions] = useState(
@@ -269,7 +266,7 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'contName',
       key: 'contName',
       render: (text: string, record: Proj) => {
-        return record.agreements ? record.agreements[0].name : ''
+        return record.agreements ? record.agreements[0].name : '';
       },
       width: 150,
     },
@@ -314,49 +311,52 @@ const Project: React.FC<any> = (props) => {
         return confirmYear;
       },
       width: 100,
-
     },
   ];
   if (access?.includes('realm:assistant')) {
     columns.push({
       title: '操作',
       key: 'action',
-      render: (id: string, record: Proj) =>{ 
-        let proType = record.id.split('-')[2]
-        return proType !== 'SQ' && <Space>
-          <a
-            key="archive"
-            onClick={async () => {
-              // 点击操作
-              let res = await getArgByProId(record.id);
-              if (res.data.getAgreementsByProjectId.length !== 0) {
-                res.data.getAgreementsByProjectId[0].contactProj = [record.id];
-                res.data.getAgreementsByProjectId[0].time = [
-                  moment(res.data.getAgreementsByProjectId[0].startTime),
-                  moment(res.data.getAgreementsByProjectId[0].endTime),
-                ];
-                ref.current?.showDialog({ ...res.data.getAgreementsByProjectId[0] });
-              } else {
-                ref.current?.showDialog({
-                  name: '',
-                  customer: record.customer,
-                  type: '',
-                  contactProj: [record.id],
-                  startTime: '',
-                  endTime: '',
-                  fileList: [],
-                  remark: '',
-                });
-              }
-            }}
-          >
-            添加合同
-          </a>
-        </Space>
+      render: (id: string, record: Proj) => {
+        let proType = record.id.split('-')[2];
+        return (
+          proType !== 'SQ' && (
+            <Space>
+              <a
+                key="archive"
+                onClick={async () => {
+                  // 点击操作
+                  let res = await getArgByProId(record.id);
+                  if (res.data.getAgreementsByProjectId.length !== 0) {
+                    res.data.getAgreementsByProjectId[0].contactProj = [record.id];
+                    res.data.getAgreementsByProjectId[0].time = [
+                      moment(res.data.getAgreementsByProjectId[0].startTime),
+                      moment(res.data.getAgreementsByProjectId[0].endTime),
+                    ];
+                    ref.current?.showDialog({ ...res.data.getAgreementsByProjectId[0] });
+                  } else {
+                    ref.current?.showDialog({
+                      name: '',
+                      customer: record.customer,
+                      type: '',
+                      contactProj: [record.id],
+                      startTime: '',
+                      endTime: '',
+                      fileList: [],
+                      remark: '',
+                    });
+                  }
+                }}
+              >
+                添加合同
+              </a>
+            </Space>
+          )
+        );
       },
       fixed: 'right',
       width: 120,
-    }as any);
+    } as any);
   }
 
   //=====zhouyueyang
@@ -382,6 +382,10 @@ const Project: React.FC<any> = (props) => {
         <Col className="gutter-row">
           <label>行业：</label>
           <Select
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             value={params.industries}
             mode="multiple"
             allowClear
@@ -396,6 +400,10 @@ const Project: React.FC<any> = (props) => {
         <Col className="gutter-row">
           <label>区域：</label>
           <Select
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             value={params.regions}
             mode="multiple"
             allowClear
@@ -408,6 +416,10 @@ const Project: React.FC<any> = (props) => {
         <Col className="gutter-row">
           <label>类型：</label>
           <Select
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             value={params.projTypes}
             mode="multiple"
             allowClear

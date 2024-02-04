@@ -345,6 +345,10 @@ const Project: React.FC<any> = () => {
         <Col className="gutter-row">
           <label>行业：</label> 
           <Select
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
             value={params.industries}
             mode="multiple"
             allowClear
@@ -360,6 +364,10 @@ const Project: React.FC<any> = () => {
         <Col className="gutter-row">
           <label>区域：</label> 
           <Select
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
             value={params.regions}
             mode="multiple"
             allowClear

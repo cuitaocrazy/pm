@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, {  useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Button,
   Table,
@@ -16,9 +16,7 @@ import {
   Pagination,
   Cascader,
 } from 'antd';
-import type {
-  Project as Proj, ProjectInput, ActiveInput
-} from '@/apollo';
+import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
@@ -52,7 +50,7 @@ const Project: React.FC<any> = () => {
     setQuery,
     query,
     total,
-    todoProjsTotal
+    todoProjsTotal,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -89,7 +87,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string; }) => user.id === record.leader)?.name;
+        return subordinates.find((user: { id: string }) => user.id === record.leader)?.name;
       },
       width: 110,
     },
@@ -98,7 +96,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'salesLeader',
       key: 'salesLeader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string; }) => user.id === record.salesLeader)?.name;
+        return subordinates.find((user: { id: string }) => user.id === record.salesLeader)?.name;
       },
       width: 110,
     },
@@ -142,7 +140,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-        return record.customerObj ? record.customerObj.name : ''
+        return record.customerObj ? record.customerObj.name : '';
       },
       width: 150,
     },
@@ -221,7 +219,7 @@ const Project: React.FC<any> = () => {
       width: 180,
     },
   ];
-  
+
   if (!isAdmin && archive === '2') {
     columns.splice(2, 0, {
       title: '待办内容',
@@ -229,15 +227,14 @@ const Project: React.FC<any> = () => {
       key: 'todoTip',
       width: 180,
       render: (text: string, record: Proj) => {
-        let proType = record.id.split('-')[2]
-        if(proType === 'SZ'){
-          return '免费维护期不足三个月，请及时签署维护合同'
-        }else if(proType === 'SH'){
-          return '维护服务即将不足三个月，请及时巡检'
-        }else{
-          return '-----'
+        let proType = record.id.split('-')[2];
+        if (proType === 'SZ') {
+          return '免费维护期不足三个月，请及时签署维护合同';
+        } else if (proType === 'SH') {
+          return '维护服务即将不足三个月，请及时巡检';
+        } else {
+          return '-----';
         }
-
       },
     });
   }
@@ -251,58 +248,59 @@ const Project: React.FC<any> = () => {
     group: [],
     status: '',
     name: '',
-  })
+  });
   const handleChange = (value = '', type: string) => {
     setParams({
       ...params,
-      [type]: type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
-      
-    })
+      [type]:
+        type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
+    });
   };
   const handleChangeCas = (value: any, type: string) => {
     setParams({
       ...params,
       group: value,
-      
-    })
-  }
+    });
+  };
   const onChange = (confirmYear: any) => {
     setParams({
       ...params,
       confirmYear,
-      
-    })
+    });
   };
   const handleChangeInput = (name: string) => {
     setParams({
       ...params,
       name,
-      
-    })
-  }
+    });
+  };
   const pageChange = (page: any) => {
-    setParams({ ...params, page })
+    setParams({ ...params, page });
     setQuery({
       ...query,
       ...params,
       page,
-      group: ''
-    })
-  }
+      group: '',
+    });
+  };
   const searchBtn = () => {
     setParams({
       ...params,
       page: 1,
-    })
+    });
     setQuery({
       ...query,
       ...params,
       page: 1,
-      group: params.group.length !== 0 ? params.group.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, '') : ''
-    })
-  }
+      group:
+        params.group.length !== 0
+          ? params.group.reduce((accumulator: string, currentValue: string) => {
+              return `${accumulator}/${currentValue}`;
+            }, '')
+          : '',
+    });
+  };
   const canaelBtn = () => {
-
     setParams({
       ...params,
       regions: [],
@@ -313,7 +311,7 @@ const Project: React.FC<any> = () => {
       group: [],
       status: '',
       name: '',
-    })
+    });
     setQuery({
       ...query,
       ...params,
@@ -325,11 +323,10 @@ const Project: React.FC<any> = () => {
       group: '',
       status: '',
       name: '',
-    })
-
-  }
+    });
+  };
   const groupDatas = (inputArray: any) => {
-    let result: any = []
+    let result: any = [];
     inputArray.forEach((item: any) => {
       const path = item.substring(1).split('/');
       let currentLevel = result;
@@ -338,7 +335,6 @@ const Project: React.FC<any> = () => {
 
         if (existingSegment) {
           currentLevel = existingSegment.children || [];
-
         } else {
           const newSegment = {
             value: segment,
@@ -348,12 +344,11 @@ const Project: React.FC<any> = () => {
 
           currentLevel.push(newSegment);
           currentLevel = newSegment.children || [];
-
         }
       });
-    })
-    return result
-  }
+    });
+    return result;
+  };
   const [orgCodeOptions] = useState(
     Object.keys(orgCode).map((s) => ({ label: orgCode[s], value: s })),
   );
@@ -364,10 +359,7 @@ const Project: React.FC<any> = () => {
     Object.keys(projType).map((s) => ({ label: projType[s], value: s })),
   );
   const [statusOptions] = useState(projStatus.map((s) => ({ label: s[1], value: s[0] })));
-  const [groupsOptions] = useState(
-    groupDatas(groupType)
-  );
-
+  const [groupsOptions] = useState(groupDatas(groupType));
 
   // const [customerListData, setCustomerListData] = useState({} as any);
   // const queryCustomerVariables: QueryCustomersArgs = {
@@ -394,9 +386,7 @@ const Project: React.FC<any> = () => {
   //   variables: queryCustomerVariables,
   // });
 
-
   // useEffect(() => {
-
 
   //   setCustomerListData(customerListData1?.result)
   // }, [customerListData1])
@@ -412,13 +402,18 @@ const Project: React.FC<any> = () => {
             key="search"
             addonBefore="项目名称"
             allowClear
-            onChange={(e) => { handleChangeInput(e.target.value) }}
-
+            onChange={(e) => {
+              handleChangeInput(e.target.value);
+            }}
           />
         </Col>
         <Col className="gutter-row">
           <label>行业：</label>
           <Select
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             value={params.industries}
             mode="multiple"
             allowClear
@@ -433,6 +428,10 @@ const Project: React.FC<any> = () => {
         <Col className="gutter-row">
           <label>区域：</label>
           <Select
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             value={params.regions}
             mode="multiple"
             allowClear
@@ -445,6 +444,10 @@ const Project: React.FC<any> = () => {
         <Col className="gutter-row">
           <label>类型：</label>
           <Select
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             value={params.projTypes}
             mode="multiple"
             allowClear
@@ -473,24 +476,43 @@ const Project: React.FC<any> = () => {
             changeOnSelect
             className="width122"
             placeholder="请选择"
-            onChange={(value, event) => { handleChangeCas(value, 'group') }}
-            options={groupsOptions} />
+            onChange={(value, event) => {
+              handleChangeCas(value, 'group');
+            }}
+            options={groupsOptions}
+          />
         </Col>
         <Col className="gutter-row">
           <label>确认年度：</label>
-          <DatePicker format="YYYY" value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null} picker="year" onChange={(value, event) => { onChange(event) }} />
+          <DatePicker
+            format="YYYY"
+            value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
+            picker="year"
+            onChange={(value, event) => {
+              onChange(event);
+            }}
+          />
         </Col>
         <Col>
           <Radio.Group
             className="gutter-row displayInlineBlock"
             key="archive"
             value={archive}
-            onChange={(e) => {setArchive(e.target.value);setQuery({
-              ...query,
-              ...params,
-              page: 1,
-              group: params.group.length !== 0 ? params.group.reduce((accumulator: string, currentValue: string) => { return `${accumulator}/${currentValue}` }, '') : ''
-            });setParams({...params,page: 1})}}
+            onChange={(e) => {
+              setArchive(e.target.value);
+              setQuery({
+                ...query,
+                ...params,
+                page: 1,
+                group:
+                  params.group.length !== 0
+                    ? params.group.reduce((accumulator: string, currentValue: string) => {
+                        return `${accumulator}/${currentValue}`;
+                      }, '')
+                    : '',
+              });
+              setParams({ ...params, page: 1 });
+            }}
           >
             <Radio.Button value="0">项目</Radio.Button>
             {isAdmin ? (
@@ -503,9 +525,13 @@ const Project: React.FC<any> = () => {
           </Radio.Group>
         </Col>
       </Row>
-      <Row justify="center" className='marginTop20'>
-        <Col ><Button onClick={() => searchBtn()} type="primary" className='marginRight10'>查询</Button>
-          <Button onClick={() => canaelBtn()} >重置</Button></Col>
+      <Row justify="center" className="marginTop20">
+        <Col>
+          <Button onClick={() => searchBtn()} type="primary" className="marginRight10">
+            查询
+          </Button>
+          <Button onClick={() => canaelBtn()}>重置</Button>
+        </Col>
       </Row>
       <Table
         className="marginTop20"
@@ -518,8 +544,12 @@ const Project: React.FC<any> = () => {
         size="middle"
       />
       <div className="paginationCon marginTop20 lineHeight32">
-
-        <Pagination onChange={(page, pageSize) => pageChange(page)} current={params.page} total={total} className="floatRight " />
+        <Pagination
+          onChange={(page, pageSize) => pageChange(page)}
+          current={params.page}
+          total={total}
+          className="floatRight "
+        />
         <label className="floatRight ">一共{total}条</label>
       </div>
 

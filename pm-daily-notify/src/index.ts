@@ -21,7 +21,7 @@ import {
 import { remindsUsersProject } from "./remind";
 // console.log(moment('20240107', 'YYYYMMDD').valueOf())
 const afterTimestamp = 1704556800000; //2024年1月07日的时间戳，忽略2024年1月7日之前的日报
-
+process.env.TZ = 'Asia/Shanghai'
 const getConfigData = async (configId: string): Promise<string[]> => {
   const config = await Config.findOne({ _id: configId });
   return R.isNil(config) ? [] : config.data;
@@ -135,14 +135,12 @@ async function main(year: number) {
 
 const args = arg({ "--year": Number });
 const year = args["--year"] || moment().year();
-
 if (new Date().getDay() === 1) {
   main(year);
 }
 
 remindsUsersProject().then(() => {
   // closeTransporter();
-
   setTimeout(() => {
     console.log("发送完毕，关闭邮箱");
     closeTransporter();

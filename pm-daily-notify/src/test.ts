@@ -22,6 +22,7 @@ remindsUsersProject().then(() => {
   setTimeout(() => {
     console.log("发送完毕，关闭邮箱");
     closeTransporter();
-    Promise.reject(new Error("结束"));
-  }, 30 * 1000);
+    process.exit(0)
+    // Promise.reject(new Error("结束"));
+  }, 1 * 1000);
 });

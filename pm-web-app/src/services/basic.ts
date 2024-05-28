@@ -42,6 +42,7 @@ export async function getCurrentBasics() {
             id
             name
             groups
+            enabled
           }
         }
       `,

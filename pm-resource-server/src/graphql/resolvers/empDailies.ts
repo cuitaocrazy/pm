@@ -151,13 +151,16 @@ export default {
   Query: {
     dailyUsers: async (_: any, __: any, context: AuthContext) => {
       const user = context.user!;
-      const users = await getGroupUsers(user);
+      let users = await getGroupUsers(user);
+      users = users.filter((u) => {
+        return u.enabled !== false;
+      })
       if (anyPass([isSupervisor, isGroupLeader])(user)) {
         const userMaxGroup = getMaxGroup(user.groups);
         const subordinate = await oauthGetUsersByGroups(user, userMaxGroup);
         return getUsersByGroups(user.groups, subordinate).filter((u) => {
           u.groups.filter((group) => group.indexOf(userMaxGroup[0]) !== -1);
-          return u.id !== user.id;
+          return u.id !== user.id && u.enabled !== false;
         });
       } else if (isProjectManager(user)) {
         return getParticipateProjectUsersByLeader(user.id, users);

@@ -54,6 +54,7 @@ export type UserInfo = {
   claims: any;
   hasPower: (roles: string[] | undefined) => boolean;
   groups: string[];
+  enabled: boolean;
 };
 
 export type AuthContext = {
@@ -105,6 +106,7 @@ const nextFunction =
         name,
         roles: flatRoles,
         groups,
+        enabled: prop<"enabled", boolean>("enabled")
       });
 
       const user = getUser(req.auth.claims);
@@ -166,6 +168,7 @@ export type UserWithGroup = {
   name: string;
   groups: string[];
   email: string;
+  enabled: boolean;
 };
 
 async function getUserByRootGroups(roots: string[], fetch: AxiosInstance) {
@@ -195,6 +198,7 @@ async function getUserByRootGroup(root: string, fetch: AxiosInstance) {
           name: u.name,
           email: u.email,
           groups: g.path,
+          enabled: u.enabled,
         }))
       )
     );
@@ -243,6 +247,7 @@ async function getUserByGroup(groupId: string, fetch: AxiosInstance) {
     id: u.username,
     name: getName(u),
     email: u.email,
+    enabled: u.enabled
   }));
 }
 
@@ -293,5 +298,6 @@ async function getUserByRole(role: string, fetch: AxiosInstance) {
     id: u.username,
     name: getName(u),
     email: u.email,
+    enabled: u.enabled
   }));
 }

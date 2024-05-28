@@ -90,8 +90,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  const { status, dataForTree, groupType, subordinates } = useBaseState(); // subordinates是指公司的全部人员
-
+  const { status, dataForTree, groupType,subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
     .map(group => {
@@ -394,10 +393,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [leader, setLeader] = useState<string>('');
   // 初始化更新的参与人员[]
   const [updatedParticipants, setUpdatedParticipants] = useState<string[]>([]);
+
+
+
   // 组件渲染完成后，获取项目经理的值
   useEffect(() => {
     // 在 useEffect 中获取 form.getFieldValue('leader') 的值
     const leaderValue = form.getFieldValue('leader');
+    console.log(subordinatesOnJob)
     // 更新组件的状态
     setLeader(leaderValue);
   }, []); // 空数组作为第二个参数表示仅在组件挂载时执行一次
@@ -406,8 +409,21 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   useEffect(() => {
     const participantsValue: string[] = form.getFieldValue('participants');
     const initParticipants: string[] = Array.isArray(participantsValue) ? participantsValue : [];
+    const isOnJob = (participant:string,subOnJob : any[])=>{
+      //判断participants是否在subordinatesOnJob的id中
+     let result = false;
+       for(let user of subOnJob){
+        if(participant===user.id){
+          result = true;
+        }
+       }
+     return result;
+    }
+    form.setFieldsValue({
+      participants: initParticipants.filter(participant=>isOnJob(participant,subordinatesOnJob)),
+    });
     // 更新参与人员的数组
-    setUpdatedParticipants(initParticipants.filter(participant => participant !== leader));
+    setUpdatedParticipants(initParticipants.filter(participant => participant !== leader).filter(participant=>isOnJob(participant,subordinatesOnJob)));
   }, [leader, form]);
 
   // 选择项目经理
@@ -670,7 +686,7 @@ return true;
                 return true;
               }}
             >
-              {subordinates.map((u) => (
+              {subordinatesOnJob.map((u) => (
                 <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
                   {u.name}
                 </Select.Option>

@@ -6,6 +6,7 @@ const dataTypeDef = gql`
     name: String!
     access: [String!]!
     groups: [String!]!
+    enabled: Boolean!
   }
 
   type ProjectOfDailies {

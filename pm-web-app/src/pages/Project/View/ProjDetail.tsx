@@ -12,7 +12,7 @@ import { useModel } from 'umi';
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { initialState } =  useModel('@@initialState');
-  const { status, buildProjName } = useBaseState();
+  const { status, buildProjName,subordinatesOnJob } = useBaseState();
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType] = useState(result?.groups?.projType || '');
@@ -99,7 +99,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             find(sub => sub.id === data?.salesLeader, initialState?.subordinates || [])?.name
           }</Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>{
-            map(lead => filter(sub => sub.id === lead, initialState?.subordinates || [])[0]?.name, data?.participants || []).join(' ')
+            map(lead => filter(sub => sub.id === lead, subordinatesOnJob || [])[0]?.name, data?.participants || []).join(' ')
           }</Descriptions.Item>
 
           <Descriptions.Item label="阶段状态:">{

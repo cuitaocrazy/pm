@@ -102,6 +102,7 @@ export function useBaseState() {
   const regions = initialState?.regions || [];
   let groupType = initialState?.groups || [];
   const subordinates = initialState?.subordinates || [];
+  const subordinatesOnJob = subordinates.filter(item => item.enabled) || [];
   let orgCode = {}
   let zoneCode = {}
   let projType = {}
@@ -133,6 +134,7 @@ export function useBaseState() {
     industries,
     regions,
     subordinates,
+    subordinatesOnJob,
     groupType,
     orgCode,
     zoneCode,

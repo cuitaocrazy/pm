@@ -37,6 +37,7 @@ const userQuery = gql`
     groupsUsers(groups: $groups) {
       id
       name
+      enabled
     }
     agreements {
       result{
@@ -52,6 +53,7 @@ const userQuery = gql`
     realSubordinates {
       id
       name
+      enabled
     }
     projs {
       id
@@ -69,8 +71,7 @@ export default () => {
   const [form] = useForm<ProjectInput>();
   const { pushProj } = useProjStatus();
   const [messageApi, contextHolder] = message.useMessage();
-  const { status, dataForTree, groupType, subordinates } = useBaseState(); // subordinates是指公司的全部人员
-
+  const { status, dataForTree, groupType, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const salesGroups: string[] = groupType
     .map(group => {
@@ -88,7 +89,8 @@ export default () => {
       groups: salesGroups
     },
   });
-
+  // const realSubordinates = resData?.realSubordinates.filter(item => item.enabled);
+  // const groupsUsers = resData?.groupsUsers.filter(item => item.enabled);
   const { initialState } = useModel('@@initialState');
   const [isDerive] = useState(false);
   const treeStatus = dataForTree(status);
@@ -563,7 +565,7 @@ export default () => {
               }}
               onChange={(value) => handleLeaderChange(value)}
             >
-
+              {/* 获取本用户及其所属下级 */}
               {resData?.realSubordinates.map((u) => (
                 //本级和下级
                 <Select.Option key={u.id} value={u.id}>
@@ -611,7 +613,7 @@ export default () => {
                 handleParticipantsChange(participantsArray);
               }}
             >
-              {subordinates.map((u) => (
+              {subordinatesOnJob.map((u) => (
                 //本级及下级
                 <Select.Option key={u.id} value={u.id} >
                   {u.name}

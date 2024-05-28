@@ -56,6 +56,7 @@ export type User = {
   name: Scalars['String'];
   access: Scalars['String'][];
   groups: Scalars['String'][];
+  enabled: Scalars['Boolean'];
 };
 
 export type ProjectOfDailies = {

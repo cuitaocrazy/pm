@@ -1,6 +1,6 @@
 {       
   "name": "pm-mobile",       
-  "version": "1.0.128",
+  "version": "1.0.129",
   "private": true,       
   "scripts": {       
     "start": "vue-cli-service serve",       

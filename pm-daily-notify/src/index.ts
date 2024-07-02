@@ -21,6 +21,7 @@ import {
 import { remindsUsersProject } from "./remind";
 // console.log(moment('20240107', 'YYYYMMDD').valueOf())
 const afterTimestamp = 1704556800000; //2024年1月07日的时间戳，忽略2024年1月7日之前的日报
+const today = moment().format("YYYYMMDD"); // 获取当前日期并格式化为 YYYYMMDD 
 process.env.TZ = 'Asia/Shanghai'
 const getConfigData = async (configId: string): Promise<string[]> => {
   const config = await Config.findOne({ _id: configId });
@@ -98,7 +99,10 @@ async function main(year: number) {
           )
           .filter((date) =>
             moment(date, "YYYYMMDD").isAfter(moment(afterTimestamp))
-          ), // 在次日期前的日报不提醒
+          )// 在次日期前的日报不提醒
+           .filter((date) =>  
+            !moment(date, "YYYYMMDD").isSame(today, 'day') // 排除当前日期  
+          ), 
       }))
       .filter((mail) => R.not(R.isNil(mail.email)))
       .filter((mail) => R.not(R.isEmpty(mail.dates)));

@@ -630,6 +630,9 @@ const dataTypeDef = gql`
     requiredInspections: Int
     actualInspections: Int
     confirmYear: String
+    productName:String
+    copyrightName:String
+    projectArrangement:String
     doYear: String
     group: String
     projectClass: String

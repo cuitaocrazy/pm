@@ -11,7 +11,7 @@ import {
   DatePicker,
   Upload,
   message,
-  Cascader
+  Cascader,
 } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
@@ -40,7 +40,7 @@ const userQuery = gql`
       enabled
     }
     agreements {
-      result{
+      result {
         id
         name
       }
@@ -61,7 +61,6 @@ const userQuery = gql`
   }
 `;
 
-
 const layout = {
   labelCol: { span: 9 },
   wrapperCol: { span: 16 },
@@ -74,7 +73,7 @@ export default () => {
   const { status, dataForTree, groupType, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const salesGroups: string[] = groupType
-    .map(group => {
+    .map((group) => {
       const match = group.toString().match(/\/市场组/);
       if (match) {
         return `${match.input}`;
@@ -86,7 +85,7 @@ export default () => {
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
-      groups: salesGroups
+      groups: salesGroups,
     },
   });
   // const realSubordinates = resData?.realSubordinates.filter(item => item.enabled);
@@ -99,13 +98,13 @@ export default () => {
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState('');
   const myGroup = initialState?.currentUser?.groups;
-  const shouldEnable = myGroup?.map(item => {
+  const shouldEnable = myGroup?.map((item) => {
     // 使用正则表达式检查是否包含一个或两个斜杠
     const match = item.match(/^\/[^/]+(\/[^/]+)?$/);
     return match !== null;
   });
 
-  const isConfirmYearDisabled = shouldEnable?.some(enabled => enabled === true);
+  const isConfirmYearDisabled = shouldEnable?.some((enabled) => enabled === true);
 
   //上传材料
   const props: UploadProps = {
@@ -273,13 +272,13 @@ export default () => {
     region: region || '',
     industry: industry || '',
     page: 1,
-    pageSize: 100000
+    pageSize: 100000,
   };
 
   const customerQuery = gql`
-    query GetCustomers($region: String!, $industry: String!,$page:Int!,$pageSize:Int!) {
-      customers(region: $region, industry: $industry,page:$page,pageSize:$pageSize) {
-        result{
+    query GetCustomers($region: String!, $industry: String!, $page: Int!, $pageSize: Int!) {
+      customers(region: $region, industry: $industry, page: $page, pageSize: $pageSize) {
+        result {
           id
           name
           enable
@@ -290,13 +289,16 @@ export default () => {
     }
   `;
 
-  const [fetchCustomersData, { data: customerListData }] = useLazyQuery<CustomersQuery, QueryCustomersArgs>(customerQuery, {
+  const [fetchCustomersData, { data: customerListData }] = useLazyQuery<
+    CustomersQuery,
+    QueryCustomersArgs
+  >(customerQuery, {
     fetchPolicy: 'no-cache',
     variables: queryCustomerVariables,
   });
 
   const groupDatas = (inputArray: any) => {
-    let result: any = []
+    let result: any = [];
     inputArray.forEach((item: any) => {
       const path = item.substring(1).split('/');
       let currentLevel = result;
@@ -305,7 +307,6 @@ export default () => {
 
         if (existingSegment) {
           currentLevel = existingSegment.children || [];
-
         } else {
           const newSegment = {
             value: segment,
@@ -315,22 +316,25 @@ export default () => {
 
           currentLevel.push(newSegment);
           currentLevel = newSegment.children || [];
-
         }
       });
-    })
-    return result
-  }
+    });
+    return result;
+  };
   // 项目部门下拉菜单的数据源
-  const [groupsOptions] = useState(
-    groupDatas(groupType)
-  );
+  const [groupsOptions] = useState(groupDatas(groupType));
 
   const handleSubmit = () => {
     // 获取处理后的group字段值
-    const processedGroup = form.getFieldValue('group') && (typeof form.getFieldValue('group') === 'string' ? form.getFieldValue('group') : form.getFieldValue('group').length > 0 ? form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
-      return `${accumulator}/${currentValue}`;
-    }, '') : '');
+    const processedGroup =
+      form.getFieldValue('group') &&
+      (typeof form.getFieldValue('group') === 'string'
+        ? form.getFieldValue('group')
+        : form.getFieldValue('group').length > 0
+        ? form.getFieldValue('group').reduce((accumulator: string, currentValue: string) => {
+            return `${accumulator}/${currentValue}`;
+          }, '')
+        : '');
     // 使用async/await语法确保异步操作的正确执行
     (async () => {
       try {
@@ -344,7 +348,7 @@ export default () => {
         await messageApi.open({
           type: 'success',
           content: '新增成功！',
-          duration: 2
+          duration: 2,
         });
         // 重置字段
         form.resetFields();
@@ -380,7 +384,6 @@ export default () => {
 
   //   // const currentParticipants: string[] = form.getFieldValue('participants') || [];
 
-
   //   // 定义一个更新参与者的数组
   //   let updatedParticipants: string[] = [];
 
@@ -415,8 +418,6 @@ export default () => {
   //   });
   // };
 
-
-
   // 初始化项目经理‘’
   const [leader, setLeader] = useState<string>('');
   // 初始化更新的参与人员[]
@@ -436,7 +437,7 @@ export default () => {
     const initParticipants: string[] = Array.isArray(participantsValue) ? participantsValue : [];
 
     // 更新参与人员的数组
-    setUpdatedParticipants(initParticipants.filter(participant => participant !== leader));
+    setUpdatedParticipants(initParticipants.filter((participant) => participant !== leader));
   }, [leader, form]);
 
   // 选择项目经理
@@ -446,32 +447,29 @@ export default () => {
     }
 
     if (typeof value === 'string') {
-
-      updatedParticipants.filter(participant => participant.includes(value))
+      updatedParticipants.filter((participant) => participant.includes(value));
       updatedParticipants.push(value);
     }
     // 设置更新参与人员到表单中
     form.setFieldsValue({
       participants: updatedParticipants,
     });
-
   };
-
-
 
   // 选择参与人员
   const handleParticipantsChange = (value: string[]) => {
-    setUpdatedParticipants(value)
-  }
-
-
+    setUpdatedParticipants(value);
+  };
 
   return (
     <Form
       style={{ background: '#fff' }}
       {...layout}
       form={form}
-      initialValues={{ leader: initialState?.currentUser?.id, participants: initialState?.currentUser?.id }}
+      initialValues={{
+        leader: initialState?.currentUser?.id,
+        participants: initialState?.currentUser?.id,
+      }}
     >
       <Form.Item shouldUpdate noStyle>
         {() => {
@@ -486,7 +484,7 @@ export default () => {
                   rules={[{ required: true }, { validator }]}
                 >
                   <ProjIdComponent
-                    onChange={onIdChange}        // 处理整个 ID 变化的回调
+                    onChange={onIdChange} // 处理整个 ID 变化的回调
                     onIsExistProjIdDataChange={handleIsExistProjIdDataChange} // 将回调函数传递给子组件
                   />
                 </Form.Item>
@@ -503,8 +501,7 @@ export default () => {
         </Col>
         <Col span={7}>
           <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
-            <Select allowClear
-              onFocus={() => fetchCustomersData()}>
+            <Select allowClear onFocus={() => fetchCustomersData()}>
               {customerListData?.customers.result.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -540,12 +537,13 @@ export default () => {
         <Col span={7}>
           <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Cascader
-              defaultValue={[]}  // 或者使用 value={[]}
+              defaultValue={[]} // 或者使用 value={[]}
               allowClear
               changeOnSelect
               className="width122"
               placeholder="请选择"
-              options={groupsOptions} />
+              options={groupsOptions}
+            />
           </Form.Item>
         </Col>
         <Col span={7}></Col>
@@ -554,7 +552,8 @@ export default () => {
         <Col span={7}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
             {/* disabled={!!data?.id && !isDerive} */}
-            <Select allowClear
+            <Select
+              allowClear
               showSearch
               filterOption={(input, option) => {
                 const nameStr: any = option?.children || '';
@@ -577,7 +576,9 @@ export default () => {
         </Col>
         <Col span={7}>
           <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
-            <Select allowClear showSearch
+            <Select
+              allowClear
+              showSearch
               filterOption={(input, option) => {
                 const nameStr: any = option?.children || '';
                 if (input && nameStr) {
@@ -585,7 +586,7 @@ export default () => {
                 }
                 return true;
               }}
-            // onChange={(value) => handleSalesLeaderChange(value)}
+              // onChange={(value) => handleSalesLeaderChange(value)}
             >
               {resData?.groupsUsers.map((u) => (
                 //本级及下级
@@ -615,7 +616,7 @@ export default () => {
             >
               {subordinatesOnJob.map((u) => (
                 //本级及下级
-                <Select.Option key={u.id} value={u.id} >
+                <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
               ))}
@@ -687,17 +688,12 @@ export default () => {
       <Row>
         <Col span={7}>
           <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled/>
           </Form.Item>
         </Col>
         <Col span={7}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0}  disabled/>
           </Form.Item>
         </Col>
       </Row>
@@ -766,22 +762,32 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }, { validator: validateInteger, },]}>
+          <Form.Item
+            label="预估工作量"
+            name="estimatedWorkload"
+            rules={[{ required: false }, { validator: validateInteger }]}
+          >
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
           <>
             <Col span={7}>
-              <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }, { validator: validateInteger, },]}>
+              <Form.Item
+                label="免费人天数"
+                name="freePersonDays"
+                rules={[{ required: false }, { validator: validateInteger }]}
+              >
                 <InputNumber min={0} />
-
               </Form.Item>
             </Col>
             <Col span={7}>
-              <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }, { validator: validateInteger, },]}>
+              <Form.Item
+                label="已用人天数"
+                name="usedPersonDays"
+                rules={[{ required: false }, { validator: validateInteger }]}
+              >
                 <InputNumber min={0} />
-
               </Form.Item>
             </Col>
             <Col span={7}></Col>
@@ -825,7 +831,7 @@ export default () => {
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled/>
             </Form.Item>
           </Col>
         </Row>
@@ -836,13 +842,17 @@ export default () => {
             <Form.Item
               label="要求巡检次数"
               name="requiredInspections"
-              rules={[{ required: false }, { validator: validateInteger, },]}
+              rules={[{ required: false }, { validator: validateInteger }]}
             >
               <InputNumber min={0} />
             </Form.Item>
           </Col>
           <Col span={7}>
-            <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }, { validator: validateInteger, },]}>
+            <Form.Item
+              label="实际巡检次数"
+              name="actualInspections"
+              rules={[{ required: false }, { validator: validateInteger }]}
+            >
               <InputNumber min={0} />
             </Form.Item>
           </Col>
@@ -850,7 +860,7 @@ export default () => {
             <Form.Item
               label="服务周期"
               name="serviceCycle"
-              rules={[{ required: false }, { validator: validateInteger, },]}
+              rules={[{ required: false }, { validator: validateInteger }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
               <InputNumber min={0} />
@@ -882,6 +892,29 @@ export default () => {
         </Col>
         <Col span={7}>
           <Form.Item
+            label="确认季度"
+            name="confirmQuarter"
+            rules={[{ required: false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined,
+            })}
+          >
+            <DatePicker
+              picker="month"
+              format="MM"
+              style={{ width: '100%' }}
+              onChange={onConfirmYearChange}
+              disabled={!isConfirmYearDisabled}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
             label="实施年度"
             name="doYear"
             rules={[{ required: false }]}
@@ -900,8 +933,25 @@ export default () => {
         <Col span={7}></Col>
       </Row>
       <Row>
-        <Col span={24} >
-          <Form.Item label="项目描述" name="description" labelCol={{ span: 2.4, offset: 1 }} >
+        <Col span={7}>
+          <Form.Item label="产品名称" name="productName" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="著作权名称" name="copyrightName" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="项目安排" name="projectArrangement" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          <Form.Item label="项目描述" name="description" labelCol={{ span: 2.4, offset: 1 }}>
             <Input.TextArea />
           </Form.Item>
         </Col>
@@ -1012,7 +1062,7 @@ export default () => {
                             defaultFileList={
                               form.getFieldValue('actives')
                                 ? (form.getFieldValue('actives')[field.name]
-                                  ?.fileList as UploadFile[])
+                                    ?.fileList as UploadFile[])
                                 : []
                             }
                           >
@@ -1087,12 +1137,20 @@ export default () => {
           </Form.List>
         </Col>
       </Row>
-      <div style={{ paddingBottom: '40px', paddingRight: '20px' }} >
-        <Button onClick={() => form.resetFields()} style={{ float: 'right' }}>重置</Button>
-        <Button onClick={() => handleSubmit()} style={{ marginRight: '20px', float: 'right' }} type="primary">提交</Button>
+      <div style={{ paddingBottom: '40px', paddingRight: '20px' }}>
+        <Button onClick={() => form.resetFields()} style={{ float: 'right' }}>
+          重置
+        </Button>
+        <Button
+          onClick={() => handleSubmit()}
+          style={{ marginRight: '20px', float: 'right' }}
+          type="primary"
+        >
+          提交
+        </Button>
         <div style={{ clear: 'both' }}></div>
       </div>
       {contextHolder}
-    </Form >
+    </Form>
   );
 };

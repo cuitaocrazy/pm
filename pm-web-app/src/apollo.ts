@@ -749,6 +749,9 @@ export type ProjectInput = {
   requiredInspections?: Scalars['Int'];
   actualInspections?: Scalars['Int'];
   confirmYear?: Scalars['String'];
+  productName?: Scalars['String'];
+  copyrightName?: Scalars['String'];
+  projectArrangement?: Scalars['String'];
   doYear?: Scalars['String'];
 };
 

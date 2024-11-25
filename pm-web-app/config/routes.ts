@@ -209,6 +209,42 @@
         access: 'canRegion',
       },
       {
+        path: '/infoManage/regionOne',
+        name: 'regionOne',
+        component: './InfoManage/RegionOne/Edit',
+        access: 'canRegion',
+      },
+      {
+        path: '/infoManage/yearManage',
+        name: 'yearManage',
+        component: './InfoManage/YearManage/Edit',
+        access: 'canRegion',
+      },
+      {
+        path: '/infoManage/quarterManage',
+        name: 'quarterManage',
+        component: './InfoManage/QuarterManage/Edit',
+        access: 'canRegion',
+      },
+      {
+        path: '/infoManage/payStateManage',
+        name: 'payStateManage',
+        component: './InfoManage/PayStateManage/Edit',
+        access: 'canRegion',
+      },
+      {
+        path: '/infoManage/proConfirmStateManage',
+        name: 'proConfirmStateManage',
+        component: './InfoManage/ProConfirmStateManage/Edit',
+        access: 'canRegion',
+      },
+      {
+        path: '/infoManage/collectionQuarterManage',
+        name: 'collectionQuarterManage',
+        component: './InfoManage/CollectionQuarterManage/Edit',
+        access: 'canRegion',
+      },
+      {
         path: '/infoManage/projectClass',
         name: 'projectClass',
         component: './InfoManage/ProjectClass/Edit',

@@ -15,6 +15,12 @@ import charts from "./charts";
 import status from "./status";
 import industries from "./industries";
 import regions from "./regions";
+import regionones from "./regionones";
+import yearManages from "./yearManages";
+import quarterManages from "./quarterManages";
+import payStateManages from "./payStateManages";
+import proConfirmStateManages from "./proConfirmStateManages";
+import collectionQuarterManages from "./collectionQuarterManages";
 import customers from "./customers";
 import agreements from "./agreements";
 import projectAgreements from "./projectAgreements";
@@ -46,6 +52,12 @@ export default merge(
   status,
   industries,
   regions,
+  regionones,
+  yearManages,
+  quarterManages,
+  payStateManages,
+  proConfirmStateManages,
+  collectionQuarterManages,
   customers,
   agreements,
   projectAgreements,

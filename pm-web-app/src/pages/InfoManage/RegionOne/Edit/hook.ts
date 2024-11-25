@@ -1,16 +1,16 @@
 /*
  * @Author: 13718154103 1161593628@qq.com
- * @Date: 2024-11-21 09:20:39
+ * @Date: 2024-11-21 15:31:52
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-11-25 11:53:04
- * @FilePath: /pm/pm-web-app/src/pages/InfoManage/Region/Edit/hook.ts
+ * @LastEditTime: 2024-11-21 16:57:08
+ * @FilePath: /pm/pm-web-app/src/pages/InfoManage/RegionOne/Edit/hook.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import type {
   Mutation,
-  MutationDeleteRegionArgs,
-  MutationPushRegionArgs,
-  RegionInput,
+  MutationDeleteRegionOneArgs,
+  MutationPushRegionOneArgs,
+  RegionOneInput,
   Query,
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
@@ -18,18 +18,6 @@ import { useCallback, useEffect } from 'react';
 import { message } from 'antd';
 const queryGql = gql`
   {
-    regions {
-      id
-      name
-      code
-      remark
-      sort
-      enable
-      isDel
-      createDate
-      parentId
-      parentName
-    }
     regionones {
       id
       name
@@ -44,14 +32,14 @@ const queryGql = gql`
 `;
 
 const pushRegionGql = gql`
-  mutation ($region: RegionInput!) {
-    pushRegion(region: $region)
+  mutation ($region: RegionOneInput!) {
+    pushRegionOne(region: $region)
   }
 `;
 
 const deleteRegionGql = gql`
   mutation ($id: ID!) {
-    deleteRegion(id: $id)
+    deleteRegionOne(id: $id)
   }
 `;
 
@@ -61,19 +49,18 @@ export function useRegionState() {
   });
   const [deleteRegionHandle, { loading: deleteLoading }] = useMutation<
     Mutation,
-    MutationDeleteRegionArgs
+    MutationDeleteRegionOneArgs
   >(deleteRegionGql);
   const [pushRegionHandle, { loading: pushLoading }] = useMutation<
     Mutation,
-    MutationPushRegionArgs
+    MutationPushRegionOneArgs
   >(pushRegionGql);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
-  const regions = queryData?.regions || [];
-  const regionones = queryData?.regionones || [];
+  const regions = queryData?.regionones || [];
 
   const deleteRegion = useCallback(
     async (id: string) => {
@@ -84,7 +71,7 @@ export function useRegionState() {
   );
 
   const pushRegion = useCallback(
-    async (region: RegionInput) => {
+    async (region: RegionOneInput) => {
       await pushRegionHandle({
         variables: {
           region,
@@ -103,7 +90,6 @@ export function useRegionState() {
   return {
     loading: queryLoading || deleteLoading || pushLoading,
     regions,
-    regionones,
     refresh,
     deleteRegion,
     pushRegion,

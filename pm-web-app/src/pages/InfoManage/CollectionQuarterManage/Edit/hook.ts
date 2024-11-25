@@ -2,15 +2,15 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-11-21 09:20:39
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-11-25 11:53:04
+ * @LastEditTime: 2024-11-25 13:20:16
  * @FilePath: /pm/pm-web-app/src/pages/InfoManage/Region/Edit/hook.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import type {
   Mutation,
-  MutationDeleteRegionArgs,
-  MutationPushRegionArgs,
-  RegionInput,
+  MutationDeleteCollectionQuarterManageArgs,
+  MutationPushCollectionQuarterManageArgs,
+  CollectionQuarterManageInput,
   Query,
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
@@ -18,19 +18,7 @@ import { useCallback, useEffect } from 'react';
 import { message } from 'antd';
 const queryGql = gql`
   {
-    regions {
-      id
-      name
-      code
-      remark
-      sort
-      enable
-      isDel
-      createDate
-      parentId
-      parentName
-    }
-    regionones {
+    collectionQuarterManages {
       id
       name
       code
@@ -43,15 +31,15 @@ const queryGql = gql`
   }
 `;
 
-const pushRegionGql = gql`
-  mutation ($region: RegionInput!) {
-    pushRegion(region: $region)
+const pushCollectionQuarterManageGql = gql`
+  mutation ($region: CollectionQuarterManageInput!) {
+    pushCollectionQuarterManage(region: $region)
   }
 `;
 
-const deleteRegionGql = gql`
+const deleteCollectionQuarterManageGql = gql`
   mutation ($id: ID!) {
-    deleteRegion(id: $id)
+    deleteCollectionQuarterManage(id: $id)
   }
 `;
 
@@ -61,19 +49,18 @@ export function useRegionState() {
   });
   const [deleteRegionHandle, { loading: deleteLoading }] = useMutation<
     Mutation,
-    MutationDeleteRegionArgs
-  >(deleteRegionGql);
+    MutationDeleteCollectionQuarterManageArgs
+  >(deleteCollectionQuarterManageGql);
   const [pushRegionHandle, { loading: pushLoading }] = useMutation<
     Mutation,
-    MutationPushRegionArgs
-  >(pushRegionGql);
+    MutationPushCollectionQuarterManageArgs
+  >(pushCollectionQuarterManageGql);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
-  const regions = queryData?.regions || [];
-  const regionones = queryData?.regionones || [];
+  const regions = queryData?.collectionQuarterManages || [];
 
   const deleteRegion = useCallback(
     async (id: string) => {
@@ -103,7 +90,6 @@ export function useRegionState() {
   return {
     loading: queryLoading || deleteLoading || pushLoading,
     regions,
-    regionones,
     refresh,
     deleteRegion,
     pushRegion,

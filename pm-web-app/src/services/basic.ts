@@ -36,6 +36,7 @@ export async function getCurrentBasics() {
             sort
             isDel
             createDate
+            parentId
           }
           groups
           subordinates{

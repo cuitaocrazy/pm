@@ -6,7 +6,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.map(({ message: eorrMessage, path }) => {
       if (path?.includes('charts')) return;
-      message.error(eorrMessage).then((res)=>{
+      message.error(eorrMessage).then((res) => {
         location.reload();
       });
     });
@@ -322,6 +322,73 @@ export type Region = {
   isDel: Scalars['Boolean'];
   sort: Scalars['Int'];
   createDate: Scalars['String'];
+  parentId: Scalars['String'];
+};
+export type RegionOne = {
+  __typename?: 'RegionOne';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
+};
+export type YearManage = {
+  __typename?: 'YearManage';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
+};
+export type QuarterManage = {
+  __typename?: 'QuarterManage';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
+};
+export type PayStateManage = {
+  __typename?: 'PayStateManage';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
+};
+export type ProConfirmStateManage = {
+  __typename?: 'ProConfirmStateManage';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
+};
+export type CollectionQuarterManage = {
+  __typename?: 'CollectionQuarterManage';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
 };
 export type Group = {
   __typename?: 'Group';
@@ -530,6 +597,12 @@ export type Query = {
   treeStatus: TreeStatu[];
   industries: Industry[];
   regions: Region[];
+  regionones: RegionOne[];
+  yearManages: YearManage[];
+  quarterManages: QuarterManage[];
+  payStateManages: PayStateManage[];
+  proConfirmStateManages: ProConfirmStateManage[];
+  collectionQuarterManages: CollectionQuarterManage[];
   projectClasses: ProjectClass[];
   groups: Group[];
   customers: CustomersResult;
@@ -714,6 +787,54 @@ export type RegionInput = {
   remark?: Scalars['String'];
   sort: Scalars['Int'];
 };
+export type RegionOneInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
+};
+export type YearManageInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
+};
+export type QuarterManageInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
+};
+export type PayStateManageInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
+};
+export type ProConfirmStateManageInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
+};
+export type CollectionQuarterManageInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
+};
 export type GroupInput = {
   id?: Maybe<Scalars['ID']>;
   name: Scalars['String'];
@@ -845,6 +966,12 @@ export type Mutation = {
   pushStatu: Scalars['ID'];
   pushIndustry: Scalars['ID'];
   pushRegion: Scalars['ID'];
+  pushRegionOne: Scalars['ID'];
+  pushYearManage: Scalars['ID'];
+  pushQuarterManage: Scalars['ID'];
+  pushPayStateManage: Scalars['ID'];
+  pushProConfirmStateManage: Scalars['ID'];
+  pushCollectionQuarterManage: Scalars['ID'];
   pushGroup: Scalars['ID'];
   pushCustomer: Scalars['ID'];
   pushAgreement: Scalars['ID'];
@@ -907,6 +1034,24 @@ export type MutationDeleteIndustryArgs = {
 export type MutationPushRegionArgs = {
   region: RegionInput;
 };
+export type MutationPushRegionOneArgs = {
+  region: RegionOneInput;
+};
+export type MutationPushYearManageArgs = {
+  yearManage: YearManageInput;
+};
+export type MutationPushQuarterManageArgs = {
+  quarterManage: QuarterManageInput;
+};
+export type MutationPushPayStateManageArgs = {
+  payStateManages: PayStateManageInput;
+};
+export type MutationPushProConfirmStateManageArgs = {
+  proConfirmStateManages: ProConfirmStateManageInput;
+};
+export type MutationPushCollectionQuarterManageArgs = {
+  collectionQuarterManages: CollectionQuarterManageInput;
+};
 export type MutationPushGroupArgs = {
   group: GroupInput;
 };
@@ -914,6 +1059,24 @@ export type MutationPushProjectClassArgs = {
   projectclass: ProjectClassInput;
 };
 export type MutationDeleteRegionArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeleteRegionOneArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeleteYearManageArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeleteQuarterManageArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeletePayStateManageArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeleteProConfirmStateManageArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeleteCollectionQuarterManageArgs = {
   id: Scalars['ID'];
 };
 export type MutationDeleteGroupArgs = {

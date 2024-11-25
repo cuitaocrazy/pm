@@ -330,9 +330,241 @@ export interface IRegion {
    * 创建日期
    */
   createDate: Date;
+  /**
+   * 一级区域ID
+   */
+  parentId: string;
 }
 
 export const Region = client.db().collection<IRegion>(pluralize("Region"));
+/**
+ * 一级区域
+ */
+export interface IRegionOne {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+}
+
+export const RegionOne = client
+  .db()
+  .collection<IRegionOne>(pluralize("RegionOne"));
+/**
+ * 年度管理
+ */
+export interface IYearManage {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+}
+
+export const YearManage = client
+  .db()
+  .collection<IYearManage>(pluralize("YearManage"));
+/**
+ * 季度管理
+ */
+export interface IQuarterManage {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+}
+
+export const QuarterManage = client
+  .db()
+  .collection<IQuarterManage>(pluralize("QuarterManage"));
+/**
+ * 付款状态管理
+ */
+export interface IPayStateManage {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+}
+
+export const PayStateManage = client
+  .db()
+  .collection<IPayStateManage>(pluralize("PayStateManage"));
+/**
+ * 项目确认状态管理
+ */
+export interface IProConfirmStateManage {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+}
+
+export const ProConfirmStateManage = client
+  .db()
+  .collection<IProConfirmStateManage>(pluralize("ProConfirmStateManage"));
+/**
+ * 回款季度管理
+ */
+export interface ICollectionQuarterManage {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+}
+
+export const CollectionQuarterManage = client
+  .db()
+  .collection<ICollectionQuarterManage>(pluralize("CollectionQuarterManage"));
 
 /**
  * 区域

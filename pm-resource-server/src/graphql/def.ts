@@ -243,6 +243,68 @@ const dataTypeDef = gql`
     isDel: Boolean!
     sort: Int!
     createDate: String!
+    parentId: String
+    parentName: String
+  }
+  type RegionOne {
+    id: ID!
+    name: String!
+    code: String!
+    remark: String!
+    enable: Boolean!
+    isDel: Boolean!
+    sort: Int!
+    createDate: String!
+  }
+  type YearManage {
+    id: ID!
+    name: String!
+    code: String!
+    remark: String!
+    enable: Boolean!
+    isDel: Boolean!
+    sort: Int!
+    createDate: String!
+  }
+  type QuarterManage {
+    id: ID!
+    name: String!
+    code: String!
+    remark: String!
+    enable: Boolean!
+    isDel: Boolean!
+    sort: Int!
+    createDate: String!
+  }
+  type PayStateManage {
+    id: ID!
+    name: String!
+    code: String!
+    remark: String!
+    enable: Boolean!
+    isDel: Boolean!
+    sort: Int!
+    createDate: String!
+  }
+  type ProConfirmStateManage {
+    id: ID!
+    name: String!
+    code: String!
+    remark: String!
+    enable: Boolean!
+    isDel: Boolean!
+    sort: Int!
+    createDate: String!
+  }
+  type CollectionQuarterManage {
+    id: ID!
+    name: String!
+    code: String!
+    remark: String!
+    enable: Boolean!
+    isDel: Boolean!
+    sort: Int!
+    createDate: String!
   }
 
   type ProjectClass {
@@ -474,6 +536,12 @@ const dataTypeDef = gql`
     treeStatus: [TreeStatu!]!
     industries: [Industry!]!
     regions: [Region!]!
+    regionones: [RegionOne!]!
+    yearManages: [YearManage!]!
+    quarterManages: [QuarterManage!]!
+    payStateManages: [PayStateManage!]!
+    proConfirmStateManages: [ProConfirmStateManage!]!
+    collectionQuarterManages: [CollectionQuarterManage!]!
     customers(
       region: String
       industry: String
@@ -596,6 +664,55 @@ const dataTypeDef = gql`
   }
 
   input RegionInput {
+    id: ID
+    name: String!
+    code: String!
+    enable: Boolean!
+    sort: Int!
+    remark: String!
+    parentId: String
+  }
+  input RegionOneInput {
+    id: ID
+    name: String!
+    code: String!
+    enable: Boolean!
+    sort: Int!
+    remark: String!
+  }
+  input YearManageInput {
+    id: ID
+    name: String!
+    code: String!
+    enable: Boolean!
+    sort: Int!
+    remark: String!
+  }
+  input QuarterManageInput {
+    id: ID
+    name: String!
+    code: String!
+    enable: Boolean!
+    sort: Int!
+    remark: String!
+  }
+  input PayStateManageInput {
+    id: ID
+    name: String!
+    code: String!
+    enable: Boolean!
+    sort: Int!
+    remark: String!
+  }
+  input ProConfirmStateManageInput {
+    id: ID
+    name: String!
+    code: String!
+    enable: Boolean!
+    sort: Int!
+    remark: String!
+  }
+  input CollectionQuarterManageInput {
     id: ID
     name: String!
     code: String!
@@ -742,7 +859,19 @@ const dataTypeDef = gql`
     pushIndustry(industry: IndustryInput!): ID!
     deleteIndustry(id: ID!): ID!
     pushRegion(region: RegionInput!): ID!
+    pushRegionOne(region: RegionOneInput!): ID!
+    pushYearManage(region: YearManageInput!): ID!
+    pushQuarterManage(region: QuarterManageInput!): ID!
+    pushPayStateManage(region: PayStateManageInput!): ID!
+    pushProConfirmStateManage(region: ProConfirmStateManageInput!): ID!
+    pushCollectionQuarterManage(region: CollectionQuarterManageInput!): ID!
     deleteRegion(id: ID!): ID!
+    deleteRegionOne(id: ID!): ID!
+    deleteYearManage(id: ID!): ID!
+    deleteQuarterManage(id: ID!): ID!
+    deletePayStateManage(id: ID!): ID!
+    deleteProConfirmStateManage(id: ID!): ID!
+    deleteCollectionQuarterManage(id: ID!): ID!
     pushCustomer(customer: CustomerInput!): ID!
     deleteCustomer(id: ID!): ID!
     pushAgreement(agreement: AgreementInput!): ID!

@@ -14,17 +14,11 @@ function getColumns(
   createHandle: (region: RegionType) => void,
   editHandle: (region: RegionType) => void,
   deleteHandle: (id: string) => void,
-  changeEnable: (region: RegionType) => void,
+  changeEnable:(region: RegionType) => void,
 ) {
   return [
     {
-      title: '一级区域名称',
-      dataIndex: 'parentName',
-      key: 'parentName',
-      width: '20%',
-    },
-    {
-      title: '区域名称',
+      title: '回款季度名称',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: RegionType) => (
@@ -33,7 +27,7 @@ function getColumns(
       width: '20%',
     },
     {
-      title: '区域编码',
+      title: '回款季度编码',
       dataIndex: 'code',
       key: 'code',
     },
@@ -43,7 +37,7 @@ function getColumns(
       key: 'enable',
       render: (text: string, record: RegionType) => (
         <Switch checked={record.enable} onChange={() => changeEnable(record)} />
-      ),
+      )
     },
     {
       title: '排序',
@@ -80,7 +74,7 @@ function getColumns(
   ];
 }
 function Region() {
-  const { regions, regionones, loading, deleteRegion, pushRegion } = useRegionState();
+  const { regions, loading, deleteRegion, pushRegion } = useRegionState();
   const ref = useRef<FormDialogHandle<RegionInput>>(null);
   const columns = getColumns(
     (region) => {
@@ -90,7 +84,6 @@ function Region() {
         enable: true,
         sort: 0,
         remark: '',
-        parentId: '',
       });
     },
     (region) => {
@@ -105,9 +98,8 @@ function Region() {
         enable: !region.enable,
         sort: region.sort,
         remark: region.remark,
-        parentId: region.parentId,
-      });
-    },
+      })
+    }
   );
   return (
     <PageContainer

@@ -1,3 +1,11 @@
+/*
+ * @Author: 13718154103 1161593628@qq.com
+ * @Date: 2024-11-21 09:20:39
+ * @LastEditors: 13718154103 1161593628@qq.com
+ * @LastEditTime: 2024-11-25 13:09:10
+ * @FilePath: /pm/pm-web-app/src/locales/zh-CN/menu.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 export default {
   'menu.welcome': '欢迎',
   'menu.dailies': '填写日报',
@@ -24,7 +32,7 @@ export default {
   'menu.synthetical.empExpense': '员工费用',
   'menu.project': '项目管理',
   'menu.project.allEdit': '全部项目',
-  'menu.project.establishPro':'项目立项',
+  'menu.project.establishPro': '项目立项',
   'menu.project.edit': '项目维护',
   'menu.project.editSalesActive': '售前活动',
   'menu.project.editAfterSalesActive': '售后活动',
@@ -45,7 +53,13 @@ export default {
   'menu.infoManage': '信息维护',
   'menu.infoManage.statu': '项目类型管理',
   'menu.infoManage.industry': '行业管理',
-  'menu.infoManage.region': '区域管理',
+  'menu.infoManage.region': '二级区域管理',
+  'menu.infoManage.regionOne': '一级区域管理',
+  'menu.infoManage.yearManage': '年度管理',
+  'menu.infoManage.quarterManage': '季度管理',
+  'menu.infoManage.payStateManage': '付款状态管理',
+  'menu.infoManage.proConfirmStateManage': '项目确认状态管理',
+  'menu.infoManage.collectionQuarterManage': '回款季度管理',
   'menu.infoManage.projectClass': '项目分类',
   'menu.infoManage.config': '配置管理',
   'menu.infoManage.workCalendar': '工作日历',

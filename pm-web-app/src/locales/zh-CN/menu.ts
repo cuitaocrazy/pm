@@ -2,7 +2,7 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-11-21 09:20:39
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-11-25 13:09:10
+ * @LastEditTime: 2024-11-25 15:10:02
  * @FilePath: /pm/pm-web-app/src/locales/zh-CN/menu.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -60,6 +60,8 @@ export default {
   'menu.infoManage.payStateManage': '付款状态管理',
   'menu.infoManage.proConfirmStateManage': '项目确认状态管理',
   'menu.infoManage.collectionQuarterManage': '回款季度管理',
+  'menu.infoManage.payWayInfoManage': '付款方式信息管理',
+  'menu.infoManage.auditStateManage': '审核状态',
   'menu.infoManage.projectClass': '项目分类',
   'menu.infoManage.config': '配置管理',
   'menu.infoManage.workCalendar': '工作日历',

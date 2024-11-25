@@ -306,6 +306,27 @@ const dataTypeDef = gql`
     sort: Int!
     createDate: String!
   }
+  type PayWayInfoManage {
+    id: ID!
+    name: String!
+    code: String!
+    remark: String!
+    enable: Boolean!
+    isDel: Boolean!
+    sort: Int!
+    createDate: String!
+    milestone: [String]
+  }
+  type AuditStateManage {
+    id: ID!
+    name: String!
+    code: String!
+    remark: String!
+    enable: Boolean!
+    isDel: Boolean!
+    sort: Int!
+    createDate: String!
+  }
 
   type ProjectClass {
     id: ID!
@@ -542,6 +563,8 @@ const dataTypeDef = gql`
     payStateManages: [PayStateManage!]!
     proConfirmStateManages: [ProConfirmStateManage!]!
     collectionQuarterManages: [CollectionQuarterManage!]!
+    payWayInfoManages: [PayWayInfoManage!]!
+    auditStateManages: [AuditStateManage!]!
     customers(
       region: String
       industry: String
@@ -720,6 +743,23 @@ const dataTypeDef = gql`
     sort: Int!
     remark: String!
   }
+  input PayWayInfoManageInput {
+    id: ID
+    name: String!
+    code: String!
+    enable: Boolean!
+    sort: Int!
+    remark: String!
+    milestone: [String]
+  }
+  input AuditStateManageInput {
+    id: ID
+    name: String!
+    code: String!
+    enable: Boolean!
+    sort: Int!
+    remark: String!
+  }
 
   input ProjectClassInput {
     id: ID
@@ -865,6 +905,8 @@ const dataTypeDef = gql`
     pushPayStateManage(region: PayStateManageInput!): ID!
     pushProConfirmStateManage(region: ProConfirmStateManageInput!): ID!
     pushCollectionQuarterManage(region: CollectionQuarterManageInput!): ID!
+    pushPayWayInfoManage(region: PayWayInfoManageInput!): ID!
+    pushAuditStateManage(region: AuditStateManageInput!): ID!
     deleteRegion(id: ID!): ID!
     deleteRegionOne(id: ID!): ID!
     deleteYearManage(id: ID!): ID!
@@ -872,6 +914,8 @@ const dataTypeDef = gql`
     deletePayStateManage(id: ID!): ID!
     deleteProConfirmStateManage(id: ID!): ID!
     deleteCollectionQuarterManage(id: ID!): ID!
+    deletePayWayInfoManage(id: ID!): ID!
+    deleteAuditStateManage(id: ID!): ID!
     pushCustomer(customer: CustomerInput!): ID!
     deleteCustomer(id: ID!): ID!
     pushAgreement(agreement: AgreementInput!): ID!

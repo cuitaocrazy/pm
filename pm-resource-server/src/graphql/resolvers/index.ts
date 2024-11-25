@@ -21,6 +21,8 @@ import quarterManages from "./quarterManages";
 import payStateManages from "./payStateManages";
 import proConfirmStateManages from "./proConfirmStateManages";
 import collectionQuarterManages from "./collectionQuarterManages";
+import payWayInfoManages from "./payWayInfoManages";
+import auditStateManages from "./auditStateManages";
 import customers from "./customers";
 import agreements from "./agreements";
 import projectAgreements from "./projectAgreements";
@@ -58,6 +60,8 @@ export default merge(
   payStateManages,
   proConfirmStateManages,
   collectionQuarterManages,
+  payWayInfoManages,
+  auditStateManages,
   customers,
   agreements,
   projectAgreements,

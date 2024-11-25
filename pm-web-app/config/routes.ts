@@ -245,6 +245,18 @@
         access: 'canRegion',
       },
       {
+        path: '/infoManage/payWayInfoManage',
+        name: 'payWayInfoManage',
+        component: './InfoManage/PayWayInfoManage/Edit',
+        access: 'canRegion',
+      },
+      {
+        path: '/infoManage/auditStateManage',
+        name: 'auditStateManage',
+        component: './InfoManage/AuditStateManage/Edit',
+        access: 'canRegion',
+      },
+      {
         path: '/infoManage/projectClass',
         name: 'projectClass',
         component: './InfoManage/ProjectClass/Edit',

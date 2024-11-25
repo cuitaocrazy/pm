@@ -565,6 +565,86 @@ export interface ICollectionQuarterManage {
 export const CollectionQuarterManage = client
   .db()
   .collection<ICollectionQuarterManage>(pluralize("CollectionQuarterManage"));
+/**
+ * 付款方式信息管理
+ */
+export interface IPayWayInfoManage {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+  /**
+   * 付款方式（添加里程碑）
+   */
+  milestone: [String];
+}
+
+export const PayWayInfoManage = client
+  .db()
+  .collection<IPayWayInfoManage>(pluralize("PayWayInfoManage"));
+  /**
+ * 审核状态
+ */
+export interface IAuditStateManage {
+  _id: ObjectId;
+  /**
+   * 名称
+   */
+  name: string;
+  /**
+   * 代码
+   */
+  code: string;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 是否启用
+   */
+  enable: Boolean;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 排序
+   */
+  sort: number;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+}
+
+export const AuditStateManage = client
+  .db()
+  .collection<IAuditStateManage>(pluralize("AuditStateManage"));
 
 /**
  * 区域

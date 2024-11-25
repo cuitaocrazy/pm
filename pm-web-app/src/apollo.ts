@@ -389,6 +389,29 @@ export type CollectionQuarterManage = {
   isDel: Scalars['Boolean'];
   sort: Scalars['Int'];
   createDate: Scalars['String'];
+  milestone: Array<Scalars['String']>;
+};
+export type PayWayInfoManage = {
+  __typename?: 'PayWayInfoManage';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
+};
+export type AuditStateManage = {
+  __typename?: 'AuditStateManage';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  code: Scalars['String'];
+  remark: Scalars['String'];
+  enable: Scalars['Boolean'];
+  isDel: Scalars['Boolean'];
+  sort: Scalars['Int'];
+  createDate: Scalars['String'];
 };
 export type Group = {
   __typename?: 'Group';
@@ -603,6 +626,8 @@ export type Query = {
   payStateManages: PayStateManage[];
   proConfirmStateManages: ProConfirmStateManage[];
   collectionQuarterManages: CollectionQuarterManage[];
+  payWayInfoManages: PayWayInfoManage[];
+  auditStateManages: AuditStateManage[];
   projectClasses: ProjectClass[];
   groups: Group[];
   customers: CustomersResult;
@@ -834,6 +859,23 @@ export type CollectionQuarterManageInput = {
   enable: Scalars['Boolean'];
   remark?: Scalars['String'];
   sort: Scalars['Int'];
+  milestone: Array<Scalars['String']>;
+};
+export type PayWayInfoManageInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
+};
+export type AuditStateManageInput = {
+  id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  enable: Scalars['Boolean'];
+  remark?: Scalars['String'];
+  sort: Scalars['Int'];
 };
 export type GroupInput = {
   id?: Maybe<Scalars['ID']>;
@@ -972,6 +1014,8 @@ export type Mutation = {
   pushPayStateManage: Scalars['ID'];
   pushProConfirmStateManage: Scalars['ID'];
   pushCollectionQuarterManage: Scalars['ID'];
+  pushPayWayInfoManage: Scalars['ID'];
+  pushAuditStateManage: Scalars['ID'];
   pushGroup: Scalars['ID'];
   pushCustomer: Scalars['ID'];
   pushAgreement: Scalars['ID'];
@@ -1052,6 +1096,12 @@ export type MutationPushProConfirmStateManageArgs = {
 export type MutationPushCollectionQuarterManageArgs = {
   collectionQuarterManages: CollectionQuarterManageInput;
 };
+export type MutationPushPayWayInfoManageArgs = {
+  payWayInfoManages: PayWayInfoManageInput;
+};
+export type MutationPushAuditStateManageArgs = {
+  auditStateManages: AuditStateManageInput;
+};
 export type MutationPushGroupArgs = {
   group: GroupInput;
 };
@@ -1077,6 +1127,12 @@ export type MutationDeleteProConfirmStateManageArgs = {
   id: Scalars['ID'];
 };
 export type MutationDeleteCollectionQuarterManageArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeletePayWayInfoManageArgs = {
+  id: Scalars['ID'];
+};
+export type MutationDeleteAuditStateManageArgs = {
   id: Scalars['ID'];
 };
 export type MutationDeleteGroupArgs = {

@@ -602,6 +602,7 @@ export type Query = {
   myDailies?: Maybe<EmployeeOfDailies>;
   projs: Project[];
   superProjs: Result;
+  awaitingReviewProjs: Result;
   iLeadProjs: Result;
   filterProjs: Result;
   filterProjsByType: Project[];
@@ -752,6 +753,14 @@ export type ProjectInput = {
   productName?: Scalars['String'];
   copyrightName?: Scalars['String'];
   projectArrangement?: Scalars['String'];
+  proState?: Scalars['Int'];
+  incomeConfirm?: Scalars['Int'];
+  contractState?: Scalars['Int'];
+  address?: Scalars['String'];
+  customerContact?: Scalars['String'];
+  contactDetailsCus?: Scalars['String'];
+  salesManager?: Scalars['String'];
+  copyrightNameSale?: Scalars['String'];
   doYear?: Scalars['String'];
 };
 
@@ -1000,6 +1009,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   pushDaily: Scalars['ID'];
   pushProject: Scalars['ID'];
+  checkProj: Scalars['ID'];
   archiveProject: Scalars['ID'];
   deleteProject: Scalars['ID'];
   restartProject: Scalars['ID'];
@@ -1036,6 +1046,11 @@ export type MutationPushDailyArgs = {
 
 export type MutationPushProjectArgs = {
   proj: ProjectInput;
+};
+export type MutationCheckProjArgs = {
+  id: Scalars['String'];
+  checkState: Scalars['Int'];
+  reason: Scalars['String'];
 };
 
 export type MutationDeleteProjectArgs = {

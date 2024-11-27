@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Button,
   Table,
@@ -23,6 +23,7 @@ import moment from 'moment';
 import { useProjStatus } from './hook';
 import ProjForm from './ProjForm';
 import ProjActiveForm from './ProjActiveForm';
+import CheckProjForm from './CheckProjForm';
 import DailyModal from './DailyModal';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
@@ -36,6 +37,7 @@ const Project: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
   const dailyRef = useRef<FormDialogHandle<Proj>>(null);
   const activeRef = useRef<FormDialogHandle<ProjectInput>>(null);
+  const checkProjRef = useRef(null);
 
   const {
     projs,
@@ -47,11 +49,11 @@ const Project: React.FC<any> = () => {
     archiveProj,
     deleteProj,
     pushProj,
+    checkProj,
     setQuery,
     query,
     total,
     todoProjsTotal,
-    yearManages,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -65,6 +67,18 @@ const Project: React.FC<any> = () => {
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
   };
+  const checkHandle = (proj: Proj, openRef: any) => {
+    const { actives, ...pro } = proj;
+    openRef.current?.showDialog({
+      ...pro,
+      // contName: proj.agreements[0].name ? proj.agreements[0].name : '',
+      contName: proj.agreements && proj.agreements.length > 0 ? proj.agreements[0].name : '',
+      actives: actives as ActiveInput[],
+      // @ts-ignore
+      acceptDate: pro.acceptDate && moment(pro.acceptDate),
+    });
+  };
+
   const columns = [
     {
       title: '项目名称',
@@ -182,87 +196,17 @@ const Project: React.FC<any> = () => {
       width: 100,
     },
     {
-      title: '合同金额',
-      dataIndex: 'contractAmount',
-      key: 'contractAmount',
-      render: (contractAmount: string) => {
-        return contractAmount;
-      },
-      width: 100,
-    },
-    {
-      title: '确认金额',
-      dataIndex: 'recoAmount',
-      key: 'recoAmount',
-      render: (recoAmount: string) => {
-        return recoAmount;
-      },
-      width: 100,
-    },
-    {
-      title: '税后金额',
-      dataIndex: 'afterTaxAmount',
-      key: 'afterTaxAmount',
-      render: (afterTaxAmount: string) => {
-        return afterTaxAmount;
-      },
-      width: 100,
-    },
-    {
-      title: '投产日期',
-      dataIndex: 'productDate',
-      key: 'productDate',
-      render: (productDate: string) => {
-        return productDate;
-      },
-      width: 100,
-    },
-    {
-      title: '合同签订日期',
-      dataIndex: 'contractSignDate',
-      key: 'contractSignDate',
-      render: (contractSignDate: string) => {
-        return contractSignDate;
-      },
-      width: 100,
-    },
-    {
       title: '操作',
       key: 'action',
       render: (id: string, record: Proj) => (
         <Space>
-          <a
-            key="archive"
-            onClick={() => {
-              editHandle(record, activeRef);
-            }}
-          >
-            添加项目活动
-          </a>
-          <Popconfirm
-            title="将项目数据归档，只能到归档列表查看！"
-            okText="是"
-            cancelText="否"
-            onConfirm={() => archiveProj(record.id)}
-          >
-            <a key="archive" hidden={record.isArchive}>
-              归档
-            </a>
-          </Popconfirm>
-          <Popconfirm
-            title="将会彻底删除源数据，且无法恢复？"
-            okText="是"
-            cancelText="否"
-            onConfirm={() => deleteProj(record.id)}
-          >
-            <a key="delete" hidden={record.isArchive}>
-              删除
-            </a>
-          </Popconfirm>
+          <Button type="link" block onClick={() => checkHandle(record, checkProjRef)}>
+            审核
+          </Button>
         </Space>
       ),
       fixed: 'right' as 'right',
-      width: 180,
+      width: 100,
     },
   ];
 
@@ -294,9 +238,6 @@ const Project: React.FC<any> = () => {
     group: [],
     status: '',
     name: '',
-    contractState: '',
-    acceptanceStatus: '',
-    confirmYear: '',
   });
   const handleChange = (value = '', type: string) => {
     setParams({
@@ -360,7 +301,6 @@ const Project: React.FC<any> = () => {
       group: [],
       status: '',
       name: '',
-      contractState:''
     });
     setQuery({
       ...query,
@@ -373,7 +313,6 @@ const Project: React.FC<any> = () => {
       group: '',
       status: '',
       name: '',
-      contractState:''
     });
   };
   const groupDatas = (inputArray: any) => {
@@ -411,23 +350,6 @@ const Project: React.FC<any> = () => {
   );
   const [statusOptions] = useState(projStatus.map((s) => ({ label: s[1], value: s[0] })));
   const [groupsOptions] = useState(groupDatas(groupType));
-  const [contractStatesOptions] = useState([
-    {
-      value: '0',
-      label: '未签署',
-    },
-    {
-      value: '1',
-      label: '已签署',
-    },
-  ]);
-  const [confirmYearOptions, setConfirmYearOptions] = useState([]);
-  useEffect(() => {
-    if (yearManages) {
-      console.log(yearManages, 'yearManages ====== LLLLLLL');
-      setConfirmYearOptions(yearManages);
-    }
-  }, [yearManages]);
 
   // const [customerListData, setCustomerListData] = useState({} as any);
   // const queryCustomerVariables: QueryCustomersArgs = {
@@ -552,48 +474,17 @@ const Project: React.FC<any> = () => {
         </Col>
         <Col className="gutter-row">
           <label>确认年度：</label>
-          {/* <DatePicker
+          <DatePicker
             format="YYYY"
             value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
             picker="year"
             onChange={(value, event) => {
               onChange(event);
             }}
-          /> yearManages*/}
-          <Select
-            value={params.confirmYear}
-            allowClear
-            className="width120"
-            placeholder="请选择"
-            onChange={(value, event) => handleChange(value, 'confirmYear')}
-            fieldNames={{ value: 'id', label: 'name' }}
-            options={confirmYearOptions}
           />
         </Col>
-        <Col className="gutter-row">
-          <label>合同状态：</label>
-          <Select
-            value={params.contractState}
-            allowClear
-            className="width120"
-            placeholder="请选择"
-            onChange={(value, event) => handleChange(value, 'contractState')}
-            options={contractStatesOptions}
-          />
-        </Col>
-        {/* <Col className="gutter-row">
-          <label>验收状态：</label>
-          <Select
-            value={params.acceptanceStatus}
-            allowClear
-            className="width120"
-            placeholder="请选择"
-            onChange={(value, event) => handleChange(value, 'acceptanceStatus')}
-            options={acceptanceStatusOptions}
-          />
-        </Col> */}
         <Col>
-          <Radio.Group
+          {/* <Radio.Group
             className="gutter-row displayInlineBlock"
             key="archive"
             value={archive}
@@ -621,7 +512,7 @@ const Project: React.FC<any> = () => {
                 <Badge count={todoProjsTotal}>待办项目</Badge>
               </Radio.Button>
             )}
-          </Radio.Group>
+          </Radio.Group> */}
         </Col>
       </Row>
       <Row justify="center" className="marginTop20">
@@ -654,7 +545,7 @@ const Project: React.FC<any> = () => {
 
       <DialogForm
         ref={ref}
-        title="编辑项目"
+        title="项目详情"
         width={1000}
         submitHandle={(v: ProjectInput) => pushProj(v)}
       >
@@ -670,6 +561,14 @@ const Project: React.FC<any> = () => {
         submitHandle={(v: ProjectInput) => pushProj(v)}
       >
         {ProjActiveForm}
+      </DialogForm>
+      <DialogForm
+        ref={checkProjRef}
+        title="审核项目"
+        width={1000}
+        submitHandle={(v: ProjectInput) => checkProj(v)}
+      >
+        {CheckProjForm}
       </DialogForm>
     </PageContainer>
   );

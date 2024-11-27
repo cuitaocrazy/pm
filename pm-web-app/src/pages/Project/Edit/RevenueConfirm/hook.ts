@@ -266,7 +266,7 @@ const deleteProjGql = gql`
 
 export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false; //判断是全部项目还是项目维护
-  const queryGql = getGql(isAdmin ? 'superProjs' : 'iLeadProjs'); //全部项目走superProjs，项目维护走iLeadProjs
+  const queryGql = getGql('superProjs'); //全部项目走superProjs，项目维护走iLeadProjs
   const [archive, setArchive] = useState('0');
   let [query, setQuery] = useState({});
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
@@ -306,9 +306,7 @@ export function useProjStatus() {
       refresh();
     }
   }, [refresh, query, archive]);
-  const tmpProjs = (
-    (isAdmin ? queryData?.superProjs?.result : queryData?.iLeadProjs?.result) || []
-  ).map((item) => {
+  const tmpProjs = (queryData?.superProjs?.result || []).map((item) => {
     return { ...item };
   });
   const projs = projectClassify(
@@ -320,7 +318,7 @@ export function useProjStatus() {
   // const agreements = isAdmin ? queryData?.superProjs?.result.agreenemts : queryData?.iLeadProjs?.result.agreenemts
   // const agreements = tmpProjs
   const projectAgreements = queryData?.projectAgreements || [];
-console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
+  console.log(queryData?.yearManages, 'yearManages ====== OOOOOOOOO');
   const archiveProj = useCallback(
     async (id: string) => {
       await archiveProjHandle({ variables: { id } });
@@ -401,12 +399,8 @@ console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
     deleteProj,
     pushProj,
     // yearManages: queryData?.yearManages,
-    yearManages:queryData?.yearManages,
-    total: isAdmin
-      ? queryData?.superProjs?.total
-      : archive !== '2'
-      ? queryData?.iLeadProjs?.total
-      : todoProjs.total,
+    yearManages: queryData?.yearManages,
+    total: queryData?.superProjs?.total,
     setQuery,
     query,
     getTodoList,

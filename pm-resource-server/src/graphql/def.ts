@@ -100,12 +100,19 @@ const dataTypeDef = gql`
     actualInspections: Int
     timeConsuming: Float
     confirmYear: String
+    confirmQuarter: String
     projectClass: String
     doYear: String
     group: String
     customerObj: Customer
     agreements: [Agreement]
     todoTip: String
+    proState: Int
+    incomeConfirm: Int
+    contractState: Int
+    contractAmount: String
+    afterTaxAmount: String
+    contractSignDate: String
   }
   type ProjectPage {
     result: [Project!]!
@@ -380,6 +387,9 @@ const dataTypeDef = gql`
     remark: String!
     isDel: Boolean!
     createDate: String!
+    contractAmount: String
+    afterTaxAmount: String
+    contractSignDate: String
   }
 
   type ProjectAgreement {
@@ -493,6 +503,21 @@ const dataTypeDef = gql`
       status: String
       name: String
       leaders: [String]
+      contractState: String
+    ): ProjectPage
+    awaitingReviewProjs(
+      isArchive: Boolean
+      regions: [String]
+      industries: [String]
+      projTypes: [String]
+      page: Int
+      pageSize: Int
+      confirmYear: String
+      group: String
+      status: String
+      name: String
+      leaders: [String]
+      contractState:String
     ): ProjectPage
     iLeadProjs(
       isArchive: Boolean
@@ -505,6 +530,7 @@ const dataTypeDef = gql`
       group: String
       status: String
       name: String
+      contractState: String
     ): ProjectPage
     iLeadTodoProjs(
       isArchive: Boolean
@@ -630,9 +656,17 @@ const dataTypeDef = gql`
     requiredInspections: Int
     actualInspections: Int
     confirmYear: String
-    productName:String
-    copyrightName:String
-    projectArrangement:String
+    productName: String
+    copyrightName: String
+    projectArrangement: String
+    proState: Int
+    incomeConfirm: Int
+    contractState: Int
+    address: String
+    customerContact: String
+    contactDetailsCus: String
+    salesManager: String
+    copyrightNameSale: String
     doYear: String
     group: String
     projectClass: String
@@ -889,6 +923,7 @@ const dataTypeDef = gql`
   type Mutation {
     pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
     pushProject(proj: ProjectInput!): ID!
+    checkProj(id: String, checkState: Int, reason: String): ID!
     archiveProject(id: ID!): ID!
     deleteProject(id: ID!): ID!
     restartProject(id: ID!): ID!

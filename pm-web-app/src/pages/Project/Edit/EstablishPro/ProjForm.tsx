@@ -282,9 +282,22 @@ export default () => {
           id
           name
           enable
+          contacts {
+            name
+            phone
+            tags
+            recorder
+            remark
+          }
+          officeAddress
+          salesman
         }
         page
         total
+      }
+      subordinates {
+        id
+        name
       }
     }
   `;
@@ -460,6 +473,38 @@ export default () => {
   const handleParticipantsChange = (value: string[]) => {
     setUpdatedParticipants(value);
   };
+  const [officeAddress, setOfficeAddress] = useState();
+  const [salesman, setSalesman] = useState();
+  const [contacts, setContacts] = useState();
+
+  //客户名称change
+  const handleChange = (value, option) => {
+    console.log(option, 'option KKKKK', option['data-salesman']);
+    setOfficeAddress(option['data-officeAddress']);
+    setSalesman(option['data-salesman']);
+    setContacts(option['data-contacts']);
+  };
+  useEffect(() => {
+    console.log('Value updated:', officeAddress); // 在状态变化后触发
+    form.setFieldsValue({ address: officeAddress });
+  }, [officeAddress]); // value 改变时运行
+  //客户联系人change
+  const customerContacthandleChange = (value, option) => {
+    console.log(option, 'option NNNNNNNN');
+    form.setFieldsValue({ contactDetailsCus: option.phone });
+  };
+  const [formattedOptions, setFormattedOptions] = useState([]);
+  useEffect(() => {
+    console.log(salesman, 'salesman KKKK');
+    //   //销售负责人的options
+    if (salesman) {
+      let temp = salesman.map((item) => ({
+        value: item,
+        label: customerListData?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
+      }));
+      setFormattedOptions(temp);
+    }
+  }, [salesman]); // value 改变时运行
 
   return (
     <Form
@@ -501,9 +546,15 @@ export default () => {
         </Col>
         <Col span={7}>
           <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
-            <Select allowClear onFocus={() => fetchCustomersData()}>
+            <Select onChange={handleChange} allowClear onFocus={() => fetchCustomersData()}>
               {customerListData?.customers.result.map((u) => (
-                <Select.Option key={u.id} value={u.id}>
+                <Select.Option
+                  key={u.id}
+                  value={u.id}
+                  data-salesman={u.salesman}
+                  data-officeAddress={u.officeAddress}
+                  data-contacts={u.contacts}
+                >
                   {u.name}
                 </Select.Option>
               ))}
@@ -641,10 +692,8 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item dependencies={['id']} noStyle>
-            {() => {
-              return getLeveTwoStatus('contStatus', '合同状态');
-            }}
+          <Form.Item label="合同状态">
+            <Input defaultValue="未签署" disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -688,12 +737,12 @@ export default () => {
       <Row>
         <Col span={7}>
           <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled/>
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         <Col span={7}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0}  disabled/>
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -831,7 +880,7 @@ export default () => {
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} disabled/>
+              <InputNumber min={0} disabled />
             </Form.Item>
           </Col>
         </Row>
@@ -948,6 +997,48 @@ export default () => {
             <Input />
           </Form.Item>
         </Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
+            <Select
+              onChange={customerContacthandleChange}
+              options={contacts}
+              fieldNames={{ value: 'name', label: 'name' }}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="客户联系人联系方式"
+            name="contactDetailsCus"
+            rules={[{ required: false }]}
+          >
+            <Input disabled />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
+            <Select options={formattedOptions} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="销售负责人联系方式"
+            name="copyrightNameSale"
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}></Col>
       </Row>
       <Row>
         <Col span={24}>

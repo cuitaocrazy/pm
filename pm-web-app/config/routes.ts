@@ -115,6 +115,18 @@
         component: './Project/Edit/EstablishPro',
         access: 'canProjEdit',
       },
+      {
+        path: '/project/establishProReview',
+        name: 'establishProReview',
+        component: './Project/Edit/EstablishProReview',
+        access: 'canProLeaderEdit',
+      },
+      {
+        path: '/project/revenueConfirm',
+        name: 'revenueConfirm',
+        component: './Project/Edit/RevenueConfirm',
+        access: 'canProLeaderEdit',
+      },
     ],
   },
   {

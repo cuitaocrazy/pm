@@ -2,6 +2,7 @@ import type {
   Mutation,
   MutationDeleteProjectArgs,
   MutationPushProjectArgs,
+  MutationCheckProjArgs,
   ProjectInput,
   Query,
   QueryProjectArgs,
@@ -16,7 +17,7 @@ import { attachmentUpload, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
-    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String) {
+    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int) {
       subordinates {
         id
         name
@@ -31,12 +32,8 @@ const getGql = (proName: string) => {
         id
         agreementId
       }
-        yearManages{
-          id
-          name
-        }
 
-      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState){
+      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name){
         result{
           id
         pId
@@ -75,22 +72,13 @@ const getGql = (proName: string) => {
         actualInspections
         timeConsuming
         confirmYear
-        confirmQuarter
         doYear
         projectClass
         group
         proState
-        contractAmount
-        recoAmount
-        afterTaxAmount
-        productDate
-        contractSignDate
         agreements{
           id
           name
-          contractAmount
-          afterTaxAmount
-          contractSignDate
         }
         actives {
           name
@@ -104,6 +92,7 @@ const getGql = (proName: string) => {
             status
             thumbUrl
           }
+            
         }
         customerObj{
           id
@@ -199,13 +188,9 @@ const queryTodoProjs = gql`
         doYear
         projectClass
         group
-        proState
         agreements {
           id
           name
-          contractAmount
-          afterTaxAmount
-          contractSignDate
         }
         actives {
           name
@@ -251,6 +236,11 @@ const pushProjGql = gql`
     pushProject(proj: $proj)
   }
 `;
+const checkProjGql = gql`
+  mutation ($id: String, $checkState: Int, $reason: String) {
+    checkProj(id: $id, checkState: $checkState, reason: $reason)
+  }
+`;
 
 const archiveProjGql = gql`
   mutation ($id: ID!) {
@@ -266,7 +256,7 @@ const deleteProjGql = gql`
 
 export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false; //判断是全部项目还是项目维护
-  const queryGql = getGql(isAdmin ? 'superProjs' : 'iLeadProjs'); //全部项目走superProjs，项目维护走iLeadProjs
+  const queryGql = getGql('awaitingReviewProjs'); //全部项目走superProjs，项目维护走iLeadProjs
   const [archive, setArchive] = useState('0');
   let [query, setQuery] = useState({});
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
@@ -291,6 +281,11 @@ export function useProjStatus() {
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
     pushProjGql,
   );
+  //checkProjHandle
+  const [checkProjHandle, { loading: checkProjHandleLoading }] = useMutation<
+    Mutation,
+    MutationCheckProjArgs
+  >(checkProjGql);
 
   const { refresh: initialRefresh } = useModel('@@initialState'); //获取全局初始状态
   const { buildProjName } = useBaseState(); //项目名字的工具函数
@@ -306,9 +301,7 @@ export function useProjStatus() {
       refresh();
     }
   }, [refresh, query, archive]);
-  const tmpProjs = (
-    (isAdmin ? queryData?.superProjs?.result : queryData?.iLeadProjs?.result) || []
-  ).map((item) => {
+  const tmpProjs = (queryData?.awaitingReviewProjs?.result || []).map((item) => {
     return { ...item };
   });
   const projs = projectClassify(
@@ -320,7 +313,7 @@ export function useProjStatus() {
   // const agreements = isAdmin ? queryData?.superProjs?.result.agreenemts : queryData?.iLeadProjs?.result.agreenemts
   // const agreements = tmpProjs
   const projectAgreements = queryData?.projectAgreements || [];
-console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
+
   const archiveProj = useCallback(
     async (id: string) => {
       await archiveProjHandle({ variables: { id } });
@@ -368,6 +361,19 @@ console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
     },
     [pushCostHandle, refresh],
   );
+  //审核项目
+  const checkProj = useCallback(
+    async (proj: ProjectInput) => {
+      console.log(proj, 'proj LLLLLLL');
+      await checkProjHandle({
+        variables: {
+          ...proj,
+        },
+      });
+      await refresh();
+    },
+    [checkProjHandle, refresh],
+  );
   //获取代办项目
   const getTodoList = async (params: any) => {
     return await client.query({
@@ -386,7 +392,8 @@ console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
   });
 
   return {
-    loading: queryLoading || deleteLoading || pushLoading || archiveLoading,
+    loading:
+      queryLoading || deleteLoading || pushLoading || archiveLoading || checkProjHandleLoading,
     projs,
     todoProjs: todoProjs.result,
     subordinates,
@@ -400,13 +407,8 @@ console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
     archiveProj,
     deleteProj,
     pushProj,
-    // yearManages: queryData?.yearManages,
-    yearManages:queryData?.yearManages,
-    total: isAdmin
-      ? queryData?.superProjs?.total
-      : archive !== '2'
-      ? queryData?.iLeadProjs?.total
-      : todoProjs.total,
+    checkProj,
+    total: queryData?.awaitingReviewProjs?.total,
     setQuery,
     query,
     getTodoList,

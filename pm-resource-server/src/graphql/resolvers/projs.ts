@@ -68,6 +68,165 @@ export default {
       if (__.isArchive === true || __.isArchive === false) {
         filter["isArchive"] = __.isArchive;
       }
+      // filter['proState'] = 1
+      let {
+        regions,
+        industries,
+        projTypes,
+        page,
+        pageSize,
+        confirmYear,
+        group,
+        status,
+        name,
+        leaders,
+        contractState,
+      } = __;
+      if (!page || page === 0) {
+        page = 1;
+      }
+      if (!pageSize || pageSize === 0) {
+        pageSize = 10;
+      }
+      const skip = (page - 1) * pageSize;
+      const user = context.user!;
+
+      const regexArray: RegExp[] = [];
+      if (!regions || regions.length == 0) regions = ["\\w*"];
+      if (!industries || industries.length == 0) industries = ["\\w*"];
+      if (!projTypes || projTypes.length == 0) projTypes = ["\\w*"];
+
+      if (confirmYear) {
+        filter["confirmYear"] = confirmYear;
+      }
+      if (status) {
+        filter["status"] = status;
+      }
+      if (group) {
+        filter["group"] = new RegExp(group, "g");
+      }
+      if (name) {
+        filter["name"] = new RegExp(name, "g");
+      }
+      if (leaders && leaders.length > 0) {
+        filter["leader"] = { $in: leaders };
+      }
+      //contractState
+      if (contractState) {
+        filter["contractState"] = Number(contractState);
+      }
+
+      for (let i = 0; i < regions.length; i++) {
+        for (let j = 0; j < industries.length; j++) {
+          for (let k = 0; k < projTypes.length; k++) {
+            const regexStr = `^${industries[j]}-${regions[i]}-${projTypes[k]}-.*`;
+            regexArray.push(new RegExp(regexStr));
+          }
+        }
+      }
+
+      // filter = { _id: { $not: /-ZH-/ } };
+      filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
+      }
+
+      // filter["$or"] = [];
+      if (filter["$or"]) {
+        filter["$and"] = [
+          {
+            $or: filter["$or"].concat([
+              { participants: { $elemMatch: { $eq: context.user!.id } } },
+              { leader: { $in: subordinateIds } },
+            ]),
+          },
+          {
+            $or: [{ proState: 1 }, { proState: { $exists: false } }],
+          },
+        ];
+      } else {
+        filter["$and"] = [
+          {
+            $or: [
+              { participants: { $elemMatch: { $eq: context.user!.id } } },
+              { leader: { $in: subordinateIds } },
+            ],
+          },
+          {
+            $or: [{ proState: 1 }, { proState: { $exists: false } }],
+          },
+        ];
+      }
+      // filter["$or"] = [];
+      // if (filter["$or"]) {
+      //   filter["$or"] = filter["$or"].concat([
+      //     { participants: { $elemMatch: { $eq: context.user!.id } } },
+      //     { leader: { $in: subordinateIds } },
+      //   ]);
+      // } else {
+      //   filter["$or"] = [
+      //     { participants: { $elemMatch: { $eq: context.user!.id } } },
+      //     { leader: { $in: subordinateIds } },
+      //   ];
+      // }
+
+      // console.dir(filter, { depth: null, colors: true });
+      const result = await Project.find(filter)
+        .skip(skip)
+        .limit(pageSize)
+        .sort({ createDate: -1 })
+        .map(dbid2id)
+        .toArray(); //项目数据
+
+      const projIds = result.map((proj) => proj.id); //项目的ID
+      const projAggrement = await ProjectAgreement.find({
+        _id: { $in: projIds },
+      }).toArray(); //中间的表，有合同ID和项目ID，根据项目ID去查
+      await Promise.all(
+        projAggrement.map(async (pa) => {
+          const agreement = await Agreement.find({
+            _id: new ObjectId(pa.agreementId),
+          })
+            .map(dbid2id)
+            .toArray(); //合同数据
+          // console.dir(agreement, { depth: null, colors: true });
+          const oneResult = result.find((res) => res.id === pa._id);
+          oneResult.agreements = agreement;
+        })
+      );
+      await Promise.all(
+        result.map(async (oneResult) => {
+          const customer = await Customer.findOne({
+            $or: [
+              { _id: new ObjectId(oneResult.customer) },
+              { _id: oneResult.customer },
+            ],
+          });
+          if (customer) oneResult.customerObj = dbid2id(customer);
+        })
+      );
+      console.dir(filter, { depth: null, colors: true });
+      const total = await Project.find(filter).count();
+
+      return {
+        result,
+        page,
+        total,
+      };
+    },
+    //获取待审核的项目（其他的限制条件都一样）
+    awaitingReviewProjs: async (_: any, __: any, context: AuthContext) => {
+      let filter = {};
+      if (__.isArchive === true || __.isArchive === false) {
+        filter["isArchive"] = __.isArchive;
+      }
+      filter["proState"] = 0;
 
       let {
         regions,
@@ -143,6 +302,7 @@ export default {
           { leader: { $in: subordinateIds } },
         ];
       }
+      // console.dir(filter, { depth: null, colors: true });
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
@@ -538,10 +698,10 @@ export default {
       let or =
         __.type === "active"
           ? [
-            { leader: context.user!.id },
-            { salesLeader: context.user!.id },
-            { participants: { $elemMatch: { $eq: context.user!.id } } },
-          ]
+              { leader: context.user!.id },
+              { salesLeader: context.user!.id },
+              { participants: { $elemMatch: { $eq: context.user!.id } } },
+            ]
           : [{ leader: context.user!.id }, { salesLeader: context.user!.id }];
       let filter = __.isAdmin
         ? { isArchive: false }
@@ -552,8 +712,8 @@ export default {
           __.org && __.projType
             ? `^${__.org}+-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`
             : __.org
-              ? `^${__.org}+-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$`
-              : `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`;
+            ? `^${__.org}+-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*-[0-9A-Za-z]*$`
+            : `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`;
         filter["_id"] = { $regex: regex };
       }
       if (__.customerId) {
@@ -613,6 +773,19 @@ export default {
         { $set: proj },
         { upsert: true }
       ).then((res) => id || res.upsertedId._id);
+    },
+    checkProj: async (_: any, args: any, context: AuthContext) => {
+      // console.dir(args, { depth: null, colors: true });
+      let { id, checkState, reason } = args;
+      return Project.updateOne(
+        { _id: id },
+        { $set: { proState: checkState, reason } },
+        { upsert: true }
+      )
+        .then((res) => id || res.upsertedId._id)
+        .catch((e) => {
+          // console.dir(e, { depth: null, colors: true });
+        });
     },
     archiveProject: async (_: any, args: any, context: AuthContext) => {
       let archiveTime = moment()

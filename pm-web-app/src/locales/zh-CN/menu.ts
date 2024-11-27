@@ -2,7 +2,7 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-11-21 09:20:39
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-11-25 15:10:02
+ * @LastEditTime: 2024-11-27 14:20:41
  * @FilePath: /pm/pm-web-app/src/locales/zh-CN/menu.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -33,6 +33,7 @@ export default {
   'menu.project': '项目管理',
   'menu.project.allEdit': '全部项目',
   'menu.project.establishPro': '立项申请',
+  'menu.project.establishProReview': '立项审核',
   'menu.project.edit': '项目维护',
   'menu.project.editSalesActive': '售前活动',
   'menu.project.editAfterSalesActive': '售后活动',
@@ -41,6 +42,7 @@ export default {
   'menu.project.projDailies': '项目日报',
   'menu.project.projWeeklies': '项目周报',
   'menu.project.projExpense': '项目费用',
+  'menu.project.revenueConfirm': '收入确认',
   'menu.market': '市场管理',
   'menu.market.marketCustom': '市场客户管理',
   'menu.market.marketPlan': '市场计划管理',

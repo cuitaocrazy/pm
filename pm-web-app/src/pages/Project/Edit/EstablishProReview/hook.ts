@@ -76,6 +76,7 @@ const getGql = (proName: string) => {
         projectClass
         group
         proState
+        contractState
         agreements{
           id
           name
@@ -237,8 +238,8 @@ const pushProjGql = gql`
   }
 `;
 const checkProjGql = gql`
-  mutation ($id: String, $checkState: Int, $reason: String) {
-    checkProj(id: $id, checkState: $checkState, reason: $reason)
+  mutation ($id: String, $checkState: Int, $reason: String, $incomeConfirm: String) {
+    checkProj(id: $id, checkState: $checkState, reason: $reason, incomeConfirm: $incomeConfirm)
   }
 `;
 
@@ -364,6 +365,9 @@ export function useProjStatus() {
   //审核项目
   const checkProj = useCallback(
     async (proj: ProjectInput) => {
+      if (proj.checkState == 1) {
+        proj.incomeConfirm = '0';
+      }
       console.log(proj, 'proj LLLLLLL');
       await checkProjHandle({
         variables: {

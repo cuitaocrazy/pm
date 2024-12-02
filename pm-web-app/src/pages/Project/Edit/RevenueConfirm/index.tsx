@@ -52,6 +52,8 @@ const Project: React.FC<any> = () => {
     total,
     todoProjsTotal,
     yearManages,
+    proConfirmStateManages,
+    incomeConfirmProj,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -156,10 +158,10 @@ const Project: React.FC<any> = () => {
     },
     {
       title: '合同状态',
-      dataIndex: 'contStatus',
-      key: 'contStatus',
+      dataIndex: 'contractState',
+      key: 'contractState',
       render: (text: string, record: Proj) => {
-        return status?.find((statu) => statu.id === record.contStatus)?.name;
+        return record.contractState == 0 ? '未签署' : record.contractState == 1 ? '已签署' : '---';
       },
       width: 100,
     },
@@ -231,38 +233,36 @@ const Project: React.FC<any> = () => {
       key: 'action',
       render: (id: string, record: Proj) => (
         <Space>
-          <a
-            key="archive"
-            onClick={() => {
-              editHandle(record, activeRef);
-            }}
-          >
-            添加项目活动
-          </a>
           <Popconfirm
-            title="将项目数据归档，只能到归档列表查看！"
+            disabled={
+              !(
+                status?.find((statu) => statu.id === record.acceStatus)?.name == '已验收' &&
+                record.contractState == 1
+              )
+            }
+            title="把项目进行收入确认？"
             okText="是"
             cancelText="否"
-            onConfirm={() => archiveProj(record.id)}
+            onConfirm={() => incomeConfirmProj(record.id)}
           >
-            <a key="archive" hidden={record.isArchive}>
-              归档
-            </a>
-          </Popconfirm>
-          <Popconfirm
-            title="将会彻底删除源数据，且无法恢复？"
-            okText="是"
-            cancelText="否"
-            onConfirm={() => deleteProj(record.id)}
-          >
-            <a key="delete" hidden={record.isArchive}>
-              删除
-            </a>
+            <Button
+              type="link"
+              key="confirm"
+              disabled={
+                !(
+                  status?.find((statu) => statu.id === record.acceStatus)?.name == '已验收' &&
+                  record.contractState == 1
+                )
+              }
+            >
+              {/** */}
+              收入确认
+            </Button>
           </Popconfirm>
         </Space>
       ),
       fixed: 'right' as 'right',
-      width: 180,
+      width: 100,
     },
   ];
 
@@ -297,6 +297,7 @@ const Project: React.FC<any> = () => {
     contractState: '',
     acceptanceStatus: '',
     confirmYear: '',
+    incomeConfirm: '',
   });
   const handleChange = (value = '', type: string) => {
     setParams({
@@ -360,7 +361,8 @@ const Project: React.FC<any> = () => {
       group: [],
       status: '',
       name: '',
-      contractState:''
+      contractState: '',
+      incomeConfirm: '',
     });
     setQuery({
       ...query,
@@ -373,7 +375,8 @@ const Project: React.FC<any> = () => {
       group: '',
       status: '',
       name: '',
-      contractState:''
+      contractState: '',
+      incomeConfirm: '',
     });
   };
   const groupDatas = (inputArray: any) => {
@@ -422,12 +425,15 @@ const Project: React.FC<any> = () => {
     },
   ]);
   const [confirmYearOptions, setConfirmYearOptions] = useState([]);
+  const [incomeConfirmOptions, setIncomeConfirmOptions] = useState([]);
   useEffect(() => {
     if (yearManages) {
-      console.log(yearManages, 'yearManages ====== LLLLLLL');
       setConfirmYearOptions(yearManages);
     }
-  }, [yearManages]);
+    if (proConfirmStateManages) {
+      setIncomeConfirmOptions(proConfirmStateManages);
+    }
+  }, [yearManages, proConfirmStateManages]);
 
   // const [customerListData, setCustomerListData] = useState({} as any);
   // const queryCustomerVariables: QueryCustomersArgs = {
@@ -566,11 +572,11 @@ const Project: React.FC<any> = () => {
             className="width120"
             placeholder="请选择"
             onChange={(value, event) => handleChange(value, 'confirmYear')}
-            fieldNames={{ value: 'id', label: 'name' }}
+            fieldNames={{ value: 'code', label: 'name' }}
             options={confirmYearOptions}
           />
         </Col>
-        <Col className="gutter-row">
+        {/* <Col className="gutter-row">
           <label>合同状态：</label>
           <Select
             value={params.contractState}
@@ -579,6 +585,19 @@ const Project: React.FC<any> = () => {
             placeholder="请选择"
             onChange={(value, event) => handleChange(value, 'contractState')}
             options={contractStatesOptions}
+          />
+        </Col> */}
+        {/**incomeConfirm */}
+        <Col className="gutter-row">
+          <label>确认状态：</label>
+          <Select
+            value={params.incomeConfirm}
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'incomeConfirm')}
+            fieldNames={{ value: 'code', label: 'name' }}
+            options={incomeConfirmOptions}
           />
         </Col>
         {/* <Col className="gutter-row">
@@ -592,7 +611,7 @@ const Project: React.FC<any> = () => {
             options={acceptanceStatusOptions}
           />
         </Col> */}
-        <Col>
+        {/* <Col>
           <Radio.Group
             className="gutter-row displayInlineBlock"
             key="archive"
@@ -622,7 +641,7 @@ const Project: React.FC<any> = () => {
               </Radio.Button>
             )}
           </Radio.Group>
-        </Col>
+        </Col> */}
       </Row>
       <Row justify="center" className="marginTop20">
         <Col>

@@ -40,7 +40,7 @@ const userQuery = gql`
       name
     }
     agreements {
-      result{
+      result {
         id
         name
       }
@@ -90,10 +90,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  const { status, dataForTree, groupType,subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
+  data.contractState = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  //
+  const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
-    .map(group => {
+    .map((group) => {
       const match = group.toString().match(/\/市场组/);
       if (match) {
         return `${match.input}`;
@@ -126,15 +128,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
 
-
   const myGroup = initialState?.currentUser?.groups;
-  const shouldEnable = myGroup?.map(item => {
+  const shouldEnable = myGroup?.map((item) => {
     // 使用正则表达式检查是否包含一个或两个斜杠
     const match = item.match(/^\/[^/]+(\/[^/]+)?$/);
     return match !== null;
   });
 
-  const isConfirmYearDisabled = shouldEnable?.some(enabled => enabled === true);
+  const isConfirmYearDisabled = shouldEnable?.some((enabled) => enabled === true);
 
   // 获取填写日报人员id，禁止修改
   let employeeIds: string[] = [];
@@ -145,7 +146,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       queryData.allProjDaily.dailies,
     );
     employeeIds = [...employeesSet];
-
   }
 
   const props: UploadProps = {
@@ -386,21 +386,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   //   });
   // };
 
-
-
-
   // 初始化项目经理‘’
   const [leader, setLeader] = useState<string>('');
   // 初始化更新的参与人员[]
   const [updatedParticipants, setUpdatedParticipants] = useState<string[]>([]);
 
-
-
   // 组件渲染完成后，获取项目经理的值
   useEffect(() => {
     // 在 useEffect 中获取 form.getFieldValue('leader') 的值
     const leaderValue = form.getFieldValue('leader');
-    console.log(subordinatesOnJob)
+    console.log(subordinatesOnJob);
     // 更新组件的状态
     setLeader(leaderValue);
   }, []); // 空数组作为第二个参数表示仅在组件挂载时执行一次
@@ -409,21 +404,27 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   useEffect(() => {
     const participantsValue: string[] = form.getFieldValue('participants');
     const initParticipants: string[] = Array.isArray(participantsValue) ? participantsValue : [];
-    const isOnJob = (participant:string,subOnJob : any[])=>{
+    const isOnJob = (participant: string, subOnJob: any[]) => {
       //判断participants是否在subordinatesOnJob的id中
-     let result = false;
-       for(let user of subOnJob){
-        if(participant===user.id){
+      let result = false;
+      for (let user of subOnJob) {
+        if (participant === user.id) {
           result = true;
         }
-       }
-     return result;
-    }
+      }
+      return result;
+    };
     form.setFieldsValue({
-      participants: initParticipants.filter(participant=>isOnJob(participant,subordinatesOnJob)),
+      participants: initParticipants.filter((participant) =>
+        isOnJob(participant, subordinatesOnJob),
+      ),
     });
     // 更新参与人员的数组
-    setUpdatedParticipants(initParticipants.filter(participant => participant !== leader).filter(participant=>isOnJob(participant,subordinatesOnJob)));
+    setUpdatedParticipants(
+      initParticipants
+        .filter((participant) => participant !== leader)
+        .filter((participant) => isOnJob(participant, subordinatesOnJob)),
+    );
   }, [leader, form]);
 
   // 选择项目经理
@@ -438,10 +439,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     form.setFieldsValue({
       participants: updatedParticipants,
     });
-
   };
-
-
 
   // 处理customerListData1.customers获取值
   const [customerListData, setCustomerListData] = useState({} as any);
@@ -450,12 +448,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     variables: queryCustomerVariables,
   });
   useEffect(() => {
-
-
-
     setCustomerListData(customerListData1?.customers);
   }, [customerListData1]);
-
 
   const [isExistProjIdData, setIsExistProjIdData] = useState<Boolean>();
 
@@ -464,11 +458,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     if (data !== undefined) {
       setIsExistProjIdData(data);
     }
-
   };
 
   const groupDatas = (inputArray: any) => {
-    let result: any = []
+    let result: any = [];
     inputArray.forEach((item: any) => {
       const path = item.substring(1).split('/');
       let currentLevel = result;
@@ -477,7 +470,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
         if (existingSegment) {
           currentLevel = existingSegment.children || [];
-
         } else {
           const newSegment = {
             value: segment,
@@ -487,24 +479,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
           currentLevel.push(newSegment);
           currentLevel = newSegment.children || [];
-
         }
       });
-    })
-    return result
-  }
+    });
+    return result;
+  };
   // 项目部门下拉菜单的数据源
-  const [groupsOptions] = useState(
-    groupDatas(groupType)
-  );
+  const [groupsOptions] = useState(groupDatas(groupType));
 
   return (
-    <Form
-      {...layout}
-      form={form}
-      initialValues={data}
-      disabled
-    >
+    <Form {...layout} form={form} initialValues={data} disabled>
       <Form.Item shouldUpdate noStyle>
         {() => {
           return (
@@ -524,8 +508,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >
-                  <ProjIdComponent disabled={!!data?.id && !isDerive}
-                    onChange={onIdChange}        // 处理整个 ID 变化的回调  这个数据里的ID字段存在，且不是派生，isDerive是否派生了，true为点击派生按钮了
+                  <ProjIdComponent
+                    disabled={!!data?.id && !isDerive}
+                    onChange={onIdChange} // 处理整个 ID 变化的回调  这个数据里的ID字段存在，且不是派生，isDerive是否派生了，true为点击派生按钮了
                     onIsExistProjIdDataChange={handleIsExistProjIdDataChange} // 将回调函数传递给子组件
                   />
                 </Form.Item>
@@ -597,8 +582,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               changeOnSelect
               className="width122"
               placeholder="请选择"
-              options={groupsOptions} />
-
+              options={groupsOptions}
+            />
           </Form.Item>
           {/* <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Select allowClear>
@@ -713,17 +698,18 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item dependencies={['id']} noStyle>
-            {() => {
+          <Form.Item label="合同状态" name="contractState">
+            {/* {() => {
               return getLeveTwoStatus('contStatus', '合同状态');
-            }}
+            }} */}
+            <Input disabled />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={8}>
           <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
-            <Select  loading={loading} onChange={(v) => setStageStatus(v)}>
+            <Select loading={loading} onChange={(v) => setStageStatus(v)}>
               {projStatus.map((s) => (
                 <Select.Option key={s[0]} value={s[0]}>
                   {s[1]}
@@ -741,7 +727,7 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker  format="YYYY-MM-DD" style={{ width: '100%' }} />
+            <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -753,7 +739,7 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker  format="YYYY-MM-DD" style={{ width: '100%' }} />
+            <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>
@@ -839,19 +825,31 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="预估工作量" name="estimatedWorkload" rules={[{ required: false }, { validator: validateInteger, },]}>
+          <Form.Item
+            label="预估工作量"
+            name="estimatedWorkload"
+            rules={[{ required: false }, { validator: validateInteger }]}
+          >
             <InputNumber min={0} />
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
           <>
             <Col span={8}>
-              <Form.Item label="免费人天数" name="freePersonDays" rules={[{ required: false }, { validator: validateInteger, },]}>
+              <Form.Item
+                label="免费人天数"
+                name="freePersonDays"
+                rules={[{ required: false }, { validator: validateInteger }]}
+              >
                 <InputNumber min={0} />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item label="已用人天数" name="usedPersonDays" rules={[{ required: false }, { validator: validateInteger, },]}>
+              <Form.Item
+                label="已用人天数"
+                name="usedPersonDays"
+                rules={[{ required: false }, { validator: validateInteger }]}
+              >
                 <InputNumber min={0} />
               </Form.Item>
             </Col>
@@ -907,13 +905,17 @@ return true;
             <Form.Item
               label="要求巡检次数"
               name="requiredInspections"
-              rules={[{ required: false }, { validator: validateInteger, },]}
+              rules={[{ required: false }, { validator: validateInteger }]}
             >
               <InputNumber min={0} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="实际巡检次数" name="actualInspections" rules={[{ required: false }, { validator: validateInteger, },]}>
+            <Form.Item
+              label="实际巡检次数"
+              name="actualInspections"
+              rules={[{ required: false }, { validator: validateInteger }]}
+            >
               <InputNumber min={0} />
             </Form.Item>
           </Col>
@@ -921,7 +923,7 @@ return true;
             <Form.Item
               label="服务周期"
               name="serviceCycle"
-              rules={[{ required: false }, { validator: validateInteger, },]}
+              rules={[{ required: false }, { validator: validateInteger }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
               <InputNumber min={0} />
@@ -1084,7 +1086,7 @@ return true;
                             defaultFileList={
                               form.getFieldValue('actives')
                                 ? (form.getFieldValue('actives')[field.name]
-                                  ?.fileList as UploadFile[])
+                                    ?.fileList as UploadFile[])
                                 : []
                             }
                           >

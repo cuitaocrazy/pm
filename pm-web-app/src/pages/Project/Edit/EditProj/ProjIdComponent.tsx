@@ -5,10 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useBaseState } from '@/pages/utils/hook';
 import moment from 'moment';
 import { gql, useLazyQuery } from '@apollo/client';
-import type {
-  IsExistProjIdArgs,
-  IsExistProjIdQuery
-} from '@/apollo';
+import type { IsExistProjIdArgs, IsExistProjIdQuery } from '@/apollo';
 
 const { Option } = Select;
 
@@ -43,22 +40,31 @@ function getIdInfo(id?: string) {
 }
 
 const queryIsExistProjID = gql`
-  query GetIsExistProjID($id: String!){
+  query GetIsExistProjID($id: String!) {
     isExistProjID(id: $id)
   }
 `;
 
-const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled, onIsExistProjIdDataChange }) => {
+const ProjIdComponent: FC<ProjIdComponentProps> = ({
+  oldID,
+  value,
+  onChange,
+  disabled,
+  onIsExistProjIdDataChange,
+}) => {
   const { status, orgCode, projType, zoneCode } = useBaseState();
-  const [isZh, setIsZh] = useState(false)
+  const [isZh, setIsZh] = useState(false);
   const info = getIdInfo(value); // 获取项目信息对象
   const getId = () =>
     `${info.org}-${info.zone}-${info.projType}-${info.simpleName}-${info.dateCode}`;
-  const [fetchIsExistProjID, { data: IsExistProjIdData }] = useLazyQuery<IsExistProjIdQuery, IsExistProjIdArgs>(queryIsExistProjID, {
+  const [fetchIsExistProjID, { data: IsExistProjIdData }] = useLazyQuery<
+    IsExistProjIdQuery,
+    IsExistProjIdArgs
+  >(queryIsExistProjID, {
     fetchPolicy: 'no-cache',
     variables: {
       id: getId(),
-    }
+    },
   });
   useEffect(() => {
     // 在 IsExistProjIdData 发生变化时调用回调函数
@@ -81,16 +87,16 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled, 
     change();
   };
   const handleOnKeyDown = (e: any) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       // 用户按下回车键
-      setIsZh(false)
-    } else if (e.shiftKey && e.key === "Shift") {
+      setIsZh(false);
+    } else if (e.shiftKey && e.key === 'Shift') {
       // 用户按下Shift键
-      setIsZh(false)
+      setIsZh(false);
     }
-  }
+  };
   const changeSimpleName = (simpleName: string) => {
-    if (isZh) return
+    if (isZh) return;
     const result = /^\w*$/.exec(simpleName);
     if (result) {
       info.simpleName = simpleName.toUpperCase();
@@ -157,11 +163,13 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled, 
             </Option>
           ))}
         </Select>
-        <span hidden={disabled} className="status-remark">{info.projType ? status.find(p => p.code === info.projType)?.remark : ''}</span>
+        <span hidden={disabled} className="status-remark">
+          {info.projType ? status.find((p) => p.code === info.projType)?.remark : ''}
+        </span>
         <Input
           key="simpleName"
           addonBefore={'项目缩写'}
-          placeholder='只允许填写拼音或数字'
+          placeholder="只允许填写拼音或数字"
           onCompositionStart={(e) => setIsZh(true)}
           // onBlur={(e) => setIsZh(false)}
           onKeyDown={(e) => handleOnKeyDown(e)}
@@ -179,6 +187,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled, 
           disabled={disabled}
         />
         <Input key="preview" disabled addonBefore={'预览'} value={getId()} />
+        {/* <Input key="oldId" disabled addonBefore={'旧ID'} value={oldID} /> */}
       </Form.Item>
     </Input.Group>
   );

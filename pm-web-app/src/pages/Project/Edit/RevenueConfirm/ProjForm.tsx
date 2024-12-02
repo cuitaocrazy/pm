@@ -57,6 +57,14 @@ const userQuery = gql`
     projs {
       id
     }
+    yearManages {
+      code
+      name
+    }
+    quarterManages {
+      code
+      name
+    }
   }
 `;
 
@@ -90,6 +98,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
+  console.log(data, 'data LLLLLLLLL');
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
@@ -125,6 +134,21 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const result = reg.exec(data?.id || '');
   const [projType, setProjType] = useState(result?.groups?.projType || '');
   const [stageStatus, setStageStatus] = useState(data?.status || '');
+  const [confirmYear, setConfirmYear] = useState(data?.confirmYear || '');
+  const [confirmQuarter, setConfirmQuarter] = useState(data?.confirmQuarter || '');
+  const [confirmYearOptions, setConfirmYearOptions] = useState(resData?.yearManages);
+  const [confirmQuarterOptions, setConfirmQuarterOptions] = useState(resData?.quarterManages);
+  useEffect(() => {
+    if (resData?.yearManages) {
+      setConfirmYearOptions(resData.yearManages);
+    }
+  }, [resData?.yearManages]);
+  useEffect(() => {
+    if (resData?.quarterManages) {
+      setConfirmQuarterOptions(resData.quarterManages);
+      console.log(confirmQuarterOptions, 'confirmQuarterOptions llllllll');
+    }
+  }, [resData?.quarterManages]);
 
   const myGroup = initialState?.currentUser?.groups;
   const shouldEnable = myGroup?.map((item) => {
@@ -253,7 +277,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     return (
       <Form.Item label={label} name={type} rules={[{ required: true }]}>
         {options.length ? (
-          <Select allowClear>
+          <Select allowClear disabled>
             {options
               .filter((s) => s.enable)
               .map((s: TreeStatu) => (
@@ -516,7 +540,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   />
                 </Form.Item>
               </Col>
-              <Col xs={24} sm={4}>
+              {/* <Col xs={24} sm={4}>
                 <Button
                   key="create"
                   hidden={!data?.id || isDerive}
@@ -525,7 +549,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 >
                   派生一个新项目
                 </Button>
-              </Col>
+              </Col> */}
             </Row>
           );
         }}
@@ -533,13 +557,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="项目名称" name="name" rules={[{ required: true }]}>
-            <Input />
+            <Input disabled />
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
             {customerListData?.result && (
-              <Select allowClear>
+              <Select allowClear disabled>
                 {customerListData.result.map((u: Customer) => (
                   <Select.Option key={u.id} value={u.id}>
                     {u.name}
@@ -565,7 +589,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="项目分类" name="projectClass" rules={[{ required: true }]}>
-            <Select allowClear>
+            <Select allowClear disabled>
               {resData?.projectClasses.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -577,6 +601,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         <Col span={8}>
           <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Cascader
+              disabled
               // value={}
               allowClear
               changeOnSelect
@@ -603,7 +628,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         <Col span={8}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
             <Select
-              disabled={!!data?.id && !isDerive}
+              disabled
               allowClear
               showSearch
               filterOption={(input, option) => {
@@ -642,6 +667,7 @@ return true;
 </Form.Item> */}
           <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
             <Select
+              disabled
               allowClear
               showSearch
               filterOption={(input, option) => {
@@ -663,6 +689,7 @@ return true;
         <Col span={8}>
           <Form.Item label="参与人员" name="participants">
             <Select
+              disabled
               mode="multiple"
               filterOption={(input, option) => {
                 const nameStr: any = option?.children || '';
@@ -708,7 +735,7 @@ return true;
       <Row>
         <Col span={8}>
           <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
-            <Select disabled={false} loading={loading} onChange={(v) => setStageStatus(v)}>
+            <Select disabled loading={loading} onChange={(v) => setStageStatus(v)}>
               {projStatus.map((s) => (
                 <Select.Option key={s[0]} value={s[0]}>
                   {s[1]}
@@ -726,7 +753,7 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
+            <DatePicker disabled format="YYYY-MM-DD" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -738,24 +765,24 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
+            <DatePicker disabled format="YYYY-MM-DD" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={8}>
           <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        {/* <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
             <InputNumber min={0} />
           </Form.Item>
-        </Col>
+        </Col> */}
         <Col span={8}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -767,7 +794,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">客户心理的预算</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
 
@@ -778,7 +805,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -788,7 +815,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -800,7 +827,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -810,7 +837,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -820,7 +847,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际采购成本</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -829,7 +856,7 @@ return true;
             name="estimatedWorkload"
             rules={[{ required: false }, { validator: validateInteger }]}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
@@ -840,7 +867,7 @@ return true;
                 name="freePersonDays"
                 rules={[{ required: false }, { validator: validateInteger }]}
               >
-                <InputNumber min={0} />
+                <InputNumber min={0} disabled />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -849,7 +876,7 @@ return true;
                 name="usedPersonDays"
                 rules={[{ required: false }, { validator: validateInteger }]}
               >
-                <InputNumber min={0} />
+                <InputNumber min={0} disabled />
               </Form.Item>
             </Col>
             <Col span={8}></Col>
@@ -871,7 +898,7 @@ return true;
                 value: value ? moment(value) : undefined,
               })}
             >
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} disabled />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -883,7 +910,7 @@ return true;
                 value: value ? moment(value) : undefined,
               })}
             >
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} disabled />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -893,7 +920,7 @@ return true;
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled />
             </Form.Item>
           </Col>
         </Row>
@@ -906,7 +933,7 @@ return true;
               name="requiredInspections"
               rules={[{ required: false }, { validator: validateInteger }]}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -915,7 +942,7 @@ return true;
               name="actualInspections"
               rules={[{ required: false }, { validator: validateInteger }]}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -925,7 +952,7 @@ return true;
               rules={[{ required: false }, { validator: validateInteger }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled />
             </Form.Item>
           </Col>
         </Row>
@@ -935,46 +962,48 @@ return true;
 
       <Row>
         <Col span={8}>
-          <Form.Item
-            label="确认年度"
-            name="confirmYear"
-            rules={[{ required: false }]}
-            getValueProps={(value) => ({
-              value: value ? moment(value) : undefined,
-            })}
-          >
-            <DatePicker
+          <Form.Item label="确认年度" name="confirmYear" rules={[{ required: false }]}>
+            <Select
+            disabled={data.incomeConfirm=='2'}
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setConfirmYear(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={confirmYearOptions}
+            />
+            {/* <DatePicker
               picker="year"
               format="YYYY"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
-              disabled={!isConfirmYearDisabled}
-            />
+            /> */}
             {/* <Input /> */}
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item
-            label="确认季度"
-            name="confirmQuarter"
-            rules={[{ required: false }]}
-            getValueProps={(value) => ({
-              value: value ? moment(value) : undefined,
-            })}
-          >
-            <DatePicker
+          <Form.Item label="确认季度" name="confirmQuarter" rules={[{ required: false }]}>
+            <Select
+            disabled={data.incomeConfirm=='2'}
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setConfirmQuarter(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={confirmQuarterOptions}
+            />
+            {/* <DatePicker    
               picker="month"
               format="MM"
               style={{ width: '100%' }}
               onChange={onConfirmQuarterChange}
-              disabled={!isConfirmYearDisabled}
-            />
+            /> */}
             {/* <Input /> */}
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber disabled={data.incomeConfirm=='2'} min={0} disabled={data.incomeConfirm == 2} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -991,6 +1020,7 @@ return true;
               format="YYYY"
               style={{ width: '100%' }}
               onChange={ondoYearChange}
+              disabled
             />
             {/* <Input /> */}
           </Form.Item>
@@ -1000,7 +1030,7 @@ return true;
       <Row>
         <Col span={24}>
           <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
-            <Input.TextArea />
+            <Input.TextArea disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -1014,6 +1044,7 @@ return true;
                     ''
                   ) : (
                     <Button
+                      disabled
                       type="dashed"
                       onClick={() =>
                         add({ recorder: initialState?.currentUser?.id }, fields.length)
@@ -1037,6 +1068,7 @@ return true;
                         rules={[{ required: true, message: '请输入活动名称' }]}
                       >
                         <Input
+                          disabled
                           placeholder="请输入活动名称"
                           style={{ width: '15vw', textAlign: 'center' }}
                         />
@@ -1055,6 +1087,7 @@ return true;
                           })}
                         >
                           <DatePicker
+                            disabled
                             showTime
                             format="YYYY-MM-DD HH:mm:ss"
                             style={{ width: '100%' }}
@@ -1088,7 +1121,11 @@ return true;
                           name={[field.name, 'content']}
                           rules={[{ required: true }]}
                         >
-                          <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" />
+                          <Input.TextArea
+                            disabled
+                            rows={4}
+                            placeholder="需包含：地点--人物---事件"
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1104,6 +1141,7 @@ return true;
                           style={{ textAlign: 'left' }}
                         >
                           <Upload
+                            disabled
                             className="upload-list-inline"
                             {...props}
                             defaultFileList={
@@ -1124,7 +1162,7 @@ return true;
                       ) : (
                         <MinusCircleOutlined
                           className="dynamic-delete-button"
-                          onClick={() => remove(field.name)}
+                          // onClick={() => remove(field.name)}
                         />
                       )}
                     </div>
@@ -1150,7 +1188,7 @@ return true;
                       name={[field.name, 'name']}
                       rules={[{ required: true }]}
                     >
-                      <Input />
+                      <Input disabled />
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 3, offset: 0 }}
@@ -1158,7 +1196,7 @@ return true;
                       label="职务"
                       name={[field.name, 'duties']}
                     >
-                      <Input />
+                      <Input disabled />
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 3, offset: 0 }}
@@ -1166,16 +1204,16 @@ return true;
                       label="电话"
                       name={[field.name, 'phone']}
                     >
-                      <Input />
+                      <Input disabled />
                     </Form.Item>
                     <MinusCircleOutlined
                       className="dynamic-delete-button"
-                      onClick={() => remove(i)}
+                      // onClick={() => remove(i)}
                     />
                   </div>
                 ))}
                 <Form.Item>
-                  <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                  <Button disabled type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
                     添加售前活动
                   </Button>
                 </Form.Item>

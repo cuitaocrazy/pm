@@ -32,6 +32,7 @@ import ProjIdComponent from './ProjIdComponent';
 import { projStatus } from './utils';
 import { forEach } from 'ramda';
 import moment from 'moment';
+import { history } from 'umi';
 
 const userQuery = gql`
   query ($groups: [String!]) {
@@ -56,6 +57,14 @@ const userQuery = gql`
     }
     projs {
       id
+    }
+    yearManages {
+      code
+      name
+    }
+    quarterManages {
+      code
+      name
     }
   }
 `;
@@ -90,6 +99,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
+  // console.log(data, 'data NNNMMMM');
+  data.oldId = data.id;
+  const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
@@ -132,7 +144,21 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     const match = item.match(/^\/[^/]+(\/[^/]+)?$/);
     return match !== null;
   });
-
+  const [confirmYear, setConfirmYear] = useState(data?.confirmYear || '');
+  const [confirmQuarter, setConfirmQuarter] = useState(data?.confirmQuarter || '');
+  const [confirmYearOptions, setConfirmYearOptions] = useState(resData?.yearManages);
+  const [confirmQuarterOptions, setConfirmQuarterOptions] = useState(resData?.quarterManages);
+  useEffect(() => {
+    if (resData?.yearManages) {
+      setConfirmYearOptions(resData.yearManages);
+    }
+  }, [resData?.yearManages]);
+  useEffect(() => {
+    if (resData?.quarterManages) {
+      setConfirmQuarterOptions(resData.quarterManages);
+      console.log(confirmQuarterOptions, 'confirmQuarterOptions llllllll');
+    }
+  }, [resData?.quarterManages]);
   const isConfirmYearDisabled = shouldEnable?.some((enabled) => enabled === true);
 
   // 获取填写日报人员id，禁止修改
@@ -253,7 +279,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     return (
       <Form.Item label={label} name={type} rules={[{ required: true }]}>
         {options.length ? (
-          <Select allowClear>
+          <Select allowClear disabled={data.proState == 0}>
             {options
               .filter((s) => s.enable)
               .map((s: TreeStatu) => (
@@ -487,7 +513,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
   // 项目部门下拉菜单的数据源
   const [groupsOptions] = useState(groupDatas(groupType));
-
+  // data.contractState = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
   return (
     <Form {...layout} form={form} initialValues={data} disabled={data?.status === 'endProj'}>
       <Form.Item shouldUpdate noStyle>
@@ -510,7 +536,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   rules={[{ required: true }, { validator }]}
                 >
                   <ProjIdComponent
-                    disabled={!!data?.id && !isDerive}
+                    oldID={data.id}
+                    disabled={(data.proState == 0 || data.proState == 1) && !!data?.id && !isDerive}
                     onChange={onIdChange} // 处理整个 ID 变化的回调
                     onIsExistProjIdDataChange={handleIsExistProjIdDataChange} // 将回调函数传递给子组件
                   />
@@ -518,6 +545,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               </Col>
               <Col xs={24} sm={4}>
                 <Button
+                  disabled={data.proState == 0}
                   key="create"
                   hidden={!data?.id || isDerive}
                   type="primary"
@@ -533,13 +561,19 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="项目名称" name="name" rules={[{ required: true }]}>
-            <Input />
+            <Input disabled={data.proState == 0} />
+          </Form.Item>
+          <Form.Item label="审核状态" name="proState" style={{ display: 'none' }}>
+            <Input hidden />
+          </Form.Item>
+          <Form.Item label="旧ID" name="oldId" style={{ display: 'none' }}>
+            <Input hidden />
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
             {customerListData?.result && (
-              <Select allowClear>
+              <Select allowClear disabled={data.proState == 0}>
                 {customerListData.result.map((u: Customer) => (
                   <Select.Option key={u.id} value={u.id}>
                     {u.name}
@@ -565,7 +599,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Row>
         <Col span={8}>
           <Form.Item label="项目分类" name="projectClass" rules={[{ required: true }]}>
-            <Select allowClear>
+            <Select allowClear disabled={data.proState == 0}>
               {resData?.projectClasses.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
@@ -577,6 +611,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         <Col span={8}>
           <Form.Item label="项目部门" name="group" rules={[{ required: true }]}>
             <Cascader
+              disabled={data.proState == 0}
               // value={}
               allowClear
               changeOnSelect
@@ -603,6 +638,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         <Col span={8}>
           <Form.Item label="项目经理" name="leader" rules={[{ required: true }]}>
             <Select
+              disabled={data.proState == 0}
               disabled={!!data?.id && !isDerive}
               allowClear
               showSearch
@@ -642,6 +678,7 @@ return true;
 </Form.Item> */}
           <Form.Item label="市场经理" name="salesLeader" rules={[{ required: true }]}>
             <Select
+              disabled={data.proState == 0}
               allowClear
               showSearch
               filterOption={(input, option) => {
@@ -663,6 +700,7 @@ return true;
         <Col span={8}>
           <Form.Item label="参与人员" name="participants">
             <Select
+              disabled={data.proState == 0}
               mode="multiple"
               filterOption={(input, option) => {
                 const nameStr: any = option?.children || '';
@@ -698,17 +736,26 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item dependencies={['id']} noStyle>
-            {() => {
+          <Form.Item label="合同状态">
+            {/**name="contractState"*/}
+            {/* {() => {
               return getLeveTwoStatus('contStatus', '合同状态');
-            }}
+            }} */}
+            <Input
+              disabled
+              value={data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : ''}
+            />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={8}>
           <Form.Item label="阶段状态" name="status" rules={[{ required: false }]}>
-            <Select disabled={false} loading={loading} onChange={(v) => setStageStatus(v)}>
+            <Select
+              disabled={data.proState == 0}
+              loading={loading}
+              onChange={(v) => setStageStatus(v)}
+            >
               {projStatus.map((s) => (
                 <Select.Option key={s[0]} value={s[0]}>
                   {s[1]}
@@ -726,7 +773,11 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
+            <DatePicker
+              disabled={data.proState == 0}
+              format="YYYY-MM-DD"
+              style={{ width: '100%' }}
+            />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -738,24 +789,28 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker disabled={false} format="YYYY-MM-DD" style={{ width: '100%' }} />
+            <DatePicker
+              disabled={data.proState == 0}
+              format="YYYY-MM-DD"
+              style={{ width: '100%' }}
+            />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={8}>
           <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        {/* <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled/>
           </Form.Item>
-        </Col>
+        </Col> */}
         <Col span={8}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
       </Row>
@@ -767,7 +822,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">客户心理的预算</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
 
@@ -778,7 +833,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -788,7 +843,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
       </Row>
@@ -800,7 +855,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -810,7 +865,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -820,7 +875,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际采购成本</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -829,7 +884,7 @@ return true;
             name="estimatedWorkload"
             rules={[{ required: false }, { validator: validateInteger }]}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={data.proState == 0} />
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
@@ -840,7 +895,7 @@ return true;
                 name="freePersonDays"
                 rules={[{ required: false }, { validator: validateInteger }]}
               >
-                <InputNumber min={0} />
+                <InputNumber min={0} disabled={data.proState == 0} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -849,7 +904,7 @@ return true;
                 name="usedPersonDays"
                 rules={[{ required: false }, { validator: validateInteger }]}
               >
-                <InputNumber min={0} />
+                <InputNumber min={0} disabled={data.proState == 0} />
               </Form.Item>
             </Col>
             <Col span={8}></Col>
@@ -871,7 +926,11 @@ return true;
                 value: value ? moment(value) : undefined,
               })}
             >
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+              <DatePicker
+                format="YYYY-MM-DD"
+                style={{ width: '100%' }}
+                disabled={data.proState == 0}
+              />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -883,7 +942,11 @@ return true;
                 value: value ? moment(value) : undefined,
               })}
             >
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+              <DatePicker
+                format="YYYY-MM-DD"
+                style={{ width: '100%' }}
+                disabled={data.proState == 0}
+              />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -893,7 +956,7 @@ return true;
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled={data.proState == 0} />
             </Form.Item>
           </Col>
         </Row>
@@ -906,7 +969,7 @@ return true;
               name="requiredInspections"
               rules={[{ required: false }, { validator: validateInteger }]}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled={data.proState == 0} />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -915,7 +978,7 @@ return true;
               name="actualInspections"
               rules={[{ required: false }, { validator: validateInteger }]}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled={data.proState == 0} />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -925,7 +988,7 @@ return true;
               rules={[{ required: false }, { validator: validateInteger }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} disabled={data.proState == 0} />
             </Form.Item>
           </Col>
         </Row>
@@ -943,13 +1006,22 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker
+            <Select
+              disabled
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setConfirmYear(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={confirmYearOptions}
+            />
+            {/* <DatePicker
               picker="year"
               format="YYYY"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
               disabled={!isConfirmYearDisabled}
-            />
+            /> */}
             {/* <Input /> */}
           </Form.Item>
         </Col>
@@ -962,19 +1034,28 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker
+            <Select
+              disabled
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setConfirmQuarter(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={confirmQuarterOptions}
+            />
+            {/* <DatePicker
               picker="month"
               format="MM"
               style={{ width: '100%' }}
               onChange={onConfirmQuarterChange}
               disabled={!isConfirmYearDisabled}
-            />
+            /> */}
             {/* <Input /> */}
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -987,6 +1068,7 @@ return true;
             })}
           >
             <DatePicker
+              disabled={data.proState == 0}
               picker="year"
               format="YYYY"
               style={{ width: '100%' }}
@@ -1000,7 +1082,7 @@ return true;
       <Row>
         <Col span={24}>
           <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
-            <Input.TextArea />
+            <Input.TextArea disabled={data.proState == 0} />
           </Form.Item>
         </Col>
       </Row>
@@ -1014,6 +1096,7 @@ return true;
                     ''
                   ) : (
                     <Button
+                      disabled={data.proState == 0}
                       type="dashed"
                       onClick={() =>
                         add({ recorder: initialState?.currentUser?.id }, fields.length)
@@ -1037,6 +1120,7 @@ return true;
                         rules={[{ required: true, message: '请输入活动名称' }]}
                       >
                         <Input
+                          disabled={data.proState == 0}
                           placeholder="请输入活动名称"
                           style={{ width: '15vw', textAlign: 'center' }}
                         />
@@ -1055,6 +1139,7 @@ return true;
                           })}
                         >
                           <DatePicker
+                            disabled={data.proState == 0}
                             showTime
                             format="YYYY-MM-DD HH:mm:ss"
                             style={{ width: '100%' }}
@@ -1088,7 +1173,11 @@ return true;
                           name={[field.name, 'content']}
                           rules={[{ required: true }]}
                         >
-                          <Input.TextArea rows={4} placeholder="需包含：地点--人物---事件" />
+                          <Input.TextArea
+                            disabled={data.proState == 0}
+                            rows={4}
+                            placeholder="需包含：地点--人物---事件"
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1104,6 +1193,7 @@ return true;
                           style={{ textAlign: 'left' }}
                         >
                           <Upload
+                            disabled={data.proState == 0}
                             className="upload-list-inline"
                             {...props}
                             defaultFileList={
@@ -1113,7 +1203,9 @@ return true;
                                 : []
                             }
                           >
-                            <Button icon={<UploadOutlined />}>上传</Button>
+                            <Button disabled={data.proState == 0} icon={<UploadOutlined />}>
+                              上传
+                            </Button>
                           </Upload>
                         </Form.Item>
                       </Col>
@@ -1124,7 +1216,9 @@ return true;
                       ) : (
                         <MinusCircleOutlined
                           className="dynamic-delete-button"
-                          onClick={() => remove(field.name)}
+                          onClick={() => {
+                            data.proState == 0 ? remove(field.name) : '';
+                          }}
                         />
                       )}
                     </div>
@@ -1150,7 +1244,7 @@ return true;
                       name={[field.name, 'name']}
                       rules={[{ required: true }]}
                     >
-                      <Input />
+                      <Input disabled={data.proState == 0} />
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 3, offset: 0 }}
@@ -1158,7 +1252,7 @@ return true;
                       label="职务"
                       name={[field.name, 'duties']}
                     >
-                      <Input />
+                      <Input disabled={data.proState == 0} />
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 3, offset: 0 }}
@@ -1166,16 +1260,23 @@ return true;
                       label="电话"
                       name={[field.name, 'phone']}
                     >
-                      <Input />
+                      <Input disabled={data.proState == 0} />
                     </Form.Item>
                     <MinusCircleOutlined
                       className="dynamic-delete-button"
-                      onClick={() => remove(i)}
+                      onClick={() => {
+                        data.proState == 0 ? remove(i) : '';
+                      }}
                     />
                   </div>
                 ))}
                 <Form.Item>
-                  <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                  <Button
+                    disabled={data.proState == 0}
+                    type="dashed"
+                    onClick={() => add()}
+                    icon={<PlusOutlined />}
+                  >
                     添加售前活动
                   </Button>
                 </Form.Item>

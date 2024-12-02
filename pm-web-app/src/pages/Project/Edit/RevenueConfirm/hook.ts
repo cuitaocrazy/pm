@@ -5,6 +5,7 @@ import type {
   ProjectInput,
   Query,
   QueryProjectArgs,
+  MutationUpdateIncomeConfirmProjArgs,
 } from '@/apollo';
 import { client } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
@@ -16,7 +17,7 @@ import { attachmentUpload, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
-    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String) {
+    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String,$incomeConfirm:String) {
       subordinates {
         id
         name
@@ -32,11 +33,15 @@ const getGql = (proName: string) => {
         agreementId
       }
         yearManages{
-          id
+          code
           name
         }
+          proConfirmStateManages{
+        code
+        name
+        }
 
-      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState){
+      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState,incomeConfirm:$incomeConfirm){
         result{
           id
         pId
@@ -85,6 +90,8 @@ const getGql = (proName: string) => {
         afterTaxAmount
         productDate
         contractSignDate
+        contractState
+        incomeConfirm
         agreements{
           id
           name
@@ -132,6 +139,7 @@ const getGql = (proName: string) => {
         id
         name
       }
+        
     }
   `;
 };
@@ -257,6 +265,11 @@ const archiveProjGql = gql`
     archiveProject(id: $id)
   }
 `;
+const incomeConfirmProjGql = gql`
+  mutation ($id: ID!) {
+    incomeConfirmProj(id: $id)
+  }
+`;
 
 const deleteProjGql = gql`
   mutation ($id: ID!) {
@@ -284,6 +297,10 @@ export function useProjStatus() {
     Mutation,
     MutationDeleteProjectArgs
   >(archiveProjGql);
+  const [incomeConfirmProjHandle, { loading: incomeConfirmProjLoading }] = useMutation<
+    Mutation,
+    MutationUpdateIncomeConfirmProjArgs
+  >(incomeConfirmProjGql);
   const [deleteProjHandle, { loading: deleteLoading }] = useMutation<
     Mutation,
     MutationDeleteProjectArgs
@@ -318,7 +335,6 @@ export function useProjStatus() {
   // const agreements = isAdmin ? queryData?.superProjs?.result.agreenemts : queryData?.iLeadProjs?.result.agreenemts
   // const agreements = tmpProjs
   const projectAgreements = queryData?.projectAgreements || [];
-  console.log(queryData?.yearManages, 'yearManages ====== OOOOOOOOO');
   const archiveProj = useCallback(
     async (id: string) => {
       await archiveProjHandle({ variables: { id } });
@@ -328,6 +344,17 @@ export function useProjStatus() {
       });
     },
     [archiveProjHandle, refresh],
+  );
+  const incomeConfirmProj = useCallback(
+    async (id: string) => {
+      console.log(id, '');
+      await incomeConfirmProjHandle({ variables: { id } });
+      refresh();
+      getTodoList(query).then((res) => {
+        setTodoProjs(res.data.iLeadTodoProjs);
+      });
+    },
+    [incomeConfirmProjHandle, refresh],
   );
 
   const deleteProj = useCallback(
@@ -396,10 +423,12 @@ export function useProjStatus() {
     setFilter,
     refresh,
     archiveProj,
+    incomeConfirmProj,
     deleteProj,
     pushProj,
     // yearManages: queryData?.yearManages,
     yearManages: queryData?.yearManages,
+    proConfirmStateManages: queryData?.proConfirmStateManages,
     total: queryData?.superProjs?.total,
     setQuery,
     query,

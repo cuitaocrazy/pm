@@ -32,7 +32,7 @@ const getGql = (proName: string) => {
         agreementId
       }
         yearManages{
-          id
+          code
           name
         }
 
@@ -80,11 +80,14 @@ const getGql = (proName: string) => {
         projectClass
         group
         proState
+        oldId
+        reason
         contractAmount
         recoAmount
         afterTaxAmount
         productDate
         contractSignDate
+        contractState
         agreements{
           id
           name
@@ -251,6 +254,11 @@ const pushProjGql = gql`
     pushProject(proj: $proj)
   }
 `;
+const applyAgainGql = gql`
+mutation ($proj: ProjectInput!) {
+  applyAgain(proj: $proj)
+}
+`;
 
 const archiveProjGql = gql`
   mutation ($id: ID!) {
@@ -291,6 +299,9 @@ export function useProjStatus() {
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
     pushProjGql,
   );
+  const [applyAgain,{loading: applyAgainLoading}] = useMutation<Mutation, MutationPushProjectArgs>(
+    applyAgainGql,
+  );
 
   const { refresh: initialRefresh } = useModel('@@initialState'); //获取全局初始状态
   const { buildProjName } = useBaseState(); //项目名字的工具函数
@@ -320,7 +331,7 @@ export function useProjStatus() {
   // const agreements = isAdmin ? queryData?.superProjs?.result.agreenemts : queryData?.iLeadProjs?.result.agreenemts
   // const agreements = tmpProjs
   const projectAgreements = queryData?.projectAgreements || [];
-console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
+  console.log(queryData?.yearManages, 'yearManages ====== OOOOOOOOO');
   const archiveProj = useCallback(
     async (id: string) => {
       await archiveProjHandle({ variables: { id } });
@@ -356,11 +367,21 @@ console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
             }, '')
           : '');
       let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
-      await pushCostHandle({
-        variables: {
-          proj: reqProj,
-        },
-      });
+      if (proj.proState == 1) {
+        await pushCostHandle({
+          variables: {
+            proj: reqProj,
+          },
+        });
+      } else if (proj.proState == 2) {
+        console.log(temp,'proState=2');
+        reqProj.proState = 0
+        await applyAgain({
+          variables: {
+            proj: reqProj,
+          },
+        });
+      }
       getTodoList(query).then((res) => {
         setTodoProjs(res.data.iLeadTodoProjs);
       });
@@ -401,7 +422,7 @@ console.log(queryData?.yearManages,'yearManages ====== OOOOOOOOO')
     deleteProj,
     pushProj,
     // yearManages: queryData?.yearManages,
-    yearManages:queryData?.yearManages,
+    yearManages: queryData?.yearManages,
     total: isAdmin
       ? queryData?.superProjs?.total
       : archive !== '2'

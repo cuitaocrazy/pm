@@ -1011,6 +1011,7 @@ export type Mutation = {
   pushProject: Scalars['ID'];
   checkProj: Scalars['ID'];
   archiveProject: Scalars['ID'];
+  incomeConfirmProj: Scalars['ID'];
   deleteProject: Scalars['ID'];
   restartProject: Scalars['ID'];
   pushCost: Scalars['ID'];
@@ -1057,6 +1058,9 @@ export type MutationDeleteProjectArgs = {
   id: Scalars['ID'];
 };
 
+export type MutationUpdateIncomeConfirmProjArgs = {
+  id: Scalars['ID'];
+};
 export type MutationPushCostArgs = {
   cost: CostInput;
 };

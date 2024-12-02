@@ -58,6 +58,12 @@ export default {
       if (__.isArchive === true || __.isArchive === false) {
         filter["isArchive"] = __.isArchive;
       }
+      // 添加 proState 为 1 或为空的条件
+      filter["$or"] = [
+        { proState: 1 }, // proState 为 1
+        { proState: { $exists: false } }, // proState 字段不存在
+        { proState: null }, // proState 为 null
+      ];
       return Project.find(filter)
         .sort({ createDate: -1 })
         .map(dbid2id)
@@ -81,6 +87,7 @@ export default {
         name,
         leaders,
         contractState,
+        incomeConfirm,
       } = __;
       if (!page || page === 0) {
         page = 1;
@@ -111,11 +118,12 @@ export default {
       if (leaders && leaders.length > 0) {
         filter["leader"] = { $in: leaders };
       }
-      //contractState
       if (contractState) {
         filter["contractState"] = Number(contractState);
       }
-
+      if (incomeConfirm) {
+        filter["incomeConfirm"] = incomeConfirm;
+      }
       for (let i = 0; i < regions.length; i++) {
         for (let j = 0; j < industries.length; j++) {
           for (let k = 0; k < projTypes.length; k++) {
@@ -211,7 +219,7 @@ export default {
           if (customer) oneResult.customerObj = dbid2id(customer);
         })
       );
-      console.dir(filter, { depth: null, colors: true });
+      // console.dir(filter, { depth: null, colors: true });
       const total = await Project.find(filter).count();
 
       return {
@@ -481,6 +489,15 @@ export default {
           { salesLeader: context.user!.id },
           { leader: { $in: subordinateIds } },
         ],
+        $and: [
+          {
+            $or: [
+              { proState: 1 }, // proState 为 1
+              { proState: { $exists: false } }, // proState 不存在
+              { proState: null }, // proState 为 null
+            ],
+          },
+        ],
       };
 
       let {
@@ -594,6 +611,15 @@ export default {
           { participants: { $elemMatch: { $eq: context.user!.id } } },
           { leader: { $in: subordinateIds } },
         ],
+        $and: [
+          {
+            $or: [
+              { proState: 1 }, // proState 为 1
+              { proState: { $exists: false } }, // proState 不存在
+              { proState: null }, // proState 为 null
+            ],
+          },
+        ],
       };
       let {
         regions,
@@ -644,6 +670,7 @@ export default {
       }
 
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+      console.dir(filter, { depth: null, colors: true });
       const result = await Project.find(filter)
         .sort({ createDate: -1 })
         .map(dbid2id)
@@ -774,12 +801,59 @@ export default {
         { upsert: true }
       ).then((res) => id || res.upsertedId._id);
     },
-    checkProj: async (_: any, args: any, context: AuthContext) => {
-      // console.dir(args, { depth: null, colors: true });
-      let { id, checkState, reason } = args;
+    applyAgain: async (_: any, args: any, context: AuthContext) => {
+      const { id, ...proj } = args.proj;
+      proj.participants = proj.participants || [];
+      proj.contacts = proj.contacts || [];
+
+      // 获取旧项目数据
+      const oldId = proj.oldId;
+      // console.dir(oldId, { depth: null, colors: true });
+      // 删除 `oldId` 对应的数据
+      if (oldId) {
+        await Project.deleteOne({ _id: oldId });
+      }
+      // 判断是否有此项目，如果没有则为第一次创建
+      let repeat = await Project.findOne({ _id: id });
+      // console.dir(repeat, { depth: null, colors: true });
+
+      if (isNil(repeat)) {
+        proj.createDate = moment()
+          .utc()
+          .utcOffset(8 * 60)
+          .format("YYYYMMDD");
+        proj.isArchive = false;
+      } else {
+        proj.createDate = repeat.createDate;
+        proj.isArchive = repeat.isArchive;
+      }
+      // console.dir(proj, { depth: null, colors: true });
+      // console.dir(id, { depth: null, colors: true });
+      // return 123;
+      // // 更新或新增项目
+      proj.updateTime = moment()
+        .utc()
+        .utcOffset(8 * 60)
+        .format("YYYY-MM-DD HH:mm:ss");
+      delete proj.contName;
+
+      // // 插入新数据
       return Project.updateOne(
         { _id: id },
-        { $set: { proState: checkState, reason } },
+        { $set: proj },
+        { upsert: true }
+      ).then((res) => {
+        console.dir(res, { depth: null, colors: true });
+        console.dir(id, { depth: null, colors: true });
+        return id || res.upsertedId._id;
+      });
+    },
+    checkProj: async (_: any, args: any, context: AuthContext) => {
+      // console.dir(args, { depth: null, colors: true });
+      let { id, checkState, reason, incomeConfirm } = args;
+      return Project.updateOne(
+        { _id: id },
+        { $set: { proState: checkState, reason, incomeConfirm } },
         { upsert: true }
       )
         .then((res) => id || res.upsertedId._id)
@@ -799,6 +873,17 @@ export default {
             isArchive: true,
             archiveTime,
             archivePerson: context.user!.id,
+          },
+        },
+        { upsert: true }
+      ).then((res) => args.id || res.upsertedId._id);
+    },
+    incomeConfirmProj: async (_: any, args: any, context: AuthContext) => {
+      return Project.updateOne(
+        { _id: args.id },
+        {
+          $set: {
+            incomeConfirm: 2,
           },
         },
         { upsert: true }

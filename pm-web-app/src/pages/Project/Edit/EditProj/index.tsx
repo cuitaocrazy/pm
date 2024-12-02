@@ -156,10 +156,10 @@ const Project: React.FC<any> = () => {
     },
     {
       title: '合同状态',
-      dataIndex: 'contStatus',
-      key: 'contStatus',
+      dataIndex: 'contractState',
+      key: 'contractState',
       render: (text: string, record: Proj) => {
-        return status?.find((statu) => statu.id === record.contStatus)?.name;
+        return record.contractState == 0 ? '未签署' : record.contractState == 1 ? '已签署' : '---';
       },
       width: 100,
     },
@@ -227,6 +227,21 @@ const Project: React.FC<any> = () => {
       width: 100,
     },
     {
+      title: '审核状态',
+      dataIndex: 'proState',
+      key: 'proState',
+      render: (proState: string) => {
+        return proState == 0
+          ? '待审核'
+          : proState == 1
+          ? '审核通过'
+          : proState == 2
+          ? '审核不通过'
+          : '---';
+      },
+      width: 100,
+    },
+    {
       title: '操作',
       key: 'action',
       render: (id: string, record: Proj) => (
@@ -259,10 +274,21 @@ const Project: React.FC<any> = () => {
               删除
             </a>
           </Popconfirm>
+          <Popconfirm
+            title={'驳回原因：' + record.reason}
+            okText="关闭"
+            showCancel={false}
+            disabled={record.proState != 2}
+          >
+            <Button disabled={record.proState != 2} type="link" hidden={isAdmin}>
+              驳回原因
+            </Button>
+          </Popconfirm>
+          {/**isAdmin */}
         </Space>
       ),
       fixed: 'right' as 'right',
-      width: 180,
+      width: 280,
     },
   ];
 
@@ -360,7 +386,7 @@ const Project: React.FC<any> = () => {
       group: [],
       status: '',
       name: '',
-      contractState:''
+      contractState: '',
     });
     setQuery({
       ...query,
@@ -373,7 +399,7 @@ const Project: React.FC<any> = () => {
       group: '',
       status: '',
       name: '',
-      contractState:''
+      contractState: '',
     });
   };
   const groupDatas = (inputArray: any) => {
@@ -566,7 +592,7 @@ const Project: React.FC<any> = () => {
             className="width120"
             placeholder="请选择"
             onChange={(value, event) => handleChange(value, 'confirmYear')}
-            fieldNames={{ value: 'id', label: 'name' }}
+            fieldNames={{ value: 'code', label: 'name' }}
             options={confirmYearOptions}
           />
         </Col>

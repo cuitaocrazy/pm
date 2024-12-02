@@ -170,10 +170,10 @@ const Project: React.FC<any> = () => {
     },
     {
       title: '合同状态',
-      dataIndex: 'contStatus',
-      key: 'contStatus',
+      dataIndex: 'contractState',
+      key: 'contractState',
       render: (text: string, record: Proj) => {
-        return status?.find((statu) => statu.id === record.contStatus)?.name;
+        return record.contractState == 0 ? '未签署' : record.contractState == 1 ? '已签署' : '';
       },
       width: 100,
     },

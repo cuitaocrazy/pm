@@ -1,41 +1,41 @@
-.bgColorWhite{
-    background:#fff
+.bgColorWhite {
+  background: #fff;
 }
-.displayInlineBlock{
-    display:inline-block;
+.displayInlineBlock {
+  display: inline-block;
 }
-.width120{
-    width:120px
+.width120 {
+  width: 120px;
 }
-.width122{
-    width:122px;
+.width122 {
+  width: 122px;
 }
-.marginTop20{
-    margin-top:20px
+.marginTop20 {
+  margin-top: 20px;
 }
-.marginRight10{
-    margin-right:20px
+.marginRight10 {
+  margin-right: 20px;
 }
-.paddingBottom20{
-    padding-bottom:20px
+.paddingBottom20 {
+  padding-bottom: 20px;
 }
-.floatRight{
-    float:right;
+.floatRight {
+  float: right;
 }
 .paginationCon::after {
-    content: "";
-    display: table;
-    clear: both;
+  display: table;
+  clear: both;
+  content: '';
 }
-.textAlignCenter{
-    text-align:center;
+.textAlignCenter {
+  text-align: center;
 }
-.lineHeight32{
-    line-height:32px
+.lineHeight32 {
+  line-height: 32px;
 }
 .width160 {
-    width: 160px;
+  width: 160px;
 }
-.justfyCenter{
-    justify-content: center;
+.justfyCenter {
+  justify-content: center;
 }

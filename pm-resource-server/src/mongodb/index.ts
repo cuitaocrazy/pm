@@ -607,7 +607,101 @@ export interface IPayWayInfoManage {
 export const PayWayInfoManage = client
   .db()
   .collection<IPayWayInfoManage>(pluralize("PayWayInfoManage"));
+/**
+ * 款项管理
+ */
+export interface IPaymentManage {
+  _id: ObjectId;
   /**
+   * 合同名称
+   */
+  name: string;
+  /**
+   * 关联客户
+   */
+  customer: String;
+  /**
+   * 合同类型
+   */
+  type: String;
+  /**
+   * 合同文件上传
+   */
+  fileList: [
+    {
+      /**
+       * uid
+       */
+      uid: string;
+      /**
+       * 名称
+       */
+      name: string;
+      /**
+       * 状态
+       */
+      status: string;
+      /**
+       * 地址
+       */
+      url: string;
+    }
+  ];
+  /**
+   * 合同签订日期
+   */
+  contractSignDate: String;
+  /**
+   * 合同周期
+   */
+  contractPeriod: String;
+  /**
+   * 合同编号
+   */
+  contractNumber: String;
+  /**
+   * 合同金额
+   */
+  contractAmount: String;
+  /**
+   * 不含税金额
+   */
+  afterTaxAmount: String;
+  /**
+   * 免维期(单位月)
+   */
+  maintenanceFreePeriod: String;
+  /**
+   * 备注
+   */
+  remark: String;
+  /**
+   * 创建日期
+   */
+  createDate: Date;
+  /**
+   * 是否删除
+   */
+  isDel: Boolean;
+  /**
+   * 付款方式名称
+   */
+  payWayName;
+  /**
+   * 里程碑名称
+   */
+  milestoneName: String;
+  /**
+   * 百分比
+   */
+  milestoneValue: String;
+}
+
+export const PaymentManage = client
+  .db()
+  .collection<IPaymentManage>(pluralize("PaymentManage"));
+
+/**
  * 审核状态
  */
 export interface IAuditStateManage {

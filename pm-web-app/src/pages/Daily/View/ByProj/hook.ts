@@ -5,7 +5,7 @@ import moment, { Moment } from 'moment';
 
 const QueryProjs = gql`
   query ($page: Int, $pageSize: Int) {
-    iLeadProjs(page: $page, pageSize: $pageSize) {
+    iLeadProjs_(page: $page, pageSize: $pageSize) {
       result {
         id
         name
@@ -26,7 +26,7 @@ export function useProjsState() {
   });
 
   useEffect(() => {queryUsers()}, [queryUsers]);
-  const projs = queryData?.iLeadProjs.result || [];
+  const projs = queryData?.iLeadProjs_.result || [];
 
   return {
     loading: queryLoading,

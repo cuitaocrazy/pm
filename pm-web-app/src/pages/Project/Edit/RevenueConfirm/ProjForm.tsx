@@ -98,6 +98,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
+  data.contractState = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
   console.log(data, 'data LLLLLLLLL');
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
@@ -725,10 +726,16 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item dependencies={['id']} noStyle>
+          {/* <Form.Item dependencies={['id']} noStyle>
             {() => {
               return getLeveTwoStatus('contStatus', '合同状态');
             }}
+          </Form.Item> */}
+          <Form.Item label="合同状态" name="contractState">
+            {/* {() => {
+              return getLeveTwoStatus('contStatus', '合同状态');
+            }} */}
+            <Input disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -964,7 +971,7 @@ return true;
         <Col span={8}>
           <Form.Item label="确认年度" name="confirmYear" rules={[{ required: false }]}>
             <Select
-            disabled={data.incomeConfirm=='2'}
+              disabled={data.incomeConfirm == '2'}
               allowClear
               className="width120"
               placeholder="请选择"
@@ -984,7 +991,7 @@ return true;
         <Col span={8}>
           <Form.Item label="确认季度" name="confirmQuarter" rules={[{ required: false }]}>
             <Select
-            disabled={data.incomeConfirm=='2'}
+              disabled={data.incomeConfirm == '2'}
               allowClear
               className="width120"
               placeholder="请选择"
@@ -1003,7 +1010,11 @@ return true;
         </Col>
         <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber disabled={data.incomeConfirm=='2'} min={0} disabled={data.incomeConfirm == 2} />
+            <InputNumber
+              disabled={data.incomeConfirm == '2'}
+              min={0}
+              disabled={data.incomeConfirm == 2}
+            />
           </Form.Item>
         </Col>
         <Col span={8}>

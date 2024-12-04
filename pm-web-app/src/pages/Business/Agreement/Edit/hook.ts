@@ -6,12 +6,18 @@ import type {
   Query,
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
 
 const queryGql = gql`
-  query($customersPageSize:Int,$pageSizeAgreements:Int){
+  query (
+    $customersPageSize: Int
+    $pageSizeAgreements: Int
+    $name: String
+    $customer: [String]
+    $type: [String]
+  ) {
     projectAgreements {
       id
       agreementId
@@ -24,31 +30,37 @@ const queryGql = gql`
       id
       name
     }
-    customers(pageSize:$customersPageSize) {
-      result{
+    customers(pageSize: $customersPageSize) {
+      result {
         id
         name
       }
       total
       page
     }
-    agreements(pageSize:$pageSizeAgreements) {
-      result{
+    agreements(pageSize: $pageSizeAgreements, name: $name, customer: $customer, type: $type) {
+      result {
         id
-      name
-      customer
-      type
-      remark
-      fileList {
-        uid
         name
-        status
-        url
-      }
-      startTime
-      endTime
-      isDel
-      createDate
+        customer
+        type
+        remark
+        fileList {
+          uid
+          name
+          status
+          url
+        }
+        startTime
+        endTime
+        isDel
+        createDate
+        contractAmount
+        afterTaxAmount
+        contractSignDate
+        contractPeriod
+        contractNumber
+        maintenanceFreePeriod
       }
       page
       total
@@ -61,6 +73,11 @@ const pushAgreementGql = gql`
     pushAgreement(agreement: $agreement)
   }
 `;
+const payWaySubGql = gql`
+  mutation ($agreement: PayWayInput!) {
+    payWaySub(agreement: $agreement)
+  }
+`;
 
 const deleteAgreementGql = gql`
   mutation ($id: ID!) {
@@ -71,21 +88,24 @@ const deleteAgreementGql = gql`
 async function attachmentUpload(agreement: AgreementInput) {
   const formData = new FormData();
   // 临时变量
-  let fileArr: any = []
+  let fileArr: any = [];
   // 拼接附件存储路径
-  formData.append('directory', `/${agreement.customerName}/${agreementType[agreement.type]}/${agreement.name}_`);
+  formData.append(
+    'directory',
+    `/${agreement.customerName}/${agreementType[agreement.type]}/${agreement.name}_`,
+  );
   agreement?.fileList?.forEach((file: any) => {
     if (file.originFileObj) {
       formData.append('uids[]', file.uid);
       formData.append('files', file.originFileObj);
-      fileArr.push(file.originFileObj)
+      fileArr.push(file.originFileObj);
     }
   });
   // 批量上传附件
   if (fileArr.length) {
-    let { data } = await axios.post('/api/upload/agreement', formData)
+    let { data } = await axios.post('/api/upload/agreement', formData);
     if (data.code === 1000) {
-      fileArr = data.data
+      fileArr = data.data;
     }
     // else {
     //   message.warning('附件存储失败');
@@ -93,31 +113,41 @@ async function attachmentUpload(agreement: AgreementInput) {
     // }
   }
   agreement?.fileList?.forEach((item: any) => {
-    delete item.originFileObj
-    let sameId = fileArr.find((chItem: any) => chItem.uid === item.uid)
+    delete item.originFileObj;
+    let sameId = fileArr.find((chItem: any) => chItem.uid === item.uid);
     if (sameId) {
-      item.url = sameId.path
+      item.url = sameId.path;
     }
-  })
-  return agreement
+  });
+  return agreement;
 }
 
 export function useAgreementState() {
+  let [query, setQuery] = useState({});
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query>(queryGql, {
     fetchPolicy: 'no-cache',
-    variables:{
-      customersPageSize:10000000,
-      pageSizeAgreements:10000000
-    }
+    variables: {
+      customersPageSize: 10000000,
+      pageSizeAgreements: 10000000,
+      ...query,
+    },
   });
+  useEffect(() => {
+    refresh();
+  }, [query]);
   const [deleteAgreementHandle, { loading: deleteLoading }] = useMutation<
     Mutation,
     MutationDeleteAgreementArgs
   >(deleteAgreementGql);
-  const [pushAgreementHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushAgreementArgs>(
-    pushAgreementGql,
-  );
-
+  const [pushAgreementHandle, { loading: pushLoading }] = useMutation<
+    Mutation,
+    MutationPushAgreementArgs
+  >(pushAgreementGql);
+  //
+  const [payWaySubHandle, { loading: payWaySubLoading }] = useMutation<
+    Mutation,
+    MutationPushAgreementArgs
+  >(payWaySubGql);
   useEffect(() => {
     refresh();
   }, [refresh]);
@@ -135,20 +165,31 @@ export function useAgreementState() {
     },
     [deleteAgreementHandle, refresh],
   );
-
   const pushAgreement = useCallback(
     async (agreement: AgreementInput) => {
-      let reqAgreement = await attachmentUpload(agreement)
-      delete reqAgreement.time
-      delete reqAgreement.customerName
+      let reqAgreement = await attachmentUpload(agreement);
+      delete reqAgreement.time;
+      delete reqAgreement.customerName;
       await pushAgreementHandle({
         variables: {
-          agreement: reqAgreement
+          agreement: reqAgreement,
         },
-      })
-      refresh()
+      });
+      refresh();
     },
     [pushAgreementHandle, refresh],
+  );
+  const payWaySub = useCallback(
+    async (agreement: AgreementInput) => {
+      console.log(agreement, 'KKKLLLLMMMMM');
+      await payWaySubHandle({
+        variables: {
+          agreement: { ...agreement, },
+        },
+      });
+      refresh();
+    },
+    [payWaySubHandle, refresh],
   );
 
   return {
@@ -161,5 +202,8 @@ export function useAgreementState() {
     refresh,
     deleteAgreement,
     pushAgreement,
+    query,
+    setQuery,
+    payWaySub,
   };
 }

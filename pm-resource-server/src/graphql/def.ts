@@ -108,7 +108,7 @@ const dataTypeDef = gql`
     agreements: [Agreement]
     todoTip: String
     proState: Int
-    oldId:String
+    oldId: String
     incomeConfirm: Int
     contractState: Int
     contractAmount: String
@@ -384,14 +384,17 @@ const dataTypeDef = gql`
     customer: String!
     type: String!
     fileList: [File!]!
-    startTime: String!
-    endTime: String!
+    startTime: String
+    endTime: String
     remark: String!
     isDel: Boolean!
     createDate: String!
     contractAmount: String
     afterTaxAmount: String
     contractSignDate: String
+    maintenanceFreePeriod: String
+    contractPeriod: String
+    contractNumber: String
   }
 
   type ProjectAgreement {
@@ -535,6 +538,19 @@ const dataTypeDef = gql`
       name: String
       contractState: String
     ): ProjectPage
+    iLeadProjs_(
+      isArchive: Boolean
+      regions: [String]
+      industries: [String]
+      projTypes: [String]
+      page: Int
+      pageSize: Int
+      confirmYear: String
+      group: String
+      status: String
+      name: String
+      contractState: String
+    ): ProjectPage
     iLeadTodoProjs(
       isArchive: Boolean
       regions: [String]
@@ -600,7 +616,13 @@ const dataTypeDef = gql`
       page: Int
       pageSize: Int
     ): CustomerPage
-    agreements(page: Int, pageSize: Int, name: String): AgreementPage
+    agreements(
+      page: Int
+      pageSize: Int
+      name: String
+      customer: [String]
+      type: [String]
+    ): AgreementPage
     projectAgreements: [ProjectAgreement!]!
     getAgreementsByProjectId(id: String): [Agreement!]!
     attachments: [Attachment!]!
@@ -674,7 +696,7 @@ const dataTypeDef = gql`
     group: String
     projectClass: String
     confirmQuarter: String
-    oldId:String
+    oldId: String
   }
 
   input ContactInput {
@@ -838,6 +860,10 @@ const dataTypeDef = gql`
     url: String!
     thumbUrl: String
   }
+  input MilestoneInput {
+    name: String!
+    value: Float!
+  }
 
   input AgreementInput {
     id: ID
@@ -845,10 +871,39 @@ const dataTypeDef = gql`
     customer: String!
     type: String!
     fileList: [FileInput!]!
-    startTime: String!
-    endTime: String!
+    startTime: String
+    endTime: String
     remark: String!
     contactProj: [String!]!
+    contractSignDate: String
+    contractAmount: String
+    afterTaxAmount: String
+    contractPeriod: String
+    contractNumber: String
+    maintenanceFreePeriod: String
+    payWayName: String
+    milestone: [MilestoneInput]
+  }
+  input PayWayInput {
+    payWayName: String
+    milestone: [MilestoneInput]
+    id: ID
+    name: String
+    customer: String
+    type: String
+    fileList: [FileInput]
+    startTime: String
+    endTime: String
+    remark: String
+    contactProj: [String]
+    contractSignDate: String
+    contractAmount: String
+    afterTaxAmount: String
+    contractPeriod: String
+    contractNumber: String
+    maintenanceFreePeriod: String
+    isDel:Boolean
+    createDate:String
   }
 
   input AttachmentInput {
@@ -969,6 +1024,7 @@ const dataTypeDef = gql`
     pushCustomer(customer: CustomerInput!): ID!
     deleteCustomer(id: ID!): ID!
     pushAgreement(agreement: AgreementInput!): ID!
+    payWaySub(agreement: PayWayInput!): ID!
     deleteAgreement(id: ID!): ID!
     pushAttachment(attachment: AttachmentInput!): ID!
     deleteAttachment(id: ID!): ID!

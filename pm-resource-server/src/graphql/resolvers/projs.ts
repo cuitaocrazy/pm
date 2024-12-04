@@ -489,6 +489,118 @@ export default {
           { salesLeader: context.user!.id },
           { leader: { $in: subordinateIds } },
         ],
+      };
+
+      let {
+        regions,
+        industries,
+        projTypes,
+        page,
+        pageSize,
+        confirmYear,
+        group,
+        status,
+        name,
+        leaders,
+      } = __;
+
+      if (!page || page === 0) {
+        page = 1;
+      }
+      if (!pageSize || pageSize === 0) {
+        pageSize = 10;
+      }
+      const skip = (page - 1) * pageSize;
+
+      const regexArray: RegExp[] = [];
+      if (!regions || regions.length == 0) regions = ["\\w*"];
+      if (!industries || industries.length == 0) industries = ["\\w*"];
+      if (!projTypes || projTypes.length == 0) projTypes = ["\\w*"];
+
+      if (confirmYear) {
+        filter["confirmYear"] = confirmYear;
+      }
+      if (status) {
+        filter["status"] = status;
+      }
+      if (group) {
+        filter["group"] = new RegExp(group, "g");
+      }
+      if (name) {
+        filter["name"] = new RegExp(name, "g");
+      }
+      if (leaders) {
+        filter["leader"] = { $in: leaders };
+      }
+
+      for (let i = 0; i < regions.length; i++) {
+        for (let j = 0; j < industries.length; j++) {
+          for (let k = 0; k < projTypes.length; k++) {
+            const regexStr = `^${industries[j]}-${regions[i]}-${projTypes[k]}-.*`;
+            regexArray.push(new RegExp(regexStr));
+          }
+        }
+      }
+      filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+      const result = await Project.find(filter)
+        .skip(skip)
+        .limit(pageSize)
+        .sort({ createDate: -1 })
+        .map(dbid2id)
+        .toArray();
+      const projIds = result.map((proj) => proj.id);
+      const projAggrement = await ProjectAgreement.find({
+        _id: { $in: projIds },
+      }).toArray();
+      await Promise.all(
+        projAggrement.map(async (pa) => {
+          const agreement = await Agreement.find({
+            _id: new ObjectId(pa.agreementId),
+          })
+            .map(dbid2id)
+            .toArray();
+          const oneResult = result.find((res) => res.id === pa._id);
+          oneResult.agreements = agreement;
+        })
+      );
+
+      await Promise.all(
+        result.map(async (oneResult) => {
+          const customer = await Customer.findOne({
+            $or: [
+              { _id: new ObjectId(oneResult.customer) },
+              { _id: oneResult.customer },
+            ],
+          });
+          if (customer) oneResult.customerObj = dbid2id(customer);
+        })
+      );
+
+      const total = await Project.countDocuments(filter);
+
+      return {
+        result,
+        page,
+        total,
+      };
+    },
+    iLeadProjs_: async (_: any, __: any, context: AuthContext) => {
+      const user = context.user!;
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
+      }
+
+      const filter = {
+        isArchive: __.isArchive ? __.isArchive : false,
+        $or: [
+          { leader: context.user!.id },
+          { salesLeader: context.user!.id },
+          { leader: { $in: subordinateIds } },
+        ],
         $and: [
           {
             $or: [

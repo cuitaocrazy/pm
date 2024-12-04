@@ -1,36 +1,120 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef } from 'react';
-import { Button, Table, Tag, Space, Popconfirm } from 'antd';
+import React, { useRef, useState } from 'react';
+import { Button, Table, Tag, Space, Popconfirm, Row, Col, Input, Select } from 'antd';
 import type { Agreement as AgreementType, AgreementInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
 import moment from 'moment';
 import { useAgreementState } from './hook';
 import AgreementForm from './AgreementForm';
+import PayWayForm from './PayWayForm';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { agreementType, useBaseState } from '@/pages/utils/hook';
+import '@/common.css';
 
 const Agreement: React.FC<any> = () => {
-  const { loading, agreements, projs, projectAgreements, customers, deleteAgreement, pushAgreement } = useAgreementState();
+  const {
+    loading,
+    agreements,
+    projs,
+    projectAgreements,
+    customers,
+    deleteAgreement,
+    pushAgreement,
+    payWaySub,
+    query,
+    setQuery,
+  } = useAgreementState();
+  const [params, setParams] = useState({
+    name: '',
+    customer: [],
+    type: [],
+  });
+  const contractType = Object.entries(agreementType).map(([key, value]) => ({
+    label: value,
+    value: key,
+  }));
+  const [type, setType] = useState(1);
   const { buildProjName } = useBaseState();
   const ref = useRef<FormDialogHandle<AgreementInput>>(null);
+  const payWayref = useRef<FormDialogHandle<AgreementInput>>(null);
   const editHandle = (agreement: AgreementType) => {
-    const projArr = projectAgreements.filter(item => {
-      return item.agreementId === agreement.id
-    }).map(pro => pro.id)
-    
-    agreement.contactProj = projArr
-    agreement.time = [moment(agreement.startTime), moment(agreement.endTime)]
-    ref.current?.showDialog({ ...agreement });
-  }
+    setType(2);
+    const projArr = projectAgreements
+      .filter((item) => {
+        return item.agreementId === agreement.id;
+      })
+      .map((pro) => pro.id);
 
+    agreement.contactProj = projArr;
+    agreement.time = [moment(agreement.startTime), moment(agreement.endTime)];
+    ref.current?.showDialog({ ...agreement });
+  };
+  const handleChange = (value = '', type: string) => {
+    setParams({
+      ...params,
+      [type]: type !== 'customer' && type !== 'type' ? String(value) : value,
+    });
+  };
+  const handleChangeInput = (name: string) => {
+    setParams({
+      ...params,
+      name,
+    });
+  };
+  const searchBtn = () => {
+    setParams({
+      ...params,
+    });
+    setQuery({
+      ...query,
+      ...params,
+    });
+  };
+  const canaelBtn = () => {
+    setParams({
+      ...params,
+      name: '',
+      customer: [],
+      type: [],
+    });
+    setQuery({
+      ...query,
+      ...params,
+      name: '',
+      customer: [],
+      type: [],
+    });
+  };
+  const addContract = () => {
+    ref.current?.showDialog({
+      name: '',
+      customer: '',
+      type: '',
+      contactProj: [],
+      startTime: '',
+      endTime: '',
+      fileList: [],
+      remark: '',
+    });
+    setType(1);
+  };
+  const [projInfo, setProjInfo] = useState();
+  const payWayBtn = (record) => {
+    // console.log(record, 'MMMMJJJJJ');
+    setProjInfo(record);
+    payWayref.current?.showDialog({
+      payWayName: '',
+      milestone: [],
+    });
+  };
   const columns = [
     {
       title: '合同名称',
       dataIndex: 'name',
       key: 'name',
-      width: '15%',
+      width: 300,
       render: (text: string, record: AgreementType) => (
         <a onClick={() => editHandle(record)}>{record.name}</a>
       ),
@@ -39,32 +123,39 @@ const Agreement: React.FC<any> = () => {
       title: '关联客户',
       dataIndex: 'customer',
       key: 'customer',
-      width: 100,
-      render: (text: string, record: AgreementType) => (
-        customers.filter(item => item.id === record.customer).length ? customers.filter(item => item.id === record.customer)[0].name : ''
-      ),
+      width: 150,
+      render: (text: string, record: AgreementType) =>
+        customers.filter((item) => item.id === record.customer).length
+          ? customers.filter((item) => item.id === record.customer)[0].name
+          : '',
     },
     {
       title: '合同类型',
       dataIndex: 'type',
       key: 'type',
-      width: 100,
-      render: (text: string, record: AgreementType) => (
-        agreementType[record.type]
-      ),
+      width: 200,
+      render: (text: string, record: AgreementType) => agreementType[record.type],
     },
     {
       title: '关联项目',
-      width: 100,
+      width: 400,
       render: (text: string, record: AgreementType) => {
-        const projArr = projectAgreements.filter(item => {
-          return item.agreementId === record.id
-        })
-        const nameArrTags = projArr.map(pro => {
-          const projName = projs?.find((item) => pro.id === item.id)?.name || ''
-          return <Tag color="processing" key={pro.id}>{buildProjName(pro.id, projName)}</Tag>
-        })
-        return nameArrTags
+        const projArr = projectAgreements.filter((item) => {
+          return item.agreementId === record.id;
+        });
+        const nameArrTags = projArr.map((pro) => {
+          const projName = projs?.find((item) => pro.id === item.id)?.name || '';
+          return (
+            <Tag
+              color="processing"
+              key={pro.id}
+              style={{ whiteSpace: 'normal', overflowWrap: 'break-word' }}
+            >
+              {buildProjName(pro.id, projName)}
+            </Tag>
+          );
+        });
+        return nameArrTags;
       },
     },
     {
@@ -74,6 +165,7 @@ const Agreement: React.FC<any> = () => {
       render: (startTime: string) => {
         return startTime && moment(startTime, 'YYYYMMDD').format('YYYY年MM月DD日');
       },
+      width: 250,
     },
     {
       title: '结束时间',
@@ -82,11 +174,13 @@ const Agreement: React.FC<any> = () => {
       render: (endTime: string) => {
         return endTime && moment(endTime, 'YYYYMMDD').format('YYYY年MM月DD日');
       },
+      width: 250,
     },
     {
       title: '备注',
       dataIndex: 'remark',
       key: 'remark',
+      width: 250,
     },
     {
       title: '创建日期',
@@ -95,6 +189,7 @@ const Agreement: React.FC<any> = () => {
       render: (createDate: string) => {
         return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
       },
+      width: 250,
     },
     {
       title: '操作',
@@ -102,38 +197,77 @@ const Agreement: React.FC<any> = () => {
       key: 'action',
       render: (id: string, record: AgreementType) => (
         <Space>
-          <Popconfirm title="是否删除？" okText="是" cancelText="否" onConfirm={() => deleteAgreement(id)}>
-            <a key="delete">
-              删除
-            </a>
+          <Popconfirm
+            title="是否删除？"
+            okText="是"
+            cancelText="否"
+            onConfirm={() => deleteAgreement(id)}
+          >
+            <a key="delete">删除</a>
           </Popconfirm>
+          <Button type="link" onClick={() => payWayBtn(record)}>
+            付款方式
+          </Button>
         </Space>
       ),
+      width: 200,
+      fixed: 'right',
     },
   ];
   return (
-    <PageContainer
-      extra={[
-        <Button
-          key="create"
-          type="primary"
-          onClick={() =>
-            ref.current?.showDialog({
-              name: '',
-              customer: '',
-              type: '',
-              contactProj: [],
-              startTime: '',
-              endTime: '',
-              fileList: [],
-              remark: '',
-            })
-          }
-        >
-          新建
-        </Button>,
-      ]}
-    >
+    <PageContainer className="bgColorWhite paddingBottom20">
+      <Row gutter={16}>
+        <Col className="gutter-row">
+          <Input
+            id="proName"
+            value={params.name}
+            key="search"
+            addonBefore="合同名称"
+            allowClear
+            onChange={(e) => {
+              handleChangeInput(e.target.value);
+            }}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>关联客户：</label>
+          <Select
+            value={params.customer}
+            style={{ width: '200px' }}
+            onChange={(value: any, event) => {
+              handleChange(value, 'customer');
+            }}
+            fieldNames={{ value: 'id', label: 'name' }}
+            options={customers}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>合同类型：</label>
+          <Select
+            value={params.type}
+            style={{ width: '200px' }}
+            onChange={(value: any, event) => {
+              handleChange(value, 'type');
+            }}
+            options={contractType}
+          />
+        </Col>
+      </Row>
+      <Row justify="center" className="marginTop20">
+        <Col>
+          <Button onClick={() => searchBtn()} type="primary" className="marginRight10">
+            查询
+          </Button>
+          <Button onClick={() => canaelBtn()}>重置</Button>
+        </Col>
+      </Row>
+      <Row justify="left" className="marginTop20">
+        <Col>
+          <Button key="create" type="primary" onClick={() => addContract()}>
+            新建
+          </Button>
+        </Col>
+      </Row>
       <Table
         loading={loading}
         rowKey={(record) => record.id}
@@ -141,16 +275,30 @@ const Agreement: React.FC<any> = () => {
         dataSource={agreements}
         pagination={false}
         size="middle"
+        scroll={{ x: 1500 }}
       />
-      <DialogForm submitHandle={(v: AgreementInput) => {
-        let customerName = customers.find(item => item.id === v.customer)?.name
-        return pushAgreement({ ...v, customerName })
-      }} ref={ref} title="编辑合同">
+      <DialogForm
+        submitHandle={(v: AgreementInput) => {
+          let customerName = customers.find((item) => item.id === v.customer)?.name;
+          return pushAgreement({ ...v, customerName });
+        }}
+        ref={ref}
+        title={type == 1 ? '新增合同' : type == 2 ? '编辑合同' : ''}
+      >
         {AgreementForm}
+      </DialogForm>
+      <DialogForm
+        submitHandle={(v: AgreementInput) => {
+          return payWaySub({ ...v, ...projInfo });
+        }}
+        ref={payWayref}
+        title="付款方式"
+      >
+        {PayWayForm}
       </DialogForm>
     </PageContainer>
   );
-}
+};
 
 export default () => (
   <ApolloProvider client={client}>

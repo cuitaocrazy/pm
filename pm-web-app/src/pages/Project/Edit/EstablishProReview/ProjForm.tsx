@@ -91,7 +91,6 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // role: 'engineer',
   // } });
   data.contractState = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
-  //
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType

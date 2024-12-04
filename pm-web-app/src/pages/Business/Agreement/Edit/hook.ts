@@ -61,6 +61,11 @@ const queryGql = gql`
         contractPeriod
         contractNumber
         maintenanceFreePeriod
+        payWayName
+        milestone {
+          name
+          value
+        }
       }
       page
       total
@@ -181,13 +186,13 @@ export function useAgreementState() {
   );
   const payWaySub = useCallback(
     async (agreement: AgreementInput) => {
-      console.log(agreement, 'KKKLLLLMMMMM');
+      console.log(agreement, 'agreement JJJJJJJ');
       await payWaySubHandle({
         variables: {
-          agreement: { ...agreement, },
+          agreement: { ...agreement },
         },
       });
-      refresh();
+      await refresh();
     },
     [payWaySubHandle, refresh],
   );

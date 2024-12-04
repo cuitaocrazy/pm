@@ -105,9 +105,9 @@ const Agreement: React.FC<any> = () => {
     // console.log(record, 'MMMMJJJJJ');
     setProjInfo(record);
     payWayref.current?.showDialog({
-      payWayName: '',
-      milestone: [],
+      ...record,
     });
+    /**ref.current?.showDialog({ ...agreement }); */
   };
   const columns = [
     {
@@ -289,7 +289,7 @@ const Agreement: React.FC<any> = () => {
       </DialogForm>
       <DialogForm
         submitHandle={(v: AgreementInput) => {
-          return payWaySub({ ...v, ...projInfo });
+          return payWaySub({ ...projInfo, ...v });
         }}
         ref={payWayref}
         title="付款方式"

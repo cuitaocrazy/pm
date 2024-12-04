@@ -395,6 +395,12 @@ const dataTypeDef = gql`
     maintenanceFreePeriod: String
     contractPeriod: String
     contractNumber: String
+    payWayName: String
+    milestone: [Milestone]
+  }
+  type Milestone {
+    name: String
+    value: Float
   }
 
   type ProjectAgreement {
@@ -902,8 +908,8 @@ const dataTypeDef = gql`
     contractPeriod: String
     contractNumber: String
     maintenanceFreePeriod: String
-    isDel:Boolean
-    createDate:String
+    isDel: Boolean
+    createDate: String
   }
 
   input AttachmentInput {

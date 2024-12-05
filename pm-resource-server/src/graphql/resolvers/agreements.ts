@@ -2,7 +2,7 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-11-21 09:20:39
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-12-04 10:20:39
+ * @LastEditTime: 2024-12-04 16:13:32
  * @FilePath: /pm/pm-resource-server/src/graphql/resolvers/agreements.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE,
  */
@@ -84,7 +84,7 @@ export default {
           { $set: { contractState: 1 } } // 更新 contractState 字段
         ).then((res) => proID || res.upsertedId._id);
       });
-      console.dir(agreement.contactProj, { depth: null, color: true });
+      // console.dir(agreement.contactProj, { depth: null, color: true });
       delete agreement.contactProj;
       if (!id) {
         return Agreement.updateOne(
@@ -102,10 +102,11 @@ export default {
     payWaySub: async (_: any, args: any, context: AuthContext) => {
       // console.dir(args, { depth: null, color: true });
       let { milestone, ...agreement } = args.agreement;
+
       // 遍历 milestone 并插入数据
       const inserts = milestone.map((item) => ({
         payWayName: agreement.payWayName,
-        milestone: agreement.milestone,
+        milestone: milestone,
         contractId: agreement.id,
         name: agreement.name,
         customer: agreement.customer,
@@ -130,7 +131,7 @@ export default {
         milestoneValue: item.value, // 添加 milestoneValue
       }));
 
-      // console.dir(agreement.id, { depth: null, color: true });
+      console.dir(inserts, { depth: null, color: true });
       await Agreement.updateOne(
         { $or: [{ _id: new ObjectId(agreement.id) }] },
         {

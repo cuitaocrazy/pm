@@ -166,6 +166,12 @@
         name: 'agreement',
         component: './Business/Agreement/Edit',
         access: 'canAgreement',
+      },//
+      {
+        path: '/business/contractPaymentManage',
+        name: 'contractPaymentManage',
+        component: './Business/ContractPaymentManage/Edit',
+        access: 'canAgreement',
       },
     ],
   },

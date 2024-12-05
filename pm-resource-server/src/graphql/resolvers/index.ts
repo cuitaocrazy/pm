@@ -33,6 +33,7 @@ import marketPlans from "./marketPlans";
 import eventLogs from "./eventLogs";
 import projectClasses from "./projectClass";
 import groups from "./groups";
+import contractPaymentManages from "./contractPaymentManages";
 
 const merge = (...args: IResolvers[]) => {
   return args.reduce(R.mergeDeepRight);
@@ -71,5 +72,6 @@ export default merge(
   marketPlans,
   eventLogs,
   projectClasses,
-  groups
+  groups,
+  contractPaymentManages
 );

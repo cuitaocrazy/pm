@@ -106,6 +106,7 @@ const dataTypeDef = gql`
     group: String
     customerObj: Customer
     agreements: [Agreement]
+    contractPaymentManages: [ContractPaymentManage]
     todoTip: String
     proState: Int
     oldId: String
@@ -129,6 +130,11 @@ const dataTypeDef = gql`
   }
   type AgreementPage {
     result: [Agreement!]!
+    page: Int!
+    total: Int!
+  }
+  type ContractPaymentManagePage {
+    result: [ContractPaymentManage!]!
     page: Int!
     total: Int!
   }
@@ -398,6 +404,31 @@ const dataTypeDef = gql`
     payWayName: String
     milestone: [Milestone]
   }
+  type ContractPaymentManage {
+    id: ID!
+    name: String
+    customer: String
+    type: String
+    fileList: [File]
+    contractSignDate: String
+    contractPeriod: String
+    contractNumber: String
+    contractAmount: String
+    afterTaxAmount: String
+    maintenanceFreePeriod: String
+    remark: String
+    createDate: String
+    isDel: Boolean
+    payWayName: String
+    milestoneName: String
+    milestoneValue: String
+    milestone: [Milestone]
+    payState: String
+    expectedQuarter: String
+    actualQuarter: String
+    paymentRemark: String
+    paymentFileList: [File]
+  }
   type Milestone {
     name: String
     value: Float
@@ -629,6 +660,13 @@ const dataTypeDef = gql`
       customer: [String]
       type: [String]
     ): AgreementPage
+    contractPaymentManages(
+      page: Int
+      pageSize: Int
+      name: String
+      customer: [String]
+      type: [String]
+    ): ContractPaymentManagePage
     projectAgreements: [ProjectAgreement!]!
     getAgreementsByProjectId(id: String): [Agreement!]!
     attachments: [Attachment!]!
@@ -911,6 +949,19 @@ const dataTypeDef = gql`
     isDel: Boolean
     createDate: String
   }
+  input ContractPaymentInput {
+    id: ID
+    name: String
+    contractAmount: String
+    milestoneName: String
+    milestoneValue: String
+    milestoneAmount: Float
+    payState: [String]
+    expectedQuarter: [String]
+    actualQuarter: [String]
+    paymentRemark: String
+    paymentFileList: [FileInput]
+  }
 
   input AttachmentInput {
     id: ID!
@@ -1031,7 +1082,9 @@ const dataTypeDef = gql`
     deleteCustomer(id: ID!): ID!
     pushAgreement(agreement: AgreementInput!): ID!
     payWaySub(agreement: PayWayInput!): ID!
+    contractPaymentSub(agreement: ContractPaymentInput!): ID!
     deleteAgreement(id: ID!): ID!
+    deleteContractPayment(id: ID!): ID!
     pushAttachment(attachment: AttachmentInput!): ID!
     deleteAttachment(id: ID!): ID!
     pushTags(tags: [String!]!): String

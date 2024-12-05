@@ -2,7 +2,7 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-11-21 09:20:39
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-11-27 14:20:41
+ * @LastEditTime: 2024-12-04 11:26:20
  * @FilePath: /pm/pm-web-app/src/locales/zh-CN/menu.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -49,6 +49,7 @@ export default {
   'menu.business': '商务管理',
   'menu.business.customer': '客户管理',
   'menu.business.agreement': '销售合同',
+  'menu.business.contractPaymentManage': '合同款项管理',
   'menu.expense': '费用管理',
   'menu.expense.perExpense': '人员费用',
   'menu.expense.projExpense': '项目费用',

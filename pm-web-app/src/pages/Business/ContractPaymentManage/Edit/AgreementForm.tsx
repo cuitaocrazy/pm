@@ -59,7 +59,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   const [selectCustomer, setSelectCustomer] = useState(data?.customer || '');
 
   let files = data?.fileList as UploadFile[];
-  console.log(files, 'files KKLLKKLL');
+
   const props: UploadProps = {
     listType: 'picture-card',
     action: '/api/upload/tmp',

@@ -32,6 +32,11 @@ const getGql = (proName: string) => {
         id
         agreementId
       }
+         yearManages {
+      code
+      name
+      enable
+    }
 
       ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name){
         result{
@@ -281,6 +286,7 @@ export function useProjStatus() {
     },
     fetchPolicy: 'no-cache',
   }); //走后台获取数据，data为返回数据，refresh为函数，自己触发，variables为参数
+  //console.log(queryData?.yearManages, 'queryData?.yearManages MMMMMMLLLLLL');
   const [archiveProjHandle, { loading: archiveLoading }] = useMutation<
     Mutation,
     MutationDeleteProjectArgs
@@ -434,5 +440,6 @@ export function useProjStatus() {
     query,
     getTodoList,
     todoProjsTotal,
+    yearManages: queryData?.yearManages,
   };
 }

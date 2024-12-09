@@ -57,6 +57,16 @@ const userQuery = gql`
     projs {
       id
     }
+    yearManages {
+      code
+      name
+      enable
+    }
+    quarterManages {
+      code
+      name
+      enable
+    }
   }
 `;
 
@@ -90,7 +100,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  data.contractState1 = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  data.contractState1 =
+    data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
@@ -516,7 +527,20 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     console.log(`selected ${value}`);
     setIsRequire(value);
   };
-
+  const [confirmYearOptions, setConfirmYearOptions] = useState(resData?.yearManages);
+  useEffect(() => {
+    if (resData?.yearManages) {
+      let yearManages = resData?.yearManages.filter((item) => item.enable == true);
+      setConfirmYearOptions(yearManages);
+    }
+  }, [resData?.yearManages]);
+  const [confirmQuarterOptions, setConfirmQuarterOptions] = useState(resData?.quarterManages);
+  useEffect(() => {
+    if (resData?.quarterManages) {
+      let quarterManages = resData?.quarterManages.filter((item) => item.enable == true);
+      setConfirmQuarterOptions(quarterManages);
+    }
+  }, [resData?.quarterManages]);
   return (
     <Form {...layout} form={form} initialValues={data} disabled>
       <Form.Item shouldUpdate noStyle>
@@ -779,11 +803,11 @@ return true;
             <InputNumber min={0} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        {/* <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
             <InputNumber min={0} />
           </Form.Item>
-        </Col>
+        </Col> */}
         <Col span={8}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
             <InputNumber min={0} />
@@ -974,14 +998,55 @@ return true;
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker
+            <Select
+              disabled={!isConfirmYearDisabled}
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setConfirmYear(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={confirmYearOptions}
+            />
+            {/* <DatePicker
               picker="year"
               format="YYYY"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
               disabled={!isConfirmYearDisabled}
-            />
+            /> */}
             {/* <Input /> */}
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="确认季度"
+            name="confirmQuarter"
+            rules={[{ required: false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined,
+            })}
+          >
+            <Select
+              disabled={!isConfirmYearDisabled}
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setConfirmQuarter(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={confirmQuarterOptions}
+            />
+            {/* <DatePicker
+              picker="month"
+              format="MM"
+              style={{ width: '100%' }}
+              onChange={onConfirmYearChange}
+              disabled={!isConfirmYearDisabled}
+            /> */}
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
+            <InputNumber min={0} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -1240,7 +1305,7 @@ return true;
                       ) : (
                         <MinusCircleOutlined
                           className="dynamic-delete-button"
-                          onClick={() => remove(field.name)}
+                          // remove(field.name)
                         />
                       )}
                     </div>

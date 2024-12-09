@@ -54,6 +54,8 @@ const Project: React.FC<any> = () => {
     yearManages,
     proConfirmStateManages,
     incomeConfirmProj,
+    agreements,
+    projectAgreements,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -72,7 +74,8 @@ const Project: React.FC<any> = () => {
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',
-      width: 120,
+      width: 200,
+      fixed: 'left',
     },
     {
       title: '项目ID',
@@ -92,7 +95,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return subordinates.find((user: { id: string }) => user.id === record.leader)?.name;
       },
-      width: 110,
+      width: 200,
     },
     {
       title: '市场经理',
@@ -101,7 +104,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return subordinates.find((user: { id: string }) => user.id === record.salesLeader)?.name;
       },
-      width: 110,
+      width: 200,
     },
     {
       title: '阶段状态',
@@ -118,20 +121,20 @@ const Project: React.FC<any> = () => {
       title: '项目部门',
       dataIndex: 'group',
       key: 'group',
-      width: '200px',
+      width: '300px',
     },
     {
       title: '预算人天',
       dataIndex: 'estimatedWorkload',
       key: 'estimatedWorkload',
-      width: '80px',
+      width: '200px',
       render: (text: string, record: Proj) => <Tag color="cyan">{text ? text : 0}</Tag>,
     },
     {
       title: '实际人天',
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
-      width: '80px',
+      width: 200,
       render: (text: number, record: Proj) => (
         <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}>
           <Tag color="cyan">{text ? ((text - 0) / 8).toFixed(2) : 0}</Tag>
@@ -145,7 +148,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return record.customerObj ? record.customerObj.name : '';
       },
-      width: 150,
+      width: 200,
     },
     {
       title: '项目状态',
@@ -154,7 +157,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.projStatus)?.name;
       },
-      width: 100,
+      width: 200,
     },
     {
       title: '合同状态',
@@ -163,7 +166,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return record.contractState == 0 ? '未签署' : record.contractState == 1 ? '已签署' : '---';
       },
-      width: 100,
+      width: 200,
     },
     {
       title: '验收状态',
@@ -172,7 +175,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.acceStatus)?.name;
       },
-      width: 100,
+      width: 200,
     },
     {
       title: '确认年度',
@@ -181,16 +184,18 @@ const Project: React.FC<any> = () => {
       render: (confirmYear: string) => {
         return confirmYear;
       },
-      width: 100,
+      width: 200,
     },
     {
       title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
-      render: (contractAmount: string) => {
-        return contractAmount;
+      render: (contractAmount: string, record: Proj) => {
+        let contract = projectAgreements.filter((item) => item.id == record.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        return amount[0]?.contractAmount;
       },
-      width: 100,
+      width: 200,
     },
     {
       title: '确认金额',
@@ -199,34 +204,38 @@ const Project: React.FC<any> = () => {
       render: (recoAmount: string) => {
         return recoAmount;
       },
-      width: 100,
+      width: 200,
     },
     {
       title: '税后金额',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
-      render: (afterTaxAmount: string) => {
-        return afterTaxAmount;
+      render: (afterTaxAmount: string, record: Proj) => {
+        let contract = projectAgreements.filter((item) => item.id == record.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        return amount[0]?.afterTaxAmount;
       },
-      width: 100,
+      width: 200,
     },
     {
       title: '投产日期',
       dataIndex: 'productDate',
       key: 'productDate',
       render: (productDate: string) => {
-        return productDate;
+        return productDate ? moment(productDate).format('YYYY-MM-DD') : '---';
       },
-      width: 100,
+      width: 200,
     },
     {
       title: '合同签订日期',
       dataIndex: 'contractSignDate',
       key: 'contractSignDate',
-      render: (contractSignDate: string) => {
-        return contractSignDate;
+      render: (contractSignDate: string, record: Proj) => {
+        let contract = projectAgreements.filter((item) => item.id == record.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
       },
-      width: 100,
+      width: 200,
     },
     // {
     //   title: '操作',
@@ -428,9 +437,11 @@ const Project: React.FC<any> = () => {
   const [incomeConfirmOptions, setIncomeConfirmOptions] = useState([]);
   useEffect(() => {
     if (yearManages) {
-      setConfirmYearOptions(yearManages);
+      let yearManages_ = yearManages.filter((item) => item.enable == true);
+      setConfirmYearOptions(yearManages_);
     }
     if (proConfirmStateManages) {
+      let proConfirmStateManages_ = proConfirmStateManages.filter((item) => item.enable == true);
       setIncomeConfirmOptions(proConfirmStateManages);
     }
   }, [yearManages, proConfirmStateManages]);
@@ -651,16 +662,18 @@ const Project: React.FC<any> = () => {
           <Button onClick={() => canaelBtn()}>重置</Button>
         </Col>
       </Row>
+      {/* <div style={{ overflowX: 'auto' }}> */}
       <Table
         className="marginTop20"
         loading={loading}
         rowKey={(record) => record.id}
         columns={columns}
         dataSource={!isAdmin && archive === '2' ? todoProjs : projs}
-        scroll={{ x: 1500 }}
+        scroll={{ x: 1000 }}
         pagination={false}
         size="middle"
       />
+      {/* </div> */}
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination
           onChange={(page, pageSize) => pageChange(page)}

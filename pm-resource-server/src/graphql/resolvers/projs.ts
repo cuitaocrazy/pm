@@ -492,6 +492,7 @@ export default {
         name,
         leaders,
         incomeConfirm,
+        contractState,
       } = __;
 
       if (!page || page === 0) {
@@ -524,6 +525,9 @@ export default {
       }
       if (incomeConfirm) {
         filter["incomeConfirm"] = Number(incomeConfirm);
+      }
+      if (contractState) {
+        filter["contractState"] = Number(contractState);
       }
 
       for (let i = 0; i < regions.length; i++) {

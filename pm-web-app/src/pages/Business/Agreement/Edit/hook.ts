@@ -175,6 +175,7 @@ export function useAgreementState() {
       let reqAgreement = await attachmentUpload(agreement);
       delete reqAgreement.time;
       delete reqAgreement.customerName;
+      console.log(reqAgreement, 'reqAgreement MMMMMM');
       await pushAgreementHandle({
         variables: {
           agreement: reqAgreement,

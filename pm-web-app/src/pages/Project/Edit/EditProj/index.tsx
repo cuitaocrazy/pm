@@ -52,6 +52,8 @@ const Project: React.FC<any> = () => {
     total,
     todoProjsTotal,
     yearManages,
+    projectAgreements,
+    agreements,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -185,8 +187,10 @@ const Project: React.FC<any> = () => {
       title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
-      render: (contractAmount: string) => {
-        return contractAmount;
+      render: (contractAmount: string, record: Proj) => {
+        let contract = projectAgreements.filter((item) => item.id == record.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        return amount[0]?.contractAmount;
       },
       width: 100,
     },
@@ -203,8 +207,10 @@ const Project: React.FC<any> = () => {
       title: '税后金额',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
-      render: (afterTaxAmount: string) => {
-        return afterTaxAmount;
+      render: (afterTaxAmount: string, record: Proj) => {
+        let contract = projectAgreements.filter((item) => item.id == record.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        return amount[0]?.afterTaxAmount;
       },
       width: 100,
     },
@@ -213,7 +219,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'productDate',
       key: 'productDate',
       render: (productDate: string) => {
-        return productDate;
+        return productDate ? moment(productDate).format('YYYY-MM-DD') : '---';
       },
       width: 100,
     },
@@ -221,8 +227,10 @@ const Project: React.FC<any> = () => {
       title: '合同签订日期',
       dataIndex: 'contractSignDate',
       key: 'contractSignDate',
-      render: (contractSignDate: string) => {
-        return contractSignDate;
+      render: (contractSignDate: string, record: Proj) => {
+        let contract = projectAgreements.filter((item) => item.id == record.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
       },
       width: 100,
     },
@@ -451,7 +459,8 @@ const Project: React.FC<any> = () => {
   useEffect(() => {
     if (yearManages) {
       console.log(yearManages, 'yearManages ====== LLLLLLL');
-      setConfirmYearOptions(yearManages);
+      let yearManages_ = yearManages.filter((item) => item.enable == true);
+      setConfirmYearOptions(yearManages_);
     }
   }, [yearManages]);
 

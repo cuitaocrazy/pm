@@ -26,6 +26,10 @@ const getGql = (proName: string) => {
       result{
         id
         name
+        contractAmount
+        afterTaxAmount
+        maintenanceFreePeriod
+        contractSignDate
       }
     }
       projectAgreements {
@@ -35,10 +39,12 @@ const getGql = (proName: string) => {
         yearManages{
           code
           name
+          enable
         }
           proConfirmStateManages{
         code
         name
+        enable
         }
 
       ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState,incomeConfirm:$incomeConfirm){
@@ -390,15 +396,15 @@ export function useProjStatus() {
       reqProj.incomeConfirm = 2;
       delete reqProj.contractState1;
       console.log(reqProj, 'proj OOOPPP');
-      // await pushCostHandle({
-      //   variables: {
-      //     proj: reqProj,
-      //   },
-      // });
-      // getTodoList(query).then((res) => {
-      //   setTodoProjs(res.data.iLeadTodoProjs);
-      // });
-      // refresh();
+      await pushCostHandle({
+        variables: {
+          proj: reqProj,
+        },
+      });
+      getTodoList(query).then((res) => {
+        setTodoProjs(res.data.iLeadTodoProjs);
+      });
+      refresh();
     },
     [pushCostHandle, refresh],
   );

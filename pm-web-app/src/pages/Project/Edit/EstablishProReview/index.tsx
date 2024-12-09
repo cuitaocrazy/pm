@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Button,
   Table,
@@ -54,6 +54,7 @@ const Project: React.FC<any> = () => {
     query,
     total,
     todoProjsTotal,
+    yearManages,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -380,6 +381,13 @@ const Project: React.FC<any> = () => {
 
   //   setCustomerListData(customerListData1?.result)
   // }, [customerListData1])
+  const [confirmYearOptions, setConfirmYearOptions] = useState([]);
+  useEffect(() => {
+    if (yearManages) {
+      let temp = yearManages.filter((item) => item.enable == true);
+      setConfirmYearOptions(temp);
+    }
+  }, [yearManages]);
 
   //=====zhouyueyang
   return (
@@ -474,13 +482,22 @@ const Project: React.FC<any> = () => {
         </Col>
         <Col className="gutter-row">
           <label>确认年度：</label>
-          <DatePicker
+          {/* <DatePicker
             format="YYYY"
             value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
             picker="year"
             onChange={(value, event) => {
               onChange(event);
             }}
+          /> */}
+          <Select
+            value={params.confirmYear}
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'confirmYear')}
+            fieldNames={{ value: 'code', label: 'name' }}
+            options={confirmYearOptions}
           />
         </Col>
         <Col>

@@ -25,6 +25,10 @@ const getGql = (proName: string) => {
       result{
         id
         name
+        contractAmount
+        afterTaxAmount
+        maintenanceFreePeriod
+        contractSignDate
       }
     }
       projectAgreements {
@@ -34,6 +38,7 @@ const getGql = (proName: string) => {
         yearManages{
           code
           name
+          enable
         }
 
       ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState){

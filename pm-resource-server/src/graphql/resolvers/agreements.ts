@@ -2,7 +2,7 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-11-21 09:20:39
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-12-07 21:19:31
+ * @LastEditTime: 2024-12-09 14:09:49
  * @FilePath: /pm/pm-resource-server/src/graphql/resolvers/agreements.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE,
  */
@@ -61,9 +61,9 @@ export default {
     pushAgreement: async (_: any, args: any, context: AuthContext) => {
       const {
         id,
-        contractAmount,
-        afterTaxAmount,
-        maintenanceFreePeriod,
+        // contractAmount,
+        // afterTaxAmount,
+        // maintenanceFreePeriod,
         ...agreement
       } = args.agreement;
       // console.dir(args.agreement, { depth: null, colors: true });
@@ -90,9 +90,9 @@ export default {
           {
             $set: {
               contractState: 1,
-              contAmount: contractAmount,
-              taxAmount: afterTaxAmount,
-              serviceCycle: maintenanceFreePeriod,
+              contAmount: agreement.contractAmount,
+              taxAmount: agreement.afterTaxAmount,
+              serviceCycle: agreement.maintenanceFreePeriod,
             },
           } // 更新 contractState 字段
         ).then((res) => proID || res.upsertedId._id);

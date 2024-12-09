@@ -35,16 +35,24 @@ import moment from 'moment';
 import { history } from 'umi';
 
 const userQuery = gql`
-  query ($groups: [String!]) {
+  query ($groups: [String!], $agreementPageSize: Int) {
     groupsUsers(groups: $groups) {
       id
       name
     }
-    agreements {
+    agreements(pageSize: $agreementPageSize) {
       result {
         id
         name
+        contractAmount
+        afterTaxAmount
+        maintenanceFreePeriod
+        contractSignDate
       }
+    }
+    projectAgreements {
+      id
+      agreementId
     }
     projectClasses {
       id
@@ -119,8 +127,20 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     variables: {
       groups: filteredGroups,
       pageSizeAgreements: 10000000,
+      agreementPageSize: 10000000,
     },
   });
+  useEffect(() => {
+    if (resData?.projectAgreements && resData?.agreements) {
+      let contract = resData?.projectAgreements.filter((item) => item.id == data.id);
+      let amount = resData?.agreements?.result.filter(
+        (item) => item.id == contract[0]?.agreementId,
+      );
+      form.setFieldsValue({ contAmount_: amount && amount[0]?.contractAmount });
+      form.setFieldsValue({ taxAmount_: amount && amount[0]?.afterTaxAmount });
+      form.setFieldsValue({ serviceCycle_: amount && amount[0]?.maintenanceFreePeriod });
+    }
+  }, [resData?.projectAgreements, resData?.agreements]);
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
     fetchPolicy: 'no-cache',
     variables: {
@@ -600,7 +620,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               </Col>
               <Col xs={24} sm={4}>
                 <Button
-                  disabled={data.proState == 0}
+                  disabled={data.proState != 1}
                   key="create"
                   hidden={!data?.id || isDerive}
                   type="primary"
@@ -857,8 +877,8 @@ return true;
       </Row>
       <Row>
         <Col span={8}>
-          <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled={data.proState == 0} disabled />
+          <Form.Item label="合同金额" name="contAmount_" rules={[{ required: false }]}>
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         {/* <Col span={8}>
@@ -867,8 +887,8 @@ return true;
           </Form.Item>
         </Col> */}
         <Col span={8}>
-          <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled={data.proState == 0} disabled />
+          <Form.Item label="税后金额" name="taxAmount_" rules={[{ required: false }]}>
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -1010,11 +1030,11 @@ return true;
           <Col span={8}>
             <Form.Item
               label="免费维护期"
-              name="serviceCycle"
+              name="serviceCycle_"
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} disabled={data.proState == 0} disabled />
+              <InputNumber min={0} disabled />
             </Form.Item>
           </Col>
         </Row>
@@ -1344,7 +1364,7 @@ return true;
                         <MinusCircleOutlined
                           className="dynamic-delete-button"
                           onClick={() => {
-                            data.proState == 0 ? remove(field.name) : '';
+                            data.proState == 0 ? '' : remove(field.name);
                           }}
                         />
                       )}

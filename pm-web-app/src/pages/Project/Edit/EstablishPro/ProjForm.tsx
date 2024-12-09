@@ -58,6 +58,16 @@ const userQuery = gql`
     projs {
       id
     }
+    yearManages {
+      code
+      name
+      enable
+    }
+    quarterManages {
+      code
+      name
+      enable
+    }
   }
 `;
 
@@ -102,9 +112,9 @@ export default () => {
     // 使用正则表达式检查是否包含一个或两个斜杠
     const match = item.match(/^\/[^/]+(\/[^/]+)?$/);
     return match !== null;
-  });
+  }); //匹配/abc/def和/abc，不匹配/abc/def/ghi和abc
 
-  const isConfirmYearDisabled = shouldEnable?.some((enabled) => enabled === true);
+  const isConfirmYearDisabled = shouldEnable?.some((enabled) => enabled === true); //存在true，返回true，不存在true，返回false
 
   //上传材料
   const props: UploadProps = {
@@ -505,7 +515,22 @@ export default () => {
       setFormattedOptions(temp);
     }
   }, [salesman]); // value 改变时运行
-
+  const [confirmYearOptions, setConfirmYearOptions] = useState(resData?.yearManages);
+  const [confirmYear, setConfirmYear] = useState(resData?.confirmYear || '');
+  const [confirmQuarter, setConfirmQuarter] = useState(resData?.confirmQuarter || '');
+  const [confirmQuarterOptions, setConfirmQuarterOptions] = useState(resData?.quarterManages);
+  useEffect(() => {
+    if (resData?.yearManages) {
+      let yearManages = resData?.yearManages.filter((item) => item.enable == true);
+      setConfirmYearOptions(yearManages);
+    }
+  }, [resData?.yearManages]);
+  useEffect(() => {
+    if (resData?.quarterManages) {
+      let quarterManages = resData?.quarterManages.filter((item) => item.enable == true);
+      setConfirmQuarterOptions(quarterManages);
+    }
+  }, [resData?.quarterManages]);
   return (
     <Form
       style={{ background: '#fff' }}
@@ -930,13 +955,22 @@ export default () => {
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker
+            <Select
+              disabled={!isConfirmYearDisabled}
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setConfirmYear(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={confirmYearOptions}
+            />
+            {/* <DatePicker
               picker="year"
               format="YYYY"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
               disabled={!isConfirmYearDisabled}
-            />
+            /> */}
           </Form.Item>
         </Col>
         <Col span={7}>
@@ -948,18 +982,27 @@ export default () => {
               value: value ? moment(value) : undefined,
             })}
           >
-            <DatePicker
+            <Select
+              disabled={!isConfirmYearDisabled}
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setConfirmQuarter(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={confirmQuarterOptions}
+            />
+            {/* <DatePicker
               picker="month"
               format="MM"
               style={{ width: '100%' }}
               onChange={onConfirmYearChange}
               disabled={!isConfirmYearDisabled}
-            />
+            /> */}
           </Form.Item>
         </Col>
         <Col span={7}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled={!isConfirmYearDisabled} />
           </Form.Item>
         </Col>
         <Col span={7}>
@@ -1039,6 +1082,21 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}></Col>
+        <Col span={7}>
+          <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="商户联系人联系方式"
+            name="contactDetailsMerchant"
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        {/* <Col span={7}></Col> */}
       </Row>
       <Row>
         <Col span={24}>

@@ -242,13 +242,13 @@ const Agreement: React.FC<any> = () => {
           <Button onClick={() => canaelBtn()}>重置</Button>
         </Col>
       </Row>
-      <Row justify="left" className="marginTop20">
+      {/* <Row justify="left" className="marginTop20">
         <Col>
           <Button key="create" type="primary" onClick={() => addContract()}>
             新建
           </Button>
         </Col>
-      </Row>
+      </Row> */}
       <Table
         loading={loading}
         rowKey={(record) => record.id}

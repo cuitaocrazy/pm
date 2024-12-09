@@ -14,7 +14,7 @@ function getColumns(
   createHandle: (region: RegionType) => void,
   editHandle: (region: RegionType) => void,
   deleteHandle: (id: string) => void,
-  changeEnable:(region: RegionType) => void,
+  changeEnable: (region: RegionType) => void,
 ) {
   return [
     {
@@ -31,14 +31,14 @@ function getColumns(
       dataIndex: 'code',
       key: 'code',
     },
-    {
-      title: '是否启用',
-      dataIndex: 'enable',
-      key: 'enable',
-      render: (text: string, record: RegionType) => (
-        <Switch checked={record.enable} onChange={() => changeEnable(record)} />
-      )
-    },
+    // {
+    //   title: '是否启用',
+    //   dataIndex: 'enable',
+    //   key: 'enable',
+    //   render: (text: string, record: RegionType) => (
+    //     <Switch checked={record.enable} onChange={() => changeEnable(record)} />
+    //   )
+    // },
     {
       title: '排序',
       dataIndex: 'sort',
@@ -98,8 +98,8 @@ function Region() {
         enable: !region.enable,
         sort: region.sort,
         remark: region.remark,
-      })
-    }
+      });
+    },
   );
   return (
     <PageContainer

@@ -274,7 +274,7 @@ const Project: React.FC<any> = () => {
               删除
             </a>
           </Popconfirm>
-          <Popconfirm
+          {/* <Popconfirm
             title={'驳回原因：' + record.reason}
             okText="关闭"
             showCancel={false}
@@ -283,7 +283,7 @@ const Project: React.FC<any> = () => {
             <Button disabled={record.proState != 2} type="link" hidden={isAdmin}>
               驳回原因
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
           {/**isAdmin */}
         </Space>
       ),

@@ -279,7 +279,7 @@ const deleteProjGql = gql`
 
 export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false; //判断是全部项目还是项目维护
-  const queryGql = getGql('superProjs'); //全部项目走superProjs，项目维护走iLeadProjs
+  const queryGql = getGql('iLeadProjs'); //全部项目走superProjs，项目维护走iLeadProjs
   const [archive, setArchive] = useState('0');
   let [query, setQuery] = useState({});
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
@@ -323,7 +323,7 @@ export function useProjStatus() {
       refresh();
     }
   }, [refresh, query, archive]);
-  const tmpProjs = (queryData?.superProjs?.result || []).map((item) => {
+  const tmpProjs = (queryData?.iLeadProjs?.result || []).map((item) => {
     return { ...item };
   });
   const projs = projectClassify(
@@ -380,16 +380,25 @@ export function useProjStatus() {
               return `${accumulator}/${currentValue}`;
             }, '')
           : '');
-      let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
-      await pushCostHandle({
-        variables: {
-          proj: reqProj,
-        },
-      });
-      getTodoList(query).then((res) => {
-        setTodoProjs(res.data.iLeadTodoProjs);
-      });
-      refresh();
+      let reqProj = await attachmentUpload(
+        { ...proj, group: groupPath, incomeConfirm: 2 },
+        buildProjName,
+      );
+
+      reqProj.contractState =
+        reqProj.contractState1 == '未签署' ? 0 : reqProj.contractState1 == '已签署' ? 1 : '';
+      reqProj.incomeConfirm = 2;
+      delete reqProj.contractState1;
+      console.log(reqProj, 'proj OOOPPP');
+      // await pushCostHandle({
+      //   variables: {
+      //     proj: reqProj,
+      //   },
+      // });
+      // getTodoList(query).then((res) => {
+      //   setTodoProjs(res.data.iLeadTodoProjs);
+      // });
+      // refresh();
     },
     [pushCostHandle, refresh],
   );
@@ -429,7 +438,7 @@ export function useProjStatus() {
     // yearManages: queryData?.yearManages,
     yearManages: queryData?.yearManages,
     proConfirmStateManages: queryData?.proConfirmStateManages,
-    total: queryData?.superProjs?.total,
+    total: queryData?.iLeadProjs?.total,
     setQuery,
     query,
     getTodoList,

@@ -230,10 +230,23 @@ export default {
     },
     //获取待审核的项目（其他的限制条件都一样）
     awaitingReviewProjs: async (_: any, __: any, context: AuthContext) => {
-      let filter = {};
-      if (__.isArchive === true || __.isArchive === false) {
-        filter["isArchive"] = __.isArchive;
+      const user = context.user!;
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
       }
+
+      const filter = {
+        isArchive: __.isArchive ? __.isArchive : false,
+        $or: [
+          { leader: context.user!.id },
+          { salesLeader: context.user!.id },
+          { leader: { $in: subordinateIds } },
+        ],
+      };
       filter["proState"] = 0;
 
       let {
@@ -248,6 +261,7 @@ export default {
         name,
         leaders,
       } = __;
+
       if (!page || page === 0) {
         page = 1;
       }
@@ -255,7 +269,6 @@ export default {
         pageSize = 10;
       }
       const skip = (page - 1) * pageSize;
-      const user = context.user!;
 
       const regexArray: RegExp[] = [];
       if (!regions || regions.length == 0) regions = ["\\w*"];
@@ -274,7 +287,7 @@ export default {
       if (name) {
         filter["name"] = new RegExp(name, "g");
       }
-      if (leaders && leaders.length > 0) {
+      if (leaders) {
         filter["leader"] = { $in: leaders };
       }
 
@@ -286,38 +299,13 @@ export default {
           }
         }
       }
-
-      // filter = { _id: { $not: /-ZH-/ } };
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
-
-      const maxGroup = getMaxGroup(user.groups);
-      let subordinateIds: string[] = [];
-
-      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
-      if (maxGroup[0].split("/").length < 4) {
-        const subordinate = await getUsersByGroups(user, maxGroup);
-        subordinateIds = subordinate.map((subordinate) => subordinate.id);
-      }
-      filter["$or"] = [];
-      if (filter["$or"]) {
-        filter["$or"] = filter["$or"].concat([
-          { participants: { $elemMatch: { $eq: context.user!.id } } },
-          { leader: { $in: subordinateIds } },
-        ]);
-      } else {
-        filter["$or"] = [
-          { participants: { $elemMatch: { $eq: context.user!.id } } },
-          { leader: { $in: subordinateIds } },
-        ];
-      }
-      // console.dir(filter, { depth: null, colors: true });
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
         .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
-
       const projIds = result.map((proj) => proj.id);
       const projAggrement = await ProjectAgreement.find({
         _id: { $in: projIds },
@@ -333,6 +321,7 @@ export default {
           oneResult.agreements = agreement;
         })
       );
+
       await Promise.all(
         result.map(async (oneResult) => {
           const customer = await Customer.findOne({
@@ -345,7 +334,7 @@ export default {
         })
       );
 
-      const total = await Project.find(filter).count();
+      const total = await Project.countDocuments(filter);
 
       return {
         result,
@@ -502,6 +491,7 @@ export default {
         status,
         name,
         leaders,
+        incomeConfirm,
       } = __;
 
       if (!page || page === 0) {
@@ -531,6 +521,9 @@ export default {
       }
       if (leaders) {
         filter["leader"] = { $in: leaders };
+      }
+      if (incomeConfirm) {
+        filter["incomeConfirm"] = Number(incomeConfirm);
       }
 
       for (let i = 0; i < regions.length; i++) {

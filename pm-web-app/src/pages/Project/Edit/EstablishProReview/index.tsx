@@ -195,19 +195,19 @@ const Project: React.FC<any> = () => {
       },
       width: 100,
     },
-    {
-      title: '操作',
-      key: 'action',
-      render: (id: string, record: Proj) => (
-        <Space>
-          <Button type="link" block onClick={() => checkHandle(record, checkProjRef)}>
-            审核
-          </Button>
-        </Space>
-      ),
-      fixed: 'right' as 'right',
-      width: 100,
-    },
+    // {
+    //   title: '操作',
+    //   key: 'action',
+    //   render: (id: string, record: Proj) => (
+    //     <Space>
+    //       <Button type="link" block onClick={() => checkHandle(record, checkProjRef)}>
+    //         审核
+    //       </Button>
+    //     </Space>
+    //   ),
+    //   fixed: 'right' as 'right',
+    //   width: 100,
+    // },
   ];
 
   if (!isAdmin && archive === '2') {
@@ -547,7 +547,7 @@ const Project: React.FC<any> = () => {
         ref={ref}
         title="项目详情"
         width={1000}
-        submitHandle={(v: ProjectInput) => pushProj(v)}
+        submitHandle={(v: ProjectInput) => checkProj(v)}
       >
         {ProjForm}
       </DialogForm>
@@ -558,7 +558,7 @@ const Project: React.FC<any> = () => {
         ref={activeRef}
         title="项目活动管理"
         width={1000}
-        submitHandle={(v: ProjectInput) => pushProj(v)}
+        submitHandle={(v: ProjectInput) => checkProj(v)}
       >
         {ProjActiveForm}
       </DialogForm>

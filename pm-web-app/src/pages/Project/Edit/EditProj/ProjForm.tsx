@@ -24,7 +24,7 @@ import type {
   CustomersQuery,
   QueryCustomersArgs,
 } from '@/apollo';
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import { useModel } from 'umi';
 import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
@@ -91,7 +91,7 @@ const QueryDaily = gql`
 `;
 
 const layout = {
-  labelCol: { span: 9 },
+  labelCol: { span: 13 },
   wrapperCol: { span: 16 },
 };
 
@@ -150,13 +150,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [confirmQuarterOptions, setConfirmQuarterOptions] = useState(resData?.quarterManages);
   useEffect(() => {
     if (resData?.yearManages) {
-      setConfirmYearOptions(resData.yearManages);
+      let yearManages = resData?.yearManages.filter((item) => item.enable == true);
+      setConfirmYearOptions(yearManages);
     }
   }, [resData?.yearManages]);
   useEffect(() => {
     if (resData?.quarterManages) {
-      setConfirmQuarterOptions(resData.quarterManages);
-      console.log(confirmQuarterOptions, 'confirmQuarterOptions llllllll');
+      let quarterManages = resData?.quarterManages.filter((item) => item.enable == true);
+      setConfirmQuarterOptions(quarterManages);
     }
   }, [resData?.quarterManages]);
   const isConfirmYearDisabled = shouldEnable?.some((enabled) => enabled === true);
@@ -339,9 +340,21 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           id
           name
           enable
+          contacts {
+            name
+            phone
+            tags
+            recorder
+            remark
+          }
+          salesman
         }
         page
         total
+      }
+      subordinates {
+        id
+        name
       }
     }
   `;
@@ -474,8 +487,24 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     fetchPolicy: 'no-cache',
     variables: queryCustomerVariables,
   });
+  const [customerContactOptions, setCustomerContactOptions] = useState([]);
+  const [formattedOptions, setFormattedOptions] = useState([]);
   useEffect(() => {
-    setCustomerListData(customerListData1?.customers);
+    if (customerListData1) {
+      console.log(customerListData1, 'customerListData1?.customers KKKLLLKKKLLL');
+      setCustomerListData(customerListData1?.customers);
+      let kehulianxiren = customerListData1?.customers.result.filter(
+        (item) => item.id == data.customer,
+      );
+      console.log(kehulianxiren, 'kehulianxiren.contacts LLLLLL');
+      setCustomerContactOptions(kehulianxiren[0].contacts);
+      console.log(kehulianxiren, 'kehulianxiren LLLLLLLL');
+      let temp = kehulianxiren[0].salesman.map((item) => ({
+        value: item,
+        label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
+      }));
+      setFormattedOptions(temp);
+    }
   }, [customerListData1]);
 
   const [isExistProjIdData, setIsExistProjIdData] = useState<Boolean>();
@@ -513,7 +542,33 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
   // 项目部门下拉菜单的数据源
   const [groupsOptions] = useState(groupDatas(groupType));
-  // data.contractState = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  data.contractState1 =
+    data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  //客户联系人change
+  const customerContacthandleChange = (value, option) => {
+    console.log(option, 'option NNNNNNNN');
+    form.setFieldsValue({ contactDetailsCus: option.phone });
+  };
+  //客户名称change
+  const handleChange = (value, option) => {
+    console.log(option, 'option KKKKK', option['data-salesman']);
+    form.setFieldsValue({ customerContact: '' });
+    form.setFieldsValue({ salesManager: '' });
+    setCustomerContactOptions(option['data-contacts']);
+    let temp = option['data-salesman'].map((item) => ({
+      value: item,
+      label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
+    }));
+    setFormattedOptions(temp);
+  };
+  data.proState1 =
+    data.proState == 0
+      ? '待审核'
+      : data.proState == 1
+      ? '审核通过'
+      : data.proState == 2
+      ? '审核驳回'
+      : '';
   return (
     <Form {...layout} form={form} initialValues={data} disabled={data?.status === 'endProj'}>
       <Form.Item shouldUpdate noStyle>
@@ -573,9 +628,15 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         <Col span={8}>
           <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
             {customerListData?.result && (
-              <Select allowClear disabled={data.proState == 0}>
+              <Select allowClear disabled={data.proState == 0} onChange={handleChange}>
                 {customerListData.result.map((u: Customer) => (
-                  <Select.Option key={u.id} value={u.id}>
+                  <Select.Option
+                    key={u.id}
+                    value={u.id}
+                    data-salesman={u.salesman}
+                    data-officeAddress={u.officeAddress}
+                    data-contacts={u.contacts}
+                  >
                     {u.name}
                   </Select.Option>
                 ))}
@@ -736,15 +797,12 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="合同状态">
+          <Form.Item label="合同状态" name="contractState1">
             {/**name="contractState"*/}
             {/* {() => {
               return getLeveTwoStatus('contStatus', '合同状态');
             }} */}
-            <Input
-              disabled
-              value={data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : ''}
-            />
+            <Input disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -800,7 +858,7 @@ return true;
       <Row>
         <Col span={8}>
           <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data.proState == 0} disabled />
           </Form.Item>
         </Col>
         {/* <Col span={8}>
@@ -810,7 +868,7 @@ return true;
         </Col> */}
         <Col span={8}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data.proState == 0} disabled />
           </Form.Item>
         </Col>
       </Row>
@@ -956,7 +1014,7 @@ return true;
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} disabled={data.proState == 0} />
+              <InputNumber min={0} disabled={data.proState == 0} disabled />
             </Form.Item>
           </Col>
         </Row>
@@ -998,14 +1056,7 @@ return true;
 
       <Row>
         <Col span={8}>
-          <Form.Item
-            label="确认年度"
-            name="confirmYear"
-            rules={[{ required: false }]}
-            getValueProps={(value) => ({
-              value: value ? moment(value) : undefined,
-            })}
-          >
+          <Form.Item label="确认年度" name="confirmYear" rules={[{ required: false }]}>
             <Select
               disabled
               allowClear
@@ -1026,14 +1077,7 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item
-            label="确认季度"
-            name="confirmQuarter"
-            rules={[{ required: false }]}
-            getValueProps={(value) => ({
-              value: value ? moment(value) : undefined,
-            })}
-          >
+          <Form.Item label="确认季度" name="confirmQuarter" rules={[{ required: false }]}>
             <Select
               disabled
               allowClear
@@ -1078,6 +1122,89 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}></Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item label="产品名称" name="productName" rules={[{ required: false }]}>
+            <Input disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="著作权名称" name="copyrightName" rules={[{ required: false }]}>
+            <Input disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="项目安排" name="projectArrangement" rules={[{ required: false }]}>
+            <Input disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
+            <Input disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
+            <Select
+              disabled={data.proState == 0}
+              onChange={customerContacthandleChange}
+              options={customerContactOptions}
+              fieldNames={{ value: 'name', label: 'name' }}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item
+            label="客户联系人联系方式"
+            name="contactDetailsCus"
+            rules={[{ required: false }]}
+          >
+            <Input disabled />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
+            <Select options={formattedOptions} disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="销售负责人联系方式"
+            name="copyrightNameSale"
+            rules={[{ required: false }]}
+          >
+            <Input disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
+            <Input disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="商户联系人联系方式"
+            name="contactDetailsMerchant"
+            rules={[{ required: false }]}
+          >
+            <Input disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item label="审核状态" name="proState1" labelCol={{ span: 3, offset: 0 }}>
+            <Input disabled />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item label="原因" name="reason" labelCol={{ span: 3, offset: 0 }}>
+            {data.proState != 0 && <Input.TextArea disabled />}
+          </Form.Item>
+        </Col>
       </Row>
       <Row>
         <Col span={24}>

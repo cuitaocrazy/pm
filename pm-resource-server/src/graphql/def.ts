@@ -116,6 +116,16 @@ const dataTypeDef = gql`
     afterTaxAmount: String
     contractSignDate: String
     reason: String
+    productName: String
+    copyrightName: String
+    projectArrangement: String
+    address: String
+    customerContact: String
+    contactDetailsCus: String
+    salesManager: String
+    copyrightNameSale: String
+    merchantContact: String
+    contactDetailsMerchant: String
   }
   type ProjectPage {
     result: [Project!]!
@@ -574,6 +584,7 @@ const dataTypeDef = gql`
       status: String
       name: String
       contractState: String
+      incomeConfirm: String
     ): ProjectPage
     iLeadProjs_(
       isArchive: Boolean
@@ -741,6 +752,9 @@ const dataTypeDef = gql`
     projectClass: String
     confirmQuarter: String
     oldId: String
+    merchantContact: String
+    contactDetailsMerchant: String
+    reason: String
   }
 
   input ContactInput {

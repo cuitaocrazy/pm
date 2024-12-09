@@ -156,6 +156,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   };
 
   const customerChange = (value: string, option: any) => {
+    console.log(value,'value LLLL')
     setSelectCustomer(value);
     form.setFieldsValue({ contactProj: [] });
   };

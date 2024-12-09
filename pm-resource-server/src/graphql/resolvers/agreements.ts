@@ -2,7 +2,7 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-11-21 09:20:39
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-12-04 16:13:32
+ * @LastEditTime: 2024-12-07 21:19:31
  * @FilePath: /pm/pm-resource-server/src/graphql/resolvers/agreements.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE,
  */
@@ -59,7 +59,13 @@ export default {
   },
   Mutation: {
     pushAgreement: async (_: any, args: any, context: AuthContext) => {
-      const { id, ...agreement } = args.agreement;
+      const {
+        id,
+        contractAmount,
+        afterTaxAmount,
+        maintenanceFreePeriod,
+        ...agreement
+      } = args.agreement;
       // console.dir(args.agreement, { depth: null, colors: true });
       if (!id) {
         agreement.createDate = moment()
@@ -81,7 +87,14 @@ export default {
         //根据项目ID，去更改合同状态
         await Project.updateOne(
           { _id: proID }, // 查询条件
-          { $set: { contractState: 1 } } // 更新 contractState 字段
+          {
+            $set: {
+              contractState: 1,
+              contAmount: contractAmount,
+              taxAmount: afterTaxAmount,
+              serviceCycle: maintenanceFreePeriod,
+            },
+          } // 更新 contractState 字段
         ).then((res) => proID || res.upsertedId._id);
       });
       // console.dir(agreement.contactProj, { depth: null, color: true });

@@ -228,42 +228,42 @@ const Project: React.FC<any> = () => {
       },
       width: 100,
     },
-    {
-      title: '操作',
-      key: 'action',
-      render: (id: string, record: Proj) => (
-        <Space>
-          <Popconfirm
-            disabled={
-              !(
-                status?.find((statu) => statu.id === record.acceStatus)?.name == '已验收' &&
-                record.contractState == 1
-              )
-            }
-            title="把项目进行收入确认？"
-            okText="是"
-            cancelText="否"
-            onConfirm={() => incomeConfirmProj(record.id)}
-          >
-            <Button
-              type="link"
-              key="confirm"
-              disabled={
-                !(
-                  status?.find((statu) => statu.id === record.acceStatus)?.name == '已验收' &&
-                  record.contractState == 1
-                )
-              }
-            >
-              {/** */}
-              收入确认
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
-      fixed: 'right' as 'right',
-      width: 100,
-    },
+    // {
+    //   title: '操作',
+    //   key: 'action',
+    //   render: (id: string, record: Proj) => (
+    //     <Space>
+    //       <Popconfirm
+    //         disabled={
+    //           !(
+    //             status?.find((statu) => statu.id === record.acceStatus)?.name == '已验收' &&
+    //             record.contractState == 1
+    //           )
+    //         }
+    //         title="把项目进行收入确认？"
+    //         okText="是"
+    //         cancelText="否"
+    //         onConfirm={() => incomeConfirmProj(record.id)}
+    //       >
+    //         <Button
+    //           type="link"
+    //           key="confirm"
+    //           disabled={
+    //             !(
+    //               status?.find((statu) => statu.id === record.acceStatus)?.name == '已验收' &&
+    //               record.contractState == 1
+    //             )
+    //           }
+    //         >
+    //           {/** */}
+    //           收入确认
+    //         </Button>
+    //       </Popconfirm>
+    //     </Space>
+    //   ),
+    //   fixed: 'right' as 'right',
+    //   width: 100,
+    // },
   ];
 
   if (!isAdmin && archive === '2') {
@@ -673,7 +673,7 @@ const Project: React.FC<any> = () => {
 
       <DialogForm
         ref={ref}
-        title="编辑项目"
+        title="收入确认"
         width={1000}
         submitHandle={(v: ProjectInput) => pushProj(v)}
       >

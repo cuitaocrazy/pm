@@ -60,10 +60,12 @@ const userQuery = gql`
     yearManages {
       code
       name
+      enable
     }
     quarterManages {
       code
       name
+      enable
     }
   }
 `;
@@ -98,7 +100,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  data.contractState = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  data.contractState1 =
+    data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
   console.log(data, 'data LLLLLLLLL');
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
@@ -141,13 +144,14 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [confirmQuarterOptions, setConfirmQuarterOptions] = useState(resData?.quarterManages);
   useEffect(() => {
     if (resData?.yearManages) {
-      setConfirmYearOptions(resData.yearManages);
+      let yearManages = resData?.yearManages.filter((item) => item.enable == true);
+      setConfirmYearOptions(yearManages);
     }
   }, [resData?.yearManages]);
   useEffect(() => {
     if (resData?.quarterManages) {
-      setConfirmQuarterOptions(resData.quarterManages);
-      console.log(confirmQuarterOptions, 'confirmQuarterOptions llllllll');
+      let quarterManages = resData?.quarterManages.filter((item) => item.enable == true);
+      setConfirmQuarterOptions(quarterManages);
     }
   }, [resData?.quarterManages]);
 
@@ -731,7 +735,7 @@ return true;
               return getLeveTwoStatus('contStatus', '合同状态');
             }}
           </Form.Item> */}
-          <Form.Item label="合同状态" name="contractState">
+          <Form.Item label="合同状态" name="contractState1">
             {/* {() => {
               return getLeveTwoStatus('contStatus', '合同状态');
             }} */}

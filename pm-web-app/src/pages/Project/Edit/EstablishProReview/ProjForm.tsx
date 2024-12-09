@@ -82,7 +82,7 @@ const QueryDaily = gql`
 `;
 
 const layout = {
-  labelCol: { span: 9 },
+  labelCol: { span: 13 },
   wrapperCol: { span: 16 },
 };
 
@@ -90,7 +90,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  data.contractState = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  data.contractState1 = data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
@@ -108,6 +108,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     variables: {
       groups: filteredGroups,
       pageSizeAgreements: 10000000,
+      page: 1,
+      pageSize: 100000,
     },
   });
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
@@ -311,9 +313,17 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           id
           name
           enable
+          contacts {
+            name
+          }
+          salesman
         }
         page
         total
+      }
+      subordinates {
+        id
+        name
       }
     }
   `;
@@ -446,8 +456,23 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     fetchPolicy: 'no-cache',
     variables: queryCustomerVariables,
   });
+  const [customerContactOptions, setCustomerContactOptions] = useState([]);
+  const [formattedOptions, setFormattedOptions] = useState([]);
   useEffect(() => {
-    setCustomerListData(customerListData1?.customers);
+    if (customerListData1) {
+      setCustomerListData(customerListData1?.customers);
+      let kehulianxiren = customerListData1?.customers.result.filter(
+        (item) => item.id == data.customer,
+      );
+      console.log(kehulianxiren, 'kehulianxiren.contacts LLLLLL');
+      setCustomerContactOptions(kehulianxiren[0].contacts);
+      console.log(kehulianxiren, 'kehulianxiren LLLLLLLL');
+      let temp = kehulianxiren[0].salesman.map((item) => ({
+        value: item,
+        label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
+      }));
+      setFormattedOptions(temp);
+    }
   }, [customerListData1]);
 
   const [isExistProjIdData, setIsExistProjIdData] = useState<Boolean>();
@@ -485,6 +510,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
   // 项目部门下拉菜单的数据源
   const [groupsOptions] = useState(groupDatas(groupType));
+  const [contacts, setContacts] = useState();
+  const [isRequire, setIsRequire] = useState();
+  const handleChange = (value: string) => {
+    console.log(`selected ${value}`);
+    setIsRequire(value);
+  };
 
   return (
     <Form {...layout} form={form} initialValues={data} disabled>
@@ -697,7 +728,7 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="合同状态" name="contractState">
+          <Form.Item label="合同状态" name="contractState1">
             {/* {() => {
               return getLeveTwoStatus('contStatus', '合同状态');
             }} */}
@@ -974,12 +1005,121 @@ return true;
         <Col span={8}></Col>
       </Row>
       <Row>
+        <Col span={7}>
+          <Form.Item label="产品名称" name="productName" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="著作权名称" name="copyrightName" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="项目安排" name="projectArrangement" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
+            <Select
+              disabled
+              options={customerContactOptions}
+              fieldNames={{ value: 'name', label: 'name' }}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item
+            label="客户联系人联系方式"
+            name="contactDetailsCus"
+            rules={[{ required: false }]}
+          >
+            <Input disabled />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
+            <Select options={formattedOptions} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="销售负责人联系方式"
+            name="copyrightNameSale"
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="商户联系人联系方式"
+            name="contactDetailsMerchant"
+            rules={[{ required: false }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
         <Col span={24}>
           <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
             <Input.TextArea />
           </Form.Item>
         </Col>
       </Row>
+      <Row>
+        <Col span={24}>
+          <Form.Item
+            label="审核"
+            name="checkState"
+            rules={[{ required: true }]}
+            labelCol={{ span: 3, offset: 0 }}
+          >
+            <Select
+              disabled={false}
+              style={{ width: '100%' }}
+              onChange={handleChange}
+              options={[
+                {
+                  value: 1,
+                  label: '通过',
+                },
+                {
+                  value: 2,
+                  label: '驳回',
+                },
+              ]}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            label="原因"
+            name="reason"
+            rules={[{ required: isRequire == 2 ? true : false }]}
+            labelCol={{ span: 3, offset: 0 }}
+          >
+            <Input.TextArea disabled={false} rows={4} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+      </Row>
+
       <Row>
         <Col span={24}>
           <Form.List name="actives" rules={[{ validator: activeValidator }]}>

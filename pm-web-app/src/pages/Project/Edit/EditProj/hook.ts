@@ -88,6 +88,16 @@ const getGql = (proName: string) => {
         productDate
         contractSignDate
         contractState
+        productName
+        copyrightName
+        projectArrangement
+        address
+        customerContact
+        contactDetailsCus
+        salesManager
+        copyrightNameSale
+        merchantContact
+        contactDetailsMerchant
         agreements{
           id
           name
@@ -255,9 +265,9 @@ const pushProjGql = gql`
   }
 `;
 const applyAgainGql = gql`
-mutation ($proj: ProjectInput!) {
-  applyAgain(proj: $proj)
-}
+  mutation ($proj: ProjectInput!) {
+    applyAgain(proj: $proj)
+  }
 `;
 
 const archiveProjGql = gql`
@@ -299,9 +309,10 @@ export function useProjStatus() {
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
     pushProjGql,
   );
-  const [applyAgain,{loading: applyAgainLoading}] = useMutation<Mutation, MutationPushProjectArgs>(
-    applyAgainGql,
-  );
+  const [applyAgain, { loading: applyAgainLoading }] = useMutation<
+    Mutation,
+    MutationPushProjectArgs
+  >(applyAgainGql);
 
   const { refresh: initialRefresh } = useModel('@@initialState'); //获取全局初始状态
   const { buildProjName } = useBaseState(); //项目名字的工具函数
@@ -367,6 +378,11 @@ export function useProjStatus() {
             }, '')
           : '');
       let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
+      reqProj.contractState =
+        reqProj.contractState1 == '未签署' ? 0 : reqProj.contractState1 == '已签署' ? 1 : '';
+      delete reqProj.proState1;
+      delete reqProj.contractState1;
+      console.log(reqProj, 'reqProj MMMMMMM');
       if (proj.proState == 1) {
         await pushCostHandle({
           variables: {
@@ -374,8 +390,8 @@ export function useProjStatus() {
           },
         });
       } else if (proj.proState == 2) {
-        console.log(temp,'proState=2');
-        reqProj.proState = 0
+        console.log(temp, 'proState=2');
+        reqProj.proState = 0;
         await applyAgain({
           variables: {
             proj: reqProj,

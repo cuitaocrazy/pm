@@ -1,6 +1,19 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState, } from 'react';
-import { Table, Tag, Input, Space, ButtonProps, Select,Col, Row, Pagination , DatePicker,Button, Cascader} from 'antd';
+import React, { useRef, useState } from 'react';
+import {
+  Table,
+  Tag,
+  Input,
+  Space,
+  ButtonProps,
+  Select,
+  Col,
+  Row,
+  Pagination,
+  DatePicker,
+  Button,
+  Cascader,
+} from 'antd';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -17,146 +30,159 @@ import '@/common.css';
 const Project: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ProjectInput>>(null);
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
-  const { projectAgreements, routeProjType, loading, pushProj,setQuery,query,total,tmpProjsResult} = useProjStatus();
-  const { status, orgCode, zoneCode, buildProjName,groupType, subordinates, } = useBaseState();
+  const {
+    projectAgreements,
+    routeProjType,
+    loading,
+    pushProj,
+    setQuery,
+    query,
+    total,
+    tmpProjsResult,
+  } = useProjStatus();
+  const { status, orgCode, zoneCode, buildProjName, groupType, subordinates } = useBaseState();
   const editHandle = (proj: Proj) => {
-    const agree = projectAgreements.filter(item => item.id === proj.id)
+    const agree = projectAgreements.filter((item) => item.id === proj.id);
     const { actives, ...pro } = proj;
-    ref.current?.showDialog({ 
+    ref.current?.showDialog({
       subordinates,
       ...pro,
-      contName: agree.length ? agree[0].agreementId : '', 
-      actives: (actives as ActiveInput[]),
+      contName: agree.length ? agree[0].agreementId : '',
+      actives: actives as ActiveInput[],
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
   };
 
   // =======yuheming
-  const [params,setParams] = useState({
-    regions:[],
-    industries:[],
-    projTypes:[],
+  const [params, setParams] = useState({
+    regions: [],
+    industries: [],
+    projTypes: [],
     page: 1,
-    confirmYear:null,
-    group:[],
-    status:'',
-    name:'',
-  })
-  
-  const onChange = (confirmYear:any) => {
+    confirmYear: null,
+    group: [],
+    status: '',
+    name: '',
+  });
+
+  const onChange = (confirmYear: any) => {
     setParams({
       ...params,
       confirmYear,
-      page:1
-    })
+      page: 1,
+    });
   };
 
-  const handleChange = (value='', type:string) => {
+  const handleChange = (value = '', type: string) => {
     setParams({
       ...params,
-      [type]:type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
-      page:1
-    })
+      [type]:
+        type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
+      page: 1,
+    });
   };
 
-  const handleChangeCas = (value:any,type:string) => {
+  const handleChangeCas = (value: any, type: string) => {
     setParams({
       ...params,
-      group:value,
-      page:1,
-    })
-  }
+      group: value,
+      page: 1,
+    });
+  };
 
-  const searchBtn = ()=>{
+  const searchBtn = () => {
     setParams({
       ...params,
-      page:1
-    })
+      page: 1,
+    });
     setQuery({
       ...query,
       ...params,
-      page:1,
-      group:params.group.length !== 0 ? params.group.reduce((accumulator:string, currentValue:string)=> {return `${accumulator}/${currentValue}`},'') : ''
-    })
-  }
+      page: 1,
+      group:
+        params.group.length !== 0
+          ? params.group.reduce((accumulator: string, currentValue: string) => {
+              return `${accumulator}/${currentValue}`;
+            }, '')
+          : '',
+    });
+  };
 
-  const canaelBtn = ()=>{
+  const canaelBtn = () => {
     setParams({
       ...params,
-      regions:[],
-      industries:[],
-      projTypes:[],
+      regions: [],
+      industries: [],
+      projTypes: [],
       page: 1,
-      confirmYear:null,
-      group:[],
-      status:'',
-      name:'',
-    })
+      confirmYear: null,
+      group: [],
+      status: '',
+      name: '',
+    });
     setQuery({
       ...query,
       ...params,
-      regions:[],
-      industries:[],
-      projTypes:[],
+      regions: [],
+      industries: [],
+      projTypes: [],
       page: 1,
-      confirmYear:null,
-      group:'',
-      status:'',
-      name:'',
-    })
-  }
+      confirmYear: null,
+      group: '',
+      status: '',
+      name: '',
+    });
+  };
 
-  const handleChangeInput = (name:string)=>{
+  const handleChangeInput = (name: string) => {
     setParams({
       ...params,
       name,
-      page:1
-    })
-  }
-  
+      page: 1,
+    });
+  };
+
   // 分页器
-  const pageChange = (page:any)=>{
+  const pageChange = (page: any) => {
     setParams({
       ...params,
-      page
-    })
+      page,
+    });
     setQuery({
       ...query,
       ...params,
       page,
-      group:''
-    })
-  }
+      group: '',
+    });
+  };
 
   // 部门
-  const groupDatas = (inputArray:any)=>{
-    let result:any = []
-    inputArray.forEach((item:any) => {
+  const groupDatas = (inputArray: any) => {
+    let result: any = [];
+    inputArray.forEach((item: any) => {
       const path = item.substring(1).split('/');
       let currentLevel = result;
-      path.forEach((segment:any, index:number) => {
-        const existingSegment = currentLevel.find((el:any) => el.value === segment);
-  
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+
         if (existingSegment) {
           currentLevel = existingSegment.children || [];
-  
         } else {
           const newSegment = {
             value: segment,
             label: segment,
             children: index === path.length - 1 ? [] : [],
           };
-  
+
           currentLevel.push(newSegment);
           currentLevel = newSegment.children || [];
-  
         }
       });
-    })
-    return result
-  }
-  
+    });
+    return result;
+  };
+
   // 下拉选框
   const [orgCodeOptions] = useState(
     Object.keys(orgCode).map((s) => ({ label: orgCode[s], value: s })),
@@ -169,17 +195,15 @@ const Project: React.FC<any> = () => {
   // );
   const [statusOptions] = useState(projStatus.map((s) => ({ label: s[1], value: s[0] })));
 
-  const [groupsOptions] = useState(
-    groupDatas(groupType)
-  )
-  
+  const [groupsOptions] = useState(groupDatas(groupType));
+
   const detailHandle = (proj: Proj) => {
-    const agree = projectAgreements.filter(item => item.id === proj.id)
+    const agree = projectAgreements.filter((item) => item.id === proj.id);
     const { actives, ...pro } = proj;
-    detailRef.current?.showDialog({ 
+    detailRef.current?.showDialog({
       ...pro,
-      contName: agree.length ? agree[0].agreementId : '', 
-      actives: (actives as ActiveInput[]),
+      contName: agree.length ? agree[0].agreementId : '',
+      actives: actives as ActiveInput[],
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
@@ -212,8 +236,9 @@ const Project: React.FC<any> = () => {
       //     children: Object.keys(projType).map((s) => ({ text: projType[s], value: s })),
       //   }
       // ],
-      onFilter: (value: string | number | boolean, record: Proj) => record.id.indexOf(value + '') > -1,
-      width: 250
+      onFilter: (value: string | number | boolean, record: Proj) =>
+        record.id.indexOf(value + '') > -1,
+      width: 250,
     },
     {
       title: '项目经理',
@@ -238,18 +263,22 @@ const Project: React.FC<any> = () => {
       dataIndex: 'status',
       key: 'status',
       width: '120px',
-      render: (status: string) => <Tag color={ status ? status === 'onProj' ? "success" : 'default' : 'warning' }>{ getStatusDisplayName(status) }</Tag> ,
+      render: (status: string) => (
+        <Tag color={status ? (status === 'onProj' ? 'success' : 'default') : 'warning'}>
+          {getStatusDisplayName(status)}
+        </Tag>
+      ),
       // filters: projStatus.map((s) => ({ text: s[1], value: s[0] })),
       onFilter: (value: string | number | boolean, record: Proj) => record.status === value,
-    },  
+    },
     {
       title: '客户名称',
       dataIndex: 'customer',
       key: 'customer',
       render: (text: string, record: Proj) => {
-        return record.customerObj.name
+        return record.customerObj?.name;
       },
-      width:150,
+      width: 150,
     },
     {
       title: '合同名称',
@@ -258,9 +287,9 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         // const agree = projectAgreements.filter(item => item.id === record.id)
         // return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : ''
-        return record.agreements ? record.agreements[0].name : ''
+        return record.agreements ? record.agreements[0].name : '';
       },
-      width:150,
+      width: 150,
     },
     {
       title: '项目状态',
@@ -269,7 +298,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.projStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     {
       title: '项目部门',
@@ -290,7 +319,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.contStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     {
       title: '验收状态',
@@ -299,7 +328,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.acceStatus)?.name;
       },
-      width:100,
+      width: 100,
     },
     {
       title: '确认年度',
@@ -317,7 +346,7 @@ const Project: React.FC<any> = () => {
       render: (id: string, record: Proj) => (
         <Space>
           <a key="change" onClick={() => editHandle(record)}>
-            添加{ routeProjType === 'SQ' ? '销售' : '售后'  }活动
+            添加{routeProjType === 'SQ' ? '销售' : '售后'}活动
           </a>
         </Space>
       ),
@@ -330,7 +359,7 @@ const Project: React.FC<any> = () => {
   };
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
-     <Row gutter={16}>
+      <Row gutter={16}>
         <Col className="gutter-row">
           <Input
             id="proName"
@@ -338,45 +367,43 @@ const Project: React.FC<any> = () => {
             key="search"
             addonBefore="项目名称"
             allowClear
-            onChange={(e)=>handleChangeInput(e.target.value)}
+            onChange={(e) => handleChangeInput(e.target.value)}
           />
         </Col>
 
         <Col className="gutter-row">
-          <label>行业：</label> 
+          <label>行业：</label>
           <Select
-          showSearch
-          filterOption={(input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-          }
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             value={params.industries}
             mode="multiple"
             allowClear
             className="width120"
             placeholder="请选择"
             options={orgCodeOptions}
-            onChange={(value:any, event) => {
+            onChange={(value: any, event) => {
               handleChange(value, 'industries');
             }}
-          > 
-          </Select>        
+          ></Select>
         </Col>
         <Col className="gutter-row">
-          <label>区域：</label> 
+          <label>区域：</label>
           <Select
-          showSearch
-          filterOption={(input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-          }
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             value={params.regions}
             mode="multiple"
             allowClear
             className="width120"
             placeholder="请选择"
-            onChange={(value:any, event) => handleChange(value, 'regions')}
+            onChange={(value: any, event) => handleChange(value, 'regions')}
             options={zoneCodeOptions}
-          >
-          </Select>
+          ></Select>
         </Col>
         {/* <Col className="gutter-row">
           <label>类型：</label> 
@@ -392,7 +419,7 @@ const Project: React.FC<any> = () => {
           </Select>
         </Col> */}
         <Col className="gutter-row">
-          <label>阶段状态：</label> 
+          <label>阶段状态：</label>
           <Select
             value={params.status}
             allowClear
@@ -400,12 +427,11 @@ const Project: React.FC<any> = () => {
             placeholder="请选择"
             onChange={(value, event) => handleChange(value, 'status')}
             options={statusOptions}
-          >
-          </Select>
+          ></Select>
         </Col>
         <Col className="gutter-row">
-          <label>项目部门：</label> 
-          <Cascader 
+          <label>项目部门：</label>
+          <Cascader
             value={params.group}
             allowClear
             changeOnSelect
@@ -413,22 +439,30 @@ const Project: React.FC<any> = () => {
             placeholder="请选择"
             onChange={(value, event) => handleChangeCas(value, 'group')}
             options={groupsOptions}
-          >
-          </Cascader>
+          ></Cascader>
         </Col>
         <Col className="gutter-row">
-          <label>确认年度：</label> 
-          <DatePicker format="YYYY" value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null} picker="year" onChange={(value,event)=>{onChange(event)}} />
+          <label>确认年度：</label>
+          <DatePicker
+            format="YYYY"
+            value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
+            picker="year"
+            onChange={(value, event) => {
+              onChange(event);
+            }}
+          />
         </Col>
       </Row>
 
-      <Row justify="center" className='marginTop20'>
+      <Row justify="center" className="marginTop20">
         <Col>
-          <Button onClick={()=>searchBtn()} type="primary" className='marginRight10'>查询</Button>
-          <Button onClick={()=>canaelBtn()}>重置</Button>
+          <Button onClick={() => searchBtn()} type="primary" className="marginRight10">
+            查询
+          </Button>
+          <Button onClick={() => canaelBtn()}>重置</Button>
         </Col>
       </Row>
-      
+
       <Table
         className="marginTop20"
         loading={loading}
@@ -439,8 +473,13 @@ const Project: React.FC<any> = () => {
         size="middle"
         pagination={false}
       />
-       <div className="paginationCon marginTop20 lineHeight32">
-        <Pagination onChange={(page, pageSize)=>pageChange(page)} current={params.page} total={total} className="floatRight " />
+      <div className="paginationCon marginTop20 lineHeight32">
+        <Pagination
+          onChange={(page, pageSize) => pageChange(page)}
+          current={params.page}
+          total={total}
+          className="floatRight "
+        />
         <label className="floatRight ">一共{total}条</label>
       </div>
       <DialogForm
@@ -451,8 +490,8 @@ const Project: React.FC<any> = () => {
       >
         {ProjForm}
       </DialogForm>
-      <DialogForm 
-      cancelButtonProps={onCancelButtonProps}
+      <DialogForm
+        cancelButtonProps={onCancelButtonProps}
         ref={detailRef}
         title="项目详情"
         width={1000}

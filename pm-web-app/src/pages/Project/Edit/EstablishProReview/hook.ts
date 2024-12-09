@@ -77,6 +77,16 @@ const getGql = (proName: string) => {
         group
         proState
         contractState
+        productName
+        copyrightName
+        projectArrangement
+        address
+        customerContact
+        contactDetailsCus
+        salesManager
+        copyrightNameSale
+        merchantContact
+        contactDetailsMerchant
         agreements{
           id
           name
@@ -339,39 +349,46 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      let temp = JSON.parse(JSON.stringify(proj));
-      const groupPath =
-        temp.group &&
-        (typeof temp.group === 'string'
-          ? temp.group
-          : temp.group.length > 0
-          ? temp.group?.reduce((accumulator: string, currentValue: string) => {
-              return `${accumulator}/${currentValue}`;
-            }, '')
-          : '');
-      let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
-      await pushCostHandle({
-        variables: {
-          proj: reqProj,
-        },
-      });
-      getTodoList(query).then((res) => {
-        setTodoProjs(res.data.iLeadTodoProjs);
-      });
-      refresh();
+      console.log(proj, 'proj LLLLMMMM');
+      // let temp = JSON.parse(JSON.stringify(proj));
+      // const groupPath =
+      //   temp.group &&
+      //   (typeof temp.group === 'string'
+      //     ? temp.group
+      //     : temp.group.length > 0
+      //     ? temp.group?.reduce((accumulator: string, currentValue: string) => {
+      //         return `${accumulator}/${currentValue}`;
+      //       }, '')
+      //     : '');
+      // let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
+      // await pushCostHandle({
+      //   variables: {
+      //     proj: reqProj,
+      //   },
+      // });
+      // getTodoList(query).then((res) => {
+      //   setTodoProjs(res.data.iLeadTodoProjs);
+      // });
+      // refresh();
     },
     [pushCostHandle, refresh],
   );
   //审核项目
   const checkProj = useCallback(
     async (proj: ProjectInput) => {
+      let { id, checkState, reason } = proj;
+      let obj = {
+        id,
+        checkState,
+        reason,
+      };
       if (proj.checkState == 1) {
-        proj.incomeConfirm = '0';
+        obj.incomeConfirm = '0';
       }
-      console.log(proj, 'proj LLLLLLL');
+      // console.log(obj, 'obj LLLLLLL');
       await checkProjHandle({
         variables: {
-          ...proj,
+          ...obj,
         },
       });
       await refresh();

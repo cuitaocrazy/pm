@@ -188,9 +188,13 @@ const Project: React.FC<any> = () => {
       dataIndex: 'contractAmount',
       key: 'contractAmount',
       render: (contractAmount: string, record: Proj) => {
-        let contract = projectAgreements.filter((item) => item.id == record.id);
-        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        return amount[0]?.contractAmount;
+        if (projectAgreements && agreements.result && agreements.result.length != 0) {
+          let contract = projectAgreements?.filter((item) => item.id == record.id);
+          let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+          return amount[0]?.contractAmount;
+        } else {
+          return '---';
+        }
       },
       width: 100,
     },
@@ -208,9 +212,13 @@ const Project: React.FC<any> = () => {
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
       render: (afterTaxAmount: string, record: Proj) => {
-        let contract = projectAgreements.filter((item) => item.id == record.id);
-        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        return amount[0]?.afterTaxAmount;
+        if (projectAgreements && agreements.result && agreements.result.length != 0) {
+          let contract = projectAgreements?.filter((item) => item.id == record.id);
+          let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
+          return amount[0]?.afterTaxAmount;
+        } else {
+          return '---';
+        }
       },
       width: 100,
     },
@@ -228,9 +236,13 @@ const Project: React.FC<any> = () => {
       dataIndex: 'contractSignDate',
       key: 'contractSignDate',
       render: (contractSignDate: string, record: Proj) => {
-        let contract = projectAgreements.filter((item) => item.id == record.id);
-        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+        if (projectAgreements && agreements.result && agreements.result.length != 0) {
+          let contract = projectAgreements.filter((item) => item.id == record.id);
+          let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+          return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+        } else {
+          return '---';
+        }
       },
       width: 100,
     },

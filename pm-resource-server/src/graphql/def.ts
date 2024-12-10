@@ -110,7 +110,7 @@ const dataTypeDef = gql`
     todoTip: String
     proState: Int
     oldId: String
-    incomeConfirm: Int
+    incomeConfirm: String
     contractState: Int
     contractAmount: String
     afterTaxAmount: String
@@ -740,7 +740,7 @@ const dataTypeDef = gql`
     copyrightName: String
     projectArrangement: String
     proState: Int
-    incomeConfirm: Int
+    incomeConfirm: String
     contractState: Int
     address: String
     customerContact: String

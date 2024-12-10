@@ -524,7 +524,7 @@ export default {
         filter["leader"] = { $in: leaders };
       }
       if (incomeConfirm) {
-        filter["incomeConfirm"] = Number(incomeConfirm);
+        filter["incomeConfirm"] = incomeConfirm;
       }
       if (contractState) {
         filter["contractState"] = Number(contractState);

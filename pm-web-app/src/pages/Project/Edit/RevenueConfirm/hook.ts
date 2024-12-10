@@ -387,14 +387,17 @@ export function useProjStatus() {
             }, '')
           : '');
       let reqProj = await attachmentUpload(
-        { ...proj, group: groupPath, incomeConfirm: 2 },
+        { ...proj, group: groupPath, incomeConfirm: '2' },
         buildProjName,
       );
 
       reqProj.contractState =
         reqProj.contractState1 == '未签署' ? 0 : reqProj.contractState1 == '已签署' ? 1 : '';
-      reqProj.incomeConfirm = 2;
+      reqProj.incomeConfirm = '2';
       delete reqProj.contractState1;
+      delete reqProj.contAmount_;
+      delete reqProj.taxAmount_;
+      delete reqProj.serviceCycle_;
       console.log(reqProj, 'proj OOOPPP');
       await pushCostHandle({
         variables: {

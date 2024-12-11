@@ -4,7 +4,7 @@ import type {
   MutationPushProjectArgs,
   ProjectInput,
   Query,
-  QueryFilterProjectArgs
+  QueryFilterProjectArgs,
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
@@ -13,13 +13,35 @@ import { useModel, history } from 'umi';
 import { attachmentUpload } from './utils';
 
 const queryGql = gql`
-query ($projType: String!$industries: [String],$regions:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String) {
+  query (
+    $projType: String!
+    $industries: [String]
+    $regions: [String]
+    $page: Int
+    $confirmYear: String
+    $group: String
+    $status: String
+    $name: String
+  ) {
     projectAgreements {
       id
       agreementId
     }
-    
-    filterProjs(projType:$projType, industries:$industries, regions:$regions, page:$page,confirmYear:$confirmYear, group:$group, status:$status, name:$name) {
+    yearManages {
+      code
+      name
+      enable
+    }
+    filterProjs(
+      projType: $projType
+      industries: $industries
+      regions: $regions
+      page: $page
+      confirmYear: $confirmYear
+      group: $group
+      status: $status
+      name: $name
+    ) {
       result {
         id
         pId
@@ -59,7 +81,7 @@ query ($projType: String!$industries: [String],$regions:[String],$page:Int,$conf
         requiredInspections
         actualInspections
         timeConsuming
-        agreements{
+        agreements {
           id
           name
           id
@@ -77,7 +99,7 @@ query ($projType: String!$industries: [String],$regions:[String],$page:Int,$conf
           isDel
           createDate
         }
-        customerObj{
+        customerObj {
           id
           name
           createDate
@@ -126,9 +148,14 @@ const deleteProjGql = gql`
 `;
 
 export function useProjStatus() {
-  const [routeProjType] = useState(history?.location.pathname.split('/').pop() === 'editSalesActive' ? 'SQ' : 'SH');
+  const [routeProjType] = useState(
+    history?.location.pathname.split('/').pop() === 'editSalesActive' ? 'SQ' : 'SH',
+  );
   let [query, setQuery] = useState({});
-  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<Query, QueryFilterProjectArgs>(queryGql, {
+  const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
+    Query,
+    QueryFilterProjectArgs
+  >(queryGql, {
     variables: {
       projType: routeProjType,
       pageSize: 10000,
@@ -150,12 +177,12 @@ export function useProjStatus() {
 
   useEffect(() => {
     refresh();
-    initialRefresh()
+    initialRefresh();
   }, [refresh, query]);
 
   const projectAgreements = queryData?.projectAgreements || [];
   const total = queryData?.filterProjs.total || undefined;
-  const tmpProjsResult = queryData?.filterProjs.result || []
+  const tmpProjsResult = queryData?.filterProjs.result || [];
   const deleteProj = useCallback(
     async (id: string) => {
       await deleteProjHandle({ variables: { id } });
@@ -166,11 +193,13 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      if (proj.status === 'endProj') { return }
-      let reqProj = await attachmentUpload(proj, buildProjName)
+      if (proj.status === 'endProj') {
+        return;
+      }
+      let reqProj = await attachmentUpload(proj, buildProjName);
       await pushCostHandle({
         variables: {
-          proj: reqProj
+          proj: reqProj,
         },
       });
       refresh();
@@ -191,5 +220,6 @@ export function useProjStatus() {
     setQuery,
     tmpProjsResult,
     query,
+    yearManages:queryData?.yearManages
   };
 }

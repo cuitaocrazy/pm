@@ -48,6 +48,11 @@ const queryGql = gql`
       id
       agreementId
     }
+    yearManages {
+      code
+      name
+      enable
+    }
     customers(pageSize: $pageSize) {
       result {
         id
@@ -130,13 +135,13 @@ const queryGql = gql`
             thumbUrl
           }
         }
-        customerObj{
+        customerObj {
           id
           name
           industryCode
           regionCode
           salesman
-          contacts{
+          contacts {
             name
             phone
             tags
@@ -149,12 +154,12 @@ const queryGql = gql`
           isDel
           createDate
         }
-        agreements{
+        agreements {
           id
           name
           customer
           type
-          fileList{
+          fileList {
             uid
             name
             status
@@ -213,7 +218,7 @@ const pushAgreementGql = gql`
 
 export function useProjStatus() {
   const [archive, setArchive] = useState(false);
-  let [query, setQuery] = useState({ page: 1, pageSize: 10000000,});
+  let [query, setQuery] = useState({ page: 1, pageSize: 10000000 });
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
     Query,
     QueryProjectArgs
@@ -223,7 +228,7 @@ export function useProjStatus() {
       ...query,
       pageAgreements: 1,
       pageSizeAgreements: 10000000,
-      pageSize:100000000
+      pageSize: 100000000,
     },
     fetchPolicy: 'no-cache',
   });
@@ -255,7 +260,6 @@ export function useProjStatus() {
   const projectAgreements = queryData?.projectAgreements || [];
   const deleteProj = useCallback(
     async (id: string) => {
-
       refresh();
     },
     [deleteProjHandle, refresh],
@@ -263,17 +267,16 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-
       refresh();
     },
     [pushCostHandle, refresh],
   );
-//zhouyueyang===
-const [pushAgreementHandle, { loading: pushLoading1 }] = useMutation<
+  //zhouyueyang===
+  const [pushAgreementHandle, { loading: pushLoading1 }] = useMutation<
     Mutation,
     MutationPushAgreementArgs
   >(pushAgreementGql);
-  const getArgByProId = async (proId:string) => {
+  const getArgByProId = async (proId: string) => {
     return await client.query({
       query: getArgById,
       fetchPolicy: 'no-cache',
@@ -295,7 +298,7 @@ const [pushAgreementHandle, { loading: pushLoading1 }] = useMutation<
     },
     [pushAgreementHandle],
   );
-//zhouyueyang===
+  //zhouyueyang===
   return {
     loading: queryLoading || deleteLoading || pushLoading || pushLoading1,
     projs,
@@ -316,6 +319,7 @@ const [pushAgreementHandle, { loading: pushLoading1 }] = useMutation<
     access: initialState?.currentUser?.access,
     pushAgreement,
     getArgByProId,
+    yearManages: queryData?.yearManages,
   };
 }
 async function attachmentUpload(agreement: AgreementInput) {

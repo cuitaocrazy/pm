@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState,useEffect } from 'react';
 import {
   Table,
   Tag,
@@ -39,6 +39,7 @@ const Project: React.FC<any> = () => {
     query,
     total,
     tmpProjsResult,
+    yearManages,
   } = useProjStatus();
   const { status, orgCode, zoneCode, buildProjName, groupType, subordinates } = useBaseState();
   const editHandle = (proj: Proj) => {
@@ -335,6 +336,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'confirmYear',
       key: 'confirmYear',
       render: (confirmYear: string) => {
+        
         return confirmYear;
       },
       width: 100,
@@ -357,6 +359,15 @@ const Project: React.FC<any> = () => {
   const onCancelButtonProps: ButtonProps = {
     style: { display: 'none' }, // 设置样式让按钮消失
   };
+  const [confirmYearOptions, setConfirmYearOptions] = useState([]);
+  useEffect(() => {
+    if (yearManages) {
+      console.log(yearManages, 'yearManages ====== LLLLLLL');
+      let yearManages_ = yearManages.filter((item) => item.enable == true);
+      setConfirmYearOptions(yearManages_);
+    }
+  }, [yearManages]);
+
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
       <Row gutter={16}>
@@ -443,14 +454,23 @@ const Project: React.FC<any> = () => {
         </Col>
         <Col className="gutter-row">
           <label>确认年度：</label>
-          <DatePicker
+          <Select
+            value={params.confirmYear}
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'confirmYear')}
+            fieldNames={{ value: 'code', label: 'name' }}
+            options={confirmYearOptions}
+          />
+          {/* <DatePicker
             format="YYYY"
             value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
             picker="year"
             onChange={(value, event) => {
               onChange(event);
             }}
-          />
+          /> */}
         </Col>
       </Row>
 

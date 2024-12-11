@@ -262,12 +262,12 @@
         component: './InfoManage/CollectionQuarterManage/Edit',
         access: 'canRegion',
       },
-      {
-        path: '/infoManage/payWayInfoManage',
-        name: 'payWayInfoManage',
-        component: './InfoManage/PayWayInfoManage/Edit',
-        access: 'canRegion',
-      },
+      // {
+      //   path: '/infoManage/payWayInfoManage',
+      //   name: 'payWayInfoManage',
+      //   component: './InfoManage/PayWayInfoManage/Edit',
+      //   access: 'canRegion',
+      // },
       {
         path: '/infoManage/auditStateManage',
         name: 'auditStateManage',

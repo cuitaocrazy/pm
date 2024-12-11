@@ -7,7 +7,7 @@ import {
   FileOutlined,
   FileZipOutlined,
 } from '@ant-design/icons';
-import { Form, Input, Upload, Select, Modal, DatePicker, message } from 'antd';
+import { Form, Input, Upload, Select, Modal, DatePicker, message, InputNumber } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import type { AgreementInput, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
@@ -156,7 +156,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   };
 
   const customerChange = (value: string, option: any) => {
-    console.log(value,'value LLLL')
+    console.log(value, 'value LLLL');
     setSelectCustomer(value);
     form.setFieldsValue({ contactProj: [] });
   };
@@ -164,9 +164,22 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   const dateChange = (value: any, dataString: any) => {
     form.setFieldsValue({ startTime: dataString[0], endTime: dataString[1] });
   };
-
+  const calculateAfterTaxAmount = (values: any) => {
+    const { contractAmount, taxRate } = values;
+    console.log(contractAmount, 'contractAmount MMMM', taxRate);
+    if (contractAmount && taxRate) {
+      // 计算不含税金额
+      const afterTaxAmount = parseFloat(contractAmount) / (1 + parseFloat(taxRate) / 100);
+      form.setFieldsValue({ afterTaxAmount: afterTaxAmount.toFixed(2) });
+    }
+  };
   return (
-    <Form {...layout} form={form} initialValues={data}>
+    <Form
+      {...layout}
+      form={form}
+      initialValues={data}
+      onValuesChange={(_, values) => calculateAfterTaxAmount(values)}
+    >
       <Form.Item label="ID" name="id" hidden>
         <Input />
       </Form.Item>
@@ -236,7 +249,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       <Form.Item
         label="合同签订日期"
         name="contractSignDate"
-        rules={[{ required: false }]}
+        rules={[{ required: true }]}
         getValueProps={(value) => ({
           value: value ? moment(value) : undefined,
         })}
@@ -249,13 +262,16 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       <Form.Item label="合同编号" name="contractNumber" rules={[{ required: false }]}>
         <Input />
       </Form.Item>
-      <Form.Item label="合同金额" name="contractAmount" rules={[{ required: false }]}>
+      <Form.Item label="合同金额" name="contractAmount" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
-      <Form.Item label="不含税金额" name="afterTaxAmount" rules={[{ required: false }]}>
-        <Input />
+      <Form.Item label="税率" name="taxRate" rules={[{ required: true }]}>
+        <Input suffix="%" min={0} max={100} style={{ width: '100%' }} />
       </Form.Item>
-      <Form.Item label="免维期(单位月)" name="maintenanceFreePeriod" rules={[{ required: false }]}>
+      <Form.Item label="不含税金额" name="afterTaxAmount" rules={[{ required: true }]}>
+        <Input disabled />
+      </Form.Item>
+      <Form.Item label="免维期(单位月)" name="maintenanceFreePeriod" rules={[{ required: true }]}>
         {/* <Input placeholder="以月为单位" style={{ width: '96%' }} />月 */}
         <Input />
       </Form.Item>

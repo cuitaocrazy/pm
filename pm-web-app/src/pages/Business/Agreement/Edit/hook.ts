@@ -176,6 +176,7 @@ export function useAgreementState() {
       delete reqAgreement.time;
       delete reqAgreement.customerName;
       console.log(reqAgreement, 'reqAgreement MMMMMM');
+      delete reqAgreement.taxRate
       await pushAgreementHandle({
         variables: {
           agreement: reqAgreement,

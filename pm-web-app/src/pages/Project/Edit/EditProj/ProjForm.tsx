@@ -606,7 +606,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 </Form.Item>
                 <Form.Item
                   labelCol={{ span: 3, offset: 0 }}
-                  label="ID"
+                  label="项目ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >

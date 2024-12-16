@@ -75,6 +75,11 @@ const userQuery = gql`
       name
       enable
     }
+    proConfirmStateManages {
+      code
+      name
+      enable
+    }
   }
 `;
 
@@ -160,8 +165,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [stageStatus, setStageStatus] = useState(data?.status || '');
   const [confirmYear, setConfirmYear] = useState(data?.confirmYear || '');
   const [confirmQuarter, setConfirmQuarter] = useState(data?.confirmQuarter || '');
+  const [incomeConfirm, setIncomeConfirm] = useState(data?.incomeConfirm || '');
   const [confirmYearOptions, setConfirmYearOptions] = useState(resData?.yearManages);
   const [confirmQuarterOptions, setConfirmQuarterOptions] = useState(resData?.quarterManages);
+  const [incomeConfirmOptions, setIncomeConfirmOptions] = useState(resData?.proConfirmStateManages);
   useEffect(() => {
     if (resData?.yearManages) {
       let yearManages = resData?.yearManages.filter((item) => item.enable == true);
@@ -174,6 +181,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       setConfirmQuarterOptions(quarterManages);
     }
   }, [resData?.quarterManages]);
+  useEffect(() => {
+    if (resData?.proConfirmStateManages) {
+      let proConfirmStateManages_ = resData?.proConfirmStateManages.filter((item) => item.enable == true);
+      setIncomeConfirmOptions(proConfirmStateManages_);
+    }
+  }, [resData?.proConfirmStateManages]);
 
   const myGroup = initialState?.currentUser?.groups;
   const shouldEnable = myGroup?.map((item) => {
@@ -554,7 +567,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 </Form.Item>
                 <Form.Item
                   labelCol={{ span: 3, offset: 0 }}
-                  label="ID"
+                  label="项目ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >
@@ -1033,12 +1046,29 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
+          <Form.Item label="确认金额" name="recoAmount" rules={[{ required: true }]}>
             <InputNumber
               disabled={data.incomeConfirm == '2'}
               min={0}
               disabled={data.incomeConfirm == 2}
             />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="确认状态" name="incomeConfirm" rules={[{ required: true }]}>
+            <Select
+              allowClear
+              className="width120"
+              placeholder="请选择"
+              onChange={(value, event) => setIncomeConfirm(value)}
+              fieldNames={{ value: 'code', label: 'name' }}
+              options={incomeConfirmOptions}
+            />
+            {/* <InputNumber
+              disabled={data.incomeConfirm == '2'}
+              min={0}
+              disabled={data.incomeConfirm == 2}
+            /> */}
           </Form.Item>
         </Col>
         <Col span={8}>

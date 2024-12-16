@@ -39,6 +39,11 @@ const queryGql = gql`
       total
       page
     }
+    collectionQuarterManages {
+      name
+      code
+      enable
+    }
 
     contractPaymentManages(
       pageSize: $pageSizeAgreements
@@ -234,5 +239,6 @@ export function useAgreementState() {
     query,
     setQuery,
     payWaySub,
+    collectionQuarterManages:queryData?.collectionQuarterManages
   };
 }

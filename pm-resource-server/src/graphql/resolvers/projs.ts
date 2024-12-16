@@ -21,6 +21,9 @@ const getTodoProjects = (projects: any[]) => {
     const reg =
       /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
     const result = reg.exec(project.id || "");
+    if (project.proState === 2) {
+      return true;
+    }
     if (result?.groups?.projType === "SZ") {
       // 售中
       if (project.acceptDate) {

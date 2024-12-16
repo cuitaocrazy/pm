@@ -392,7 +392,7 @@ const Project: React.FC<any> = () => {
   //=====zhouyueyang
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
-      <Row gutter={16}>
+      <Row gutter={[16,16]}>
         <Col className="gutter-row">
           <Input
             id="proName"

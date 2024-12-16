@@ -386,14 +386,11 @@ export function useProjStatus() {
               return `${accumulator}/${currentValue}`;
             }, '')
           : '');
-      let reqProj = await attachmentUpload(
-        { ...proj, group: groupPath, incomeConfirm: '2' },
-        buildProjName,
-      );
+      let reqProj = await attachmentUpload({ ...proj, group: groupPath }, buildProjName);
 
       reqProj.contractState =
         reqProj.contractState1 == '未签署' ? 0 : reqProj.contractState1 == '已签署' ? 1 : '';
-      reqProj.incomeConfirm = '2';
+      // reqProj.incomeConfirm = '2';
       delete reqProj.contractState1;
       delete reqProj.contAmount_;
       delete reqProj.taxAmount_;

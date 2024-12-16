@@ -71,93 +71,16 @@ const Project: React.FC<any> = () => {
   };
   const columns = [
     {
-      title: '项目名称',
-      dataIndex: 'name',
-      key: 'name',
-      width: 200,
-      fixed: 'left',
-    },
-    {
       title: '项目ID',
       dataIndex: 'id',
       key: 'id',
+      fixed: 'left',
       render: (text: string, record: Proj) => (
         <div>
           <a onClick={() => editHandle(record, ref)}>{buildProjName(record.id, record.name)} </a>
         </div>
       ),
       width: 250,
-    },
-    {
-      title: '项目经理',
-      dataIndex: 'leader',
-      key: 'leader',
-      render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string }) => user.id === record.leader)?.name;
-      },
-      width: 200,
-    },
-    {
-      title: '市场经理',
-      dataIndex: 'salesLeader',
-      key: 'salesLeader',
-      render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string }) => user.id === record.salesLeader)?.name;
-      },
-      width: 200,
-    },
-    {
-      title: '阶段状态',
-      dataIndex: 'status',
-      key: 'status',
-      width: '120px',
-      render: (status: string) => (
-        <Tag color={status ? (status === 'onProj' ? 'success' : 'default') : 'warning'}>
-          {getStatusDisplayName(status)}
-        </Tag>
-      ),
-    },
-    {
-      title: '项目部门',
-      dataIndex: 'group',
-      key: 'group',
-      width: '300px',
-    },
-    {
-      title: '预算人天',
-      dataIndex: 'estimatedWorkload',
-      key: 'estimatedWorkload',
-      width: '200px',
-      render: (text: string, record: Proj) => <Tag color="cyan">{text ? text : 0}</Tag>,
-    },
-    {
-      title: '实际人天',
-      dataIndex: 'timeConsuming',
-      key: 'timeConsuming',
-      width: 200,
-      render: (text: number, record: Proj) => (
-        <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}>
-          <Tag color="cyan">{text ? ((text - 0) / 8).toFixed(2) : 0}</Tag>
-        </Button>
-      ),
-    },
-    {
-      title: '客户名称',
-      dataIndex: 'customer',
-      key: 'customer',
-      render: (text: string, record: Proj) => {
-        return record.customerObj ? record.customerObj.name : '';
-      },
-      width: 200,
-    },
-    {
-      title: '项目状态',
-      dataIndex: 'projStatus',
-      key: 'projStatus',
-      render: (text: string, record: Proj) => {
-        return status?.find((statu) => statu.id === record.projStatus)?.name;
-      },
-      width: 200,
     },
     {
       title: '合同状态',
@@ -174,6 +97,23 @@ const Project: React.FC<any> = () => {
       key: 'acceStatus',
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.acceStatus)?.name;
+      },
+      width: 200,
+    },
+    {
+      title: '确认状态',
+      dataIndex: 'incomeConfirm',
+      key: 'incomeConfirm',
+      render: (text: string, record: Proj) => {
+        return record.incomeConfirm == 0
+          ? '未确认'
+          : record.incomeConfirm == 1
+          ? '待确认'
+          : record.incomeConfirm == 2
+          ? '已确认'
+          : record.incomeConfirm == 3
+          ? '无法确认'
+          : '---';
       },
       width: 200,
     },
@@ -198,15 +138,6 @@ const Project: React.FC<any> = () => {
       width: 200,
     },
     {
-      title: '确认金额',
-      dataIndex: 'recoAmount',
-      key: 'recoAmount',
-      render: (recoAmount: string) => {
-        return recoAmount;
-      },
-      width: 200,
-    },
-    {
       title: '税后金额',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
@@ -218,11 +149,11 @@ const Project: React.FC<any> = () => {
       width: 200,
     },
     {
-      title: '投产日期',
-      dataIndex: 'productDate',
-      key: 'productDate',
-      render: (productDate: string) => {
-        return productDate ? moment(productDate).format('YYYY-MM-DD') : '---';
+      title: '确认金额',
+      dataIndex: 'recoAmount',
+      key: 'recoAmount',
+      render: (recoAmount: string) => {
+        return recoAmount;
       },
       width: 200,
     },
@@ -237,6 +168,22 @@ const Project: React.FC<any> = () => {
       },
       width: 200,
     },
+    {
+      title: '项目部门',
+      dataIndex: 'group',
+      key: 'group',
+      width: '300px',
+    },
+    {
+      title: '项目状态',
+      dataIndex: 'projStatus',
+      key: 'projStatus',
+      render: (text: string, record: Proj) => {
+        return status?.find((statu) => statu.id === record.projStatus)?.name;
+      },
+      width: 200,
+    },
+
     // {
     //   title: '操作',
     //   key: 'action',
@@ -442,7 +389,7 @@ const Project: React.FC<any> = () => {
     }
     if (proConfirmStateManages) {
       let proConfirmStateManages_ = proConfirmStateManages.filter((item) => item.enable == true);
-      setIncomeConfirmOptions(proConfirmStateManages);
+      setIncomeConfirmOptions(proConfirmStateManages_);
     }
   }, [yearManages, proConfirmStateManages]);
 
@@ -480,7 +427,7 @@ const Project: React.FC<any> = () => {
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
       <Row gutter={16}>
-        <Col className="gutter-row">
+        {/* <Col className="gutter-row">
           <Input
             id="proName"
             value={params.name}
@@ -490,6 +437,52 @@ const Project: React.FC<any> = () => {
             onChange={(e) => {
               handleChangeInput(e.target.value);
             }}
+          />
+        </Col> */}
+        <Col className="gutter-row">
+          <label>项目部门：</label>
+          <Cascader
+            value={params.group}
+            allowClear
+            changeOnSelect
+            className="width122"
+            placeholder="请选择"
+            onChange={(value, event) => {
+              handleChangeCas(value, 'group');
+            }}
+            options={groupsOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>确认年度：</label>
+          {/* <DatePicker
+            format="YYYY"
+            value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
+            picker="year"
+            onChange={(value, event) => {
+              onChange(event);
+            }}
+          /> yearManages*/}
+          <Select
+            value={params.confirmYear}
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'confirmYear')}
+            fieldNames={{ value: 'code', label: 'name' }}
+            options={confirmYearOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>确认状态：</label>
+          <Select
+            value={params.incomeConfirm}
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'incomeConfirm')}
+            fieldNames={{ value: 'code', label: 'name' }}
+            options={incomeConfirmOptions}
           />
         </Col>
         <Col className="gutter-row">
@@ -542,7 +535,7 @@ const Project: React.FC<any> = () => {
             options={projTypeOptoins}
           />
         </Col>
-        <Col className="gutter-row">
+        {/* <Col className="gutter-row">
           <label>阶段状态：</label>
           <Select
             value={params.status}
@@ -552,41 +545,8 @@ const Project: React.FC<any> = () => {
             onChange={(value, event) => handleChange(value, 'status')}
             options={statusOptions}
           />
-        </Col>
-        <Col className="gutter-row">
-          <label>项目部门：</label>
-          <Cascader
-            value={params.group}
-            allowClear
-            changeOnSelect
-            className="width122"
-            placeholder="请选择"
-            onChange={(value, event) => {
-              handleChangeCas(value, 'group');
-            }}
-            options={groupsOptions}
-          />
-        </Col>
-        <Col className="gutter-row">
-          <label>确认年度：</label>
-          {/* <DatePicker
-            format="YYYY"
-            value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
-            picker="year"
-            onChange={(value, event) => {
-              onChange(event);
-            }}
-          /> yearManages*/}
-          <Select
-            value={params.confirmYear}
-            allowClear
-            className="width120"
-            placeholder="请选择"
-            onChange={(value, event) => handleChange(value, 'confirmYear')}
-            fieldNames={{ value: 'code', label: 'name' }}
-            options={confirmYearOptions}
-          />
-        </Col>
+        </Col> */}
+
         {/* <Col className="gutter-row">
           <label>合同状态：</label>
           <Select
@@ -599,18 +559,7 @@ const Project: React.FC<any> = () => {
           />
         </Col> */}
         {/**incomeConfirm */}
-        <Col className="gutter-row">
-          <label>确认状态：</label>
-          <Select
-            value={params.incomeConfirm}
-            allowClear
-            className="width120"
-            placeholder="请选择"
-            onChange={(value, event) => handleChange(value, 'incomeConfirm')}
-            fieldNames={{ value: 'code', label: 'name' }}
-            options={incomeConfirmOptions}
-          />
-        </Col>
+
         {/* <Col className="gutter-row">
           <label>验收状态：</label>
           <Select

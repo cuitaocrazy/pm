@@ -2,7 +2,7 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-11-21 09:20:39
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-12-09 14:09:49
+ * @LastEditTime: 2024-12-12 10:44:48
  * @FilePath: /pm/pm-resource-server/src/graphql/resolvers/agreements.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE,
  */
@@ -117,49 +117,62 @@ export default {
       let { milestone, ...agreement } = args.agreement;
 
       // 遍历 milestone 并插入数据
-      const inserts = milestone.map((item) => ({
-        payWayName: agreement.payWayName,
-        milestone: milestone,
-        contractId: agreement.id,
-        name: agreement.name,
-        customer: agreement.customer,
-        type: agreement.type,
-        fileList: agreement.fileList,
-        startTime: agreement.startTime,
-        endTime: agreement.endTime,
-        remark: agreement.remark,
-        contractSignDate: agreement.contractSignDate,
-        contractAmount: agreement.contractAmount,
-        afterTaxAmount: agreement.afterTaxAmount,
-        contractPeriod: agreement.contractPeriod,
-        contractNumber: agreement.contractNumber,
-        maintenanceFreePeriod: agreement.maintenanceFreePeriod,
-        isDel: agreement.isDel,
-        createDateContract: agreement.createDate,
-        createDate: moment()
-          .utc()
-          .utcOffset(8 * 60)
-          .format("YYYYMMDD"),
-        milestoneName: item.name, // 添加 milestoneName
-        milestoneValue: item.value, // 添加 milestoneValue
-      }));
+      const inserts = milestone.map((item) => {
+        let data = {
+          payWayName: agreement.payWayName,
+          milestone: milestone,
+          contractId: agreement.id,
+          name: agreement.name,
+          customer: agreement.customer,
+          type: agreement.type,
+          fileList: agreement.fileList,
+          startTime: agreement.startTime,
+          endTime: agreement.endTime,
+          remark: agreement.remark,
+          contractSignDate: agreement.contractSignDate,
+          contractAmount: agreement.contractAmount,
+          afterTaxAmount: agreement.afterTaxAmount,
+          contractPeriod: agreement.contractPeriod,
+          contractNumber: agreement.contractNumber,
+          maintenanceFreePeriod: agreement.maintenanceFreePeriod,
+          isDel: agreement.isDel,
+          createDateContract: agreement.createDate,
+          createDate: moment()
+            .utc()
+            .utcOffset(8 * 60)
+            .format("YYYYMMDD"),
+          milestoneName: item.name, // 添加 milestoneName
+          milestoneValue: item.value, // 添加 milestoneValue
+        };
+        // 如果 `item.id` 存在，添加 `id` 字段；否则不包含该字段
+        if (item.id) {
+          (data as any).id = item.id;
+        }
+
+        return data;
+      });
 
       console.dir(inserts, { depth: null, color: true });
-      await Agreement.updateOne(
-        { $or: [{ _id: new ObjectId(agreement.id) }] },
-        {
-          $set: {
-            payWayName: agreement.payWayName,
-            milestone: milestone,
-          },
-        }
-      ).then((e) => {
-        // console.dir(e, { depth: null, color: true });
-      });
-      delete agreement._id;
-      return PaymentManage.insertMany(inserts).then(
-        (res) => args.id || res.insertedIds[0]
+      await Promise.all(
+        inserts.map(async (item) => {
+          // PaymentManage.updateOne(
+          //   item.id ? { _id: new ObjectId(item.id) } : {},
+          //   { $set: { ...item } }, // 更新内容
+          //   { upsert: true } // 不存在则插入
+          // )
+          if (item.id) {
+            // 如果 item 有 id，则尝试更新
+            await PaymentManage.updateOne(
+              { _id: new ObjectId(item.id) },
+              { $set: { ...item } }
+            );
+          } else {
+            // 如果 item 没有 id，则插入新文档
+            await PaymentManage.insertOne({ ...item });
+          }
+        })
       );
+      return 123;
     },
     deleteAgreement: async (_: any, args: any, context: AuthContext) => {
       const _id = new ObjectId(args.id);

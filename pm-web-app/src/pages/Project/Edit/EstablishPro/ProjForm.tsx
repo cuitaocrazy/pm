@@ -549,7 +549,7 @@ export default () => {
                 <Form.Item
                   style={{ marginTop: '40px' }}
                   labelCol={{ span: 3, offset: 0 }}
-                  label="ID"
+                  label="项目ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >

@@ -37,7 +37,7 @@ function getIdInfo(id?: string) {
 }
 const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }) => {
   const { status, orgCode, projType, zoneCode } = useBaseState();
-  const [isZh, setIsZh] = useState(false)
+  const [isZh, setIsZh] = useState(false);
 
   const info = getIdInfo(value);
   const getId = () =>
@@ -56,16 +56,16 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
     change();
   };
   const handleOnKeyDown = (e: any) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       // 用户按下回车键
-      setIsZh(false)
-    } else if (e.shiftKey && e.key === "Shift") {
+      setIsZh(false);
+    } else if (e.shiftKey && e.key === 'Shift') {
       // 用户按下Shift键
-      setIsZh(false)
+      setIsZh(false);
     }
-  }
+  };
   const changeSimpleName = (simpleName: string) => {
-    if (isZh) return 
+    if (isZh) return;
     const result = /^\w*$/.exec(simpleName);
     if (result) {
       info.simpleName = simpleName.toUpperCase();
@@ -132,11 +132,10 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
             </Option>
           ))}
         </Select>
-        <span hidden={disabled} className="status-remark">{ info.projType ? status.find(p => p.code === info.projType)?.remark : '' }</span>
         <Input
+          style={{ width: '100px' }}
           key="simpleName"
-          addonBefore={'项目缩写'}
-          placeholder='只允许填写拼音或数字'
+          placeholder="项目缩写:只允许填写拼音或数字"
           onCompositionStart={(e) => setIsZh(true)}
           onBlur={(e) => setIsZh(false)}
           onKeyDown={(e) => handleOnKeyDown(e)}
@@ -145,14 +144,19 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
           disabled={disabled}
         />
         <Input
+          style={{ width: '100px' }}
           key="dateCode"
-          addonBefore={'年度编号'}
+          placeholder="年度编号"
           onChange={(e) => changeDateCode(e.target.value)}
           maxLength={4}
           value={info.dateCode}
           disabled={disabled}
         />
-        <Input key="preview" disabled addonBefore={'预览'} value={getId()} />
+        <span hidden={disabled} className="status-remark">
+          {info.projType ? status.find((p) => p.code === info.projType)?.remark : ''}
+        </span>
+
+        <Input style={{marginTop:'12px'}} key="preview" disabled addonBefore={'预览'} value={getId()} />
       </Form.Item>
     </Input.Group>
   );

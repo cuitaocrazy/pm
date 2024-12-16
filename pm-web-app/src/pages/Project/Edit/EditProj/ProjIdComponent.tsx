@@ -163,13 +163,11 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({
             </Option>
           ))}
         </Select>
-        <span hidden={disabled} className="status-remark">
-          {info.projType ? status.find((p) => p.code === info.projType)?.remark : ''}
-        </span>
         <Input
+          style={{ width: '100px' }}
           key="simpleName"
-          addonBefore={'项目缩写'}
-          placeholder="只允许填写拼音或数字"
+          // addonBefore={'项目缩写'}
+          placeholder="项目缩写:只允许填写拼音或数字"
           onCompositionStart={(e) => setIsZh(true)}
           // onBlur={(e) => setIsZh(false)}
           onKeyDown={(e) => handleOnKeyDown(e)}
@@ -179,14 +177,25 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({
           disabled={disabled}
         />
         <Input
+          style={{ width: '100px' }}
           key="dateCode"
-          addonBefore={'年度编号'}
+          placeholder="年度编号"
           onChange={(e) => changeDateCode(e.target.value)}
           maxLength={4}
           value={info.dateCode}
           disabled={disabled}
         />
-        <Input key="preview" disabled addonBefore={'预览'} value={getId()} />
+        <span hidden={disabled} className="status-remark">
+          {info.projType ? status.find((p) => p.code === info.projType)?.remark : ''}
+        </span>
+
+        <Input
+          style={{ marginTop: '12px' }}
+          key="preview"
+          disabled
+          addonBefore={'预览'}
+          value={getId()}
+        />
         {/* <Input key="oldId" disabled addonBefore={'旧ID'} value={oldID} /> */}
       </Form.Item>
     </Input.Group>

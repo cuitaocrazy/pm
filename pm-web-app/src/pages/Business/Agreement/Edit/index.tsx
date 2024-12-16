@@ -25,6 +25,7 @@ const Agreement: React.FC<any> = () => {
     payWaySub,
     query,
     setQuery,
+    contractPaymentManages,
   } = useAgreementState();
   const [params, setParams] = useState({
     name: '',
@@ -100,12 +101,34 @@ const Agreement: React.FC<any> = () => {
     });
     setType(1);
   };
+  const transformData = (data, targetContId) => {
+    // 过滤出指定 contId 的数据
+    const filteredData = data.filter((item) => item.contractId === targetContId);
+
+    // 获取唯一的 payName（假设所有 payName 相同）
+    const payName = filteredData.length > 0 ? filteredData[0].payWayName : null;
+
+    // 转换数据格式
+    const milestone = filteredData.map((item) => ({
+      id: item.id.toString(),
+      name: item.milestoneName,
+      value: Number(item.milestoneValue),
+    }));
+
+    return {
+      payWayName: payName,
+      milestone: milestone,
+    };
+  };
   const [projInfo, setProjInfo] = useState();
   const payWayBtn = (record) => {
-    // console.log(record, 'MMMMJJJJJ');
+    console.log(record, 'MMMMJJJJJ');
     setProjInfo(record);
+    // console.log(contractPaymentManages, 'contractPaymentManages NMNMNMNM');
+    let info = transformData(contractPaymentManages.result, record.id);
     payWayref.current?.showDialog({
-      ...record,
+      // ...record,
+      ...info,
     });
     /**ref.current?.showDialog({ ...agreement }); */
   };
@@ -269,6 +292,7 @@ const Agreement: React.FC<any> = () => {
         </Col>
       </Row>
       <Table
+        style={{ marginTop: '12px' }}
         loading={loading}
         rowKey={(record) => record.id}
         columns={columns}

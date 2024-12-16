@@ -2,7 +2,7 @@
  * @Author: 13718154103 1161593628@qq.com
  * @Date: 2024-12-03 17:06:17
  * @LastEditors: 13718154103 1161593628@qq.com
- * @LastEditTime: 2024-12-03 17:49:06
+ * @LastEditTime: 2024-12-12 13:57:02
  * @FilePath: /pm/pm-web-app/src/pages/Business/Agreement/Edit/PayWayForm.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -62,9 +62,16 @@ const layout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-
 export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
-  console.log(data, 'data JJJJJJ');
+  const validateTotal = async (_, value) => {
+    const milestones = form.getFieldValue('milestone') || [];
+    const total = milestones.reduce((sum, milestone) => sum + (Number(milestone?.value) || 0), 0);
+
+    if (total !== 100) {
+      return Promise.reject(new Error('所有里程碑的百分比总和必须为100%！'));
+    }
+    return Promise.resolve();
+  };
   return (
     <Form {...layout} form={form} initialValues={data}>
       <Form.Item label="付款方式名称" name="payWayName">
@@ -98,6 +105,10 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
                     {
                       pattern: /^(100|[1-9]?\d)$/,
                       message: '请输入0-100之间的整数',
+                    },
+                    {
+                      validator: validateTotal, // 自定义校验规则
+                      validateTrigger: 'onBlur', // 在 blur 时触发校验
                     },
                   ]}
                 >

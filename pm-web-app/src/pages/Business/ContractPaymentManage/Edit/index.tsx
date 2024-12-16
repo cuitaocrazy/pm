@@ -25,6 +25,7 @@ const Agreement: React.FC<any> = () => {
     payWaySub,
     query,
     setQuery,
+    collectionQuarterManages,
   } = useAgreementState();
   const [params, setParams] = useState({
     name: '',
@@ -112,15 +113,46 @@ const Agreement: React.FC<any> = () => {
     });
     /**ref.current?.showDialog({ ...agreement }); */
   };
+  // 计算 rowSpan
+  const calculateRowSpan = (data, key) => {
+    const map = {};
+    data.forEach((item, index) => {
+      if (map[item[key]]) {
+        map[item[key]].count++;
+      } else {
+        map[item[key]] = { start: index, count: 1 };
+      }
+    });
+
+    return map;
+  };
+  // 按 name 排序数据
+  const sortedData = [...agreements].sort((a, b) => (a.name > b.name ? 1 : -1));
+  // 根据数据计算 rowSpan
+  const rowSpanMap = calculateRowSpan(sortedData, 'name');
+
+  console.log(rowSpanMap, 'rowSpanMap JJJJJJJJ');
   const columns = [
     {
       title: '合同名称',
       dataIndex: 'name',
       key: 'name',
       width: 300,
-      render: (text: string, record: AgreementType) => (
-        <a onClick={() => editHandle(record)}>{record.name}</a>
-      ),
+      render: (value, row, index) => {
+        const obj = {
+          children: value,
+          props: {},
+        };
+
+        // 设置 rowSpan 值
+        if (rowSpanMap[value].start === index) {
+          obj.props.rowSpan = rowSpanMap[value].count;
+        } else {
+          obj.props.rowSpan = 0; // 隐藏后续行
+        }
+
+        return obj;
+      },
     },
     {
       title: '关联客户',
@@ -132,13 +164,13 @@ const Agreement: React.FC<any> = () => {
           ? customers.filter((item) => item.id === record.customer)[0].name
           : '',
     },
-    {
-      title: '合同类型',
-      dataIndex: 'type',
-      key: 'type',
-      width: 200,
-      render: (text: string, record: AgreementType) => agreementType[record.type],
-    },
+    // {
+    //   title: '合同类型',
+    //   dataIndex: 'type',
+    //   key: 'type',
+    //   width: 200,
+    //   render: (text: string, record: AgreementType) => agreementType[record.type],
+    // },
     {
       title: '付款方式名称',
       dataIndex: 'payWayName',
@@ -151,7 +183,9 @@ const Agreement: React.FC<any> = () => {
       dataIndex: 'milestoneName',
       key: 'milestoneName',
       width: 200,
-      render: (text: string, record: AgreementType) => record.milestoneName,
+      render: (text: string, record: AgreementType) => {
+        return <a onClick={() => editHandle(record)}>{record.milestoneName}</a>;
+      },
     },
     {
       title: '百分比',
@@ -161,11 +195,34 @@ const Agreement: React.FC<any> = () => {
       render: (text: string, record: AgreementType) => record.milestoneValue,
     },
     {
-      title: '备注',
-      dataIndex: 'remark',
-      key: 'remark',
-      width: 250,
+      title: '款项金额',
+      dataIndex: 'milestoneValue',
+      key: 'milestoneValue',
+      width: 200,
+      render: (text: string, record: AgreementType) => {
+        return (Number(record.contractAmount) * Number(record.milestoneValue)) / 100;
+      },
     },
+    {
+      title: '回款季度',
+      dataIndex: 'actualQuarter',
+      key: 'actualQuarter',
+      width: 200,
+      render: (text: string, record: AgreementType) => {
+        if (record.actualQuarter) {
+          return collectionQuarterManages.filter((item) => item.code == record.actualQuarter)[0]
+            .name;
+        } else {
+          return '---';
+        }
+      },
+    },
+    // {
+    //   title: '备注',
+    //   dataIndex: 'remark',
+    //   key: 'remark',
+    //   width: 250,
+    // },
     {
       title: '创建日期',
       dataIndex: 'createDate',
@@ -250,13 +307,15 @@ const Agreement: React.FC<any> = () => {
         </Col>
       </Row> */}
       <Table
+        style={{ marginTop: '20px' }}
         loading={loading}
         rowKey={(record) => record.id}
         columns={columns}
-        dataSource={agreements}
+        dataSource={sortedData}
         pagination={false}
         size="middle"
         scroll={{ x: 1500 }}
+        bordered
       />
       <DialogForm
         submitHandle={(v: AgreementInput) => {

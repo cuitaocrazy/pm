@@ -86,39 +86,19 @@ const Project: React.FC<any> = () => {
       width: 250,
     },
     {
-      title: '项目经理',
-      dataIndex: 'leader',
-      key: 'leader',
-      render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string }) => user.id === record.leader)?.name;
+      title: '审核状态',
+      dataIndex: 'proState',
+      key: 'proState',
+      render: (proState: string) => {
+        return proState == 0
+          ? '待审核'
+          : proState == 1
+          ? '审核通过'
+          : proState == 2
+          ? '审核不通过'
+          : '---';
       },
-      width: 110,
-    },
-    {
-      title: '市场经理',
-      dataIndex: 'salesLeader',
-      key: 'salesLeader',
-      render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string }) => user.id === record.salesLeader)?.name;
-      },
-      width: 110,
-    },
-    {
-      title: '阶段状态',
-      dataIndex: 'status',
-      key: 'status',
-      width: '120px',
-      render: (status: string) => (
-        <Tag color={status ? (status === 'onProj' ? 'success' : 'default') : 'warning'}>
-          {getStatusDisplayName(status)}
-        </Tag>
-      ),
-    },
-    {
-      title: '项目部门',
-      dataIndex: 'group',
-      key: 'group',
-      width: '200px',
+      width: 100,
     },
     {
       title: '预算人天',
@@ -138,14 +118,17 @@ const Project: React.FC<any> = () => {
         </Button>
       ),
     },
+
     {
-      title: '客户名称',
-      dataIndex: 'customer',
-      key: 'customer',
-      render: (text: string, record: Proj) => {
-        return record.customerObj ? record.customerObj.name : '';
-      },
-      width: 150,
+      title: '阶段状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: '120px',
+      render: (status: string) => (
+        <Tag color={status ? (status === 'onProj' ? 'success' : 'default') : 'warning'}>
+          {getStatusDisplayName(status)}
+        </Tag>
+      ),
     },
     {
       title: '项目状态',
@@ -174,6 +157,7 @@ const Project: React.FC<any> = () => {
       },
       width: 100,
     },
+
     {
       title: '确认年度',
       dataIndex: 'confirmYear',
@@ -247,19 +231,38 @@ const Project: React.FC<any> = () => {
       width: 100,
     },
     {
-      title: '审核状态',
-      dataIndex: 'proState',
-      key: 'proState',
-      render: (proState: string) => {
-        return proState == 0
-          ? '待审核'
-          : proState == 1
-          ? '审核通过'
-          : proState == 2
-          ? '审核不通过'
-          : '---';
+      title: '项目部门',
+      dataIndex: 'group',
+      key: 'group',
+      width: '200px',
+    },
+
+    {
+      title: '客户名称',
+      dataIndex: 'customer',
+      key: 'customer',
+      render: (text: string, record: Proj) => {
+        return record.customerObj ? record.customerObj.name : '';
       },
-      width: 100,
+      width: 150,
+    },
+    {
+      title: '项目经理',
+      dataIndex: 'leader',
+      key: 'leader',
+      render: (text: string, record: Proj) => {
+        return subordinates.find((user: { id: string }) => user.id === record.leader)?.name;
+      },
+      width: 110,
+    },
+    {
+      title: '市场经理',
+      dataIndex: 'salesLeader',
+      key: 'salesLeader',
+      render: (text: string, record: Proj) => {
+        return subordinates.find((user: { id: string }) => user.id === record.salesLeader)?.name;
+      },
+      width: 110,
     },
     {
       title: '操作',
@@ -320,7 +323,9 @@ const Project: React.FC<any> = () => {
       width: 180,
       render: (text: string, record: Proj) => {
         let proType = record.id.split('-')[2];
-        if (proType === 'SZ') {
+        if (record.proState == 2) {
+          return '重新申请审核';
+        } else if (proType === 'SZ') {
           return '免费维护期不足三个月，请及时签署维护合同';
         } else if (proType === 'SH') {
           return '维护服务即将不足三个月，请及时巡检';
@@ -375,11 +380,12 @@ const Project: React.FC<any> = () => {
       ...query,
       ...params,
       page,
-      group:params.group.length !== 0
-      ? params.group.reduce((accumulator: string, currentValue: string) => {
-          return `${accumulator}/${currentValue}`;
-        }, '')
-      : '',
+      group:
+        params.group.length !== 0
+          ? params.group.reduce((accumulator: string, currentValue: string) => {
+              return `${accumulator}/${currentValue}`;
+            }, '')
+          : '',
     });
   };
   const searchBtn = () => {
@@ -513,7 +519,7 @@ const Project: React.FC<any> = () => {
   //=====zhouyueyang
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
-      <Row gutter={16}>
+      <Row gutter={[16, 16]}>
         <Col className="gutter-row">
           <Input
             id="proName"

@@ -416,6 +416,7 @@ const dataTypeDef = gql`
   }
   type ContractPaymentManage {
     id: ID!
+    contractId: String
     name: String
     customer: String
     type: String
@@ -919,6 +920,7 @@ const dataTypeDef = gql`
     thumbUrl: String
   }
   input MilestoneInput {
+    id:String
     name: String!
     value: Float!
   }

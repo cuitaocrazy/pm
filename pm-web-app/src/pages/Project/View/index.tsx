@@ -314,51 +314,51 @@ const Project: React.FC<any> = (props) => {
       width: 100,
     },
   ];
-  if (access?.includes('realm:assistant')) {
-    columns.push({
-      title: '操作',
-      key: 'action',
-      render: (id: string, record: Proj) => {
-        let proType = record.id.split('-')[2];
-        return (
-          proType !== 'SQ' && (
-            <Space>
-              <a
-                key="archive"
-                onClick={async () => {
-                  // 点击操作
-                  let res = await getArgByProId(record.id);
-                  if (res.data.getAgreementsByProjectId.length !== 0) {
-                    res.data.getAgreementsByProjectId[0].contactProj = [record.id];
-                    res.data.getAgreementsByProjectId[0].time = [
-                      moment(res.data.getAgreementsByProjectId[0].startTime),
-                      moment(res.data.getAgreementsByProjectId[0].endTime),
-                    ];
-                    ref.current?.showDialog({ ...res.data.getAgreementsByProjectId[0] });
-                  } else {
-                    ref.current?.showDialog({
-                      name: '',
-                      customer: record.customer,
-                      type: '',
-                      contactProj: [record.id],
-                      startTime: '',
-                      endTime: '',
-                      fileList: [],
-                      remark: '',
-                    });
-                  }
-                }}
-              >
-                添加合同
-              </a>
-            </Space>
-          )
-        );
-      },
-      fixed: 'right',
-      width: 120,
-    } as any);
-  }
+  // if (access?.includes('realm:assistant')) {
+  //   columns.push({
+  //     title: '操作',
+  //     key: 'action',
+  //     render: (id: string, record: Proj) => {
+  //       let proType = record.id.split('-')[2];
+  //       return (
+  //         proType !== 'SQ' && (
+  //           <Space>
+  //             <a
+  //               key="archive"
+  //               onClick={async () => {
+  //                 // 点击操作
+  //                 let res = await getArgByProId(record.id);
+  //                 if (res.data.getAgreementsByProjectId.length !== 0) {
+  //                   res.data.getAgreementsByProjectId[0].contactProj = [record.id];
+  //                   res.data.getAgreementsByProjectId[0].time = [
+  //                     moment(res.data.getAgreementsByProjectId[0].startTime),
+  //                     moment(res.data.getAgreementsByProjectId[0].endTime),
+  //                   ];
+  //                   ref.current?.showDialog({ ...res.data.getAgreementsByProjectId[0] });
+  //                 } else {
+  //                   ref.current?.showDialog({
+  //                     name: '',
+  //                     customer: record.customer,
+  //                     type: '',
+  //                     contactProj: [record.id],
+  //                     startTime: '',
+  //                     endTime: '',
+  //                     fileList: [],
+  //                     remark: '',
+  //                   });
+  //                 }
+  //               }}
+  //             >
+  //               添加合同
+  //             </a>
+  //           </Space>
+  //         )
+  //       );
+  //     },
+  //     fixed: 'right',
+  //     width: 120,
+  //   } as any);
+  // }
 
   //=====zhouyueyang
 
@@ -375,7 +375,7 @@ const Project: React.FC<any> = (props) => {
   }, [yearManages]);
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
-      <Row gutter={16}>
+      <Row gutter={[16, 16]}>
         <Col className="gutter-row">
           <Input
             value={params.name}

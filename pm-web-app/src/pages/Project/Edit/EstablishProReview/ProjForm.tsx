@@ -558,7 +558,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 </Form.Item>
                 <Form.Item
                   labelCol={{ span: 3, offset: 0 }}
-                  label="ID"
+                  label="项目ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >
@@ -999,7 +999,7 @@ return true;
             })}
           >
             <Select
-              disabled={!isConfirmYearDisabled}
+              disabled
               allowClear
               className="width120"
               placeholder="请选择"
@@ -1027,7 +1027,7 @@ return true;
             })}
           >
             <Select
-              disabled={!isConfirmYearDisabled}
+              disabled
               allowClear
               className="width120"
               placeholder="请选择"
@@ -1046,7 +1046,7 @@ return true;
         </Col>
         <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} disabled />
           </Form.Item>
         </Col>
         <Col span={8}>

@@ -9,6 +9,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
+import { message } from 'antd';
 
 const queryGql = gql`
   query (
@@ -69,6 +70,15 @@ const queryGql = gql`
       }
       page
       total
+    }
+    contractPaymentManages {
+      result {
+        id
+        contractId
+        milestoneName
+        milestoneValue
+        payWayName
+      }
     }
   }
 `;
@@ -173,10 +183,11 @@ export function useAgreementState() {
   const pushAgreement = useCallback(
     async (agreement: AgreementInput) => {
       let reqAgreement = await attachmentUpload(agreement);
+      reqAgreement.contractAmount = reqAgreement.contractAmount + '';
       delete reqAgreement.time;
       delete reqAgreement.customerName;
       console.log(reqAgreement, 'reqAgreement MMMMMM');
-      delete reqAgreement.taxRate
+      delete reqAgreement.taxRate;
       await pushAgreementHandle({
         variables: {
           agreement: reqAgreement,
@@ -212,5 +223,6 @@ export function useAgreementState() {
     query,
     setQuery,
     payWaySub,
+    contractPaymentManages: queryData?.contractPaymentManages,
   };
 }

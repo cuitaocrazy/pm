@@ -256,24 +256,44 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       >
         <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
       </Form.Item>
-      <Form.Item label="合同周期" name="contractPeriod" rules={[{ required: false }]}>
-        <Input />
+      <Form.Item
+        label="合同周期"
+        name="contractPeriod"
+        rules={[
+          { required: false },
+          {
+            pattern: /^[0-9]+$/,
+            message: '合同周期只能填写数字',
+          },
+        ]}
+      >
+        <Input suffix="月" />
       </Form.Item>
       <Form.Item label="合同编号" name="contractNumber" rules={[{ required: false }]}>
         <Input />
       </Form.Item>
       <Form.Item label="合同金额" name="contractAmount" rules={[{ required: true }]}>
-        <Input />
+        <InputNumber style={{ width: '100%' }} />
       </Form.Item>
-      <Form.Item label="税率" name="taxRate" rules={[{ required: true }]}>
+      <Form.Item label="税率" name="taxRate" rules={[{ required: false }]}>
         <Input suffix="%" min={0} max={100} style={{ width: '100%' }} />
       </Form.Item>
       <Form.Item label="不含税金额" name="afterTaxAmount" rules={[{ required: true }]}>
         <Input disabled />
       </Form.Item>
-      <Form.Item label="免维期(单位月)" name="maintenanceFreePeriod" rules={[{ required: true }]}>
+      <Form.Item
+        label="免维期"
+        name="maintenanceFreePeriod"
+        rules={[
+          { required: true },
+          {
+            pattern: /^[0-9]+$/,
+            message: '合同周期只能填写数字',
+          },
+        ]}
+      >
         {/* <Input placeholder="以月为单位" style={{ width: '96%' }} />月 */}
-        <Input />
+        <Input suffix="月" />
       </Form.Item>
       {/* <Form.Item label="startTime" name="startTime" hidden rules={[{ required: true }]}>
         <Input />

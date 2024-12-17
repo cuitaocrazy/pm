@@ -105,7 +105,7 @@ const Agreement: React.FC<any> = () => {
     setType(1);
   };
   const [projInfo, setProjInfo] = useState();
-  const payWayBtn = (record) => {
+  const payWayBtn = (record:any) => {
     // console.log(record, 'MMMMJJJJJ');
     setProjInfo(record);
     payWayref.current?.showDialog({
@@ -114,9 +114,9 @@ const Agreement: React.FC<any> = () => {
     /**ref.current?.showDialog({ ...agreement }); */
   };
   // 计算 rowSpan
-  const calculateRowSpan = (data, key) => {
-    const map = {};
-    data.forEach((item, index) => {
+  const calculateRowSpan = (data:any, key:any) => {
+    const map:any = {};
+    data.forEach((item:any, index:any) => {
       if (map[item[key]]) {
         map[item[key]].count++;
       } else {
@@ -130,18 +130,22 @@ const Agreement: React.FC<any> = () => {
   const sortedData = [...agreements].sort((a, b) => (a.name > b.name ? 1 : -1));
   // 根据数据计算 rowSpan
   const rowSpanMap = calculateRowSpan(sortedData, 'name');
+  const rowSpanMap1 = calculateRowSpan(sortedData, 'customer');
+  const rowSpanMap2 = calculateRowSpan(sortedData, 'payWayName');
 
-  console.log(rowSpanMap, 'rowSpanMap JJJJJJJJ');
+  console.log(rowSpanMap1, 'rowSpanMap1 JJJJJJJJ');
   const columns = [
     {
       title: '合同名称',
       dataIndex: 'name',
       key: 'name',
-      width: 300,
-      render: (value, row, index) => {
+      width: 150,
+      render: (value:any, row:any, index:any) => {
         const obj = {
           children: value,
-          props: {},
+          props: {
+            rowSpan:0
+          },
         };
 
         // 设置 rowSpan 值
@@ -158,11 +162,26 @@ const Agreement: React.FC<any> = () => {
       title: '关联客户',
       dataIndex: 'customer',
       key: 'customer',
-      width: 150,
-      render: (text: string, record: AgreementType) =>
-        customers.filter((item) => item.id === record.customer).length
-          ? customers.filter((item) => item.id === record.customer)[0].name
-          : '',
+      width: 100,
+      render: (value:any, row:any, index:any) =>{
+        const obj = {
+          children: customers.filter((item) => item.id === value).length
+            ? customers.filter((item) => item.id === value)[0].name
+            : '',
+          props: {
+            rowSpan:0
+          },
+        };
+
+        // // 设置 rowSpan 值
+        if (rowSpanMap1[value].start === index) {
+          obj.props.rowSpan = rowSpanMap1[value].count;
+        } else {
+          obj.props.rowSpan = 0; // 隐藏后续行
+        }
+
+        return obj;
+        },
     },
     // {
     //   title: '合同类型',
@@ -175,14 +194,29 @@ const Agreement: React.FC<any> = () => {
       title: '付款方式名称',
       dataIndex: 'payWayName',
       key: 'payWayName',
-      width: 200,
-      render: (text: string, record: AgreementType) => record.payWayName,
+      width: 100,
+      render: (value:any, row:any, index:any) => {
+        const obj = {
+          children: value,
+          props: {
+            rowSpan:0
+          },
+        };
+
+        // // 设置 rowSpan 值
+        if (rowSpanMap2[value].start === index) {
+          obj.props.rowSpan = rowSpanMap2[value].count;
+        } else {
+          obj.props.rowSpan = 0; // 隐藏后续行
+        }
+        return obj;
+      },
     },
     {
       title: '里程碑名称',
       dataIndex: 'milestoneName',
       key: 'milestoneName',
-      width: 200,
+      width: 100,
       render: (text: string, record: AgreementType) => {
         return <a onClick={() => editHandle(record)}>{record.milestoneName}</a>;
       },
@@ -191,14 +225,14 @@ const Agreement: React.FC<any> = () => {
       title: '百分比',
       dataIndex: 'milestoneValue',
       key: 'milestoneValue',
-      width: 200,
+      width: 100,
       render: (text: string, record: AgreementType) => record.milestoneValue,
     },
     {
       title: '款项金额',
       dataIndex: 'milestoneValue',
       key: 'milestoneValue',
-      width: 200,
+      width: 100,
       render: (text: string, record: AgreementType) => {
         return (Number(record.contractAmount) * Number(record.milestoneValue)) / 100;
       },
@@ -207,10 +241,10 @@ const Agreement: React.FC<any> = () => {
       title: '回款季度',
       dataIndex: 'actualQuarter',
       key: 'actualQuarter',
-      width: 200,
+      width: 100,
       render: (text: string, record: AgreementType) => {
         if (record.actualQuarter) {
-          return collectionQuarterManages.filter((item) => item.code == record.actualQuarter)[0]
+          return collectionQuarterManages?.filter((item) => item.code == record.actualQuarter)[0]
             .name;
         } else {
           return '---';
@@ -230,7 +264,7 @@ const Agreement: React.FC<any> = () => {
       render: (createDate: string) => {
         return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
       },
-      width: 250,
+      width: 100,
     },
     {
       title: '操作',
@@ -248,8 +282,8 @@ const Agreement: React.FC<any> = () => {
           </Popconfirm>
         </Space>
       ),
-      width: 200,
-      fixed: 'right',
+      width: 100,
+      fixed: 'right' as 'right',
     },
   ];
   return (
@@ -329,7 +363,7 @@ const Agreement: React.FC<any> = () => {
       </DialogForm>
       <DialogForm
         submitHandle={(v: AgreementInput) => {
-          return payWaySub({ ...projInfo, ...v });
+          return payWaySub({ ...(projInfo||{}), ...v });
         }}
         ref={payWayref}
         title="款项填写"

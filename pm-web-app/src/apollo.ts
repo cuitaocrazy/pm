@@ -482,6 +482,12 @@ export type Agreement = {
   createDate: Scalars['String'];
   contactProj: Scalars['String'][];
   time: any[];
+  milestoneValue:String;
+  contractAmount:String;
+  payWayName:String;
+  milestoneName:String;
+  actualQuarter:String;
+
 };
 export type AgreementsResult = {
   result: Agreement[];

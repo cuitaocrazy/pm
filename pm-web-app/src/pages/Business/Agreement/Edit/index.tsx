@@ -144,7 +144,7 @@ const Agreement: React.FC<any> = () => {
     },
     {
       title: '关联项目',
-      width: 400,
+      width: 200,
       render: (text: string, record: AgreementType) => {
         const projArr = projectAgreements.filter((item) => {
           return item.agreementId === record.id;
@@ -168,31 +168,31 @@ const Agreement: React.FC<any> = () => {
       title: '合同周期',
       dataIndex: 'contractPeriod',
       key: 'contractPeriod',
-      width: 250,
+      width: 100,
     },
     {
       title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
-      width: 250,
+      width: 100,
     },
     {
       title: '不含税金额',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
-      width: 250,
+      width: 100,
     },
     {
       title: '免维期',
       dataIndex: 'maintenanceFreePeriod',
       key: 'maintenanceFreePeriod',
-      width: 250,
+      width: 100,
     },
     {
       title: '备注',
       dataIndex: 'remark',
       key: 'remark',
-      width: 250,
+      width: 100,
     },
     {
       title: '操作',
@@ -213,7 +213,7 @@ const Agreement: React.FC<any> = () => {
           </Button>
         </Space>
       ),
-      width: 200,
+      width: 150,
       fixed: 'right',
     },
   ];

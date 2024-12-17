@@ -89,7 +89,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return record.contractState == 0 ? '未签署' : record.contractState == 1 ? '已签署' : '---';
       },
-      width: 200,
+      width: 100,
     },
     {
       title: '验收状态',
@@ -98,7 +98,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.acceStatus)?.name;
       },
-      width: 200,
+      width: 100,
     },
     {
       title: '确认状态',
@@ -115,7 +115,7 @@ const Project: React.FC<any> = () => {
           ? '无法确认'
           : '---';
       },
-      width: 200,
+      width: 100,
     },
     {
       title: '确认年度',
@@ -124,7 +124,7 @@ const Project: React.FC<any> = () => {
       render: (confirmYear: string) => {
         return confirmYear;
       },
-      width: 200,
+      width: 100,
     },
     {
       title: '合同金额',
@@ -135,7 +135,7 @@ const Project: React.FC<any> = () => {
         let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
         return amount[0]?.contractAmount;
       },
-      width: 200,
+      width: 100,
     },
     {
       title: '税后金额',
@@ -146,7 +146,7 @@ const Project: React.FC<any> = () => {
         let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
         return amount[0]?.afterTaxAmount;
       },
-      width: 200,
+      width: 100,
     },
     {
       title: '确认金额',
@@ -155,7 +155,7 @@ const Project: React.FC<any> = () => {
       render: (recoAmount: string) => {
         return recoAmount;
       },
-      width: 200,
+      width: 100,
     },
     {
       title: '合同签订日期',
@@ -166,13 +166,13 @@ const Project: React.FC<any> = () => {
         let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
         return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
       },
-      width: 200,
+      width: 100,
     },
     {
       title: '项目部门',
       dataIndex: 'group',
       key: 'group',
-      width: '300px',
+      width: '250px',
     },
     {
       title: '项目状态',
@@ -181,7 +181,7 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         return status?.find((statu) => statu.id === record.projStatus)?.name;
       },
-      width: 200,
+      width: 100,
     },
 
     // {

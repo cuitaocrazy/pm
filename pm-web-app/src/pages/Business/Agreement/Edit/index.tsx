@@ -143,23 +143,6 @@ const Agreement: React.FC<any> = () => {
       ),
     },
     {
-      title: '关联客户',
-      dataIndex: 'customer',
-      key: 'customer',
-      width: 150,
-      render: (text: string, record: AgreementType) =>
-        customers.filter((item) => item.id === record.customer).length
-          ? customers.filter((item) => item.id === record.customer)[0].name
-          : '',
-    },
-    {
-      title: '合同类型',
-      dataIndex: 'type',
-      key: 'type',
-      width: 200,
-      render: (text: string, record: AgreementType) => agreementType[record.type],
-    },
-    {
       title: '关联项目',
       width: 400,
       render: (text: string, record: AgreementType) => {
@@ -182,36 +165,33 @@ const Agreement: React.FC<any> = () => {
       },
     },
     {
-      title: '开始时间',
-      dataIndex: 'startTime',
-      key: 'startTime',
-      render: (startTime: string) => {
-        return startTime && moment(startTime, 'YYYYMMDD').format('YYYY年MM月DD日');
-      },
+      title: '合同周期',
+      dataIndex: 'contractPeriod',
+      key: 'contractPeriod',
       width: 250,
     },
     {
-      title: '结束时间',
-      dataIndex: 'endTime',
-      key: 'endTime',
-      render: (endTime: string) => {
-        return endTime && moment(endTime, 'YYYYMMDD').format('YYYY年MM月DD日');
-      },
+      title: '合同金额',
+      dataIndex: 'contractAmount',
+      key: 'contractAmount',
+      width: 250,
+    },
+    {
+      title: '不含税金额',
+      dataIndex: 'afterTaxAmount',
+      key: 'afterTaxAmount',
+      width: 250,
+    },
+    {
+      title: '免维期',
+      dataIndex: 'maintenanceFreePeriod',
+      key: 'maintenanceFreePeriod',
       width: 250,
     },
     {
       title: '备注',
       dataIndex: 'remark',
       key: 'remark',
-      width: 250,
-    },
-    {
-      title: '创建日期',
-      dataIndex: 'createDate',
-      key: 'createDate',
-      render: (createDate: string) => {
-        return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
-      },
       width: 250,
     },
     {

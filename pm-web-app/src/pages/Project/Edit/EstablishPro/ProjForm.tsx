@@ -72,7 +72,7 @@ const userQuery = gql`
 `;
 
 const layout = {
-  labelCol: { span: 9 },
+  labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
 
@@ -545,10 +545,11 @@ export default () => {
         {() => {
           return (
             <Row>
-              <Col xs={24} sm={20}>
+              <Col span={14}>
                 <Form.Item
                   style={{ marginTop: '40px' }}
-                  labelCol={{ span: 3, offset: 0 }}
+                  labelCol={{ span: 4 }}
+                  wrapperCol={{ span: 20 }}
                   label="项目ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
@@ -762,189 +763,32 @@ export default () => {
       <Row>
         <Col span={7}>
           <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{ width: '100%' }} />
           </Form.Item>
         </Col>
         <Col span={7}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="实施年度"
+            name="doYear"
+            rules={[{ required: false }]}
+            getValueProps={(value) => ({
+              value: value ? moment(value) : undefined,
+            })}
+          >
+            <DatePicker
+              picker="year"
+              format="YYYY"
+              style={{ width: '100%' }}
+              onChange={ondoYearChange}
+            />
           </Form.Item>
         </Col>
       </Row>
-      <Row>
-        <Col span={7}>
-          <Form.Item
-            label="项目预算"
-            name="projBudget"
-            rules={[{ required: false }]}
-            tooltip={<span className="ant-form-text">客户心理的预算</span>}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-
-        <Col span={7}>
-          <Form.Item
-            label="费用预算"
-            name="budgetFee"
-            rules={[{ required: false }]}
-            tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item
-            label="成本预算"
-            name="budgetCost"
-            rules={[{ required: false }]}
-            tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={7}>
-          <Form.Item
-            label="人力费用"
-            name="humanFee"
-            rules={[{ required: false }]}
-            tooltip={<span className="ant-form-text">实际消耗费用</span>}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item
-            label="项目费用"
-            name="projectFee"
-            rules={[{ required: false }]}
-            tooltip={<span className="ant-form-text">实际消耗费用</span>}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item
-            label="采购成本"
-            name="actualCost"
-            rules={[{ required: false }]}
-            tooltip={<span className="ant-form-text">实际采购成本</span>}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item
-            label="预估工作量"
-            name="estimatedWorkload"
-            rules={[{ required: false }, { validator: validateInteger }]}
-          >
-            <InputNumber min={0} />
-          </Form.Item>
-        </Col>
-        {projType === 'SH' ? (
-          <>
-            <Col span={7}>
-              <Form.Item
-                label="免费人天数"
-                name="freePersonDays"
-                rules={[{ required: false }, { validator: validateInteger }]}
-              >
-                <InputNumber min={0} />
-              </Form.Item>
-            </Col>
-            <Col span={7}>
-              <Form.Item
-                label="已用人天数"
-                name="usedPersonDays"
-                rules={[{ required: false }, { validator: validateInteger }]}
-              >
-                <InputNumber min={0} />
-              </Form.Item>
-            </Col>
-            <Col span={7}></Col>
-          </>
-        ) : (
-          ''
-        )}
-      </Row>
-      {projType === 'SQ' || projType === 'SH' ? (
-        ''
-      ) : (
-        <Row>
-          <Col span={7}>
-            <Form.Item
-              label="投产日期"
-              name="productDate"
-              rules={[{ required: false }]}
-              getValueProps={(value) => ({
-                value: value ? moment(value) : undefined,
-              })}
-            >
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
-            </Form.Item>
-          </Col>
-          <Col span={7}>
-            <Form.Item
-              label="验收日期"
-              name="acceptDate"
-              rules={[{ required: false }]}
-              getValueProps={(value) => ({
-                value: value ? moment(value) : undefined,
-              })}
-            >
-              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
-            </Form.Item>
-          </Col>
-          <Col span={7}>
-            <Form.Item
-              label="免费维护期"
-              name="serviceCycle"
-              rules={[{ required: false }]}
-              tooltip={<span className="ant-form-text">月</span>}
-            >
-              <InputNumber min={0} disabled />
-            </Form.Item>
-          </Col>
-        </Row>
-      )}
-      {projType === 'SH' ? (
-        <Row hidden={projType !== 'SH'}>
-          <Col span={7}>
-            <Form.Item
-              label="要求巡检次数"
-              name="requiredInspections"
-              rules={[{ required: false }, { validator: validateInteger }]}
-            >
-              <InputNumber min={0} />
-            </Form.Item>
-          </Col>
-          <Col span={7}>
-            <Form.Item
-              label="实际巡检次数"
-              name="actualInspections"
-              rules={[{ required: false }, { validator: validateInteger }]}
-            >
-              <InputNumber min={0} />
-            </Form.Item>
-          </Col>
-          <Col span={7}>
-            <Form.Item
-              label="服务周期"
-              name="serviceCycle"
-              rules={[{ required: false }, { validator: validateInteger }]}
-              tooltip={<span className="ant-form-text">月</span>}
-            >
-              <InputNumber min={0} />
-            </Form.Item>
-          </Col>
-        </Row>
-      ) : (
-        ''
-      )}
-
       <Row>
         <Col span={7}>
           <Form.Item
@@ -1002,28 +846,185 @@ export default () => {
         </Col>
         <Col span={7}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled={!isConfirmYearDisabled} />
+            <InputNumber min={0} disabled={!isConfirmYearDisabled} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item
+            label="项目预算"
+            name="projBudget"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">客户心理的预算</span>}
+          >
+            <InputNumber min={0} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={7}>
+          <Form.Item
+            label="费用预算"
+            name="budgetFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
+          >
+            <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
         <Col span={7}>
           <Form.Item
-            label="实施年度"
-            name="doYear"
+            label="成本预算"
+            name="budgetCost"
             rules={[{ required: false }]}
-            getValueProps={(value) => ({
-              value: value ? moment(value) : undefined,
-            })}
+            tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
           >
-            <DatePicker
-              picker="year"
-              format="YYYY"
-              style={{ width: '100%' }}
-              onChange={ondoYearChange}
-            />
+            <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
-        <Col span={7}></Col>
       </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item
+            label="人力费用"
+            name="humanFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际消耗费用</span>}
+          >
+            <InputNumber min={0} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="项目费用"
+            name="projectFee"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际消耗费用</span>}
+          >
+            <InputNumber min={0} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="采购成本"
+            name="actualCost"
+            rules={[{ required: false }]}
+            tooltip={<span className="ant-form-text">实际采购成本</span>}
+          >
+            <InputNumber min={0} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item
+            label="预估工作量"
+            name="estimatedWorkload"
+            rules={[{ required: false }, { validator: validateInteger }]}
+          >
+            <InputNumber min={0} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        {projType === 'SH' ? (
+          <>
+            <Col span={7}>
+              <Form.Item
+                label="免费人天数"
+                name="freePersonDays"
+                rules={[{ required: false }, { validator: validateInteger }]}
+              >
+                <InputNumber min={0} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+            <Col span={7}>
+              <Form.Item
+                label="已用人天数"
+                name="usedPersonDays"
+                rules={[{ required: false }, { validator: validateInteger }]}
+              >
+                <InputNumber min={0} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+            <Col span={7}></Col>
+          </>
+        ) : (
+          ''
+        )}
+      </Row>
+      {projType === 'SQ' || projType === 'SH' ? (
+        ''
+      ) : (
+        <Row>
+          <Col span={7}>
+            <Form.Item
+              label="投产日期"
+              name="productDate"
+              rules={[{ required: false }]}
+              getValueProps={(value) => ({
+                value: value ? moment(value) : undefined,
+              })}
+            >
+              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col span={7}>
+            <Form.Item
+              label="验收日期"
+              name="acceptDate"
+              rules={[{ required: false }]}
+              getValueProps={(value) => ({
+                value: value ? moment(value) : undefined,
+              })}
+            >
+              <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col span={7}>
+            <Form.Item
+              label="免费维护期"
+              name="serviceCycle"
+              rules={[{ required: false }]}
+              tooltip={<span className="ant-form-text">月</span>}
+            >
+              <InputNumber min={0} disabled style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+        </Row>
+      )}
+      {projType === 'SH' ? (
+        <Row hidden={projType !== 'SH'}>
+          <Col span={7}>
+            <Form.Item
+              label="要求巡检次数"
+              name="requiredInspections"
+              rules={[{ required: false }, { validator: validateInteger }]}
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col span={7}>
+            <Form.Item
+              label="实际巡检次数"
+              name="actualInspections"
+              rules={[{ required: false }, { validator: validateInteger }]}
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col span={7}>
+            <Form.Item
+              label="服务周期"
+              name="serviceCycle"
+              rules={[{ required: false }, { validator: validateInteger }]}
+              tooltip={<span className="ant-form-text">月</span>}
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+        </Row>
+      ) : (
+        ''
+      )}
+
       <Row>
         <Col span={7}>
           <Form.Item label="产品名称" name="productName" rules={[{ required: false }]}>
@@ -1036,17 +1037,12 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item label="项目安排" name="projectArrangement" rules={[{ required: false }]}>
+          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
       </Row>
       <Row>
-        <Col span={7}>
-          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
-            <Input />
-          </Form.Item>
-        </Col>
         <Col span={7}>
           <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
             <Select
@@ -1057,39 +1053,31 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item
-            label="客户联系人联系方式"
-            name="contactDetailsCus"
-            rules={[{ required: false }]}
-          >
-            <Input disabled />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={7}>
           <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
             <Select options={formattedOptions} />
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item
-            label="销售负责人联系方式"
-            name="copyrightNameSale"
-            rules={[{ required: false }]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={7}></Col>
-        <Col span={7}>
           <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
+      </Row>
+      <Row>
+        <Col span={7}>
+          <Form.Item label="客户联系方式" name="contactDetailsCus" rules={[{ required: false }]}>
+            <Input disabled />
+          </Form.Item>
+        </Col>
+        <Col span={7}>
+          <Form.Item label="销售联系方式" name="copyrightNameSale" rules={[{ required: false }]}>
+            <Input />
+          </Form.Item>
+        </Col>
+
         <Col span={7}>
           <Form.Item
-            label="商户联系人联系方式"
+            label="商户联系方式"
             name="contactDetailsMerchant"
             rules={[{ required: false }]}
           >
@@ -1097,15 +1085,34 @@ export default () => {
           </Form.Item>
         </Col>
         {/* <Col span={7}></Col> */}
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Form.Item label="项目描述" name="description" labelCol={{ span: 2.4, offset: 1 }}>
-            <Input.TextArea />
+        <Col span={14}>
+          <Form.Item
+            label="项目描述"
+            name="description"
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 20 }}
+          >
+            {/** */}
+            <Input.TextArea style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={14}>
+          <Form.Item
+            label="项目计划"
+            name="projectArrangement"
+            rules={[{ required: false }]}
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 20 }}
+          >
+            <Input.TextArea style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
+        {/* <Col span={14}></Col> */}
+        {/* <Col span={7}></Col> */}
+      </Row>
+      {/* <Row>
         <Col span={24}>
           <Form.List name="actives" rules={[{ validator: activeValidator }]}>
             {(fields, { add, remove }, { errors }) => (
@@ -1236,7 +1243,7 @@ export default () => {
             )}
           </Form.List>
         </Col>
-      </Row>
+      </Row> */}
       <Row hidden>
         <Col span={24}>
           <Form.List name="contacts">

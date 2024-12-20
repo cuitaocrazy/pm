@@ -171,6 +171,7 @@ export type Project = {
   confirmYear?: Scalars['String'];
   doYear?: Scalars['String'];
   group?: Scalars['String'];
+  contractState:Scalars['Int'];
 };
 
 export type Contact = {
@@ -487,6 +488,8 @@ export type Agreement = {
   payWayName:String;
   milestoneName:String;
   actualQuarter:String;
+  afterTaxAmount:String;
+  maintenanceFreePeriod:String;
 
 };
 export type AgreementsResult = {
@@ -588,6 +591,7 @@ export type CustomersResult = {
 // 客户信息查询返回的类型
 export type CustomersQuery = {
   customers: CustomersResult;
+  subordinates:User[];
 };
 
 export type QueryCustomersArgs = {
@@ -647,7 +651,42 @@ export type Query = {
   marketPlansBySuper: MarketPlan[];
   eventLogs: EventLog[];
   findOneProjectById: Project;
+  contractPaymentManages:{result:ContractPaymentManage[]}
 };
+
+
+
+export type ContractPaymentManage = {
+  id: Scalars['String'];
+    contractId: Scalars['String'];
+    name: Scalars['String'];
+    customer: Scalars['String'];
+    type: Scalars['String'];
+    fileList: File[];
+    contractSignDate: Scalars['String'];
+    contractPeriod: Scalars['String'];
+    contractNumber: Scalars['String'];
+    contractAmount: Scalars['String'];
+    afterTaxAmount: Scalars['String'];
+    maintenanceFreePeriod: Scalars['String'];
+    remark: Scalars['String'];
+    createDate: Scalars['String'];
+    isDel: Scalars['Boolean']
+    payWayName: Scalars['String'];
+    milestoneName: Scalars['String'];
+    milestoneValue: Scalars['String'];
+    milestone: Milestone[];
+    payState: Scalars['String'];
+    expectedQuarter: Scalars['String'];
+    actualQuarter: Scalars['String'];
+    paymentRemark: Scalars['String'];
+    paymentFileList: File[];
+}
+
+export type  Milestone ={
+  name: Scalars['String'];
+  value: Scalars['Float'];
+}
 
 export type QueryProjectArgs = {
   isArchive?: Scalars['Boolean'];
@@ -696,6 +735,7 @@ export type QueryGroupsUsersArgs = {
   groups?: Scalars['String'][];
   customersPageSize?: Scalars['Float'];
   pageSizeAgreements?: Scalars['Float'];
+  agreementPageSize?:Scalars['Float'];
 };
 
 export type IsExistProjIdArgs = {
@@ -768,6 +808,13 @@ export type ProjectInput = {
   salesManager?: Scalars['String'];
   copyrightNameSale?: Scalars['String'];
   doYear?: Scalars['String'];
+  oldId:String;
+  contAmount_:String;
+  taxAmount_:String;
+  serviceCycle_:String;
+  confirmQuarter:String;
+  contractState1:String;
+  proState1:String;
 };
 
 export type ContactInput = {
@@ -940,17 +987,21 @@ export type FileInput = {
 };
 
 export type AgreementInput = {
+  taxRate?: any;
+  contractAmount?: any;
   id?: Maybe<Scalars['ID']>;
-  name: Scalars['String'];
-  customer: Scalars['String'];
+  name?: Scalars['String'];
+  customer?: Scalars['String'];
   customerName?: Scalars['String'];
-  type: Scalars['String'];
-  contactProj: Scalars['String'][];
+  type?: Scalars['String'];
+  contactProj?: Scalars['String'][];
   fileList?: Maybe<FileInput[]>;
-  startTime: Scalars['String'];
-  endTime: Scalars['String'];
-  remark: Scalars['String'];
+  startTime?: Scalars['String'];
+  endTime?: Scalars['String'];
+  remark?: Scalars['String'];
   time?: Scalars['String'][];
+  payWayName?:any;
+  milestone?:any;
 };
 
 export type TagInput = {

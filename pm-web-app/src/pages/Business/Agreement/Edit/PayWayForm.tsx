@@ -6,66 +6,28 @@
  * @FilePath: /pm/pm-web-app/src/pages/Business/Agreement/Edit/PayWayForm.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import React, { useState } from 'react';
+import React from 'react';
 import {
   PlusOutlined,
-  FilePdfOutlined,
-  FileWordOutlined,
-  TableOutlined,
-  FileOutlined,
-  FileZipOutlined,
   MinusCircleOutlined,
 } from '@ant-design/icons';
 import {
   Form,
   Input,
-  Upload,
-  Select,
-  Modal,
-  DatePicker,
-  message,
   Button,
   Space,
   InputNumber,
 } from 'antd';
-import type { UploadProps, UploadFile } from 'antd';
-import type { AgreementInput, Query } from '@/apollo';
-import { gql, useQuery } from '@apollo/client';
+import type { AgreementInput } from '@/apollo';
 import type { FormInstance } from 'antd/lib/form';
-import { agreementType, useBaseState } from '@/pages/utils/hook';
-import moment from 'moment';
-
-const { RangePicker } = DatePicker;
-const dateFormat = 'YYYYMMDD';
-
-const userQuery = gql`
-  query ($customersPageSize: Int) {
-    subordinates {
-      id
-      name
-    }
-    customers(pageSize: $customersPageSize) {
-      result {
-        id
-        name
-      }
-    }
-    projs {
-      id
-      name
-      customer
-    }
-  }
-`;
-
 const layout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
 export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
-  const validateTotal = async (_, value) => {
+  const validateTotal = async (_:any, value:any) => {
     const milestones = form.getFieldValue('milestone') || [];
-    const total = milestones.reduce((sum, milestone) => sum + (Number(milestone?.value) || 0), 0);
+    const total = milestones.reduce((sum:any, milestone:any) => sum + (Number(milestone?.value) || 0), 0);
 
     if (total !== 100) {
       return Promise.reject(new Error('所有里程碑的百分比总和必须为100%！'));
@@ -74,10 +36,9 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   };
   return (
     <Form {...layout} form={form} initialValues={data}>
-      <Form.Item label="付款方式名称" name="payWayName">
+      <Form.Item label="付款方式名称" name="payWayName" rules={[{ required: true, message: '请输入付款方式名称' }]}>
         <Input
           placeholder="请输入付款方式名称"
-          rules={[{ required: true, message: '请输入付款方式名称' }]}
         />
       </Form.Item>
       <Form.List name="milestone">
@@ -89,7 +50,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
                 <Form.Item
                   {...restField}
                   name={[name, 'name']}
-                  fieldKey={[fieldKey, 'name']}
+                  fieldKey={[fieldKey ?? key, 'name']}
                   rules={[{ required: true, message: '请输入里程碑名称' }]}
                 >
                   <Input placeholder="里程碑名称" />
@@ -99,7 +60,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
                 <Form.Item
                   {...restField}
                   name={[name, 'value']}
-                  fieldKey={[fieldKey, 'value']}
+                  fieldKey={[fieldKey ?? key, 'value']}
                   rules={[
                     { required: true, message: '请输入百分比' },
                     {
@@ -117,7 +78,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
                     min={0}
                     max={100}
                     formatter={(value) => `${value}%`}
-                    parser={(value) => value?.replace('%', '') || ''}
+                    
                     style={{ width: '100px' }}
                   />
                 </Form.Item>

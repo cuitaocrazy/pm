@@ -15,8 +15,7 @@ import type { FormInstance } from 'antd/lib/form';
 import { agreementType, useBaseState } from '@/pages/utils/hook';
 import moment from 'moment';
 
-const { RangePicker } = DatePicker;
-const dateFormat = 'YYYYMMDD';
+
 
 const userQuery = gql`
   query ($customersPageSize: Int) {
@@ -59,7 +58,6 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   const [selectCustomer, setSelectCustomer] = useState(data?.customer || '');
 
   let files = data?.fileList as UploadFile[];
-  console.log(files, 'files KKLLKKLL');
   const props: UploadProps = {
     listType: 'picture-card',
     action: '/api/upload/tmp',
@@ -156,21 +154,15 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   };
 
   const customerChange = (value: string, option: any) => {
-    console.log(value, 'value LLLL');
     setSelectCustomer(value);
     form.setFieldsValue({ contactProj: [] });
   };
-
-  const dateChange = (value: any, dataString: any) => {
-    form.setFieldsValue({ startTime: dataString[0], endTime: dataString[1] });
-  };
   const calculateAfterTaxAmount = (values: any) => {
     const { contractAmount, taxRate } = values;
-    console.log(contractAmount, 'contractAmount MMMM', taxRate);
     if (contractAmount && taxRate) {
       // 计算不含税金额
       const afterTaxAmount = parseFloat(contractAmount) / (1 + parseFloat(taxRate) / 100);
-      form.setFieldsValue({ afterTaxAmount: afterTaxAmount.toFixed(2) });
+      form.setFieldsValue({ afterTaxAmount: afterTaxAmount.toFixed(2) } as any);
     }
   };
   return (

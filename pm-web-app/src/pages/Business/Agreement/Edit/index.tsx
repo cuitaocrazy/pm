@@ -101,15 +101,15 @@ const Agreement: React.FC<any> = () => {
     });
     setType(1);
   };
-  const transformData = (data, targetContId) => {
+  const transformData = (data:any, targetContId:any) => {
     // 过滤出指定 contId 的数据
-    const filteredData = data.filter((item) => item.contractId === targetContId);
+    const filteredData = data.filter((item:any) => item.contractId === targetContId);
 
     // 获取唯一的 payName（假设所有 payName 相同）
     const payName = filteredData.length > 0 ? filteredData[0].payWayName : null;
 
     // 转换数据格式
-    const milestone = filteredData.map((item) => ({
+    const milestone = filteredData.map((item:any) => ({
       id: item.id.toString(),
       name: item.milestoneName,
       value: Number(item.milestoneValue),
@@ -121,16 +121,12 @@ const Agreement: React.FC<any> = () => {
     };
   };
   const [projInfo, setProjInfo] = useState();
-  const payWayBtn = (record) => {
-    console.log(record, 'MMMMJJJJJ');
+  const payWayBtn = (record:any) => {
     setProjInfo(record);
-    // console.log(contractPaymentManages, 'contractPaymentManages NMNMNMNM');
-    let info = transformData(contractPaymentManages.result, record.id);
+    let info = transformData(contractPaymentManages?.result, record.id);
     payWayref.current?.showDialog({
-      // ...record,
       ...info,
     });
-    /**ref.current?.showDialog({ ...agreement }); */
   };
   const columns = [
     {
@@ -214,7 +210,7 @@ const Agreement: React.FC<any> = () => {
         </Space>
       ),
       width: 150,
-      fixed: 'right',
+      fixed: 'right' as 'right',
     },
   ];
   return (
@@ -264,7 +260,7 @@ const Agreement: React.FC<any> = () => {
           <Button onClick={() => canaelBtn()}>重置</Button>
         </Col>
       </Row>
-      <Row justify="left" className="marginTop20">
+      <Row justify="start" className="marginTop20">
         <Col>
           <Button key="create" type="primary" onClick={() => addContract()}>
             新建
@@ -293,7 +289,7 @@ const Agreement: React.FC<any> = () => {
       </DialogForm>
       <DialogForm
         submitHandle={(v: AgreementInput) => {
-          return payWaySub({ ...projInfo, ...v });
+          return payWaySub({ ...projInfo || {}, ...v });
         }}
         ref={payWayref}
         title="付款方式"

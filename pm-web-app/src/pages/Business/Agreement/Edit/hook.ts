@@ -9,7 +9,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
-import { message } from 'antd';
+
 
 const queryGql = gql`
   query (
@@ -107,7 +107,7 @@ async function attachmentUpload(agreement: AgreementInput) {
   // 拼接附件存储路径
   formData.append(
     'directory',
-    `/${agreement.customerName}/${agreementType[agreement.type]}/${agreement.name}_`,
+    `/${agreement.customerName}/${agreementType[agreement.type || '']}/${agreement.name}_`,
   );
   agreement?.fileList?.forEach((file: any) => {
     if (file.originFileObj) {
@@ -186,7 +186,6 @@ export function useAgreementState() {
       reqAgreement.contractAmount = reqAgreement.contractAmount + '';
       delete reqAgreement.time;
       delete reqAgreement.customerName;
-      console.log(reqAgreement, 'reqAgreement MMMMMM');
       delete reqAgreement.taxRate;
       await pushAgreementHandle({
         variables: {
@@ -199,7 +198,6 @@ export function useAgreementState() {
   );
   const payWaySub = useCallback(
     async (agreement: AgreementInput) => {
-      console.log(agreement, 'agreement JJJJJJJ');
       await payWaySubHandle({
         variables: {
           agreement: { ...agreement },
@@ -211,7 +209,7 @@ export function useAgreementState() {
   );
 
   return {
-    loading: queryLoading || deleteLoading || pushLoading,
+    loading: queryLoading || deleteLoading || pushLoading || payWaySubLoading,
     agreements,
     subordinates,
     customers,

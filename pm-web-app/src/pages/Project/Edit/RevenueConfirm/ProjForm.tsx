@@ -113,8 +113,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  data.contractState1 =
-    data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  // data.contractState1 =
+  //   data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
   console.log(data, 'data LLLLLLLLL');
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
@@ -145,6 +145,34 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       form.setFieldsValue({ contAmount_: amount && amount[0]?.contractAmount });
       form.setFieldsValue({ taxAmount_: amount && amount[0]?.afterTaxAmount });
       form.setFieldsValue({ serviceCycle_: amount && amount[0]?.maintenanceFreePeriod });
+    }
+    if(data){
+      if(data.contractState){
+        form.setFieldValue('contractState1',data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '')
+        // data.contractState1 =
+        // data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '';
+      }else{
+        console.log('no contractState!!!')
+        // resData.projectAgreements
+        //resData.agreements
+       
+        let agreementId = resData?.projectAgreements.filter(item=>item.id==data.id) || []
+        let contract: string | any[] = []
+        if(agreementId.length > 0){
+          contract = resData?.agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+        }
+        console.log(contract,'VNVNVNVN')
+        if(contract.length > 0){
+          // data.contractState1 = '已签署'
+          form.setFieldValue('contractState1','已签署')
+        }else{
+          console.log('未签署未签署')
+          // data.contractState1 = '未签署'
+          form.setFieldValue('contractState1','未签署')
+        }
+        
+      }
+      
     }
   }, [resData?.projectAgreements, resData?.agreements]);
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {

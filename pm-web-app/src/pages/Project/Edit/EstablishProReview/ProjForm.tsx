@@ -34,16 +34,24 @@ import { forEach } from 'ramda';
 import moment from 'moment';
 
 const userQuery = gql`
-  query ($groups: [String!]) {
+  query ($groups: [String!],$agreementPageSize:Int) {
     groupsUsers(groups: $groups) {
       id
       name
     }
-    agreements {
+    agreements(pageSize: $agreementPageSize) {
       result {
         id
         name
+        contractAmount
+        afterTaxAmount
+        maintenanceFreePeriod
+        contractSignDate
       }
+    }
+    projectAgreements {
+      id
+      agreementId
     }
     projectClasses {
       id
@@ -100,8 +108,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  data.contractState1 =
-    data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  // data.contractState1 =
+  //   data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
@@ -121,8 +129,39 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       pageSizeAgreements: 10000000,
       page: 1,
       pageSize: 100000,
+      agreementPageSize:10000000,
     },
   });
+  useEffect(() => {
+    if(data){
+      if(data.contractState){
+        form.setFieldValue('contractState1',data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '')
+        // data.contractState1 =
+        // data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '';
+      }else{
+        console.log('no contractState!!!')
+        // resData.projectAgreements
+        //resData.agreements
+       
+        let agreementId = resData?.projectAgreements.filter(item=>item.id==data.id) || []
+        let contract: string | any[] = []
+        if(agreementId.length > 0){
+          contract = resData?.agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+        }
+        console.log(contract,'VNVNVNVN')
+        if(contract.length > 0){
+          // data.contractState1 = '已签署'
+          form.setFieldValue('contractState1','已签署')
+        }else{
+          console.log('未签署未签署')
+          // data.contractState1 = '未签署'
+          form.setFieldValue('contractState1','未签署')
+        }
+        
+      }
+      
+    }
+  }, [resData?.projectAgreements, resData?.agreements]);
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
     fetchPolicy: 'no-cache',
     variables: {
@@ -473,16 +512,19 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     if (customerListData1) {
       setCustomerListData(customerListData1?.customers);
       let kehulianxiren = customerListData1?.customers.result.filter(
-        (item) => item.id == data.customer,
+        (item) => item.id == data?.customer,
       );
       console.log(kehulianxiren, 'kehulianxiren.contacts LLLLLL');
-      setCustomerContactOptions(kehulianxiren[0].contacts);
+      if(kehulianxiren.length >0){
+        setCustomerContactOptions(kehulianxiren[0].contacts);
       console.log(kehulianxiren, 'kehulianxiren LLLLLLLL');
       let temp = kehulianxiren[0].salesman.map((item) => ({
         value: item,
         label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
       }));
       setFormattedOptions(temp);
+      }
+      
     }
   }, [customerListData1]);
 

@@ -92,7 +92,7 @@ const Project: React.FC<any> = () => {
       render: (proState: string) => {
         return proState == 0
           ? '待审核'
-          : proState == 1
+          : proState == 1 || !proState
           ? '审核通过'
           : proState == 2
           ? '审核不通过'
@@ -144,7 +144,24 @@ const Project: React.FC<any> = () => {
       dataIndex: 'contractState',
       key: 'contractState',
       render: (text: string, record: Proj) => {
-        return record.contractState == 0 ? '未签署' : record.contractState == 1 ? '已签署' : '---';
+        if(record.contractState){
+          return record?.contractState == 0 ? '未签署' : record?.contractState == 1 ? '已签署' : '';
+        }else{
+          console.log('no contractState!!!')
+          let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
+          let contract: string | any[] = []
+          if(agreementId.length > 0){
+            contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+          }
+          console.log(contract,'VNVNVNVN')
+          if(contract.length > 0){
+            return  '已签署'
+          }else{
+            console.log('未签署未签署')
+            return '未签署'
+          }
+          
+        }
       },
       width: 100,
     },
@@ -270,20 +287,32 @@ const Project: React.FC<any> = () => {
       render: (id: string, record: Proj) => (
         <Space>
           <a
+            disabled={record.proState && (record.proState == 0 || record.proState == 2)?true:false}
             key="archive"
             onClick={() => {
-              editHandle(record, activeRef);
+              if(record.proState && ( record.proState == 0 || record.proState == 2)){
+                return 
+              }else{
+                editHandle(record, activeRef);
+              }
+              
             }}
           >
             添加项目活动
           </a>
           <Popconfirm
+          disabled={record.proState &&( record.proState == 0 || record.proState == 2)?true:false}
             title="将项目数据归档，只能到归档列表查看！"
             okText="是"
             cancelText="否"
-            onConfirm={() => archiveProj(record.id)}
+            onConfirm={() => {
+              if(record.proState && (record.proState == 0 || record.proState == 2)){
+                return 
+              }else{
+                return archiveProj(record.id)
+              }}}
           >
-            <a key="archive" hidden={record.isArchive}>
+            <a disabled={record.proState && (record.proState == 0 || record.proState == 2)?true:false} key="archive" hidden={record.isArchive}>
               归档
             </a>
           </Popconfirm>

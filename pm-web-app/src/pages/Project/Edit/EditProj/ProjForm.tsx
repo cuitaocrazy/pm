@@ -108,8 +108,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // role: 'engineer',
   // } });
   // console.log(data, 'data NNNMMMM');
-  data.oldId = data.id;
-  const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
+  if(data){
+    data.oldId = data?.id || '';
+  }
+  // const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false;
   const { status, dataForTree, groupType, subordinates, subordinatesOnJob } = useBaseState(); // subordinates是指公司的全部人员
   // 使用正则表达式匹配出公司所有市场组的人员
   const filteredGroups: string[] = groupType
@@ -132,13 +134,41 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   });
   useEffect(() => {
     if (resData?.projectAgreements && resData?.agreements) {
-      let contract = resData?.projectAgreements.filter((item) => item.id == data.id);
+      let contract = resData?.projectAgreements.filter((item) => item.id == data?.id);
       let amount = resData?.agreements?.result.filter(
         (item) => item.id == contract[0]?.agreementId,
       );
       form.setFieldsValue({ contAmount_: amount && amount[0]?.contractAmount });
       form.setFieldsValue({ taxAmount_: amount && amount[0]?.afterTaxAmount });
       form.setFieldsValue({ serviceCycle_: amount && amount[0]?.maintenanceFreePeriod });
+    }
+    if(data){
+      if(data.contractState){
+        form.setFieldValue('contractState1',data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '')
+        // data.contractState1 =
+        // data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '';
+      }else{
+        console.log('no contractState!!!')
+        // resData.projectAgreements
+        //resData.agreements
+       
+        let agreementId = resData?.projectAgreements.filter(item=>item.id==data.id) || []
+        let contract: string | any[] = []
+        if(agreementId.length > 0){
+          contract = resData?.agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+        }
+        console.log(contract,'VNVNVNVN')
+        if(contract.length > 0){
+          // data.contractState1 = '已签署'
+          form.setFieldValue('contractState1','已签署')
+        }else{
+          console.log('未签署未签署')
+          // data.contractState1 = '未签署'
+          form.setFieldValue('contractState1','未签署')
+        }
+        
+      }
+      
     }
   }, [resData?.projectAgreements, resData?.agreements]);
   const { data: queryData } = useQuery<Query, QueryProjDailyArgs>(QueryDaily, {
@@ -300,7 +330,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     return (
       <Form.Item label={label} name={type} rules={[{ required: true }]}>
         {options.length ? (
-          <Select allowClear disabled={data.proState == 0}>
+          <Select allowClear disabled={data?.proState == 0}>
             {options
               .filter((s) => s.enable)
               .map((s: TreeStatu) => (
@@ -513,17 +543,21 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     if (customerListData1) {
       console.log(customerListData1, 'customerListData1?.customers KKKLLLKKKLLL');
       setCustomerListData(customerListData1?.customers);
-      let kehulianxiren = customerListData1?.customers.result.filter(
-        (item) => item.id == data.customer,
+      let kehulianxiren:any = customerListData1?.customers.result.filter(
+        (item) => item.id == data?.customer,
       );
-      console.log(kehulianxiren, 'kehulianxiren.contacts LLLLLL');
-      setCustomerContactOptions(kehulianxiren[0].contacts);
-      console.log(kehulianxiren, 'kehulianxiren LLLLLLLL');
-      let temp = kehulianxiren[0].salesman.map((item) => ({
-        value: item,
-        label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
-      }));
-      setFormattedOptions(temp);
+      if(kehulianxiren.length >0){
+        setCustomerContactOptions(kehulianxiren[0].contacts);
+        let temp = kehulianxiren[0].salesman.map((item:any) => ({
+          value: item,
+          label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
+        }));
+        setFormattedOptions(temp);
+      }
+      // console.log(kehulianxiren, 'kehulianxiren.contacts LLLLLL');
+      
+      // console.log(kehulianxiren, 'kehulianxiren LLLLLLLL');
+      
     }
   }, [customerListData1]);
 
@@ -562,33 +596,35 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
   // 项目部门下拉菜单的数据源
   const [groupsOptions] = useState(groupDatas(groupType));
-  data.contractState1 =
-    data.contractState == 0 ? '未签署' : data.contractState == 1 ? '已签署' : '';
+  
   //客户联系人change
-  const customerContacthandleChange = (value, option) => {
+  const customerContacthandleChange = (value:any, option:any) => {
     console.log(option, 'option NNNNNNNN');
     form.setFieldsValue({ contactDetailsCus: option.phone });
   };
   //客户名称change
-  const handleChange = (value, option) => {
+  const handleChange = (value:any, option:any) => {
     console.log(option, 'option KKKKK', option['data-salesman']);
     form.setFieldsValue({ customerContact: '' });
     form.setFieldsValue({ salesManager: '' });
     setCustomerContactOptions(option['data-contacts']);
-    let temp = option['data-salesman'].map((item) => ({
+    let temp = option['data-salesman'].map((item:any) => ({
       value: item,
       label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
     }));
     setFormattedOptions(temp);
   };
-  data.proState1 =
-    data.proState == 0
+  if(data){
+    data.proState1 =
+    data?.proState == 0
       ? '待审核'
-      : data.proState == 1
+      : data?.proState == 1
       ? '审核通过'
-      : data.proState == 2
+      : data?.proState == 2
       ? '审核驳回'
       : '';
+  }
+  
   return (
     <Form {...layout} form={form} initialValues={data} disabled={data?.status === 'endProj'}>
       <Form.Item shouldUpdate noStyle>
@@ -611,7 +647,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   rules={[{ required: true }, { validator }]}
                 >
                   <ProjIdComponent
-                    oldID={data.id}
+                    oldID={data?.id}
                     disabled={(data.proState == 0 || data.proState == 1) && !!data?.id && !isDerive}
                     onChange={onIdChange} // 处理整个 ID 变化的回调
                     onIsExistProjIdDataChange={handleIsExistProjIdDataChange} // 将回调函数传递给子组件
@@ -878,7 +914,7 @@ return true;
       <Row>
         <Col span={8}>
           <Form.Item label="合同金额" name="contAmount_" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         {/* <Col span={8}>
@@ -888,7 +924,7 @@ return true;
         </Col> */}
         <Col span={8}>
           <Form.Item label="税后金额" name="taxAmount_" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
       </Row>
@@ -900,7 +936,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">客户心理的预算</span>}
           >
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
 
@@ -911,7 +947,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
           >
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -921,7 +957,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
           >
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
       </Row>
@@ -933,7 +969,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -943,7 +979,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -953,7 +989,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际采购成本</span>}
           >
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -962,7 +998,7 @@ return true;
             name="estimatedWorkload"
             rules={[{ required: false }, { validator: validateInteger }]}
           >
-            <InputNumber min={0} disabled={data.proState == 0} />
+            <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
@@ -973,7 +1009,7 @@ return true;
                 name="freePersonDays"
                 rules={[{ required: false }, { validator: validateInteger }]}
               >
-                <InputNumber min={0} disabled={data.proState == 0} />
+                <InputNumber min={0} disabled={data?.proState == 0} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -982,7 +1018,7 @@ return true;
                 name="usedPersonDays"
                 rules={[{ required: false }, { validator: validateInteger }]}
               >
-                <InputNumber min={0} disabled={data.proState == 0} />
+                <InputNumber min={0} disabled={data?.proState == 0} />
               </Form.Item>
             </Col>
             <Col span={8}></Col>
@@ -1034,7 +1070,7 @@ return true;
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} disabled />
+              <InputNumber min={0} disabled style={{width:'100%'}}/>
             </Form.Item>
           </Col>
         </Row>
@@ -1119,7 +1155,7 @@ return true;
         </Col>
         <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -1144,19 +1180,19 @@ return true;
         <Col span={8}></Col>
       </Row>
       <Row>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="产品名称" name="productName" rules={[{ required: false }]}>
-            <Input disabled={data.proState == 0} />
+            <Input disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="著作权名称" name="copyrightName" rules={[{ required: false }]}>
-            <Input disabled={data.proState == 0} />
+            <Input disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="项目安排" name="projectArrangement" rules={[{ required: false }]}>
-            <Input disabled={data.proState == 0} />
+            <Input disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
       </Row>
@@ -1243,7 +1279,7 @@ return true;
                     ''
                   ) : (
                     <Button
-                      disabled={data.proState == 0}
+                      disabled={data.proState == 0 || data.proState == 2}
                       type="dashed"
                       onClick={() =>
                         add({ recorder: initialState?.currentUser?.id }, fields.length)
@@ -1340,7 +1376,7 @@ return true;
                           style={{ textAlign: 'left' }}
                         >
                           <Upload
-                            disabled={data.proState == 0}
+                            disabled={data?.proState == 0}
                             className="upload-list-inline"
                             {...props}
                             defaultFileList={
@@ -1350,7 +1386,7 @@ return true;
                                 : []
                             }
                           >
-                            <Button disabled={data.proState == 0} icon={<UploadOutlined />}>
+                            <Button disabled={data?.proState == 0} icon={<UploadOutlined />}>
                               上传
                             </Button>
                           </Upload>
@@ -1364,7 +1400,7 @@ return true;
                         <MinusCircleOutlined
                           className="dynamic-delete-button"
                           onClick={() => {
-                            data.proState == 0 ? '' : remove(field.name);
+                            data?.proState == 0 ? '' : remove(field.name);
                           }}
                         />
                       )}
@@ -1391,7 +1427,7 @@ return true;
                       name={[field.name, 'name']}
                       rules={[{ required: true }]}
                     >
-                      <Input disabled={data.proState == 0} />
+                      <Input disabled={data?.proState == 0} />
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 3, offset: 0 }}
@@ -1399,7 +1435,7 @@ return true;
                       label="职务"
                       name={[field.name, 'duties']}
                     >
-                      <Input disabled={data.proState == 0} />
+                      <Input disabled={data?.proState == 0} />
                     </Form.Item>
                     <Form.Item
                       labelCol={{ span: 3, offset: 0 }}
@@ -1407,19 +1443,19 @@ return true;
                       label="电话"
                       name={[field.name, 'phone']}
                     >
-                      <Input disabled={data.proState == 0} />
+                      <Input disabled={data?.proState == 0} />
                     </Form.Item>
                     <MinusCircleOutlined
                       className="dynamic-delete-button"
                       onClick={() => {
-                        data.proState == 0 ? remove(i) : '';
+                        data?.proState == 0 ? remove(i) : '';
                       }}
                     />
                   </div>
                 ))}
                 <Form.Item>
                   <Button
-                    disabled={data.proState == 0}
+                    disabled={data?.proState == 0}
                     type="dashed"
                     onClick={() => add()}
                     icon={<PlusOutlined />}

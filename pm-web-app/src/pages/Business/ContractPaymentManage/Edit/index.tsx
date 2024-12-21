@@ -120,7 +120,7 @@ const Agreement: React.FC<any> = () => {
       if (map[item[key]]) {
         map[item[key]].count++;
       } else {
-        map[item[key]] = { start: index, count: 1 };
+        map[item[key]] = { start: index, count: 1};
       }
     });
 
@@ -130,10 +130,7 @@ const Agreement: React.FC<any> = () => {
   const sortedData = [...agreements].sort((a, b) => (a.name > b.name ? 1 : -1));
   // 根据数据计算 rowSpan
   const rowSpanMap = calculateRowSpan(sortedData, 'name');
-  const rowSpanMap1 = calculateRowSpan(sortedData, 'customer');
-  const rowSpanMap2 = calculateRowSpan(sortedData, 'payWayName');
 
-  console.log(rowSpanMap1, 'rowSpanMap1 JJJJJJJJ');
   const columns = [
     {
       title: '合同名称',
@@ -174,8 +171,8 @@ const Agreement: React.FC<any> = () => {
         };
 
         // // 设置 rowSpan 值
-        if (rowSpanMap1[value].start === index) {
-          obj.props.rowSpan = rowSpanMap1[value].count;
+        if (rowSpanMap[row.name].start === index) {
+          obj.props.rowSpan = rowSpanMap[row.name].count;
         } else {
           obj.props.rowSpan = 0; // 隐藏后续行
         }
@@ -204,8 +201,8 @@ const Agreement: React.FC<any> = () => {
         };
 
         // // 设置 rowSpan 值
-        if (rowSpanMap2[value].start === index) {
-          obj.props.rowSpan = rowSpanMap2[value].count;
+        if (rowSpanMap[row.name].start === index) {
+          obj.props.rowSpan = rowSpanMap[row.name].count;
         } else {
           obj.props.rowSpan = 0; // 隐藏后续行
         }

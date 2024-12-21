@@ -55,6 +55,8 @@ const Project: React.FC<any> = () => {
     total,
     todoProjsTotal,
     yearManages,
+    agreements,
+    projectAgreements,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -174,7 +176,24 @@ const Project: React.FC<any> = () => {
       dataIndex: 'contractState',
       key: 'contractState',
       render: (text: string, record: Proj) => {
-        return record.contractState == 0 ? '未签署' : record.contractState == 1 ? '已签署' : '';
+        if(record.contractState){
+          return record?.contractState == 0 ? '未签署' : record?.contractState == 1 ? '已签署' : '';
+        }else{
+          console.log('no contractState!!!')
+          let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
+          let contract: string | any[] = []
+          if(agreementId.length > 0){
+            contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+          }
+          console.log(contract,'VNVNVNVN')
+          if(contract.length > 0){
+            return  '已签署'
+          }else{
+            console.log('未签署未签署')
+            return '未签署'
+          }
+          
+        }
       },
       width: 100,
     },

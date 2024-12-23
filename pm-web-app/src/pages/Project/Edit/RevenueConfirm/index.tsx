@@ -303,7 +303,11 @@ const Project: React.FC<any> = () => {
       ...query,
       ...params,
       page,
-      group: '',
+      group: params.group.length !== 0
+      ? params.group.reduce((accumulator: string, currentValue: string) => {
+          return `${accumulator}/${currentValue}`;
+        }, '')
+      : '',
     });
   };
   const searchBtn = () => {

@@ -139,7 +139,11 @@ const Project: React.FC<any> = (props) => {
   };
   const pageChange = (page: any) => {
     setParams({ ...params, page });
-    let obj = { group: '' };
+    let obj = { group: params.group.length !== 0
+      ? params.group.reduce((accumulator: string, currentValue: string) => {
+          return `${accumulator}/${currentValue}`;
+        }, '')
+      : '',};
     setQuery({
       ...query,
       ...params,

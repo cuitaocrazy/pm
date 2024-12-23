@@ -100,7 +100,7 @@ const QueryDaily = gql`
 `;
 
 const layout = {
-  labelCol: { span: 13 },
+  labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
 
@@ -589,9 +589,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         {() => {
           return (
             <Row>
-              <Col xs={24} sm={20}>
+              <Col span={16}>
                 <Form.Item
-                  labelCol={{ span: 3, offset: 0 }}
+                  labelCol={{ span: 4 }}
+                  wrapperCol={{ span: 20 }}
                   hidden={!(isDerive || data?.pId)}
                   label="关联项目ID"
                   name="pId"
@@ -599,7 +600,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   <Input disabled />
                 </Form.Item>
                 <Form.Item
-                  labelCol={{ span: 3, offset: 0 }}
+                  labelCol={{ span: 4 }}
+                  wrapperCol={{ span: 20 }}
                   label="项目ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
@@ -611,7 +613,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   />
                 </Form.Item>
               </Col>
-              <Col xs={24} sm={4}>
+              {/* <Col span={10}>
                 <Button
                   key="create"
                   hidden={!data?.id || isDerive}
@@ -621,7 +623,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 >
                   派生一个新项目
                 </Button>
-              </Col>
+              </Col> */}
             </Row>
           );
         }}
@@ -842,7 +844,7 @@ return true;
       <Row>
         <Col span={8}>
           <Form.Item label="合同金额" name="contAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         {/* <Col span={8}>
@@ -852,7 +854,7 @@ return true;
         </Col> */}
         <Col span={8}>
           <Form.Item label="税后金额" name="taxAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
       </Row>
@@ -864,7 +866,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">客户心理的预算</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
 
@@ -875,7 +877,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -885,7 +887,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
       </Row>
@@ -897,7 +899,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -907,7 +909,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -917,7 +919,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际采购成本</span>}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -926,7 +928,7 @@ return true;
             name="estimatedWorkload"
             rules={[{ required: false }, { validator: validateInteger }]}
           >
-            <InputNumber min={0} />
+            <InputNumber min={0} style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
@@ -990,7 +992,7 @@ return true;
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} />
+              <InputNumber min={0} style={{width:'100%'}}/>
             </Form.Item>
           </Col>
         </Row>
@@ -1059,7 +1061,7 @@ return true;
             {/* <Input /> */}
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item
             label="确认季度"
             name="confirmQuarter"
@@ -1088,7 +1090,7 @@ return true;
         </Col>
         <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -1112,29 +1114,29 @@ return true;
         <Col span={8}></Col>
       </Row>
       <Row>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="产品名称" name="productName" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="著作权名称" name="copyrightName" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="项目安排" name="projectArrangement" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
       </Row>
       <Row>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="地址" name="address" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
             <Select
               disabled
@@ -1145,37 +1147,37 @@ return true;
         </Col>
       </Row>
       <Row>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item
-            label="客户联系人联系方式"
+            label="客户联系方式"
             name="contactDetailsCus"
             rules={[{ required: false }]}
           >
             <Input disabled />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
             <Select options={formattedOptions} />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item
-            label="销售负责人联系方式"
+            label="销售联系方式"
             name="copyrightNameSale"
             rules={[{ required: false }]}
           >
             <Input />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item
-            label="商户联系人联系方式"
+            label="商户联系方式"
             name="contactDetailsMerchant"
             rules={[{ required: false }]}
           >

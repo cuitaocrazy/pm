@@ -133,7 +133,7 @@ const ProjIdComponent: FC<ProjIdComponentProps> = ({ value, onChange, disabled }
           ))}
         </Select>
         <Input
-          style={{ width: '100px' }}
+          style={{ width: '250px' }}
           key="simpleName"
           placeholder="项目缩写:只允许填写拼音或数字"
           onCompositionStart={(e) => setIsZh(true)}

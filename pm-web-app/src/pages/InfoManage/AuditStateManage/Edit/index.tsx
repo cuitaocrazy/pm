@@ -18,7 +18,7 @@ function getColumns(
 ) {
   return [
     {
-      title: '季度名称',
+      title: '审核名称',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: RegionType) => (
@@ -27,7 +27,7 @@ function getColumns(
       width: '20%',
     },
     {
-      title: '季度编码',
+      title: '审核编码',
       dataIndex: 'code',
       key: 'code',
     },

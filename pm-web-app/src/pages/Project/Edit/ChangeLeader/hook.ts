@@ -11,10 +11,12 @@ query($name: String, $leaders: [String!], $page: Int, $pageSize: Int) {
       id
       name
       groups
+      enabled
     }
     realSubordinates {
       id
       name
+      enabled
     }
     
     superProjs(name: $name, leaders:$leaders, page: $page, pageSize: $pageSize) {

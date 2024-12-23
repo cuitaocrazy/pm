@@ -1271,7 +1271,7 @@ return true;
       </Row>
       <Row>
         <Col span={24}>
-          <Form.List name="actives" rules={[{ validator: activeValidator }]}>
+          <Form.List name="actives" rules={data.proState == 1?[{ validator: activeValidator}]:[]}>
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Form.Item>

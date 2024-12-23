@@ -32,10 +32,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
 
   const renderActiveNode = (fields: any) => {
     let tempFields = []
-    for (let i = fields.length - 1; i >= 0; i--) {
-      fields['index'] = i
-      tempFields.push(fields[i])
+    if(fields){
+      for (let i = fields.length - 1; i >= 0; i--) {
+        fields['index'] = i
+        tempFields.push(fields[i])
+      }
     }
+    
     return tempFields;
   }
   

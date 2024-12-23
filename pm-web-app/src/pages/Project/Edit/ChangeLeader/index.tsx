@@ -20,7 +20,7 @@ const ChangePm: React.FC<any> = () => {
   const ref = useRef<FormDialogHandle<ChangePmInput>>(null);
   const {query,setQuery,projs,users,pushChangePm,total,realSubordinates} = useChangePmState();
   // const state = useChangePmState();
-  const localUsers = users || [];
+  const localUsers = users.filter(item=>item.enabled == true) || [];
   const localSubordinates = realSubordinates || [];
   const [localState, setLocalState] = useState<{
     isRemovePart: boolean;
@@ -148,9 +148,7 @@ const ChangePm: React.FC<any> = () => {
   //     optionArr.push(newOption)
   //   })
   // }
-  const optionArr = localSubordinates.map((user) => {
-    return { label: user.name, value: user.id };
-  })
+  const optionArr = localSubordinates.filter((user) => user.enabled == true)
   
   const columns = [
     {
@@ -260,6 +258,7 @@ const ChangePm: React.FC<any> = () => {
               placeholder="请选择项目经理"
               options={optionArr}
               onChange={(value:any) => handleChange(value)}
+              fieldNames={{label:'name',value:'id'}}
             > 
             </Select> 
         </Col>

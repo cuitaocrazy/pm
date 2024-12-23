@@ -667,7 +667,7 @@ export default () => {
             >
               {resData?.groupsUsers.map((u) => (
                 //本级及下级
-                <Select.Option key={u.id} value={u.id}>
+                u.enabled && <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
               ))}

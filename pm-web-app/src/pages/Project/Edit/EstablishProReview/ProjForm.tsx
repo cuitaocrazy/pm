@@ -1231,7 +1231,7 @@ return true;
 
       <Row>
         <Col span={24}>
-          <Form.List name="actives" rules={[{ validator: activeValidator }]}>
+          <Form.List name="actives" >{/**rules={[{ validator: activeValidator }]} */}
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Form.Item>

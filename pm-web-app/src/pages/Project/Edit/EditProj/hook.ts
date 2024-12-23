@@ -387,6 +387,9 @@ export function useProjStatus() {
         reqProj.contractState1 == '未签署' ? 0 : reqProj.contractState1 == '已签署' ? 1 : '';
       delete reqProj.proState1;
       delete reqProj.contractState1;
+      delete reqProj.contAmount_
+      delete reqProj.taxAmount_
+      delete reqProj.serviceCycle_
       console.log(reqProj, 'reqProj MMMMMMM');
       if (proj.proState == 1) {
         await pushCostHandle({

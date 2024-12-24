@@ -74,14 +74,14 @@ const layout = {
 };
 
 export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
-  // console.log(data, 'data JJJJJJ');
+  
   const { data: resData } = useQuery<Query>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
       customersPageSize: 10000000,
     },
   });
-  // console.log(resData, 'resData JJJJJ');
+  
   // 初始化时计算款项金额
   useEffect(() => {
     const { contractAmount, milestoneValue } = data;
@@ -93,7 +93,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   const [payState, setPayState] = useState();
   const [expectedQuarter, setExpectedQuarter] = useState();
   let files = data?.paymentFileList ? (data?.paymentFileList as UploadFile[]) : [];
-  console.log(files, 'paymentFileList KKLLKKLL');
+  
   const props: UploadProps = {
     listType: 'picture-card',
     action: '/api/upload/tmp',
@@ -107,7 +107,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       let fileList = form.getFieldValue('paymentFileList')
         ? form.getFieldValue('paymentFileList')
         : [];
-      console.log(fileList, 'fileList LLLLLL');
+      
       if (fileList.filter((item: any) => item.name === file.name).length) {
         message.warning('请不要上传相同名字的文件');
         return Upload.LIST_IGNORE;

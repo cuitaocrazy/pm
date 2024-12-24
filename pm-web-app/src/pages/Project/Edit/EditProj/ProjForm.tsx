@@ -107,7 +107,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   // const { data: resData1 } = useQuery<Query, QueryRoleUsersArgs>(userQuery1, { fetchPolicy: 'no-cache', variables: {
   // role: 'engineer',
   // } });
-  // console.log(data, 'data NNNMMMM');
+  
   if(data){
     data.oldId = data?.id || '';
   }
@@ -148,7 +148,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         // data.contractState1 =
         // data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '';
       }else{
-        console.log('no contractState!!!')
+        
         // resData.projectAgreements
         //resData.agreements
        
@@ -157,12 +157,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         if(agreementId.length > 0){
           contract = resData?.agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
         }
-        console.log(contract,'VNVNVNVN')
+        
         if(contract.length > 0){
           // data.contractState1 = '已签署'
           form.setFieldValue('contractState1','已签署')
         }else{
-          console.log('未签署未签署')
+          
           // data.contractState1 = '未签署'
           form.setFieldValue('contractState1','未签署')
         }
@@ -485,7 +485,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   useEffect(() => {
     // 在 useEffect 中获取 form.getFieldValue('leader') 的值
     const leaderValue = form.getFieldValue('leader');
-    console.log(subordinatesOnJob);
+    
     // 更新组件的状态
     setLeader(leaderValue);
   }, []); // 空数组作为第二个参数表示仅在组件挂载时执行一次
@@ -541,7 +541,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [formattedOptions, setFormattedOptions] = useState([]);
   useEffect(() => {
     if (customerListData1) {
-      console.log(customerListData1, 'customerListData1?.customers KKKLLLKKKLLL');
+      
       setCustomerListData(customerListData1?.customers);
       let kehulianxiren:any = customerListData1?.customers.result.filter(
         (item) => item.id == data?.customer,
@@ -554,9 +554,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         }));
         setFormattedOptions(temp);
       }
-      // console.log(kehulianxiren, 'kehulianxiren.contacts LLLLLL');
       
-      // console.log(kehulianxiren, 'kehulianxiren LLLLLLLL');
+      
+      
       
     }
   }, [customerListData1]);
@@ -599,12 +599,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   
   //客户联系人change
   const customerContacthandleChange = (value:any, option:any) => {
-    console.log(option, 'option NNNNNNNN');
+    
     form.setFieldsValue({ contactDetailsCus: option.phone });
   };
   //客户名称change
   const handleChange = (value:any, option:any) => {
-    console.log(option, 'option KKKKK', option['data-salesman']);
+    
     form.setFieldsValue({ customerContact: '' });
     form.setFieldsValue({ salesManager: '' });
     setCustomerContactOptions(option['data-contacts']);
@@ -656,7 +656,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               </Col>
               <Col xs={24} sm={4}>
                 <Button
-                  disabled={data.proState != 1}
+                  disabled={!(data?.proState == 1 || !data?.proState)}
                   key="create"
                   hidden={!data?.id || isDerive}
                   type="primary"

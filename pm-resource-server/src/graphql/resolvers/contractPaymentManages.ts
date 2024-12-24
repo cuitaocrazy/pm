@@ -21,7 +21,7 @@ import { dbid2id } from "../../util/utils";
 export default {
   Query: {
     contractPaymentManages: async (_: any, __: any, context: AuthContext) => {
-      // console.dir(__, { depth: null, colors: true });
+      
       let { page, pageSize, name, customer, type } = __;
       if (!page || page === 0) {
         page = 1;
@@ -59,13 +59,13 @@ export default {
   },
   Mutation: {
     contractPaymentSub: async (_: any, args: any, context: AuthContext) => {
-      console.dir(args.agreement, { depth: null, colors: true });
+      
       //actualQuarter\expectedQuarter\payState
       let temp = JSON.parse(JSON.stringify(args.agreement));
       temp.actualQuarter = args.agreement.actualQuarter[0];
       temp.expectedQuarter = args.agreement.expectedQuarter[0];
       temp.payState = args.agreement.payState[0];
-      console.dir(temp, { depth: null, colors: true });
+      
       return PaymentManage.updateOne(
         {
           $or: [{ _id: new ObjectId(temp.id) }, { _id: temp.id }],
@@ -75,7 +75,7 @@ export default {
     },
     // pushAgreement: async (_: any, args: any, context: AuthContext) => {
     //   const { id, ...agreement } = args.agreement;
-    //   // console.dir(args.agreement, { depth: null, colors: true });
+   
     //   if (!id) {
     //     agreement.createDate = moment()
     //       .utc()
@@ -99,7 +99,7 @@ export default {
     //       { $set: { contractState: 1 } } // 更新 contractState 字段
     //     ).then((res) => proID || res.upsertedId._id);
     //   });
-    //   console.dir(agreement.contactProj, { depth: null, color: true });
+   
     //   delete agreement.contactProj;
     //   if (!id) {
     //     return Agreement.updateOne(
@@ -115,7 +115,7 @@ export default {
     //   }
     // },
     // payWaySub: async (_: any, args: any, context: AuthContext) => {
-    //   // console.dir(args, { depth: null, color: true });
+   
     //   let { milestone, ...agreement } = args.agreement;
     //   // 遍历 milestone 并插入数据
     //   const inserts = milestone.map((item) => ({
@@ -145,7 +145,7 @@ export default {
     //     milestoneValue: item.value, // 添加 milestoneValue
     //   }));
 
-    //   // console.dir(agreement.id, { depth: null, color: true });
+    
     //   await Agreement.updateOne(
     //     { $or: [{ _id: new ObjectId(agreement.id) }] },
     //     {
@@ -155,7 +155,7 @@ export default {
     //       },
     //     }
     //   ).then((e) => {
-    //     // console.dir(e, { depth: null, color: true });
+    
     //   });
     //   delete agreement._id;
     //   return PaymentManage.insertMany(inserts).then(

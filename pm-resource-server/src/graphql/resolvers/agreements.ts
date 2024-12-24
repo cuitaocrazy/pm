@@ -21,7 +21,7 @@ import { dbid2id } from "../../util/utils";
 export default {
   Query: {
     agreements: async (_: any, __: any, context: AuthContext) => {
-      // console.dir(__, { depth: null, colors: true });
+      
       let { page, pageSize, name, customer, type } = __;
       if (!page || page === 0) {
         page = 1;
@@ -66,7 +66,6 @@ export default {
         // maintenanceFreePeriod,
         ...agreement
       } = args.agreement;
-      // console.dir(args.agreement, { depth: null, colors: true });
       if (!id) {
         agreement.createDate = moment()
           .utc()
@@ -97,7 +96,7 @@ export default {
           } // 更新 contractState 字段
         ).then((res) => proID || res.upsertedId._id);
       });
-      // console.dir(agreement.contactProj, { depth: null, color: true });
+      
       delete agreement.contactProj;
       if (!id) {
         return Agreement.updateOne(
@@ -113,7 +112,7 @@ export default {
       }
     },
     payWaySub: async (_: any, args: any, context: AuthContext) => {
-      // console.dir(args, { depth: null, color: true });
+     
       let { milestone, ...agreement } = args.agreement;
 
       // 遍历 milestone 并插入数据
@@ -152,7 +151,7 @@ export default {
         return data;
       });
 
-      console.dir(inserts, { depth: null, color: true });
+    
       await Promise.all(
         inserts.map(async (item) => {
           // PaymentManage.updateOne(

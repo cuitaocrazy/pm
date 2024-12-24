@@ -139,7 +139,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         // data.contractState1 =
         // data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '';
       }else{
-        console.log('no contractState!!!')
+        
         // resData.projectAgreements
         //resData.agreements
        
@@ -148,12 +148,12 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         if(agreementId.length > 0){
           contract = resData?.agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
         }
-        console.log(contract,'VNVNVNVN')
+        
         if(contract.length > 0){
           // data.contractState1 = '已签署'
           form.setFieldValue('contractState1','已签署')
         }else{
-          console.log('未签署未签署')
+          
           // data.contractState1 = '未签署'
           form.setFieldValue('contractState1','未签署')
         }
@@ -454,7 +454,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   useEffect(() => {
     // 在 useEffect 中获取 form.getFieldValue('leader') 的值
     const leaderValue = form.getFieldValue('leader');
-    console.log(subordinatesOnJob);
+    
     // 更新组件的状态
     setLeader(leaderValue);
   }, []); // 空数组作为第二个参数表示仅在组件挂载时执行一次
@@ -514,10 +514,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       let kehulianxiren = customerListData1?.customers.result.filter(
         (item) => item.id == data?.customer,
       );
-      console.log(kehulianxiren, 'kehulianxiren.contacts LLLLLL');
+      
       if(kehulianxiren.length >0){
         setCustomerContactOptions(kehulianxiren[0].contacts);
-      console.log(kehulianxiren, 'kehulianxiren LLLLLLLL');
+      
       let temp = kehulianxiren[0].salesman.map((item) => ({
         value: item,
         label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
@@ -566,7 +566,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const [contacts, setContacts] = useState();
   const [isRequire, setIsRequire] = useState();
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+    
     setIsRequire(value);
   };
   const [confirmYearOptions, setConfirmYearOptions] = useState(resData?.yearManages);

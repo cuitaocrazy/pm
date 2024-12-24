@@ -16,8 +16,7 @@ import type { FormInstance } from 'antd/lib/form';
 import moment from 'moment';
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  console.log(data, 'data KKKKK');
-  console.log(form, 'form LLLLL');
+  
   const layout = {
     labelCol: { span: 3 },
     wrapperCol: { span: 16 },
@@ -25,7 +24,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { initialState } = useModel('@@initialState');
   const [isRequire, setIsRequire] = useState();
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+    
     setIsRequire(value);
   };
   return (

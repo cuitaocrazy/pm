@@ -96,11 +96,11 @@ const Project: React.FC<any> = () => {
             if(agreementId.length > 0){
               contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
             }
-            console.log(contract,'VNVNVNVN')
+            
             if(contract.length > 0){
               return  '已签署'
             }else{
-              console.log('未签署未签署')
+              
               return '未签署'
             }
             

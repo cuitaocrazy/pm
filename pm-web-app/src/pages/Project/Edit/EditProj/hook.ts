@@ -347,7 +347,7 @@ export function useProjStatus() {
   // const agreements = isAdmin ? queryData?.superProjs?.result.agreenemts : queryData?.iLeadProjs?.result.agreenemts
   // const agreements = tmpProjs
   const projectAgreements = queryData?.projectAgreements || [];
-  console.log(queryData?.yearManages, 'yearManages ====== OOOOOOOOO');
+  
   const archiveProj = useCallback(
     async (id: string) => {
       await archiveProjHandle({ variables: { id } });
@@ -390,15 +390,15 @@ export function useProjStatus() {
       delete reqProj.contAmount_
       delete reqProj.taxAmount_
       delete reqProj.serviceCycle_
-      console.log(reqProj, 'reqProj MMMMMMM');
-      if (proj.proState == 1) {
+      
+      if (proj.proState == 1 || !proj.proState) {
         await pushCostHandle({
           variables: {
             proj: reqProj,
           },
         });
       } else if (proj.proState == 2) {
-        console.log(temp, 'proState=2');
+        
         reqProj.proState = 0;
         await applyAgain({
           variables: {

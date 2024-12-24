@@ -25,7 +25,7 @@ const getTodoProjects = (projects: any[]) => {
       return true;
     }
     if (result?.groups?.projType === "SZ") {
-      // 售中
+      // 售中 验收期与当前日期小于90天，返回该条数据
       if (project.acceptDate) {
         const dayDiff = moment(project.acceptDate).diff(new Date(), "day");
         if (dayDiff <= 90 && dayDiff > 0) {
@@ -33,9 +33,12 @@ const getTodoProjects = (projects: any[]) => {
         }
       }
     } else if (result?.groups?.projType === "SH") {
+      // 售后 服务周期 启动日期
       if (project.startTime && project.serviceCycle) {
         const today = new Date();
+        // 启动周期和当前时间的差值，已服务了几个月
         const monthDiff = moment(today).diff(project.startTime, "month");
+        // 服务周期-已服务了的，如果小于等于3个月，大于0个月，就返回该条数据
         if (
           project.serviceCycle - monthDiff <= 3 &&
           project.serviceCycle - monthDiff > -1
@@ -44,6 +47,7 @@ const getTodoProjects = (projects: any[]) => {
         }
       }
     }
+    return false
   });
   return projectResult;
 };
@@ -187,7 +191,7 @@ export default {
       //   ];
       // }
 
-      // console.dir(filter, { depth: null, colors: true });
+     
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
@@ -206,7 +210,7 @@ export default {
           })
             .map(dbid2id)
             .toArray(); //合同数据
-          // console.dir(agreement, { depth: null, colors: true });
+          
           const oneResult = result.find((res) => res.id === pa._id);
           oneResult.agreements = agreement;
         })
@@ -222,7 +226,7 @@ export default {
           if (customer) oneResult.customerObj = dbid2id(customer);
         })
       );
-      // console.dir(filter, { depth: null, colors: true });
+      
       const total = await Project.find(filter).count();
 
       return {
@@ -391,10 +395,10 @@ export default {
       const regexArray: RegExp[] = [];
       if (!regions || regions.length == 0) regions = ["\\w*"];
       if (!industries || industries.length == 0) industries = ["\\w*"];
-      if (!projTypes || projTypes.length == 0) projTypes = ["SH", "SZ"];
+      if (!projTypes || projTypes.length == 0) projTypes = ["SH", "SZ","SQ",'YF','ZH','QT'];
 
       projTypes = projTypes.filter(
-        (projType) => projType === "SH" || projType === "SZ"
+        (projType) => projType === "SH" || projType === "SZ" || projType === "SQ"  || projType === "YF"  || projType === "ZH" || projType === "QT"
       );
       if (confirmYear) {
         filter["confirmYear"] = confirmYear;
@@ -426,7 +430,6 @@ export default {
         .map(dbid2id)
         .toArray();
       result = getTodoProjects(result);
-
       const projIds = result.map((proj) => proj.id);
       const projAggrement = await ProjectAgreement.find({
         _id: { $in: projIds },
@@ -782,7 +785,7 @@ export default {
       }
 
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
-      console.dir(filter, { depth: null, colors: true });
+     
       const result = await Project.find(filter)
         .sort({ createDate: -1 })
         .map(dbid2id)
@@ -920,14 +923,14 @@ export default {
 
       // 获取旧项目数据
       const oldId = proj.oldId;
-      // console.dir(oldId, { depth: null, colors: true });
+      
       // 删除 `oldId` 对应的数据
       if (oldId) {
         await Project.deleteOne({ _id: oldId });
       }
       // 判断是否有此项目，如果没有则为第一次创建
       let repeat = await Project.findOne({ _id: id });
-      // console.dir(repeat, { depth: null, colors: true });
+     
 
       if (isNil(repeat)) {
         proj.createDate = moment()
@@ -939,9 +942,6 @@ export default {
         proj.createDate = repeat.createDate;
         proj.isArchive = repeat.isArchive;
       }
-      // console.dir(proj, { depth: null, colors: true });
-      // console.dir(id, { depth: null, colors: true });
-      // return 123;
       // // 更新或新增项目
       proj.updateTime = moment()
         .utc()
@@ -955,13 +955,11 @@ export default {
         { $set: proj },
         { upsert: true }
       ).then((res) => {
-        console.dir(res, { depth: null, colors: true });
-        console.dir(id, { depth: null, colors: true });
         return id || res.upsertedId._id;
       });
     },
     checkProj: async (_: any, args: any, context: AuthContext) => {
-      // console.dir(args, { depth: null, colors: true });
+     
       let { id, checkState, reason, incomeConfirm } = args;
       return Project.updateOne(
         { _id: id },
@@ -970,7 +968,7 @@ export default {
       )
         .then((res) => id || res.upsertedId._id)
         .catch((e) => {
-          // console.dir(e, { depth: null, colors: true });
+          
         });
     },
     archiveProject: async (_: any, args: any, context: AuthContext) => {

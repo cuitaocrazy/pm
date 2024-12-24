@@ -353,7 +353,7 @@ export function useProjStatus() {
   );
   const incomeConfirmProj = useCallback(
     async (id: string) => {
-      console.log(id, '');
+      
       await incomeConfirmProjHandle({ variables: { id } });
       refresh();
       getTodoList(query).then((res) => {
@@ -395,7 +395,7 @@ export function useProjStatus() {
       delete reqProj.contAmount_;
       delete reqProj.taxAmount_;
       delete reqProj.serviceCycle_;
-      console.log(reqProj, 'proj OOOPPP');
+      
       await pushCostHandle({
         variables: {
           proj: reqProj,

@@ -286,7 +286,7 @@ export function useProjStatus() {
     },
     fetchPolicy: 'no-cache',
   }); //走后台获取数据，data为返回数据，refresh为函数，自己触发，variables为参数
-  //console.log(queryData?.yearManages, 'queryData?.yearManages MMMMMMLLLLLL');
+  
   const [archiveProjHandle, { loading: archiveLoading }] = useMutation<
     Mutation,
     MutationDeleteProjectArgs
@@ -355,7 +355,7 @@ export function useProjStatus() {
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
-      console.log(proj, 'proj LLLLMMMM');
+      
       // let temp = JSON.parse(JSON.stringify(proj));
       // const groupPath =
       //   temp.group &&
@@ -391,7 +391,7 @@ export function useProjStatus() {
       if (proj.checkState == 1) {
         obj.incomeConfirm = '0';
       }
-      // console.log(obj, 'obj LLLLLLL');
+      
       await checkProjHandle({
         variables: {
           ...obj,

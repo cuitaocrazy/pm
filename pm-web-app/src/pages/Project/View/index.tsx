@@ -372,7 +372,7 @@ const Project: React.FC<any> = (props) => {
   const [confirmYearOptions, setConfirmYearOptions] = useState([]);
   useEffect(() => {
     if (yearManages) {
-      console.log(yearManages, 'yearManages ====== LLLLLLL');
+      
       let yearManages_ = yearManages.filter((item) => item.enable == true);
       setConfirmYearOptions(yearManages_);
     }

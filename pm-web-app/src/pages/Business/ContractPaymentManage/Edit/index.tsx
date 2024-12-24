@@ -50,7 +50,7 @@ const Agreement: React.FC<any> = () => {
 
     // agreement.contactProj = projArr;
     // agreement.time = [moment(agreement.startTime), moment(agreement.endTime)];
-    // console.log(agreement, 'agreement KKKKK');
+    
     payWayref.current?.showDialog({
       ...agreement,
     });
@@ -106,7 +106,7 @@ const Agreement: React.FC<any> = () => {
   };
   const [projInfo, setProjInfo] = useState();
   const payWayBtn = (record:any) => {
-    // console.log(record, 'MMMMJJJJJ');
+    
     setProjInfo(record);
     payWayref.current?.showDialog({
       ...record,

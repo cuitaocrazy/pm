@@ -11,7 +11,7 @@ const layout = {
 
 export default (form: FormInstance<RegionInput>, data?: RegionInput) => {
   const { regionones } = useRegionState();
-  console.log(regionones,'regionones LLLLLL')
+  
   return (
     <Form {...layout} form={form} initialValues={data}>
       <Form.Item label="一级区域" name="parentId">

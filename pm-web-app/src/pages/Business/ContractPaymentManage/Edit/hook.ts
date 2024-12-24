@@ -215,7 +215,7 @@ export function useAgreementState() {
   const payWaySub = useCallback(
     async (agreement: AgreementInput) => {
       let reqAgreement = await attachmentUpload(agreement);
-      console.log(reqAgreement, 'reqAgreement JJJJJJJ');
+      
       await contractPaymentSubSubHandle({
         variables: {
           agreement: { ...reqAgreement },

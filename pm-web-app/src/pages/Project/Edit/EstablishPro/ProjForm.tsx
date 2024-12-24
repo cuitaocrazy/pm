@@ -489,23 +489,23 @@ export default () => {
 
   //客户名称change
   const handleChange = (value, option) => {
-    console.log(option, 'option KKKKK', option['data-salesman']);
+    
     setOfficeAddress(option['data-officeAddress']);
     setSalesman(option['data-salesman']);
     setContacts(option['data-contacts']);
   };
   useEffect(() => {
-    console.log('Value updated:', officeAddress); // 在状态变化后触发
+    
     form.setFieldsValue({ address: officeAddress });
   }, [officeAddress]); // value 改变时运行
   //客户联系人change
   const customerContacthandleChange = (value, option) => {
-    console.log(option, 'option NNNNNNNN');
+    
     form.setFieldsValue({ contactDetailsCus: option.phone });
   };
   const [formattedOptions, setFormattedOptions] = useState([]);
   useEffect(() => {
-    console.log(salesman, 'salesman KKKK');
+    
     //   //销售负责人的options
     if (salesman) {
       let temp = salesman.map((item) => ({
@@ -642,7 +642,8 @@ export default () => {
               onChange={(value) => handleLeaderChange(value)}
             >
               {/* 获取本用户及其所属下级 */}
-              {resData?.realSubordinates.map((u) => (
+              {resData?.realSubordinates
+  .filter((u) => u.enabled).map((u) => (
                 //本级和下级
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}

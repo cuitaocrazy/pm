@@ -24,6 +24,7 @@ const queryGql = gql`
     $regions: [String]
     $projTypes: [String]
     $page: Int
+    $superProjsPageSize:Int
     $confirmYear: String
     $group: String
     $status: String
@@ -76,6 +77,7 @@ const queryGql = gql`
       regions: $regions
       projTypes: $projTypes
       page: $page
+      pageSize:$superProjsPageSize
       confirmYear: $confirmYear
       group: $group
       status: $status
@@ -226,6 +228,7 @@ export function useProjStatus() {
     variables: {
       isArchive: archive,
       ...query,
+      superProjsPageSize:query.pageSize,
       pageAgreements: 1,
       pageSizeAgreements: 10000000,
       pageSize: 100000000,

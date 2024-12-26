@@ -54,8 +54,9 @@ const Project: React.FC<any> = () => {
     yearManages,
     projectAgreements,
     agreements,
+    printProj,
   } = useProjStatus();
-  const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
+  const { status, orgCode, zoneCode, projType, buildProjName, groupType ,subordinatesOnJob} = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
     const { actives, ...pro } = proj;
     openRef.current?.showDialog({
@@ -67,6 +68,7 @@ const Project: React.FC<any> = () => {
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
   };
+  const [objectInfo,setObjectInfo] = useState({}) as any
   const columns = [
     {
       title: '项目名称',
@@ -240,7 +242,12 @@ const Project: React.FC<any> = () => {
         if (projectAgreements && agreements.result && agreements.result.length != 0) {
           let contract = projectAgreements.filter((item) => item.id == record.id);
           let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-          return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+          if(amount.length > 0){
+            return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+          }else{
+            return '---'
+          }
+          
         } else {
           return '---';
         }
@@ -326,6 +333,17 @@ const Project: React.FC<any> = () => {
               删除
             </a>
           </Popconfirm>
+          <Popconfirm
+          disabled={record.proState &&( record.proState == 0 || record.proState == 2)?true:false}
+            title="打印该项目的立项申请书？"
+            okText="是"
+            cancelText="否"
+            onConfirm={() => handleConfirm(record)}
+          >
+            <a key="print" hidden={record.isArchive} disabled={record.proState &&( record.proState == 0 || record.proState == 2)?true:false}>
+              打印
+            </a>
+          </Popconfirm>
           {/* <Popconfirm
             title={'驳回原因：' + record.reason}
             okText="关闭"
@@ -343,7 +361,33 @@ const Project: React.FC<any> = () => {
       width: 280,
     },
   ];
-
+  const handleConfirm = (record:any) => {
+    if (projectAgreements && agreements.result && agreements.result.length != 0) {
+      let contract = projectAgreements?.filter((item) => item.id == record.id);
+      let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+      record.contractName =  amount[0]?.name;
+      record.contractCount = amount[0]?.contractAmount;
+    } else {
+      record.contractName = ''
+      record.contractCount = ''
+    }
+    record.persons = record.participants.map((son:any,index:any)=>{
+      if(index == record.participants.length - 1){
+        return subordinatesOnJob.filter(item=>item.id == son)[0].name
+      }else {
+        return subordinatesOnJob.filter(item=>item.id == son)[0].name + '、'
+      }
+      
+    })
+    new Promise<void>((resolve) => {
+      console.log(record,'record MMMMMMM')
+      setObjectInfo(record);
+      resolve();
+    }).then(() => {
+      // console.log('subordinatesOnJob:',subordinatesOnJob)
+      printProj(record);
+    });
+  };
   if (!isAdmin && archive === '2') {
     columns.splice(2, 0, {
       title: '待办内容',
@@ -370,13 +414,13 @@ const Project: React.FC<any> = () => {
     industries: [],
     projTypes: [],
     page: 1,
+    pageSize:10,
     confirmYear: null,
     group: [],
     status: '',
     name: '',
     contractState: '',
     acceptanceStatus: '',
-    confirmYear: '',
   });
   const handleChange = (value = '', type: string) => {
     setParams({
@@ -403,12 +447,14 @@ const Project: React.FC<any> = () => {
       name,
     });
   };
-  const pageChange = (page: any) => {
-    setParams({ ...params, page });
+  const pageChange = (page: any,pageSize:any) => {
+    console.log('page:',page,'pageSize:',pageSize)
+    setParams({ ...params, page,pageSize });
     setQuery({
       ...query,
       ...params,
       page,
+      pageSize,
       group:
         params.group.length !== 0
           ? params.group.reduce((accumulator: string, currentValue: string) => {
@@ -731,10 +777,11 @@ const Project: React.FC<any> = () => {
       />
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination
-          onChange={(page, pageSize) => pageChange(page)}
+          onChange={(page, pageSize) => pageChange(page,pageSize)}
           current={params.page}
           total={total}
           className="floatRight "
+          showSizeChanger
         />
         <label className="floatRight ">一共{total}条</label>
       </div>
@@ -758,6 +805,128 @@ const Project: React.FC<any> = () => {
       >
         {ProjActiveForm}
       </DialogForm>
+      <iframe id="print-frame" style={{display:'none'}}></iframe>
+      <div id='printContent' style={{display:'none'}}>
+        <table style={{width:'100%',textAlign:'center',borderCollapse: 'collapse',fontSize:'14px',tableLayout: 'fixed'}}>
+              {/**objectInfo */}
+              <colgroup>
+                <col style={{ width: '28mm' }} />
+                <col style={{ width: '28mm' }} />
+                <col style={{ width: '28mm' }} />
+                <col style={{ width: '28mm' }} />
+                <col style={{ width: '28mm' }} />
+                <col style={{ width: '28mm' }} />
+              </colgroup>
+              <tbody>
+                <tr >
+                  <td colSpan={6} style={{fontSize:'20px',border:'1px solid #000',padding:'10px'}}>立项申请书</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目名称</td>
+                  <td colSpan={3} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.name}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目类型</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo?.id ? projType[objectInfo.id.split('-')[2]] : ''}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目编号</td>
+                  <td colSpan={3} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.id}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目负责人</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{subordinates.find((user: { id: string }) => user.id === objectInfo.leader)?.name}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>产品名称</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.productName}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>工作量评估</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.estimatedWorkload}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>客户单位</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo?.customerObj ? objectInfo?.customerObj.name : ''}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>地址</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.address}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>客户联系人</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.customerContact}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>联系方式</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.contactDetailsCus}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>商户联系人</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.merchantContact}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>联系方式</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.contactDetailsMerchant}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>销售负责人</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.salesManager}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>联系方式</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.copyrightNameSale}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>合同名称</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.contractName}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>合同金额</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.contractCount}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>著作权名称</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.copyrightName}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目阶段</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.status == 'onProj' ? '启动' : objectInfo.status == 'endProj' ? '关闭' :'' }</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目说明</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}></td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目参与人员</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.persons}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td  style={{borderRight:'1px solid #000',padding:'10px'}}>项目概况</td>
+                  <td  colSpan={5} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.description}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目安排</td>
+                  <td colSpan={5} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.projectArrangement}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>申请人(签字)</td>
+                  <td colSpan={3} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{subordinates.find((user: { id: string }) => user.id === objectInfo.leader)?.name}</td>
+                  <td  style={{borderRight:'1px solid #000',padding:'10px'}}>立项日期</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{moment().format('YYYY-MM-DD')}</td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>部门经理意见(签字)</td>
+                  <td colSpan={5} style={{borderRight:'1px solid #000',padding:'10px'}}></td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>销售部意见(签字)</td>
+                  <td colSpan={5} style={{borderRight:'1px solid #000',padding:'10px'}}></td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>财务部意见(签字)</td>
+                  <td colSpan={5} style={{borderRight:'1px solid #000',padding:'10px'}}></td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>副总经理意见(签字)</td>
+                  <td colSpan={5} style={{borderRight:'1px solid #000',padding:'10px'}}></td>
+                </tr>
+                <tr style={{border:'1px solid #000'}}>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>总经理意见(签字)</td>
+                  <td colSpan={5} style={{borderRight:'1px solid #000',padding:'10px'}}></td>
+                </tr>
+                <tr>
+                <td ></td>
+                <td ></td>
+                <td ></td>
+                <td ></td>
+                <td ></td>
+                <td ></td>
+                </tr>
+               
+              </tbody>
+        </table>
+      </div>
     </PageContainer>
   );
 };

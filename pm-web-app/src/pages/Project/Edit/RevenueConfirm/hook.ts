@@ -17,7 +17,7 @@ import { attachmentUpload, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
-    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String,$incomeConfirm:String) {
+    query ($isArchive: Boolean,$industries: [String],$regions:[String],$regionones:[String],$projTypes:[String],$page:Int,$pageSize:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String,$incomeConfirm:String) {
       subordinates {
         id
         name
@@ -46,14 +46,28 @@ const getGql = (proName: string) => {
         name
         enable
         }
+        regionones{
+          id
+          code
+          name
+          enable
+        }
+          regions{
+          id
+          code
+          name
+          enable
+          parentId
+        }
 
-      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState,incomeConfirm:$incomeConfirm){
+      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,regionones:$regionones,projTypes:$projTypes,page:$page,pageSize:$pageSize,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState,incomeConfirm:$incomeConfirm){
         result{
           id
         pId
         name
         contName
         customer
+        regionOneName
         leader
         salesLeader
         projStatus
@@ -136,6 +150,7 @@ const getGql = (proName: string) => {
           remark
           isDel
           createDate
+          
         }
         }
         page
@@ -449,5 +464,7 @@ export function useProjStatus() {
     query,
     getTodoList,
     todoProjsTotal,
+    regionones:queryData?.regionones || [],
+    regions:queryData?.regions || []
   };
 }

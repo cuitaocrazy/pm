@@ -18,6 +18,7 @@ const queryGql = gql`
     $industries: [String]
     $regions: [String]
     $page: Int
+    $pageSize:Int
     $confirmYear: String
     $group: String
     $status: String
@@ -37,6 +38,7 @@ const queryGql = gql`
       industries: $industries
       regions: $regions
       page: $page
+      pageSize:$pageSize
       confirmYear: $confirmYear
       group: $group
       status: $status

@@ -193,7 +193,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       <Form.Item label="付款状态" name="payState" rules={[{ required: true }]}>
         <Select
           defaultValue="lucy"
-          style={{ width: 120 }}
+          style={{ width: '100%' }}
           onChange={(v) => {
             setPayState(v);
           }}
@@ -204,7 +204,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       <Form.Item label="预计回款季度" name="expectedQuarter" rules={[{ required: true }]}>
         <Select
           defaultValue="lucy"
-          style={{ width: 120 }}
+          style={{ width: '100%' }}
           fieldNames={{ label: 'name', value: 'code' }}
           onChange={(v) => {
             setExpectedQuarter(v);
@@ -215,7 +215,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       <Form.Item label="实际回款季度" name="actualQuarter" rules={[{ required: true }]}>
         <Select
           defaultValue="lucy"
-          style={{ width: 120 }}
+          style={{ width: '100%' }}
           fieldNames={{ label: 'name', value: 'code' }}
           onChange={(v) => {
             setExpectedQuarter(v);
@@ -223,10 +223,15 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
           options={resData?.collectionQuarterManages.filter((item) => item.enable == true)}
         />
       </Form.Item>
+      <Form.Item label="实际回款日期" name="actualDate" rules={[{ required: true }]} getValueProps={(value) => ({
+          value: value ? moment(value) : undefined,
+        })}>
+        <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+      </Form.Item>
       <Form.Item
         label="资料上传"
         name="paymentFileList"
-        rules={[{ required: true }]}
+        rules={[{ required: false }]}
         getValueFromEvent={normFile}
       >
         <Upload {...props}>

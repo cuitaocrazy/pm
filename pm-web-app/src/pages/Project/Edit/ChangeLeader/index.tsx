@@ -92,15 +92,17 @@ const ChangePm: React.FC<any> = () => {
     })
   };
 
-  const pageChange = (page:any) => {
+  const pageChange = (page:any,pageSize:any) => {
     setParams({
       ...params,
       page,
+      pageSize,
     })
     setQuery({
       ...query,
       ...params,
       page,
+      pageSize,
     })
   }
 
@@ -292,7 +294,7 @@ const ChangePm: React.FC<any> = () => {
         rowSelection={rowSelection}
       />
       <div className="paginationCon marginTop20 lineHeight32">
-        <Pagination onChange={(page, pageSize)=>pageChange(page)} current={params.page} total={total} className="floatRight " />
+        <Pagination onChange={(page, pageSize)=>pageChange(page,pageSize)} current={params.page} total={total} className="floatRight " showSizeChanger/>
         <label className="floatRight ">一共{total}条</label>
       </div>
       <DialogForm submitHandle={onFinish} ref={ref} title="选择新的项目经理">

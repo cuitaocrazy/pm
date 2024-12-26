@@ -61,6 +61,7 @@ const Project: React.FC<any> = () => {
     industries: [],
     projTypes: [],
     page: 1,
+    pageSize:10,
     confirmYear: null,
     group: [],
     status: '',
@@ -145,15 +146,17 @@ const Project: React.FC<any> = () => {
   };
 
   // 分页器
-  const pageChange = (page: any) => {
+  const pageChange = (page: any,pageSize:any) => {
     setParams({
       ...params,
       page,
+      pageSize,
     });
     setQuery({
       ...query,
       ...params,
       page,
+      pageSize,
       group: params.group.length !== 0
       ? params.group.reduce((accumulator: string, currentValue: string) => {
           return `${accumulator}/${currentValue}`;
@@ -499,10 +502,11 @@ const Project: React.FC<any> = () => {
       />
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination
-          onChange={(page, pageSize) => pageChange(page)}
+          onChange={(page, pageSize) => pageChange(page,pageSize)}
           current={params.page}
           total={total}
           className="floatRight "
+          showSizeChanger
         />
         <label className="floatRight ">一共{total}条</label>
       </div>

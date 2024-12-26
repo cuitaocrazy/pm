@@ -1036,7 +1036,7 @@ return true;
         <Col span={8}>
           <Form.Item label="确认年度" name="confirmYear" rules={[{ required: false }]}>
             <Select
-              disabled={data.incomeConfirm == '2'}
+              disabled={data?.incomeConfirm == 2}
               allowClear
               className="width120"
               placeholder="请选择"

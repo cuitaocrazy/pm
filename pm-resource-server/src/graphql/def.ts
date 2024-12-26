@@ -64,6 +64,7 @@ const dataTypeDef = gql`
     salesLeader: String!
     name: String!
     customer: String
+    regionOneName:String
     contName: String
     projStatus: String
     contStatus: String
@@ -437,6 +438,7 @@ const dataTypeDef = gql`
     payState: String
     expectedQuarter: String
     actualQuarter: String
+    actualDate:String
     paymentRemark: String
     paymentFileList: [File]
   }
@@ -576,6 +578,7 @@ const dataTypeDef = gql`
     iLeadProjs(
       isArchive: Boolean
       regions: [String]
+      regionones: [String]
       industries: [String]
       projTypes: [String]
       page: Int
@@ -975,6 +978,7 @@ const dataTypeDef = gql`
     payState: [String]
     expectedQuarter: [String]
     actualQuarter: [String]
+    actualDate:String
     paymentRemark: String
     paymentFileList: [FileInput]
   }

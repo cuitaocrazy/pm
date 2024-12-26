@@ -107,7 +107,8 @@ const Agreement: React.FC<any> = () => {
 
     // 获取唯一的 payName（假设所有 payName 相同）
     const payName = filteredData.length > 0 ? filteredData[0].payWayName : null;
-
+    console.log(data,'data PPPPP')
+    console.log(targetContId,'targetContId PPPPP')
     // 转换数据格式
     const milestone = filteredData.map((item:any) => ({
       id: item.id.toString(),

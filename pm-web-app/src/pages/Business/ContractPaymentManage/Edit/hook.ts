@@ -10,6 +10,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
+import moment from 'moment';
 
 const queryGql = gql`
   query (
@@ -81,6 +82,7 @@ const queryGql = gql`
         payState
         expectedQuarter
         actualQuarter
+        actualDate
         paymentRemark
         paymentFileList {
           uid
@@ -215,7 +217,8 @@ export function useAgreementState() {
   const payWaySub = useCallback(
     async (agreement: AgreementInput) => {
       let reqAgreement = await attachmentUpload(agreement);
-      
+      reqAgreement.actualDate = moment(reqAgreement.actualDate).format('YYYY-MM-DD')
+        console.log(reqAgreement,'reqAgreement LLLLLL')
       await contractPaymentSubSubHandle({
         variables: {
           agreement: { ...reqAgreement },

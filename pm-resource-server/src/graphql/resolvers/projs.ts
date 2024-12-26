@@ -12,6 +12,8 @@ import {
   Agreement,
   Customer,
   IProject,
+  Region,
+  RegionOne,
 } from "../../mongodb";
 import { dbid2id, id2dbid, getMaxGroup } from "../../util/utils";
 import { ObjectId } from "mongodb";
@@ -476,7 +478,6 @@ export default {
         const subordinate = await getUsersByGroups(user, maxGroup);
         subordinateIds = subordinate.map((subordinate) => subordinate.id);
       }
-
       const filter = {
         isArchive: __.isArchive ? __.isArchive : false,
         $or: [
@@ -488,6 +489,7 @@ export default {
 
       let {
         regions,
+        regionones,
         industries,
         projTypes,
         page,
@@ -499,21 +501,27 @@ export default {
         leaders,
         incomeConfirm,
         contractState,
-      } = __;
-
+      } = __
       if (!page || page === 0) {
-        page = 1;
+        page = 1
       }
       if (!pageSize || pageSize === 0) {
-        pageSize = 10;
+        pageSize = 10
       }
-      const skip = (page - 1) * pageSize;
-
-      const regexArray: RegExp[] = [];
+      const skip = (page - 1) * pageSize
+      let regionsT = []
+      let regiononesT = []
+      if (regions) {
+        regionsT = JSON.parse(JSON.stringify(regions))
+      }
+      if (regionones) {
+        regiononesT = JSON.parse(JSON.stringify(regionones))
+      }
+      const regexArray: RegExp[] = []
       if (!regions || regions.length == 0) regions = ["\\w*"];
+      if (!regionones || regionones.length == 0) regionones = ["\\w*"];
       if (!industries || industries.length == 0) industries = ["\\w*"];
       if (!projTypes || projTypes.length == 0) projTypes = ["\\w*"];
-
       if (confirmYear) {
         filter["confirmYear"] = confirmYear;
       }
@@ -535,16 +543,34 @@ export default {
       if (contractState) {
         filter["contractState"] = Number(contractState);
       }
+      /**
+       * 如果一级区域有值，二级区域没值，拿着一级区域去找二级区域的表，找出来符合的二级区域
+       * 符合的二级区域合并到regions里，且去重
+      */
+      let newregions = [] as any
+      if ((regiononesT && regiononesT.length > 0) && (!regionsT || regionsT.length === 0)) {
+        const regions_ = await Region.find({ isDel: false, parentId: { $in: regiononesT } })
+          .sort({ sort: 1 })
+          .map(dbid2id)
+          .toArray()
+        const regionsCode = regions_.map(item => item.code)
+        newregions = [...regionsCode]
+      } else if ((regiononesT && regiononesT.length > 0) && (regionsT && regionsT.length > 0)) {
+        newregions = [...regionsT]
+      }
+      if (!newregions || newregions.length === 0) {
+        newregions = ['\\w*']
+      }
 
-      for (let i = 0; i < regions.length; i++) {
+      for (let i = 0; i < newregions.length; i++) {
         for (let j = 0; j < industries.length; j++) {
           for (let k = 0; k < projTypes.length; k++) {
-            const regexStr = `^${industries[j]}-${regions[i]}-${projTypes[k]}-.*`;
-            regexArray.push(new RegExp(regexStr));
+            const regexStr = `^${industries[j]}-${newregions[i]}-${projTypes[k]}-.*`;
+            regexArray.push(new RegExp(regexStr))
           }
         }
       }
-      filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+      filter["_id"] = { $in: regexArray, $not: /-ZH-/ }
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
@@ -569,18 +595,29 @@ export default {
 
       await Promise.all(
         result.map(async (oneResult) => {
+          // console.dir(oneResult,{depth:null,color:true})
           const customer = await Customer.findOne({
             $or: [
               { _id: new ObjectId(oneResult.customer) },
               { _id: oneResult.customer },
             ],
-          });
+          })
+          const regionTemp = await Region.findOne({code: oneResult.id.split('-')[1], // 添加查询条件
+            // 其他条件（如需要）
+            isDel: false,})
+          const regionOneTemp = await RegionOne.findOne({
+            $or: [
+              { _id: new ObjectId(regionTemp?.parentId) },
+            ],
+          })
+          // console.dir(regionOneTemp,{depth:null,color:true})
+          if(regionOneTemp) oneResult.regionOneName = regionOneTemp.name
           if (customer) oneResult.customerObj = dbid2id(customer);
-        })
-      );
+        }),
+      )
 
       const total = await Project.countDocuments(filter);
-
+      console.dir(result,{depth:null,color:true})
       return {
         result,
         page,

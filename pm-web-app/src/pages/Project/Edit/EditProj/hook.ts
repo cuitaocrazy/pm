@@ -16,7 +16,7 @@ import { attachmentUpload, projectClassify } from './utils';
 
 const getGql = (proName: string) => {
   return gql`
-    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String) {
+    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$pageSize:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String) {
       subordinates {
         id
         name
@@ -41,7 +41,7 @@ const getGql = (proName: string) => {
           enable
         }
 
-      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState){
+      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,pageSize:$pageSize,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState){
         result{
           id
         pId
@@ -369,6 +369,18 @@ export function useProjStatus() {
     },
     [deleteProjHandle, refresh],
   );
+  const printProj = useCallback(async (printProj: Object)=>{
+    console.log(document.getElementById('printContent'),'MMMM')
+    const content = document.getElementById('printContent').innerHTML;
+            const iframe = document.getElementById('print-frame');
+            
+            iframe.contentWindow.document.open();
+            iframe.contentWindow.document.write(content);
+            iframe.contentWindow.document.close();
+
+            // 调用iframe中的print方法进行打印
+            iframe.contentWindow.print();
+  },[refresh])
 
   const pushProj = useCallback(
     async (proj: ProjectInput) => {
@@ -428,6 +440,7 @@ export function useProjStatus() {
         setTodoProjsTotal(res.data.iLeadTodoProjs.todoTotal);
       });
     }
+   
   });
 
   return {
@@ -456,5 +469,6 @@ export function useProjStatus() {
     query,
     getTodoList,
     todoProjsTotal,
+    printProj,
   };
 }

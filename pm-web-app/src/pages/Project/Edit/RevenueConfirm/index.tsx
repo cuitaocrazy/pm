@@ -56,6 +56,8 @@ const Project: React.FC<any> = () => {
     incomeConfirmProj,
     agreements,
     projectAgreements,
+    regionones,
+    regions,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType } = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -74,13 +76,23 @@ const Project: React.FC<any> = () => {
       title: '项目ID',
       dataIndex: 'id',
       key: 'id',
-      fixed: 'left',
+      fixed: 'left' as 'left',
       render: (text: string, record: Proj) => (
         <div>
           <a onClick={() => editHandle(record, ref)}>{buildProjName(record.id, record.name)} </a>
         </div>
       ),
       width: 250,
+    },
+    //regionOneName
+    {
+      title: '一级区域',
+      dataIndex: 'regionOneName',
+      key: 'regionOneName',
+      render: (text: string, record: Proj) => {
+        return record.regionOneName || '---';
+      },
+      width: 100,
     },
     {
       title: '合同状态',
@@ -181,7 +193,12 @@ const Project: React.FC<any> = () => {
       render: (contractSignDate: string, record: Proj) => {
         let contract = projectAgreements.filter((item) => item.id == record.id);
         let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+        if(amount.length > 0){
+          return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+        } else{
+          return '---'
+        }
+        
       },
       width: 100,
     },
@@ -260,23 +277,29 @@ const Project: React.FC<any> = () => {
   //=====zhouyueyang
   const [params, setParams] = useState({
     regions: [],
+    regionones:[],
     industries: [],
     projTypes: [],
     page: 1,
+    pageSize:10,
     confirmYear: null,
     group: [],
     status: '',
     name: '',
     contractState: '',
     acceptanceStatus: '',
-    confirmYear: '',
     incomeConfirm: '',
   });
   const handleChange = (value = '', type: string) => {
+    if(type == 'regionones'){
+      // console.log(regions.filter(item=>value.includes(item.parentId)),'JJJKKK')
+      let options_ = regions.filter(item=>value.includes(item.parentId))
+      setZoneCodeOptions(options_)
+    }
     setParams({
       ...params,
       [type]:
-        type !== 'regions' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
+        type !== 'regions' && type !== 'regionones' && type !== 'industries' && type !== 'projTypes' ? String(value) : value,
     });
   };
   const handleChangeCas = (value: any, type: string) => {
@@ -297,12 +320,13 @@ const Project: React.FC<any> = () => {
       name,
     });
   };
-  const pageChange = (page: any) => {
-    setParams({ ...params, page });
+  const pageChange = (page: any,pageSize:any) => {
+    setParams({ ...params, page,pageSize });
     setQuery({
       ...query,
       ...params,
       page,
+      pageSize,
       group: params.group.length !== 0
       ? params.group.reduce((accumulator: string, currentValue: string) => {
           return `${accumulator}/${currentValue}`;
@@ -331,6 +355,7 @@ const Project: React.FC<any> = () => {
     setParams({
       ...params,
       regions: [],
+      regionones:[],
       industries: [],
       projTypes: [],
       page: 1,
@@ -345,6 +370,7 @@ const Project: React.FC<any> = () => {
       ...query,
       ...params,
       regions: [],
+      regionones:[],
       industries: [],
       projTypes: [],
       page: 1,
@@ -383,9 +409,7 @@ const Project: React.FC<any> = () => {
   const [orgCodeOptions] = useState(
     Object.keys(orgCode).map((s) => ({ label: orgCode[s], value: s })),
   );
-  const [zoneCodeOptions] = useState(
-    Object.keys(zoneCode).map((s) => ({ label: zoneCode[s], value: s })),
-  );
+  const [zoneCodeOptions,setZoneCodeOptions] = useState([]);
   const [projTypeOptoins] = useState(
     Object.keys(projType).map((s) => ({ label: projType[s], value: s })),
   );
@@ -525,19 +549,31 @@ const Project: React.FC<any> = () => {
           />
         </Col>
         <Col className="gutter-row">
+          <label>一级区域：</label>
+          <Select
+            showSearch
+            value={params.regionones}
+            fieldNames={{label:'name',value:'id'}}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value: any, event) => handleChange(value, 'regionones')}
+            options={regionones?.filter(item=>item.enable == true)}
+          />
+        </Col>
+        <Col className="gutter-row">
           <label>区域：</label>
           <Select
             showSearch
-            filterOption={(input, option) =>
-              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            }
+            fieldNames={{label:'name',value:'id'}}
             value={params.regions}
             mode="multiple"
             allowClear
             className="width120"
             placeholder="请选择"
             onChange={(value: any, event) => handleChange(value, 'regions')}
-            options={zoneCodeOptions}
+            options={zoneCodeOptions?.filter(item=>item.enable == true)}
           />
         </Col>
         <Col className="gutter-row">
@@ -642,14 +678,17 @@ const Project: React.FC<any> = () => {
         scroll={{ x: 1000 }}
         pagination={false}
         size="middle"
+        
       />
       {/* </div> */}
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination
-          onChange={(page, pageSize) => pageChange(page)}
+        pageSizeOptions={[1,2,3]}
+          onChange={(page, pageSize) => pageChange(page,pageSize)}
           current={params.page}
           total={total}
           className="floatRight "
+          showSizeChanger
         />
         <label className="floatRight ">一共{total}条</label>
       </div>

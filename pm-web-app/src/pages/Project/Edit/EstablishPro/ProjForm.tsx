@@ -796,9 +796,6 @@ export default () => {
             label="确认年度"
             name="confirmYear"
             rules={[{ required: false }]}
-            getValueProps={(value) => ({
-              value: value ? moment(value) : undefined,
-            })}
           >
             <Select
               disabled={!isConfirmYearDisabled}
@@ -823,9 +820,6 @@ export default () => {
             label="确认季度"
             name="confirmQuarter"
             rules={[{ required: false }]}
-            getValueProps={(value) => ({
-              value: value ? moment(value) : undefined,
-            })}
           >
             <Select
               disabled={!isConfirmYearDisabled}

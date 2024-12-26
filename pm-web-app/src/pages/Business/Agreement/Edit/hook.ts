@@ -15,6 +15,7 @@ const queryGql = gql`
   query (
     $customersPageSize: Int
     $pageSizeAgreements: Int
+    $pageSizeContractPaymentManages:Int
     $name: String
     $customer: [String]
     $type: [String]
@@ -71,7 +72,7 @@ const queryGql = gql`
       page
       total
     }
-    contractPaymentManages {
+    contractPaymentManages(pageSize: $pageSizeContractPaymentManages) {
       result {
         id
         contractId
@@ -144,6 +145,7 @@ export function useAgreementState() {
     variables: {
       customersPageSize: 10000000,
       pageSizeAgreements: 10000000,
+      pageSizeContractPaymentManages:1000000,
       ...query,
     },
   });

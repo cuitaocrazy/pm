@@ -6,7 +6,7 @@ plugins {
 	kotlin("plugin.spring") version "1.4.30"       
 }       
 group = "com.yada"       
-version = "1.0.140"
+version = "1.0.141"
 java.sourceCompatibility = JavaVersion.VERSION_11       
 repositories {       
 	mavenCentral()       

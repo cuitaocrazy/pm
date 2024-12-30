@@ -318,6 +318,7 @@ const Project: React.FC<any> = (props) => {
         return confirmYear;
       },
       width: 100,
+      align:'right',
     },
   ];
   // if (access?.includes('realm:assistant')) {
@@ -507,6 +508,7 @@ const Project: React.FC<any> = (props) => {
         dataSource={projs}
         pagination={false}
         size="middle"
+        bordered
       />
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination

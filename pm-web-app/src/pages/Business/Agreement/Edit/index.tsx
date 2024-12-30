@@ -166,24 +166,34 @@ const Agreement: React.FC<any> = () => {
       dataIndex: 'contractPeriod',
       key: 'contractPeriod',
       width: 100,
+      align:'right'
     },
     {
       title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
       width: 100,
+      align:'right',
+      render:(text: any, record: AgreementType)=>{
+          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((text))
+      }
     },
     {
       title: '不含税金额',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
       width: 100,
+      align:'right',
+      render:(text: any, record: AgreementType)=>{
+        return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((text))
+    }
     },
     {
       title: '免维期',
       dataIndex: 'maintenanceFreePeriod',
       key: 'maintenanceFreePeriod',
       width: 100,
+      align:'right',
     },
     {
       title: '备注',
@@ -277,6 +287,7 @@ const Agreement: React.FC<any> = () => {
         pagination={false}
         size="middle"
         scroll={{ x: 1500 }}
+        bordered
       />
       <DialogForm
         submitHandle={(v: AgreementInput) => {

@@ -292,6 +292,7 @@ const ChangePm: React.FC<any> = () => {
         columns={columns}
         rowKey="id"
         rowSelection={rowSelection}
+        bordered
       />
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination onChange={(page, pageSize)=>pageChange(page,pageSize)} current={params.page} total={total} className="floatRight " showSizeChanger/>

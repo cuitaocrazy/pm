@@ -84,6 +84,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
       width: '80px',
+      align:'right',
       render: (text: number, record: Proj) => 
         <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}><Tag color="cyan">{ text ? ((text - 0) / 8).toFixed(2) : 0 }</Tag></Button>,
     },
@@ -92,9 +93,10 @@ const Project: React.FC<any> = () => {
       dataIndex: 'updateTime',
       key: 'updateTime',
       render: (updateTime: string) => {
-        return moment(updateTime, 'YYYYMMDD').format('YYYY年MM月DD日');
+        return moment(updateTime, 'YYYYMMDD').format('YYYY-MM-DD');
       },
       width: 200,
+      align:'right',
     },
     {
       title: '操作',
@@ -128,6 +130,7 @@ const Project: React.FC<any> = () => {
         dataSource={projs}
         scroll={{ x: 1500 }}
         size="middle"
+        bordered
       />
       <DialogForm
         ref={ref}

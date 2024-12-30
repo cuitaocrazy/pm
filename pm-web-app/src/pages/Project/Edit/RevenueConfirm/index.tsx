@@ -162,9 +162,15 @@ const Project: React.FC<any> = () => {
       render: (contractAmount: string, record: Proj) => {
         let contract = projectAgreements.filter((item) => item.id == record.id);
         let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        return amount[0]?.contractAmount;
+        if(amount[0]?.contractAmount){
+          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.contractAmount));
+        }else{
+          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+        }
+        
       },
       width: 100,
+      align:'right',
     },
     {
       title: '税后金额',
@@ -173,18 +179,30 @@ const Project: React.FC<any> = () => {
       render: (afterTaxAmount: string, record: Proj) => {
         let contract = projectAgreements.filter((item) => item.id == record.id);
         let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        return amount[0]?.afterTaxAmount;
+        if(amount[0]?.afterTaxAmount){
+          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
+        }else{
+          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.00);
+        }
+        
       },
       width: 100,
+      align:'right',
     },
     {
       title: '确认金额',
       dataIndex: 'recoAmount',
       key: 'recoAmount',
-      render: (recoAmount: string) => {
-        return recoAmount;
+      render: (recoAmount: any) => {
+        if(recoAmount){
+          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(recoAmount));
+        }else{
+          return Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.00);
+        }
+        
       },
       width: 100,
+      align:'right',
     },
     {
       title: '合同签订日期',
@@ -201,6 +219,7 @@ const Project: React.FC<any> = () => {
         
       },
       width: 100,
+      align:'right',
     },
     {
       title: '项目部门',
@@ -678,7 +697,7 @@ const Project: React.FC<any> = () => {
         scroll={{ x: 1000 }}
         pagination={false}
         size="middle"
-        
+        bordered
       />
       {/* </div> */}
       <div className="paginationCon marginTop20 lineHeight32">

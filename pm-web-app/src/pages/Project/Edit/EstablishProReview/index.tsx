@@ -140,6 +140,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'estimatedWorkload',
       key: 'estimatedWorkload',
       width: '80px',
+      align:'right',
       render: (text: string, record: Proj) => <Tag color="cyan">{text ? text : 0}</Tag>,
     },
     {
@@ -147,6 +148,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
       width: '80px',
+      align:'right',
       render: (text: number, record: Proj) => (
         <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}>
           <Tag color="cyan">{text ? ((text - 0) / 8).toFixed(2) : 0}</Tag>
@@ -214,6 +216,7 @@ const Project: React.FC<any> = () => {
         return confirmYear;
       },
       width: 100,
+      align:'right',
     },
     // {
     //   title: '操作',
@@ -574,6 +577,7 @@ const Project: React.FC<any> = () => {
         scroll={{ x: 1500 }}
         pagination={false}
         size="middle"
+        bordered
       />
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination

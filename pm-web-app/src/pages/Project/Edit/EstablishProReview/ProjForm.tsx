@@ -1125,17 +1125,12 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目安排" name="projectArrangement" rules={[{ required: false }]}>
+          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
       </Row>
       <Row>
-        <Col span={8}>
-          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
-            <Input />
-          </Form.Item>
-        </Col>
         <Col span={8}>
           <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
             <Select
@@ -1143,6 +1138,16 @@ return true;
               options={customerContactOptions}
               fieldNames={{ value: 'name', label: 'name' }}
             />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
+            <Select options={formattedOptions} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
+            <Input />
           </Form.Item>
         </Col>
       </Row>
@@ -1157,21 +1162,11 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
-            <Select options={formattedOptions} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
           <Form.Item
             label="销售联系方式"
             name="copyrightNameSale"
             rules={[{ required: false }]}
           >
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
@@ -1186,19 +1181,24 @@ return true;
         </Col>
       </Row>
       <Row>
-        <Col span={24}>
-          <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
+        <Col span={16}>
+          <Form.Item label="项目描述" name="description" labelCol={{ span: 4}} wrapperCol={{span:20}}>
+            <Input.TextArea />
+          </Form.Item>
+        </Col>
+        <Col span={16}>
+          <Form.Item label="项目计划" name="projectArrangement" rules={[{ required: false }]} labelCol={{ span: 4}} wrapperCol={{span:20}}>
             <Input.TextArea />
           </Form.Item>
         </Col>
       </Row>
       <Row>
-        <Col span={24}>
+        <Col span={16}>
           <Form.Item
             label="审核"
             name="checkState"
             rules={[{ required: true }]}
-            labelCol={{ span: 3, offset: 0 }}
+            labelCol={{ span: 4}} wrapperCol={{span:20}}
           >
             <Select
               disabled={false}
@@ -1217,12 +1217,12 @@ return true;
             />
           </Form.Item>
         </Col>
-        <Col span={24}>
+        <Col span={16}>
           <Form.Item
             label="原因"
             name="reason"
             rules={[{ required: isRequire == 2 ? true : false }]}
-            labelCol={{ span: 3, offset: 0 }}
+            labelCol={{ span: 4}} wrapperCol={{span:20}}
           >
             <Input.TextArea disabled={false} rows={4} style={{ width: '100%' }} />
           </Form.Item>

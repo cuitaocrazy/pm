@@ -22,7 +22,7 @@ export default {
   Query: {
     contractPaymentManages: async (_: any, __: any, context: AuthContext) => {
       
-      let { page, pageSize, name, customer, type } = __;
+      let { page, pageSize, name, customer, type,payState,expectedQuarter,actualQuarter } = __;
       if (!page || page === 0) {
         page = 1;
       }
@@ -45,6 +45,16 @@ export default {
       if (type && type.length != 0) {
         filter["type"] = type[0]; // 精确匹配 type
       }
+      if (payState && payState.length != 0) {
+        filter["payState"] = payState[0]; // 精确匹配 type
+      }
+      if (expectedQuarter && expectedQuarter.length != 0) {
+        filter["expectedQuarter"] = expectedQuarter[0]; // 精确匹配 type
+      }
+      if (actualQuarter && actualQuarter.length != 0) {
+        filter["actualQuarter"] = actualQuarter[0]; // 精确匹配 type
+      }
+
 
       const result = await PaymentManage.find(filter)
         .skip(skip)

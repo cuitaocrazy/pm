@@ -490,6 +490,9 @@ export type Agreement = {
   actualQuarter:String;
   afterTaxAmount:String;
   maintenanceFreePeriod:String;
+  expectedQuarter:String;
+  actualDate:String;
+  payState:String;
 
 };
 export type AgreementsResult = {

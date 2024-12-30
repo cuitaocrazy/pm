@@ -50,7 +50,6 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
     },
   });
   const { buildProjName } = useBaseState();
-
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');

@@ -20,6 +20,8 @@ export let agreementType: Dic = {
   DGHT: '订购类合同',
   XMHT: '项目类合同',
   WHHT: '维护类合同',
+  ZYCHT:'资源池合同',
+  KFKJHT:'开发框架协议',
 };
 
 function getCodeName(code: string, codeDic: Dic, errMsgFn: () => string) {

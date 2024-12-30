@@ -11,7 +11,6 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
 import moment from 'moment';
-
 const queryGql = gql`
   query (
     $customersPageSize: Int
@@ -19,6 +18,9 @@ const queryGql = gql`
     $name: String
     $customer: [String]
     $type: [String]
+    $actualQuarter:[String],,
+    $expectedQuarter:[String]
+    $payState:[String]
   ) {
     projectAgreements {
       id
@@ -51,6 +53,9 @@ const queryGql = gql`
       name: $name
       customer: $customer
       type: $type
+      actualQuarter:$actualQuarter
+      expectedQuarter:$expectedQuarter
+      payState:$payState
     ) {
       result {
         id
@@ -94,6 +99,11 @@ const queryGql = gql`
       page
       total
     }
+      payStateManages{
+        name
+        code
+        enable
+      }
   }
 `;
 
@@ -242,6 +252,7 @@ export function useAgreementState() {
     query,
     setQuery,
     payWaySub,
-    collectionQuarterManages:queryData?.collectionQuarterManages
+    collectionQuarterManages:queryData?.collectionQuarterManages,
+    payStateManages:queryData?.payStateManages,
   };
 }

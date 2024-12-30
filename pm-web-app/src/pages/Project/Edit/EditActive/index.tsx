@@ -342,6 +342,7 @@ const Project: React.FC<any> = () => {
       title: '确认年度',
       dataIndex: 'confirmYear',
       key: 'confirmYear',
+      align:'right',
       render: (confirmYear: string) => {
         
         return confirmYear;
@@ -499,6 +500,7 @@ const Project: React.FC<any> = () => {
         dataSource={tmpProjsResult}
         size="middle"
         pagination={false}
+        bordered
       />
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination

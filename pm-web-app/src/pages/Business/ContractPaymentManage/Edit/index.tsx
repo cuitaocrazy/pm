@@ -26,11 +26,15 @@ const Agreement: React.FC<any> = () => {
     query,
     setQuery,
     collectionQuarterManages,
+    payStateManages,
   } = useAgreementState();
   const [params, setParams] = useState({
     name: '',
     customer: [],
     type: [],
+    actualQuarter:[],
+    expectedQuarter:[],
+    payState:[],
   });
   const contractType = Object.entries(agreementType).map(([key, value]) => ({
     label: value,
@@ -58,7 +62,7 @@ const Agreement: React.FC<any> = () => {
   const handleChange = (value = '', type: string) => {
     setParams({
       ...params,
-      [type]: type !== 'customer' && type !== 'type' ? String(value) : value,
+      [type]: type !== 'customer' && type !== 'type' && type !== 'actualQuarter' && type !== 'expectedQuarter' && type !== 'payState' ? String(value) : value,
     });
   };
   const handleChangeInput = (name: string) => {
@@ -82,6 +86,9 @@ const Agreement: React.FC<any> = () => {
       name: '',
       customer: [],
       type: [],
+      actualQuarter:[],
+      expectedQuarter:[],
+      payState:[],
     });
     setQuery({
       ...query,
@@ -89,6 +96,9 @@ const Agreement: React.FC<any> = () => {
       name: '',
       customer: [],
       type: [],
+      actualQuarter:[],
+      expectedQuarter:[],
+      payState:[],
     });
   };
   const addContract = () => {
@@ -180,6 +190,54 @@ const Agreement: React.FC<any> = () => {
         return obj;
         },
     },
+    {
+      title: '合同金额',
+      dataIndex: 'contractAmount',
+      key: 'contractAmount',
+      width: 100,
+      align:'right',
+      render: (value:any, row:any, index:any) =>{
+        const obj = {
+          children: new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value),
+          props: {
+            rowSpan:0
+          },
+        };
+
+        // // 设置 rowSpan 值
+        if (rowSpanMap[row.name].start === index) {
+          obj.props.rowSpan = rowSpanMap[row.name].count;
+        } else {
+          obj.props.rowSpan = 0; // 隐藏后续行
+        }
+
+        return obj;
+        },
+    },
+    {
+      title: '合同签订日期',
+      dataIndex: 'contractSignDate',
+      key: 'contractSignDate',
+      width: 100,
+      align:'right',
+      render: (value:any, row:any, index:any) =>{
+        const obj = {
+          children: moment(value).format('YYYY-MM-DD'),
+          props: {
+            rowSpan:0
+          },
+        };
+
+        // // 设置 rowSpan 值
+        if (rowSpanMap[row.name].start === index) {
+          obj.props.rowSpan = rowSpanMap[row.name].count;
+        } else {
+          obj.props.rowSpan = 0; // 隐藏后续行
+        }
+
+        return obj;
+        },
+    },
     // {
     //   title: '合同类型',
     //   dataIndex: 'type',
@@ -223,19 +281,35 @@ const Agreement: React.FC<any> = () => {
       dataIndex: 'milestoneValue',
       key: 'milestoneValue',
       width: 100,
-      render: (text: string, record: AgreementType) => record.milestoneValue,
+      align:'right',
+      render: (text: string, record: AgreementType) => record.milestoneValue+'%',
     },
     {
       title: '款项金额',
       dataIndex: 'milestoneValue',
       key: 'milestoneValue',
       width: 100,
+      align:'right',
       render: (text: string, record: AgreementType) => {
-        return (Number(record.contractAmount) * Number(record.milestoneValue)) / 100;
+        return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(record.contractAmount) * Number(record.milestoneValue)) / 100);
       },
     },
     {
-      title: '回款季度',
+      title: '预计回款季度',
+      dataIndex: 'expectedQuarter',
+      key: 'expectedQuarter',
+      width: 100,
+      render: (text: string, record: AgreementType) => {
+        if (record.expectedQuarter) {
+          return collectionQuarterManages?.filter((item) => item.code == record.expectedQuarter)[0]
+            .name;
+        } else {
+          return '---';
+        }
+      },
+    },
+    {
+      title: '实际回款季度',
       dataIndex: 'actualQuarter',
       key: 'actualQuarter',
       width: 100,
@@ -248,21 +322,48 @@ const Agreement: React.FC<any> = () => {
         }
       },
     },
+    {
+      title: '实际回款日期',
+      dataIndex: 'actualDate',
+      key: 'actualDate',
+      width: 100,
+      render: (text: string, record: AgreementType) => {
+        if (record.actualDate) {
+          return record.actualDate
+        } else {
+          return '---';
+        }
+      },
+    },
+    {
+      title: '付款状态',
+      dataIndex: 'payState',
+      key: 'payState',
+      width: 100,
+      render: (text: string, record: AgreementType) => {
+        if (record.payState) {
+          return payStateManages?.filter((item) => item.code == record.payState)[0]
+            .name;
+        } else {
+          return '---';
+        }
+      },
+    },
     // {
     //   title: '备注',
     //   dataIndex: 'remark',
     //   key: 'remark',
     //   width: 250,
     // },
-    {
-      title: '创建日期',
-      dataIndex: 'createDate',
-      key: 'createDate',
-      render: (createDate: string) => {
-        return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
-      },
-      width: 100,
-    },
+    // {
+    //   title: '创建日期',
+    //   dataIndex: 'createDate',
+    //   key: 'createDate',
+    //   render: (createDate: string) => {
+    //     return moment(createDate, 'YYYYMMDD').format('YYYY年MM月DD日');
+    //   },
+    //   width: 100,
+    // },
     {
       title: '操作',
       dataIndex: 'id',
@@ -285,7 +386,7 @@ const Agreement: React.FC<any> = () => {
   ];
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
-      <Row gutter={16}>
+      <Row gutter={[16, 16]}>
         <Col className="gutter-row">
           <Input
             id="proName"
@@ -319,6 +420,42 @@ const Agreement: React.FC<any> = () => {
               handleChange(value, 'type');
             }}
             options={contractType}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>付款状态：</label>
+          <Select
+            value={params.payState}
+            style={{ width: '200px' }}
+            onChange={(value: any, event) => {
+              handleChange(value, 'payState');
+            }}
+            fieldNames={{label:'name',value:'code'}}
+            options={payStateManages?.filter(item=>item.enable == true)}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>预计回款季度：</label>
+          <Select
+            value={params.expectedQuarter}
+            style={{ width: '200px' }}
+            onChange={(value: any, event) => {
+              handleChange(value, 'expectedQuarter');
+            }}
+            fieldNames={{label:'name',value:'code'}}
+            options={collectionQuarterManages?.filter(item=>item.enable == true)}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>实际回款季度：</label>
+          <Select
+            value={params.actualQuarter}
+            style={{ width: '200px' }}
+            onChange={(value: any, event) => {
+              handleChange(value, 'actualQuarter');
+            }}
+            fieldNames={{label:'name',value:'code'}}
+            options={collectionQuarterManages?.filter(item=>item.enable == true)}
           />
         </Col>
       </Row>

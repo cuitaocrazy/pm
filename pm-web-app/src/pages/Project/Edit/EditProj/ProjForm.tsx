@@ -99,7 +99,7 @@ const QueryDaily = gql`
 `;
 
 const layout = {
-  labelCol: { span: 13 },
+  labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
 
@@ -631,9 +631,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         {() => {
           return (
             <Row>
-              <Col xs={24} sm={20}>
+              <Col span={16}>
                 <Form.Item
-                  labelCol={{ span: 3, offset: 0 }}
+                  labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}
                   hidden={!(isDerive || data?.pId)}
                   label="关联项目ID"
                   name="pId"
@@ -641,7 +641,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   <Input disabled />
                 </Form.Item>
                 <Form.Item
-                  labelCol={{ span: 3, offset: 0 }}
+                  labelCol={{ span: 4}} wrapperCol={{ span: 20 }}
                   label="项目ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
@@ -654,7 +654,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   />
                 </Form.Item>
               </Col>
-              <Col xs={24} sm={4}>
+              <Col span={8}>
                 <Button
                   disabled={!(data?.proState == 1 || !data?.proState)}
                   key="create"
@@ -1191,81 +1191,82 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="项目安排" name="projectArrangement" rules={[{ required: false }]}>
+          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
             <Input disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
-        <Col span={7}>
-          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
-            <Input disabled={data.proState == 0} />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
             <Select
-              disabled={data.proState == 0}
+              disabled={data?.proState == 0}
               onChange={customerContacthandleChange}
               options={customerContactOptions}
               fieldNames={{ value: 'name', label: 'name' }}
             />
           </Form.Item>
         </Col>
+        <Col span={8}>
+          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
+            <Select options={formattedOptions} disabled={data?.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
+            <Input disabled={data?.proState == 0} />
+          </Form.Item>
+        </Col>
       </Row>
       <Row>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item
-            label="客户联系人联系方式"
+            label="客户联系方式"
             name="contactDetailsCus"
             rules={[{ required: false }]}
           >
             <Input disabled />
           </Form.Item>
         </Col>
-        <Col span={7}>
-          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
-            <Select options={formattedOptions} disabled={data.proState == 0} />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
+        
+        <Col span={8}>
           <Form.Item
-            label="销售负责人联系方式"
+            label="销售联系方式"
             name="copyrightNameSale"
             rules={[{ required: false }]}
           >
-            <Input disabled={data.proState == 0} />
+            <Input disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
-        <Col span={7}>
-          <Form.Item label="商户联系人" name="merchantContact" rules={[{ required: false }]}>
-            <Input disabled={data.proState == 0} />
-          </Form.Item>
-        </Col>
-        <Col span={7}>
+        <Col span={8}>
           <Form.Item
-            label="商户联系人联系方式"
+            label="商户联系方式"
             name="contactDetailsMerchant"
             rules={[{ required: false }]}
           >
             <Input disabled={data.proState == 0} />
           </Form.Item>
         </Col>
-        <Col span={24}>
-          <Form.Item label="审核状态" name="proState1" labelCol={{ span: 3, offset: 0 }}>
+        <Col span={16}>
+          <Form.Item label="审核状态" name="proState1" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
             <Input disabled />
           </Form.Item>
         </Col>
-        <Col span={24}>
-          <Form.Item label="原因" name="reason" labelCol={{ span: 3, offset: 0 }}>
+        <Col span={16}>
+          <Form.Item label="原因" name="reason" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
             {data.proState != 0 && <Input.TextArea disabled />}
           </Form.Item>
         </Col>
       </Row>
       <Row>
-        <Col span={24}>
-          <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
+        <Col span={16}>
+          <Form.Item label="项目描述" name="description" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
             <Input.TextArea disabled={data.proState == 0} />
+          </Form.Item>
+        </Col>
+        <Col span={16}>
+          <Form.Item label="项目计划" name="projectArrangement" rules={[{ required: false }]} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+            <Input.TextArea disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
       </Row>

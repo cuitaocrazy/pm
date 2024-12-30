@@ -105,7 +105,7 @@ const QueryDaily = gql`
 `;
 
 const layout = {
-  labelCol: { span: 9 },
+  labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
 
@@ -584,9 +584,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
         {() => {
           return (
             <Row>
-              <Col xs={24} sm={20}>
+              <Col span={16}>
                 <Form.Item
-                  labelCol={{ span: 3, offset: 0 }}
+                  labelCol={{ span: 4}}
+                  wrapperCol={{span:20}}
                   hidden={!(isDerive || data?.pId)}
                   label="关联项目ID"
                   name="pId"
@@ -594,7 +595,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   <Input disabled />
                 </Form.Item>
                 <Form.Item
-                  labelCol={{ span: 3, offset: 0 }}
+                 labelCol={{ span: 4}}
+                 wrapperCol={{span:20}}
                   label="项目ID"
                   name="id"
                   rules={[{ required: true }, { validator }]}
@@ -844,7 +846,7 @@ return true;
       <Row>
         <Col span={8}>
           <Form.Item label="合同金额" name="contAmount_" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         {/* <Col span={8}>
@@ -854,7 +856,7 @@ return true;
         </Col> */}
         <Col span={8}>
           <Form.Item label="税后金额" name="taxAmount_" rules={[{ required: false }]}>
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
       </Row>
@@ -866,7 +868,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">客户心理的预算</span>}
           >
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
 
@@ -877,7 +879,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">自己人员消耗的费用</span>}
           >
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -887,7 +889,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">采购或者外包的费用</span>}
           >
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
       </Row>
@@ -899,7 +901,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -909,7 +911,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际消耗费用</span>}
           >
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -919,7 +921,7 @@ return true;
             rules={[{ required: false }]}
             tooltip={<span className="ant-form-text">实际采购成本</span>}
           >
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -928,7 +930,7 @@ return true;
             name="estimatedWorkload"
             rules={[{ required: false }, { validator: validateInteger }]}
           >
-            <InputNumber min={0} disabled />
+            <InputNumber min={0} disabled style={{width:'100%'}}/>
           </Form.Item>
         </Col>
         {projType === 'SH' ? (
@@ -939,7 +941,7 @@ return true;
                 name="freePersonDays"
                 rules={[{ required: false }, { validator: validateInteger }]}
               >
-                <InputNumber min={0} disabled />
+                <InputNumber min={0} disabled style={{width:'100%'}}/>
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -948,7 +950,7 @@ return true;
                 name="usedPersonDays"
                 rules={[{ required: false }, { validator: validateInteger }]}
               >
-                <InputNumber min={0} disabled />
+                <InputNumber min={0} disabled style={{width:'100%'}}/>
               </Form.Item>
             </Col>
             <Col span={8}></Col>
@@ -992,7 +994,7 @@ return true;
               rules={[{ required: false }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} disabled />
+              <InputNumber min={0} disabled style={{width:'100%'}}/>
             </Form.Item>
           </Col>
         </Row>
@@ -1005,7 +1007,7 @@ return true;
               name="requiredInspections"
               rules={[{ required: false }, { validator: validateInteger }]}
             >
-              <InputNumber min={0} disabled />
+              <InputNumber min={0} disabled style={{width:'100%'}}/>
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -1014,7 +1016,7 @@ return true;
               name="actualInspections"
               rules={[{ required: false }, { validator: validateInteger }]}
             >
-              <InputNumber min={0} disabled />
+              <InputNumber min={0} disabled style={{width:'100%'}}/>
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -1024,7 +1026,7 @@ return true;
               rules={[{ required: false }, { validator: validateInteger }]}
               tooltip={<span className="ant-form-text">月</span>}
             >
-              <InputNumber min={0} disabled />
+              <InputNumber min={0} disabled style={{width:'100%'}}/>
             </Form.Item>
           </Col>
         </Row>
@@ -1056,7 +1058,7 @@ return true;
         <Col span={8}>
           <Form.Item label="确认季度" name="confirmQuarter" rules={[{ required: false }]}>
             <Select
-              disabled={data.incomeConfirm == '2'}
+              disabled={data?.incomeConfirm == 2}
               allowClear
               className="width120"
               placeholder="请选择"
@@ -1076,9 +1078,9 @@ return true;
         <Col span={8}>
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: true }]}>
             <InputNumber
-              disabled={data.incomeConfirm == '2'}
               min={0}
-              disabled={data.incomeConfirm == 2}
+              disabled={data?.incomeConfirm == 2}
+              style={{width:'100%'}}
             />
           </Form.Item>
         </Col>
@@ -1121,8 +1123,8 @@ return true;
         <Col span={8}></Col>
       </Row>
       <Row>
-        <Col span={24}>
-          <Form.Item label="项目描述" name="description" labelCol={{ span: 3, offset: 0 }}>
+        <Col span={16}>
+          <Form.Item label="项目描述" name="description" labelCol={{ span: 4}} wrapperCol={{span:20}}>
             <Input.TextArea disabled />
           </Form.Item>
         </Col>

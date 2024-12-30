@@ -107,6 +107,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'estimatedWorkload',
       key: 'estimatedWorkload',
       width: '80px',
+      align:'right',
       render: (text: string, record: Proj) => <Tag color="cyan">{text ? text : 0}</Tag>,
     },
     {
@@ -114,6 +115,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'timeConsuming',
       key: 'timeConsuming',
       width: '80px',
+      align:'right',
       render: (text: number, record: Proj) => (
         <Button type="text" onClick={() => dailyRef.current?.showDialog(record)}>
           <Tag color="cyan">{text ? ((text - 0) / 8).toFixed(2) : 0}</Tag>
@@ -185,16 +187,23 @@ const Project: React.FC<any> = () => {
         return confirmYear;
       },
       width: 100,
+      align:'right',
     },
     {
       title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
+      align:'right',
       render: (contractAmount: string, record: Proj) => {
         if (projectAgreements && agreements.result && agreements.result.length != 0) {
           let contract = projectAgreements?.filter((item) => item.id == record.id);
           let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-          return amount[0]?.contractAmount;
+          
+          if(amount[0]?.contractAmount){
+              return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(amount[0]?.contractAmount)));
+          }else{
+            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+          }
         } else {
           return '---';
         }
@@ -205,8 +214,9 @@ const Project: React.FC<any> = () => {
       title: '确认金额',
       dataIndex: 'recoAmount',
       key: 'recoAmount',
-      render: (recoAmount: string) => {
-        return recoAmount;
+      align:'right',
+      render: (recoAmount: any) => {
+        return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((recoAmount));
       },
       width: 100,
     },
@@ -214,11 +224,17 @@ const Project: React.FC<any> = () => {
       title: '税后金额',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
+      align:'right',
       render: (afterTaxAmount: string, record: Proj) => {
         if (projectAgreements && agreements.result && agreements.result.length != 0) {
           let contract = projectAgreements?.filter((item) => item.id == record.id);
           let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
-          return amount[0]?.afterTaxAmount;
+          if(amount[0]?.afterTaxAmount){
+            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
+          }else{
+            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+          }
+          
         } else {
           return '---';
         }
@@ -233,6 +249,7 @@ const Project: React.FC<any> = () => {
         return productDate ? moment(productDate).format('YYYY-MM-DD') : '---';
       },
       width: 100,
+      align:'right',
     },
     {
       title: '合同签订日期',
@@ -252,7 +269,8 @@ const Project: React.FC<any> = () => {
           return '---';
         }
       },
-      width: 100,
+      width: 150,
+      align:'right',
     },
     {
       title: '项目部门',
@@ -774,6 +792,7 @@ const Project: React.FC<any> = () => {
         scroll={{ x: 1500 }}
         pagination={false}
         size="middle"
+        bordered
       />
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination

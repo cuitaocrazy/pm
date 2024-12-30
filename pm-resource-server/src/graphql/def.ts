@@ -681,6 +681,9 @@ const dataTypeDef = gql`
       name: String
       customer: [String]
       type: [String]
+      payState:[String]
+      expectedQuarter:[String]
+      actualQuarter:[String]
     ): ContractPaymentManagePage
     projectAgreements: [ProjectAgreement!]!
     getAgreementsByProjectId(id: String): [Agreement!]!

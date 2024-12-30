@@ -9,6 +9,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
+import moment from 'moment';
 
 
 const queryGql = gql`
@@ -200,9 +201,11 @@ export function useAgreementState() {
   );
   const payWaySub = useCallback(
     async (agreement: AgreementInput) => {
+      let agreement_ = JSON.parse(JSON.stringify(agreement))
+      delete agreement_.time
       await payWaySubHandle({
         variables: {
-          agreement: { ...agreement },
+          agreement: { ...agreement_ },
         },
       });
       await refresh();

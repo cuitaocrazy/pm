@@ -147,7 +147,8 @@ export default {
 
       const maxGroup = getMaxGroup(user.groups);
       let subordinateIds: string[] = [];
-
+      // console.dir(maxGroup,{depth:null,color:true})
+      // console.dir(maxGroup[0].split("/").length,{depth:null,color:true})
       // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
       if (maxGroup[0].split("/").length < 4) {
         const subordinate = await getUsersByGroups(user, maxGroup);
@@ -164,7 +165,7 @@ export default {
             ]),
           },
           {
-            $or: [{ proState: 1 }, { proState: { $exists: false } }],
+            $or: [{ proState: 1 }, { proState: { $exists: false } }, { proState: null }],
           },
         ];
       } else {
@@ -176,7 +177,7 @@ export default {
             ],
           },
           {
-            $or: [{ proState: 1 }, { proState: { $exists: false } }],
+            $or: [{ proState: 1 }, { proState: { $exists: false } },{ proState: null }],
           },
         ];
       }
@@ -193,7 +194,7 @@ export default {
       //   ];
       // }
 
-     
+      // console.dir(filter,{depth:null,color:true})
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
@@ -557,11 +558,13 @@ export default {
         newregions = [...regionsCode]
       } else if ((regiononesT && regiononesT.length > 0) && (regionsT && regionsT.length > 0)) {
         newregions = [...regionsT]
+      }else if((!regiononesT || regiononesT.length === 0) && (regionsT && regionsT.length > 0)){
+        newregions = [...regionsT]
       }
+      // console.dir(newregions,{depth:null,color:true})
       if (!newregions || newregions.length === 0) {
         newregions = ['\\w*']
       }
-
       for (let i = 0; i < newregions.length; i++) {
         for (let j = 0; j < industries.length; j++) {
           for (let k = 0; k < projTypes.length; k++) {
@@ -617,7 +620,7 @@ export default {
       )
 
       const total = await Project.countDocuments(filter);
-      console.dir(result,{depth:null,color:true})
+      // console.dir(result,{depth:null,color:true})
       return {
         result,
         page,

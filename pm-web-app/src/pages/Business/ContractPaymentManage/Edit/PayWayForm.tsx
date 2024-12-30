@@ -212,7 +212,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
           options={resData?.collectionQuarterManages.filter((item) => item.enable == true)}
         />
       </Form.Item>
-      <Form.Item label="实际回款季度" name="actualQuarter" rules={[{ required: true }]}>
+      <Form.Item label="实际回款季度" name="actualQuarter" rules={[{ required: false }]}>
         <Select
           defaultValue="lucy"
           style={{ width: '100%' }}
@@ -223,7 +223,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
           options={resData?.collectionQuarterManages.filter((item) => item.enable == true)}
         />
       </Form.Item>
-      <Form.Item label="实际回款日期" name="actualDate" rules={[{ required: true }]} getValueProps={(value) => ({
+      <Form.Item label="实际回款日期" name="actualDate" rules={[{ required: false }]} getValueProps={(value) => ({
           value: value ? moment(value) : undefined,
         })}>
         <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />

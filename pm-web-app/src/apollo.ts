@@ -491,7 +491,7 @@ export type Agreement = {
   afterTaxAmount:String;
   maintenanceFreePeriod:String;
   expectedQuarter:String;
-  actualDate:String;
+  actualDate:string;
   payState:String;
 
 };
@@ -1005,6 +1005,23 @@ export type AgreementInput = {
   time?: Scalars['String'][];
   payWayName?:any;
   milestone?:any;
+  paymentFileList?:Maybe<FileInput[]>;
+  actualDate?:string;
+};
+
+export type ContractPaymentInput = {
+  id?: Maybe<Scalars['ID']>;
+    name?: Scalars['String'];
+    contractAmount?: Scalars['String'];
+    milestoneName?: Scalars['String'];
+    milestoneValue?: Scalars['String'];
+    milestoneAmount?: Scalars['Float'];
+    payState?: Scalars['String'][];
+    expectedQuarter?: Scalars['String'][];
+    actualQuarter?: Scalars['String'][];
+    actualDate?:Scalars['String'];
+    paymentRemark?: Scalars['String'];
+    paymentFileList?: Maybe<FileInput[]>;
 };
 
 export type TagInput = {
@@ -1234,6 +1251,10 @@ export type MutationDeleteCustomerArgs = {
 
 export type MutationPushAgreementArgs = {
   agreement: AgreementInput;
+};
+
+export type MutationContractPaymentArgs = {
+  agreement: ContractPaymentInput;
 };
 
 export type MutationDeleteAgreementArgs = {

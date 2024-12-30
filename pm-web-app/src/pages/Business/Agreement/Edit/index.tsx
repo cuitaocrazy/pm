@@ -166,14 +166,14 @@ const Agreement: React.FC<any> = () => {
       dataIndex: 'contractPeriod',
       key: 'contractPeriod',
       width: 100,
-      align:'right'
+      align:'right' as 'right'
     },
     {
       title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
       width: 100,
-      align:'right',
+      align:'right' as 'right',
       render:(text: any, record: AgreementType)=>{
           return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((text))
       }
@@ -183,7 +183,7 @@ const Agreement: React.FC<any> = () => {
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
       width: 100,
-      align:'right',
+      align:'right' as 'right',
       render:(text: any, record: AgreementType)=>{
         return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((text))
     }
@@ -193,7 +193,7 @@ const Agreement: React.FC<any> = () => {
       dataIndex: 'maintenanceFreePeriod',
       key: 'maintenanceFreePeriod',
       width: 100,
-      align:'right',
+      align:'right' as 'right',
     },
     {
       title: '备注',

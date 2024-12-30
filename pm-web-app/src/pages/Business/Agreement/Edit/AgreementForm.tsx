@@ -33,6 +33,7 @@ const userQuery = gql`
       id
       name
       customer
+      status
     }
   }
 `;
@@ -144,6 +145,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
         return false;
       }
     });
+    console.log(resProj,'resProj MMMMMM')
     return resProj;
   };
 
@@ -214,7 +216,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
         rules={[{ required: selectType === 'DGHT' ? false : true }]}
       >
         <Select mode="multiple" disabled={!selectType || !selectCustomer}>
-          {projectOptions().map((u) => (
+          {projectOptions().filter(item=>item.status == 'onProj').map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {buildProjName(u.id, u.name)}
             </Select.Option>

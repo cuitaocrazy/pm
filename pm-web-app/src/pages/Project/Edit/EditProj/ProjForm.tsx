@@ -624,7 +624,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       ? '审核驳回'
       : '';
   }
-  
+  console.log(data,'data OOOOOOOOO')
   return (
     <Form {...layout} form={form} initialValues={data} disabled={data?.status === 'endProj'}>
       <Form.Item shouldUpdate noStyle>
@@ -646,9 +646,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   name="id"
                   rules={[{ required: true }, { validator }]}
                 >
+                  {/* 111{data.proState}222 */}
                   <ProjIdComponent
                     oldID={data?.id}
-                    disabled={(data.proState == 0 || data.proState == 1) && !!data?.id && !isDerive}
+                    disabled={(data.proState == 0 || data.proState == 1 || data.proState == null) && !!data?.id && !isDerive}
                     onChange={onIdChange} // 处理整个 ID 变化的回调
                     onIsExistProjIdDataChange={handleIsExistProjIdDataChange} // 将回调函数传递给子组件
                   />

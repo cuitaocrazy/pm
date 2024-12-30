@@ -4,12 +4,13 @@ import type {
   MutationPushAgreementArgs,
   MutationContractPaymentArgs,
   AgreementInput,
+  ContractPaymentInput,
   Query,
 } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
-import { agreementType } from '@/pages/utils/hook';
+// import { agreementType } from '@/pages/utils/hook';
 import moment from 'moment';
 const queryGql = gql`
   query (
@@ -225,9 +226,9 @@ export function useAgreementState() {
     [pushAgreementHandle, refresh],
   );
   const payWaySub = useCallback(
-    async (agreement: AgreementInput) => {
+    async (agreement: ContractPaymentInput) => {
       let reqAgreement = await attachmentUpload(agreement);
-      reqAgreement.actualDate = moment(reqAgreement.actualDate).format('YYYY-MM-DD')
+      reqAgreement.actualDate = moment(reqAgreement.actualDate as any).format('YYYY-MM-DD')
         console.log(reqAgreement,'reqAgreement LLLLLL')
       await contractPaymentSubSubHandle({
         variables: {
@@ -240,7 +241,7 @@ export function useAgreementState() {
   );
 
   return {
-    loading: queryLoading || deleteLoading || pushLoading,
+    loading: queryLoading || deleteLoading || pushLoading || contractPaymentLoading || payWaySubLoading,
     agreements,
     subordinates,
     customers,

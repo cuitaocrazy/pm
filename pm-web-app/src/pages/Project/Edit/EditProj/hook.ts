@@ -403,7 +403,7 @@ export function useProjStatus() {
       delete reqProj.taxAmount_
       delete reqProj.serviceCycle_
       
-      if (proj.proState == 1 || !proj.proState) {
+      if (proj.proState == 1 || !proj.proState || proj.proState == null) {
         await pushCostHandle({
           variables: {
             proj: reqProj,

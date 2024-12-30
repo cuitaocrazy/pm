@@ -46,13 +46,13 @@ export default {
         filter["type"] = type[0]; // 精确匹配 type
       }
       if (payState && payState.length != 0) {
-        filter["payState"] = payState[0]; // 精确匹配 type
+        filter["payState"] = { $in: payState }; // 精确匹配 type
       }
       if (expectedQuarter && expectedQuarter.length != 0) {
-        filter["expectedQuarter"] = expectedQuarter[0]; // 精确匹配 type
+        filter["expectedQuarter"] = { $in: expectedQuarter }; // 精确匹配 type
       }
       if (actualQuarter && actualQuarter.length != 0) {
-        filter["actualQuarter"] = actualQuarter[0]; // 精确匹配 type
+        filter["actualQuarter"] = { $in: actualQuarter }; // 精确匹配 type
       }
 
 

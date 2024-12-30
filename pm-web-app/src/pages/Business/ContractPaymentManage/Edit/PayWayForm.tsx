@@ -14,29 +14,29 @@ import {
   TableOutlined,
   FileOutlined,
   FileZipOutlined,
-  MinusCircleOutlined,
+  // MinusCircleOutlined,
 } from '@ant-design/icons';
 import {
   Form,
   Input,
   Upload,
   Select,
-  Modal,
+  // Modal,
   DatePicker,
   message,
-  Button,
-  Space,
+  // Button,
+  // Space,
   InputNumber,
 } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import type { AgreementInput, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import type { FormInstance } from 'antd/lib/form';
-import { agreementType, useBaseState } from '@/pages/utils/hook';
+// import { agreementType, useBaseState } from '@/pages/utils/hook';
 import moment from 'moment';
 
-const { RangePicker } = DatePicker;
-const dateFormat = 'YYYYMMDD';
+// const { RangePicker } = DatePicker;
+// const dateFormat = 'YYYYMMDD';
 
 const userQuery = gql`
   query ($customersPageSize: Int) {
@@ -84,7 +84,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   
   // 初始化时计算款项金额
   useEffect(() => {
-    const { contractAmount, milestoneValue } = data;
+    const { contractAmount, milestoneValue } = data as any;
     if (contractAmount != null && milestoneValue != null) {
       const milestoneAmount = (Number(contractAmount) * Number(milestoneValue)) / 100;
       form.setFieldsValue({ milestoneAmount });

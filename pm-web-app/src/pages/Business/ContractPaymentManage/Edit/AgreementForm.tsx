@@ -15,8 +15,8 @@ import type { FormInstance } from 'antd/lib/form';
 import { agreementType, useBaseState } from '@/pages/utils/hook';
 import moment from 'moment';
 
-const { RangePicker } = DatePicker;
-const dateFormat = 'YYYYMMDD';
+// const { RangePicker } = DatePicker;
+// const dateFormat = 'YYYYMMDD';
 
 const userQuery = gql`
   query ($customersPageSize: Int) {
@@ -160,9 +160,9 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
     form.setFieldsValue({ contactProj: [] });
   };
 
-  const dateChange = (value: any, dataString: any) => {
-    form.setFieldsValue({ startTime: dataString[0], endTime: dataString[1] });
-  };
+  // const dateChange = (value: any, dataString: any) => {
+  //   form.setFieldsValue({ startTime: dataString[0], endTime: dataString[1] });
+  // };
 
   return (
     <Form {...layout} form={form} initialValues={data}>

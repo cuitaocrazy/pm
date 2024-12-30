@@ -9,7 +9,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { agreementType } from '@/pages/utils/hook';
-import moment from 'moment';
+// import moment from 'moment';
 
 
 const queryGql = gql`
@@ -32,6 +32,7 @@ const queryGql = gql`
     projs {
       id
       name
+      status
     }
     customers(pageSize: $customersPageSize) {
       result {

@@ -72,10 +72,14 @@ export default {
       
       //actualQuarter\expectedQuarter\payState
       let temp = JSON.parse(JSON.stringify(args.agreement));
-      temp.actualQuarter = args.agreement.actualQuarter[0];
+      if(args.agreement.actualQuarter && args.agreement.actualQuarter.length > 0){
+        temp.actualQuarter = args.agreement.actualQuarter[0];
+      }else{
+        temp.actualQuarter = '';
+      }
       temp.expectedQuarter = args.agreement.expectedQuarter[0];
       temp.payState = args.agreement.payState[0];
-      
+      console.dir(temp,{depth:null,color:true});
       return PaymentManage.updateOne(
         {
           $or: [{ _id: new ObjectId(temp.id) }, { _id: temp.id }],

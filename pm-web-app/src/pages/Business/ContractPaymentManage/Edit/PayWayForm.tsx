@@ -91,7 +91,8 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
     }
   }, [data, form]);
   const [payState, setPayState] = useState();
-  const [expectedQuarter, setExpectedQuarter] = useState();
+  const [expectedQuarter, setExpectedQuarter] = useState();//setActualQuarter
+  const [actualQuarter, setActualQuarter] = useState();
   let files = data?.paymentFileList ? (data?.paymentFileList as UploadFile[]) : [];
   
   const props: UploadProps = {
@@ -218,8 +219,9 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
           style={{ width: '100%' }}
           fieldNames={{ label: 'name', value: 'code' }}
           onChange={(v) => {
-            setExpectedQuarter(v);
+            setActualQuarter(v);
           }}
+          allowClear
           options={resData?.collectionQuarterManages.filter((item) => item.enable == true)}
         />
       </Form.Item>

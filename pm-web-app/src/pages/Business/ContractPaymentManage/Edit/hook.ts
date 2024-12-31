@@ -228,7 +228,10 @@ export function useAgreementState() {
   const payWaySub = useCallback(
     async (agreement: ContractPaymentInput) => {
       let reqAgreement = await attachmentUpload(agreement);
-      reqAgreement.actualDate = moment(reqAgreement.actualDate as any).format('YYYY-MM-DD')
+      if(!reqAgreement.actualDate){
+        reqAgreement.actualDate = ''
+      }
+      
         console.log(reqAgreement,'reqAgreement LLLLLL')
       await contractPaymentSubSubHandle({
         variables: {

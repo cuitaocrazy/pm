@@ -22,6 +22,7 @@ const queryGql = gql`
     $actualQuarter:[String],,
     $expectedQuarter:[String]
     $payState:[String]
+    $group:[String]
   ) {
     projectAgreements {
       id
@@ -57,6 +58,7 @@ const queryGql = gql`
       actualQuarter:$actualQuarter
       expectedQuarter:$expectedQuarter
       payState:$payState
+      group:$group
     ) {
       result {
         id

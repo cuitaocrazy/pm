@@ -20,6 +20,7 @@ const queryGql = gql`
     $name: String
     $customer: [String]
     $type: [String]
+    $group:[String]
   ) {
     projectAgreements {
       id
@@ -42,7 +43,7 @@ const queryGql = gql`
       total
       page
     }
-    agreements(pageSize: $pageSizeAgreements, name: $name, customer: $customer, type: $type) {
+    agreements(pageSize: $pageSizeAgreements, name: $name, customer: $customer, type: $type,group:$group) {
       result {
         id
         name
@@ -70,6 +71,8 @@ const queryGql = gql`
           name
           value
         }
+          group
+          taxRate
       }
       page
       total
@@ -190,7 +193,11 @@ export function useAgreementState() {
       reqAgreement.contractAmount = reqAgreement.contractAmount + '';
       delete reqAgreement.time;
       delete reqAgreement.customerName;
-      delete reqAgreement.taxRate;
+      // delete reqAgreement.taxRate;
+      reqAgreement.group = reqAgreement?.group && reqAgreement?.group.reduce((accumulator: string, currentValue: string) => {
+        return `${accumulator}/${currentValue}`;
+      }, '')
+      console.log(reqAgreement,'reqAgreement LLLLoooopppp')
       await pushAgreementHandle({
         variables: {
           agreement: reqAgreement,

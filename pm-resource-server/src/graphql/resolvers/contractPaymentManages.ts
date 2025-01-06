@@ -22,7 +22,7 @@ export default {
   Query: {
     contractPaymentManages: async (_: any, __: any, context: AuthContext) => {
       
-      let { page, pageSize, name, customer, type,payState,expectedQuarter,actualQuarter } = __;
+      let { page, pageSize, name, customer, type,payState,expectedQuarter,actualQuarter,group } = __;
       if (!page || page === 0) {
         page = 1;
       }
@@ -54,8 +54,12 @@ export default {
       if (actualQuarter && actualQuarter.length != 0) {
         filter["actualQuarter"] = { $in: actualQuarter }; // 精确匹配 type
       }
+      // console.dir(group,{depth:null,color:true})
+      if (group && group[0] !== '') {
+        filter["group"] = new RegExp(group, "g");
+      }
 
-
+      // console.dir(filter,{depth:null,color:true});
       const result = await PaymentManage.find(filter)
         .skip(skip)
         .limit(pageSize)
@@ -79,7 +83,7 @@ export default {
       }
       temp.expectedQuarter = args.agreement.expectedQuarter[0];
       temp.payState = args.agreement.payState[0];
-      console.dir(temp,{depth:null,color:true});
+      
       return PaymentManage.updateOne(
         {
           $or: [{ _id: new ObjectId(temp.id) }, { _id: temp.id }],

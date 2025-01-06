@@ -414,6 +414,8 @@ const dataTypeDef = gql`
     contractNumber: String
     payWayName: String
     milestone: [Milestone]
+    group:String
+    taxRate:String
   }
   type ContractPaymentManage {
     id: ID!
@@ -441,6 +443,7 @@ const dataTypeDef = gql`
     actualDate:String
     paymentRemark: String
     paymentFileList: [File]
+    group: String
   }
   type Milestone {
     name: String
@@ -674,6 +677,7 @@ const dataTypeDef = gql`
       name: String
       customer: [String]
       type: [String]
+      group:[String]
     ): AgreementPage
     contractPaymentManages(
       page: Int
@@ -684,6 +688,7 @@ const dataTypeDef = gql`
       payState:[String]
       expectedQuarter:[String]
       actualQuarter:[String]
+      group:[String]
     ): ContractPaymentManagePage
     projectAgreements: [ProjectAgreement!]!
     getAgreementsByProjectId(id: String): [Agreement!]!
@@ -949,6 +954,8 @@ const dataTypeDef = gql`
     maintenanceFreePeriod: String
     payWayName: String
     milestone: [MilestoneInput]
+    group:String
+    taxRate:String
   }
   input PayWayInput {
     payWayName: String

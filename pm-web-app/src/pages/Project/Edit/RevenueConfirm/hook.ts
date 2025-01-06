@@ -302,7 +302,7 @@ export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false; //判断是全部项目还是项目维护
   const queryGql = getGql('iLeadProjs'); //全部项目走superProjs，项目维护走iLeadProjs
   const [archive, setArchive] = useState('0');
-  let [query, setQuery] = useState({});
+  let [query, setQuery] = useState({pageSize:100000000});
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
     Query,
     QueryProjectArgs
@@ -334,8 +334,14 @@ export function useProjStatus() {
   const { buildProjName } = useBaseState(); //项目名字的工具函数
   const [filter, setFilter] = useState('');
   const [todoProjs, setTodoProjs] = useState<any>({});
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   useEffect(() => {
     initialRefresh();
+    if (isFirstLoad) {
+      // 第一次加载，不执行 refresh 或 getTodoList
+      setIsFirstLoad(false); // 设置为非首次加载
+      return;
+    }
     if (archive === '2') {
       getTodoList(query).then((res) => {
         setTodoProjs(res.data.iLeadTodoProjs);

@@ -7,7 +7,7 @@ import {
   FileOutlined,
   FileZipOutlined,
 } from '@ant-design/icons';
-import { Form, Input, Upload, Select, Modal, DatePicker, message, InputNumber } from 'antd';
+import { Form, Input, Upload, Select, Modal, DatePicker, message, InputNumber,Cascader } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import type { AgreementInput, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
@@ -50,13 +50,37 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       customersPageSize: 10000000,
     },
   });
-  const { buildProjName } = useBaseState();
+  const { buildProjName ,groupType} = useBaseState();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
   const [selectType, setSelectType] = useState(data?.type || '');
   const [selectCustomer, setSelectCustomer] = useState(data?.customer || '');
+  const groupDatas = (inputArray: any) => {
+    let result: any = [];
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
 
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
+
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
+        }
+      });
+    });
+    return result;
+  };
+  const [groupsOptions] = useState(groupDatas(groupType));
   let files = data?.fileList as UploadFile[];
   const props: UploadProps = {
     listType: 'picture-card',
@@ -160,7 +184,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   };
   const calculateAfterTaxAmount = (values: any) => {
     const { contractAmount, taxRate } = values;
-    if (contractAmount && taxRate) {
+    if ((contractAmount || contractAmount === 0) && taxRate) {
       // 计算不含税金额
       const afterTaxAmount = parseFloat(contractAmount) / (1 + parseFloat(taxRate) / 100);
       form.setFieldsValue({ afterTaxAmount: afterTaxAmount.toFixed(2) } as any);
@@ -171,13 +195,22 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       {...layout}
       form={form}
       initialValues={data}
-      onValuesChange={(_, values) => calculateAfterTaxAmount(values)}
+      onValuesChange={(_, values) => {console.log(values.contractAmount,'MMMMMMMM');calculateAfterTaxAmount(values)}}
     >
       <Form.Item label="ID" name="id" hidden>
         <Input />
       </Form.Item>
       <Form.Item label="customerName" name="customerName" hidden>
         <Input />
+      </Form.Item>
+      <Form.Item label="部门" name="group" rules={[{ required: false }]}>
+      <Cascader
+            allowClear
+            changeOnSelect
+            className="width122"
+            placeholder="请选择"
+            options={groupsOptions}
+          />
       </Form.Item>
       <Form.Item label="合同名称" name="name" rules={[{ required: true }]}>
         <Input />
@@ -213,7 +246,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       <Form.Item
         label="关联项目"
         name="contactProj"
-        rules={[{ required: selectType === 'DGHT' ? false : true }]}
+        rules={[{ required: false }]}
       >
         <Select mode="multiple" disabled={!selectType || !selectCustomer}>
           {projectOptions().filter(item=>item.status == 'onProj').map((u) => (

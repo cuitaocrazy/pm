@@ -71,7 +71,39 @@ const Project: React.FC<any> = () => {
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
   };
+  let contractAmount1 = projs.reduce((sum, item_) => {
+    let contract = projectAgreements.filter((item) => item.id == item_.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        if(amount[0]?.contractAmount){
+          console.log(amount[0]?.contractAmount,'}}}}}}')
+          return sum+Number(amount[0]?.contractAmount)
+        }else{
+          return sum+0
+        }
+  }, 0);
+  let afterTaxAmount1 = projs.reduce((sum, item_) => {
+    let contract = projectAgreements.filter((item) => item.id == item_.id);
+    let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+    if(amount[0]?.afterTaxAmount){
+      return sum+Number(amount[0]?.afterTaxAmount)
+    }else{
+      return sum+0
+    }
+  }, 0);
+  let recoAmount1 = projs.reduce((sum, item_) => {
+    return sum+Number(item_?.recoAmount)
+  }, 0);
   const columns = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      key: 'index',
+      fixed: 'left' as 'left',
+      render: (text: string, record: Proj,index) => (
+         ++index
+      ),
+      width: 60,
+    },
     {
       title: '项目ID',
       dataIndex: 'id',
@@ -156,7 +188,7 @@ const Project: React.FC<any> = () => {
       width: 100,
     },
     {
-      title: '合同金额',
+      title: '合同金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(contractAmount1)+')',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
       render: (contractAmount: string, record: Proj) => {
@@ -173,7 +205,7 @@ const Project: React.FC<any> = () => {
       align:'right',
     },
     {
-      title: '税后金额',
+      title: '税后金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(afterTaxAmount1)+')',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
       render: (afterTaxAmount: string, record: Proj) => {
@@ -190,7 +222,7 @@ const Project: React.FC<any> = () => {
       align:'right',
     },
     {
-      title: '确认金额',
+      title: '确认金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(recoAmount1)+')',
       dataIndex: 'recoAmount',
       key: 'recoAmount',
       render: (recoAmount: any) => {
@@ -300,7 +332,7 @@ const Project: React.FC<any> = () => {
     industries: [],
     projTypes: [],
     page: 1,
-    pageSize:10,
+    pageSize:100000000,
     confirmYear: null,
     group: [],
     status: '',
@@ -700,9 +732,9 @@ const Project: React.FC<any> = () => {
         bordered
       />
       {/* </div> */}
-      <div className="paginationCon marginTop20 lineHeight32">
+      {/* <div className="paginationCon marginTop20 lineHeight32">
         <Pagination
-        pageSizeOptions={[1,2,3]}
+        pageSizeOptions={[100,200,300]}
           onChange={(page, pageSize) => pageChange(page,pageSize)}
           current={params.page}
           total={total}
@@ -710,7 +742,7 @@ const Project: React.FC<any> = () => {
           showSizeChanger
         />
         <label className="floatRight ">一共{total}条</label>
-      </div>
+      </div> */}
 
       <DialogForm
         ref={ref}

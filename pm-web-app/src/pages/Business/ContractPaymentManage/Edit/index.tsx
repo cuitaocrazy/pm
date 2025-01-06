@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef, useState } from 'react';
-import { Button, Table, Space, Popconfirm, Row, Col, Input, Select } from 'antd';
+import { Button, Table, Space, Popconfirm, Row, Col, Input, Select,Cascader } from 'antd';
 import type { Agreement as AgreementType, AgreementInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -10,7 +10,7 @@ import AgreementForm from './AgreementForm';
 import PayWayForm from './PayWayForm';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
-import { agreementType } from '@/pages/utils/hook';
+import { agreementType,useBaseState } from '@/pages/utils/hook';
 import '@/common.css';
 
 const Agreement: React.FC<any> = () => {
@@ -35,7 +35,40 @@ const Agreement: React.FC<any> = () => {
     actualQuarter:[],
     expectedQuarter:[],
     payState:[],
+    group:[],
   });
+  const { groupType} = useBaseState();
+  const groupDatas = (inputArray: any) => {
+    let result: any = [];
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
+
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
+        }
+      });
+    });
+    return result;
+  };
+  const [groupsOptions] = useState(groupDatas(groupType));
+  const handleChangeCas = (value: any, type: string) => {
+    setParams({
+      ...params,
+      group: value,
+    });
+  };
   const contractType = Object.entries(agreementType).map(([key, value]) => ({
     label: value,
     value: key,
@@ -78,6 +111,12 @@ const Agreement: React.FC<any> = () => {
     setQuery({
       ...query,
       ...params,
+      group:
+        params.group.length !== 0
+          ? params.group.reduce((accumulator: string, currentValue: string) => {
+              return `${accumulator}/${currentValue}`;
+            }, '')
+          : '',
     });
   };
   const canaelBtn = () => {
@@ -89,6 +128,7 @@ const Agreement: React.FC<any> = () => {
       actualQuarter:[],
       expectedQuarter:[],
       payState:[],
+      group: [],
     });
     setQuery({
       ...query,
@@ -99,6 +139,7 @@ const Agreement: React.FC<any> = () => {
       actualQuarter:[],
       expectedQuarter:[],
       payState:[],
+      group: '',
     });
   };
   // const addContract = () => {
@@ -122,6 +163,7 @@ const Agreement: React.FC<any> = () => {
   //   });
   //   /**ref.current?.showDialog({ ...agreement }); */
   // };
+  let count = 1;
   // 计算 rowSpan
   const calculateRowSpan = (data:any, key:any) => {
     const map:any = {};
@@ -129,7 +171,7 @@ const Agreement: React.FC<any> = () => {
       if (map[item[key]]) {
         map[item[key]].count++;
       } else {
-        map[item[key]] = { start: index, count: 1};
+        map[item[key]] = { start: index, count: 1,index:count++};
       }
     });
 
@@ -138,9 +180,44 @@ const Agreement: React.FC<any> = () => {
   // 按 name 排序数据
   const sortedData = [...agreements].sort((a, b) => (a.name > b.name ? 1 : -1));
   // 根据数据计算 rowSpan
+ 
   const rowSpanMap = calculateRowSpan(sortedData, 'name');
+  console.log(rowSpanMap,'rowSpanMap NNNNNNN')
+  // 去重 name 并计算 count1 的总和
+const uniqueCounts = {};
+sortedData.forEach((item) => {
+  if (!uniqueCounts[item.name]) {
+    uniqueCounts[item.name] = item.contractAmount;
+  }
+});
+const totalCount1 = Object.values(uniqueCounts).reduce((sum, count) => sum + Number(count), 0);
 
+// 累加 number1 的总和
+const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contractAmount) * Number(item.milestoneValue)) / 100, 0);
   const columns = [
+    {
+      title: '序号',
+      key: 'index',
+      width: 60,
+      render: (value:any, record:any, index:number) => {
+        const obj = {
+          children: '',
+          props: {
+            rowSpan:0
+          },
+        };
+
+        // 设置 rowSpan 值
+        if (rowSpanMap[record.name].start === index) {
+          obj.props.rowSpan = rowSpanMap[record.name].count;
+          obj.children = rowSpanMap[record.name].index;
+        } else {
+          obj.props.rowSpan = 0; // 隐藏后续行
+        }
+
+        return obj;
+      }, // 使用索引生成序号
+    },
     {
       title: '合同名称',
       dataIndex: 'name',
@@ -190,10 +267,10 @@ const Agreement: React.FC<any> = () => {
         },
     },
     {
-      title: '合同金额',
+      title: '合同金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalCount1)+')',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
-      width: 100,
+      width: 200,
       align:'right' as 'right',
       render: (value:any, row:any, index:any) =>{
         const obj = {
@@ -284,10 +361,10 @@ const Agreement: React.FC<any> = () => {
       render: (text: string, record: any) => record.milestoneValue+'%',
     },
     {
-      title: '款项金额',
+      title: '款项金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber1)+')',
       dataIndex: 'milestoneValue',
       key: 'milestoneValue',
-      width: 100,
+      width: 200,
       align:'right' as 'right',
       render: (text: string, record: any) => {
         return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(record.contractAmount) * Number(record.milestoneValue)) / 100);
@@ -328,7 +405,7 @@ const Agreement: React.FC<any> = () => {
       width: 100,
       render: (text: string, record: any) => {
         if (record.actualDate) {
-          return record.actualDate
+          return moment(record.actualDate).format('YYYY-MM-DD')
         } else {
           return '---';
         }
@@ -458,6 +535,20 @@ const Agreement: React.FC<any> = () => {
             }}
             fieldNames={{label:'name',value:'code'}}
             options={collectionQuarterManages?.filter(item=>item.enable == true)}
+          />
+        </Col>
+        <Col className="gutter-row">
+        <label>项目部门：</label>
+          <Cascader
+            value={params.group}
+            allowClear
+            changeOnSelect
+            className="width122"
+            placeholder="请选择"
+            onChange={(value, event) => {
+              handleChangeCas(value, 'group');
+            }}
+            options={groupsOptions}
           />
         </Col>
       </Row>

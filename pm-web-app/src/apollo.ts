@@ -1007,6 +1007,7 @@ export type AgreementInput = {
   milestone?:any;
   paymentFileList?:Maybe<FileInput[]>;
   actualDate?:string;
+  group?:Scalars['String'][] | Scalars['String'];
 };
 
 export type ContractPaymentInput = {

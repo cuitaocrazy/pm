@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useRef, useState } from 'react';
-import { Button, Table, Tag, Space, Popconfirm, Row, Col, Input, Select } from 'antd';
+import { Button, Table, Tag, Space, Popconfirm, Row, Col, Input, Select,Cascader } from 'antd';
 import type { Agreement as AgreementType, AgreementInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -31,13 +31,14 @@ const Agreement: React.FC<any> = () => {
     name: '',
     customer: [],
     type: [],
+    group:[],
   });
   const contractType = Object.entries(agreementType).map(([key, value]) => ({
     label: value,
     value: key,
   }));
   const [type, setType] = useState(1);
-  const { buildProjName } = useBaseState();
+  const { buildProjName,groupType } = useBaseState();
   const ref = useRef<FormDialogHandle<AgreementInput>>(null);
   const payWayref = useRef<FormDialogHandle<AgreementInput>>(null);
   const editHandle = (agreement: AgreementType) => {
@@ -51,6 +52,37 @@ const Agreement: React.FC<any> = () => {
     agreement.contactProj = projArr;
     agreement.time = [moment(agreement.startTime), moment(agreement.endTime)];
     ref.current?.showDialog({ ...agreement });
+  };
+  const groupDatas = (inputArray: any) => {
+    let result: any = [];
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
+
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
+
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
+        }
+      });
+    });
+    return result;
+  };
+  const [groupsOptions] = useState(groupDatas(groupType));
+  const handleChangeCas = (value: any, type: string) => {
+    setParams({
+      ...params,
+      group: value,
+    });
   };
   const handleChange = (value = '', type: string) => {
     setParams({
@@ -71,6 +103,12 @@ const Agreement: React.FC<any> = () => {
     setQuery({
       ...query,
       ...params,
+      group:
+        params.group.length !== 0
+          ? params.group.reduce((accumulator: string, currentValue: string) => {
+              return `${accumulator}/${currentValue}`;
+            }, '')
+          : '',
     });
   };
   const canaelBtn = () => {
@@ -79,6 +117,7 @@ const Agreement: React.FC<any> = () => {
       name: '',
       customer: [],
       type: [],
+      group: [],
     });
     setQuery({
       ...query,
@@ -86,6 +125,7 @@ const Agreement: React.FC<any> = () => {
       name: '',
       customer: [],
       type: [],
+      group: '',
     });
   };
   const addContract = () => {
@@ -129,7 +169,20 @@ const Agreement: React.FC<any> = () => {
       ...info,
     });
   };
+  // 累加 number1 的总和
+const totalNumber1 = agreements.reduce((sum, item) => sum + Number(item.contractAmount), 0);
+// 累加 number1 的总和
+const totalNumber2 = agreements.reduce((sum, item) => sum + Number(item.afterTaxAmount), 0);
+
   const columns = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      width: 40,
+      render: (text: string, record: AgreementType,index) => (
+        ++index
+      ),
+    },
     {
       title: '合同名称',
       dataIndex: 'name',
@@ -162,6 +215,47 @@ const Agreement: React.FC<any> = () => {
       },
     },
     {
+      title: '客户名称',
+      dataIndex: 'customer',
+      key: 'customer',
+      width: 100,
+      align:'right' as 'right',
+      render: (text: string, record: AgreementType) => {
+        return customers.find((item) => item.id === text)?.name
+      },
+    },
+    {
+      title: '部门',
+      dataIndex: 'group',
+      key: 'group',
+      width: 100,
+      align:'right' as 'right'
+    },
+    {
+      title: '合同类型',
+      dataIndex: 'type',
+      key: 'type',
+      width: 100,
+      align:'right' as 'right',
+      render: (text: string, record: AgreementType) => {
+        return contractType.find((item) => item.value === text)?.label
+      },
+    },
+    {
+      title: '合同签订日期',
+      dataIndex: 'contractSignDate',
+      key: 'contractSignDate',
+      width: 100,
+      align:'right' as 'right',
+      render: (text: string, record: AgreementType) => {
+        if(text){
+          return moment(text).format('YYYY-MM-DD')
+        }else{
+          return '----'
+        }
+      },
+    },
+    {
       title: '合同周期',
       dataIndex: 'contractPeriod',
       key: 'contractPeriod',
@@ -169,7 +263,7 @@ const Agreement: React.FC<any> = () => {
       align:'right' as 'right'
     },
     {
-      title: '合同金额',
+      title: '合同金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((totalNumber1))+')',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
       width: 100,
@@ -179,7 +273,7 @@ const Agreement: React.FC<any> = () => {
       }
     },
     {
-      title: '不含税金额',
+      title: '不含税金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((totalNumber2))+')',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
       width: 100,
@@ -260,6 +354,20 @@ const Agreement: React.FC<any> = () => {
               handleChange(value, 'type');
             }}
             options={contractType}
+          />
+        </Col>
+        <Col className="gutter-row">
+        <label>项目部门：</label>
+          <Cascader
+            value={params.group}
+            allowClear
+            changeOnSelect
+            className="width122"
+            placeholder="请选择"
+            onChange={(value, event) => {
+              handleChangeCas(value, 'group');
+            }}
+            options={groupsOptions}
           />
         </Col>
       </Row>

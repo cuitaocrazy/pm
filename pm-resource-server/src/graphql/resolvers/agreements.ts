@@ -22,7 +22,7 @@ export default {
   Query: {
     agreements: async (_: any, __: any, context: AuthContext) => {
       
-      let { page, pageSize, name, customer, type } = __;
+      let { page, pageSize, name, customer, type,group } = __;
       if (!page || page === 0) {
         page = 1;
       }
@@ -44,6 +44,10 @@ export default {
       // 添加 type 查询条件
       if (type && type.length != 0) {
         filter["type"] = type[0]; // 精确匹配 type
+      }
+      
+      if (group && group[0] !== '') {
+        filter["group"] = new RegExp(group, "g");
       }
 
       const result = await Agreement.find(filter)

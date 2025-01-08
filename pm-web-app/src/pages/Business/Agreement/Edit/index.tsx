@@ -178,7 +178,7 @@ const totalNumber2 = agreements.reduce((sum, item) => sum + Number(item.afterTax
     {
       title: '序号',
       dataIndex: 'index',
-      width: 40,
+      width: 60,
       render: (text: string, record: AgreementType,index) => (
         ++index
       ),
@@ -228,7 +228,7 @@ const totalNumber2 = agreements.reduce((sum, item) => sum + Number(item.afterTax
       title: '部门',
       dataIndex: 'group',
       key: 'group',
-      width: 100,
+      width: 200,
       align:'right' as 'right'
     },
     {
@@ -263,24 +263,41 @@ const totalNumber2 = agreements.reduce((sum, item) => sum + Number(item.afterTax
       align:'right' as 'right'
     },
     {
-      title: '合同金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((totalNumber1))+')',
+      title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
       width: 100,
       align:'right' as 'right',
-      render:(text: any, record: AgreementType)=>{
-          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((text))
-      }
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber1)+')',
+          dataIndex: 'contractAmount',
+          align:'right',
+          render:(text: any, record: AgreementType)=>{
+            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((text))
+        },
+        width: 100,
+        }
+      ],
+     
     },
     {
-      title: '不含税金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((totalNumber2))+')',
+      title: '不含税金额',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
       width: 100,
       align:'right' as 'right',
-      render:(text: any, record: AgreementType)=>{
-        return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((text))
-    }
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber2)+')',
+          dataIndex: 'contractAmount',
+          align:'right',
+          render:(text: any, record: AgreementType)=>{
+            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((text))
+        },
+        width: 100,
+        }
+      ],
     },
     {
       title: '免维期',
@@ -394,7 +411,7 @@ const totalNumber2 = agreements.reduce((sum, item) => sum + Number(item.afterTax
         dataSource={agreements}
         pagination={false}
         size="middle"
-        scroll={{ x: 1500 }}
+        scroll={{ x: 1300 }}
         bordered
       />
       <DialogForm

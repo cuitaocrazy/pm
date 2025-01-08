@@ -66,13 +66,18 @@ const ChangePm: React.FC<any> = () => {
 
   const getShowProject = () => {
     return projs?.filter((proj) => {
-      if (localState.search === '' || localState.search === undefined) {
-        return true;
+      if (proj.isArchive) {
+        return false;
       }
-      return buildProjName(proj.id, proj.name).indexOf(localState.search) > -1;
+        if (localState.search === '' || localState.search === undefined) {
+          return true;
+        }
+        return buildProjName(proj.id, proj.name).indexOf(localState.search) > -1;
+      
+      
     });
   };
-
+  console.log(getShowProject(),'getShowProject MMMMM')
   const revertProjs = getShowProject().map((proj) => {
     return { ...proj, filters: '', onFilter: '' };
   });
@@ -153,6 +158,15 @@ const ChangePm: React.FC<any> = () => {
   const optionArr = localSubordinates.filter((user) => user.enabled == true)
   
   const columns = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      width: 60,
+      render: (text: string, record: Proj,index:number) => (
+         ++index
+      ),
+
+    },
     {
       title: 'id',
       dataIndex: 'id',

@@ -214,6 +214,15 @@ const Project: React.FC<any> = (props) => {
   const ref = useRef<FormDialogHandle<AgreementInput>>(null);
   const columns = [
     {
+      title: '序号',
+      dataIndex: 'index',
+      width: 60,
+      render: (text: string, record: Proj,index:number) => (
+         ++index
+      ),
+
+    },
+    {
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',
@@ -273,7 +282,7 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'contName',
       key: 'contName',
       render: (text: string, record: Proj) => {
-        return record.agreements ? record.agreements[0].name : '';
+        return record.agreements && record.agreements.length > 0 ? record.agreements[0].name : '';
       },
       width: 150,
     },

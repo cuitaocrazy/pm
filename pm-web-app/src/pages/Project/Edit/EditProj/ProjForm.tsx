@@ -69,10 +69,12 @@ const userQuery = gql`
     yearManages {
       code
       name
+      enable
     }
     quarterManages {
       code
       name
+      enable
     }
   }
 `;
@@ -816,7 +818,7 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="参与人员" name="participants">
+          <Form.Item label="参与人员" name="participants" rules={[{ required: true }]}>
             <Select
               disabled={data.proState == 0}
               mode="multiple"
@@ -934,7 +936,7 @@ return true;
           <Form.Item
             label="项目预算"
             name="projBudget"
-            rules={[{ required: false }]}
+            rules={[{ required: true }]}
             tooltip={<span className="ant-form-text">客户心理的预算</span>}
           >
             <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
@@ -997,7 +999,7 @@ return true;
           <Form.Item
             label="预估工作量"
             name="estimatedWorkload"
-            rules={[{ required: false }, { validator: validateInteger }]}
+            rules={[{ required: true }, { validator: validateInteger }]}
           >
             <InputNumber min={0} disabled={data?.proState == 0} style={{width:'100%'}}/>
           </Form.Item>
@@ -1192,14 +1194,14 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
+          <Form.Item label="地址" name="address" rules={[{ required: true }]}>
             <Input disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={8}>
-          <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
+          <Form.Item label="客户联系人" name="customerContact" rules={[{ required: true }]}>
             <Select
               disabled={data?.proState == 0}
               onChange={customerContacthandleChange}
@@ -1209,7 +1211,7 @@ return true;
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
+          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: true }]}>
             <Select options={formattedOptions} disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
@@ -1224,7 +1226,7 @@ return true;
           <Form.Item
             label="客户联系方式"
             name="contactDetailsCus"
-            rules={[{ required: false }]}
+            rules={[{ required: true }]}
           >
             <Input disabled />
           </Form.Item>
@@ -1234,7 +1236,7 @@ return true;
           <Form.Item
             label="销售联系方式"
             name="copyrightNameSale"
-            rules={[{ required: false }]}
+            rules={[{ required: true }]}
           >
             <Input disabled={data?.proState == 0} />
           </Form.Item>
@@ -1261,19 +1263,20 @@ return true;
       </Row>
       <Row>
         <Col span={16}>
-          <Form.Item label="项目描述" name="description" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+          <Form.Item label="项目描述" name="description" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} rules={[{ required: true }]}>
             <Input.TextArea disabled={data.proState == 0} />
           </Form.Item>
         </Col>
         <Col span={16}>
-          <Form.Item label="项目计划" name="projectArrangement" rules={[{ required: false }]} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+          <Form.Item label="项目计划" name="projectArrangement" rules={[{ required: true }]} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
             <Input.TextArea disabled={data?.proState == 0} />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={24}>
-          <Form.List name="actives" rules={data.proState == 1?[{ validator: activeValidator}]:[]}>
+          <Form.List name="actives" >
+            {/**rules={data.proState == 1?[{ validator: activeValidator}]:[]} */}
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Form.Item>

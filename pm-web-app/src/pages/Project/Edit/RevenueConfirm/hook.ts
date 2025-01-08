@@ -106,8 +106,9 @@ const getGql = (proName: string) => {
         group
         proState
         contractAmount
-        recoAmount
         afterTaxAmount
+        afterTaxAmountConfirm
+        taxRate
         productDate
         contractSignDate
         contractState
@@ -229,6 +230,7 @@ const queryTodoProjs = gql`
         projectClass
         group
         proState
+        
         agreements {
           id
           name
@@ -337,16 +339,15 @@ export function useProjStatus() {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   useEffect(() => {
     initialRefresh();
-    if (isFirstLoad) {
-      // 第一次加载，不执行 refresh 或 getTodoList
-      setIsFirstLoad(false); // 设置为非首次加载
-      return;
-    }
     if (archive === '2') {
       getTodoList(query).then((res) => {
         setTodoProjs(res.data.iLeadTodoProjs);
       });
     } else {
+      console.log(query,'query PPPPPP')
+      // if(query.group || query.confirmYear || query.incomeConfirm || query.industries || query.regionones || query.regions || query.projTypes){
+      //   refresh();
+      // }
       refresh();
     }
   }, [refresh, query, archive]);
@@ -416,7 +417,7 @@ export function useProjStatus() {
       delete reqProj.contAmount_;
       delete reqProj.taxAmount_;
       delete reqProj.serviceCycle_;
-      
+      console.log(reqProj,'reqProj NNNMMMJJJ')
       await pushCostHandle({
         variables: {
           proj: reqProj,

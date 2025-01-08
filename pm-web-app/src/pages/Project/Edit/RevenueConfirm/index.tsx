@@ -75,7 +75,7 @@ const Project: React.FC<any> = () => {
     let contract = projectAgreements.filter((item) => item.id == item_.id);
         let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
         if(amount[0]?.contractAmount){
-          console.log(amount[0]?.contractAmount,'}}}}}}')
+          
           return sum+Number(amount[0]?.contractAmount)
         }else{
           return sum+0
@@ -92,6 +92,9 @@ const Project: React.FC<any> = () => {
   }, 0);
   let recoAmount1 = projs.reduce((sum, item_) => {
     return sum+Number(item_?.recoAmount)
+  }, 0);
+  let afterTaxAmountConfirm2 = projs.reduce((sum, item_) => {
+    return sum+Number(item_?.afterTaxAmountConfirm)
   }, 0);
   const columns = [
     {
@@ -188,52 +191,99 @@ const Project: React.FC<any> = () => {
       width: 100,
     },
     {
-      title: '合同金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(contractAmount1)+')',
+      title: '合同金额(含税)',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
-      render: (contractAmount: string, record: Proj) => {
-        let contract = projectAgreements.filter((item) => item.id == record.id);
-        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        if(amount[0]?.contractAmount){
-          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.contractAmount));
-        }else{
-          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(contractAmount1)+')',
+          dataIndex: 'contractAmount',
+          align:'right',
+          render: (contractAmount: string, record: Proj) => {
+            let contract = projectAgreements.filter((item) => item.id == record.id);
+            let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+            if(amount[0]?.contractAmount){
+              return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.contractAmount));
+            }else{
+              return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+            }
+            
+          },
+          width: 150,
         }
-        
-      },
-      width: 100,
+      ],
+      width: 150,
       align:'right',
     },
     {
-      title: '税后金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(afterTaxAmount1)+')',
+      title: '合同金额(不含税)',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
-      render: (afterTaxAmount: string, record: Proj) => {
-        let contract = projectAgreements.filter((item) => item.id == record.id);
-        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        if(amount[0]?.afterTaxAmount){
-          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
-        }else{
-          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.00);
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(afterTaxAmount1)+')',
+          dataIndex: 'afterTaxAmount',
+          align:'right',
+          render: (afterTaxAmount: string, record: Proj) => {
+            let contract = projectAgreements.filter((item) => item.id == record.id);
+            let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+            if(amount[0]?.afterTaxAmount){
+              return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
+            }else{
+              return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.00);
+            }
+            
+          },
+          width: 150,
         }
-        
-      },
-      width: 100,
+      ],
+      width: 150,
       align:'right',
     },
     {
-      title: '确认金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(recoAmount1)+')',
+      title: '确认金额(含税)',
       dataIndex: 'recoAmount',
       key: 'recoAmount',
-      render: (recoAmount: any) => {
-        if(recoAmount){
-          return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(recoAmount));
-        }else{
-          return Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.00);
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(recoAmount1)+')',
+          dataIndex: 'recoAmount',
+          align:'right',
+          render: (recoAmount: any) => {
+            if(recoAmount){
+              return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(recoAmount));
+            }else{
+              return Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.00);
+            }
+            
+          },
+          width: 150,
         }
-        
-      },
-      width: 100,
+      ],
+      width: 150,
+      align:'right',
+    },
+    {
+      title: '确认金额(不含税)',
+      dataIndex: 'afterTaxAmountConfirm',
+      key: 'afterTaxAmountConfirm',
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(afterTaxAmountConfirm2)+')',
+          dataIndex: 'afterTaxAmountConfirm',
+          align:'right',
+          render: (afterTaxAmountConfirm: any) => {
+            if(afterTaxAmountConfirm){
+              return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(afterTaxAmountConfirm));
+            }else{
+              return Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.00);
+            }
+            
+          },
+          width: 150,
+        }
+      ],
+      width: 150,
       align:'right',
     },
     {
@@ -343,7 +393,7 @@ const Project: React.FC<any> = () => {
   });
   const handleChange = (value = '', type: string) => {
     if(type == 'regionones'){
-      // console.log(regions.filter(item=>value.includes(item.parentId)),'JJJKKK')
+      
       let options_ = regions.filter(item=>value.includes(item.parentId))
       setZoneCodeOptions(options_)
     }
@@ -522,8 +572,8 @@ const Project: React.FC<any> = () => {
   //=====zhouyueyang
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
-      <Row gutter={16}>
-        {/* <Col className="gutter-row">
+      <Row gutter={[16,16]}>
+        <Col className="gutter-row">
           <Input
             id="proName"
             value={params.name}
@@ -534,7 +584,7 @@ const Project: React.FC<any> = () => {
               handleChangeInput(e.target.value);
             }}
           />
-        </Col> */}
+        </Col>
         <Col className="gutter-row">
           <label>项目部门：</label>
           <Cascader
@@ -655,7 +705,7 @@ const Project: React.FC<any> = () => {
           />
         </Col> */}
 
-        {/* <Col className="gutter-row">
+        <Col className="gutter-row">
           <label>合同状态：</label>
           <Select
             value={params.contractState}
@@ -665,7 +715,7 @@ const Project: React.FC<any> = () => {
             onChange={(value, event) => handleChange(value, 'contractState')}
             options={contractStatesOptions}
           />
-        </Col> */}
+        </Col>
         {/**incomeConfirm */}
 
         {/* <Col className="gutter-row">

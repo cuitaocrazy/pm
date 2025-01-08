@@ -219,6 +219,15 @@ const Project: React.FC<any> = () => {
 
   const columns = [
     {
+      title: '序号',
+      dataIndex: 'index',
+      width: 60,
+      render: (text: string, record: Proj,index:number) => (
+         ++index
+      ),
+
+    },
+    {
       title: '项目名称',
       dataIndex: 'name',
       key: 'name',

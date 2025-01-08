@@ -127,6 +127,8 @@ const dataTypeDef = gql`
     copyrightNameSale: String
     merchantContact: String
     contactDetailsMerchant: String
+    taxRate:String
+    afterTaxAmountConfirm:String
   }
   type ProjectPage {
     result: [Project!]!
@@ -767,6 +769,8 @@ const dataTypeDef = gql`
     merchantContact: String
     contactDetailsMerchant: String
     reason: String
+    afterTaxAmountConfirm:String
+    taxRate:String
   }
 
   input ContactInput {
@@ -977,6 +981,8 @@ const dataTypeDef = gql`
     maintenanceFreePeriod: String
     isDel: Boolean
     createDate: String
+    taxRate:String
+    group:String
   }
   input ContractPaymentInput {
     id: ID

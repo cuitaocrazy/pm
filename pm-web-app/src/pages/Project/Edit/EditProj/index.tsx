@@ -69,7 +69,80 @@ const Project: React.FC<any> = () => {
     });
   };
   const [objectInfo,setObjectInfo] = useState({}) as any
+  let totalNumber1 = 0;
+  let totalNumber2 = 0;
+  let totalNumber3 = 0;
+  //!isAdmin && archive === '2' ? todoProjs : projs
+  if(!isAdmin && archive === '2'){
+    console.log(todoProjs,'todoProjs ++++++')
+    if(todoProjs){
+      totalNumber1 = todoProjs.reduce((sum, item_) => {
+        if (projectAgreements && agreements.result && agreements.result.length != 0) {
+          let contract = projectAgreements?.filter((item) => item.id == item_.id);
+          let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+          if(amount[0]?.contractAmount){
+              return sum + Number(amount[0]?.contractAmount);
+          }else{
+            return sum + 0;
+          }
+        }
+      },0);
+      totalNumber2 = todoProjs.reduce((sum, item_) => {
+        if (projectAgreements && agreements.result && agreements.result.length != 0) {
+          let contract = projectAgreements?.filter((item) => item.id == item_.id);
+          let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
+          if(amount[0]?.afterTaxAmount){
+            return sum + Number(amount[0]?.afterTaxAmount);
+          }else{
+            return sum + 0
+          }
+          
+        } 
+      },0)
+      totalNumber3 = todoProjs.reduce((sum, item_) => {
+        return sum + item_.recoAmount
+      },0)
+      
+    }
+    
+  }else{
+    totalNumber1 = projs.reduce((sum, item_) => {
+      if (projectAgreements && agreements.result && agreements.result.length != 0) {
+        let contract = projectAgreements?.filter((item) => item.id == item_.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        if(amount[0]?.contractAmount){
+            return sum + Number(amount[0]?.contractAmount);
+        }else{
+          return sum + 0;
+        }
+      }
+    },0);
+    totalNumber2 = projs.reduce((sum, item_) => {
+      if (projectAgreements && agreements.result && agreements.result.length != 0) {
+        let contract = projectAgreements?.filter((item) => item.id == item_.id);
+        let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
+        if(amount[0]?.afterTaxAmount){
+          return sum + Number(amount[0]?.afterTaxAmount);
+        }else{
+          return sum + 0
+        }
+        
+      } 
+    },0)
+    totalNumber3 = projs.reduce((sum, item_) => {
+      return sum + item_.recoAmount
+    },0)
+  }
   const columns = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      width: 60,
+      render: (text: string, record: Proj,index:number) => (
+         ++index
+      ),
+
+    },
     {
       title: '项目名称',
       dataIndex: 'name',
@@ -190,56 +263,79 @@ const Project: React.FC<any> = () => {
       align:'right',
     },
     {
-      title: '合同金额',
+      title: '合同金额(含税)',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
       align:'right',
-      render: (contractAmount: string, record: Proj) => {
-        if (projectAgreements && agreements.result && agreements.result.length != 0) {
-          let contract = projectAgreements?.filter((item) => item.id == record.id);
-          let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-          
-          if(amount[0]?.contractAmount){
-              return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(amount[0]?.contractAmount)));
-          }else{
-            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
-          }
-        } else {
-          return '---';
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber1)+')',
+          dataIndex: 'contractAmount',
+          align:'right',
+          render: (contractAmount: string, record: Proj) => {
+            if (projectAgreements && agreements.result && agreements.result.length != 0) {
+              let contract = projectAgreements?.filter((item) => item.id == record.id);
+              let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+              if(amount[0]?.contractAmount){
+                  return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(amount[0]?.contractAmount)));
+              }else{
+                return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+              }
+            } else {
+              return '---';
+            }
+          },
+        width: 150,
         }
-      },
-      width: 100,
+      ],
+      width: 150,
     },
     {
-      title: '确认金额',
-      dataIndex: 'recoAmount',
-      key: 'recoAmount',
-      align:'right',
-      render: (recoAmount: any) => {
-        return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((recoAmount));
-      },
-      width: 100,
-    },
-    {
-      title: '税后金额',
+      title: '合同金额(不含税)',
       dataIndex: 'afterTaxAmount',
       key: 'afterTaxAmount',
       align:'right',
-      render: (afterTaxAmount: string, record: Proj) => {
-        if (projectAgreements && agreements.result && agreements.result.length != 0) {
-          let contract = projectAgreements?.filter((item) => item.id == record.id);
-          let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
-          if(amount[0]?.afterTaxAmount){
-            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
-          }else{
-            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
-          }
-          
-        } else {
-          return '---';
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber2)+')',
+          dataIndex: 'contractAmount',
+          align:'right',
+          render: (afterTaxAmount: string, record: Proj) => {
+            if (projectAgreements && agreements.result && agreements.result.length != 0) {
+              let contract = projectAgreements?.filter((item) => item.id == record.id);
+              let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
+              if(amount[0]?.afterTaxAmount){
+                return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
+              }else{
+                return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+              }
+              
+            } else {
+              return '---';
+            }
+          },
+        width: 150,
         }
-      },
-      width: 100,
+      ],
+      width: 150,
+    },
+    {
+      title: '确认金额(含税)',
+      dataIndex: 'recoAmount',
+      key: 'recoAmount',
+      align:'right',
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber3)+')',
+          dataIndex: 'recoAmount',
+          align:'right',
+          render: (recoAmount: any) => {
+            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((recoAmount));
+          },
+        width: 150,
+        }
+      ],
+      width: 150,
     },
     {
       title: '投产日期',
@@ -796,6 +892,7 @@ const Project: React.FC<any> = () => {
       />
       <div className="paginationCon marginTop20 lineHeight32">
         <Pagination
+        pageSizeOptions={[10,50,100,200,500]}
           onChange={(page, pageSize) => pageChange(page,pageSize)}
           current={params.page}
           total={total}
@@ -853,8 +950,8 @@ const Project: React.FC<any> = () => {
                   <td style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{subordinates.find((user: { id: string }) => user.id === objectInfo.leader)?.name}</td>
                 </tr>
                 <tr style={{border:'1px solid #000'}}>
-                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>产品名称</td>
-                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.productName}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目预算</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.projBudget}</td>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>工作量评估</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.estimatedWorkload}</td>
                 </tr>
@@ -870,19 +967,19 @@ const Project: React.FC<any> = () => {
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>联系方式</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.contactDetailsCus}</td>
                 </tr>
-                <tr style={{border:'1px solid #000'}}>
+                {/* <tr style={{border:'1px solid #000'}}>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>商户联系人</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.merchantContact}</td>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>联系方式</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.contactDetailsMerchant}</td>
-                </tr>
+                </tr> */}
                 <tr style={{border:'1px solid #000'}}>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>销售负责人</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.salesManager}</td>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>联系方式</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.copyrightNameSale}</td>
                 </tr>
-                <tr style={{border:'1px solid #000'}}>
+                {/* <tr style={{border:'1px solid #000'}}>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>合同名称</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.contractName}</td>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>合同金额</td>
@@ -893,12 +990,12 @@ const Project: React.FC<any> = () => {
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.copyrightName}</td>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目阶段</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.status == 'onProj' ? '启动' : objectInfo.status == 'endProj' ? '关闭' :'' }</td>
-                </tr>
+                </tr> */}
                 <tr style={{border:'1px solid #000'}}>
-                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目说明</td>
-                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}></td>
+                  {/* <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目说明</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}></td> */}
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目参与人员</td>
-                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.persons}</td>
+                  <td colSpan={5} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.persons}</td>
                 </tr>
                 <tr style={{border:'1px solid #000'}}>
                   <td  style={{borderRight:'1px solid #000',padding:'10px'}}>项目概况</td>

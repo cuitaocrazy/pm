@@ -676,7 +676,7 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item label="参与人员" name="participants">
+          <Form.Item label="参与人员" name="participants" rules={[{ required: true }]}>
             <Select
               mode="multiple"
               filterOption={(input, option) => {
@@ -850,7 +850,7 @@ export default () => {
           <Form.Item
             label="项目预算"
             name="projBudget"
-            rules={[{ required: false }]}
+            rules={[{ required: true }]}
             tooltip={<span className="ant-form-text">客户心理的预算</span>}
           >
             <InputNumber min={0} style={{ width: '100%' }} />
@@ -913,7 +913,7 @@ export default () => {
           <Form.Item
             label="预估工作量"
             name="estimatedWorkload"
-            rules={[{ required: false }, { validator: validateInteger }]}
+            rules={[{ required: true }, { validator: validateInteger }]}
           >
             <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
@@ -1032,14 +1032,14 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item label="地址" name="address" rules={[{ required: false }]}>
+          <Form.Item label="地址" name="address" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Col>
       </Row>
       <Row>
         <Col span={7}>
-          <Form.Item label="客户联系人" name="customerContact" rules={[{ required: false }]}>
+          <Form.Item label="客户联系人" name="customerContact" rules={[{ required: true }]}>
             <Select
               onChange={customerContacthandleChange}
               options={contacts}
@@ -1048,7 +1048,7 @@ export default () => {
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: false }]}>
+          <Form.Item label="销售负责人" name="salesManager" rules={[{ required: true }]}>
             <Select options={formattedOptions} />
           </Form.Item>
         </Col>
@@ -1060,12 +1060,12 @@ export default () => {
       </Row>
       <Row>
         <Col span={7}>
-          <Form.Item label="客户联系方式" name="contactDetailsCus" rules={[{ required: false }]}>
+          <Form.Item label="客户联系方式" name="contactDetailsCus" rules={[{ required: true }]}>
             <Input disabled />
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item label="销售联系方式" name="copyrightNameSale" rules={[{ required: false }]}>
+          <Form.Item label="销售联系方式" name="copyrightNameSale" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Col>
@@ -1086,6 +1086,7 @@ export default () => {
             name="description"
             labelCol={{ span: 4 }}
             wrapperCol={{ span: 20 }}
+            rules={[{ required: true }]}
           >
             {/** */}
             <Input.TextArea style={{ width: '100%' }} />
@@ -1098,6 +1099,7 @@ export default () => {
             rules={[{ required: false }]}
             labelCol={{ span: 4 }}
             wrapperCol={{ span: 20 }}
+            rules={[{ required: true }]}
           >
             <Input.TextArea style={{ width: '100%' }} />
           </Form.Item>

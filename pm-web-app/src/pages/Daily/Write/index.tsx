@@ -20,10 +20,11 @@ const dateFormat = 'YYYYMMDD';
 function Dailies(prop: { date?: string }) {
   const [cheackInp,setCheackInp] = useState('')
   const hookStatus = useDailiesStatus(prop.date);
+  
   const involvedProj = hookStatus.currentDaily?.dailyItems?.filter(d =>
-    !(d.project.id.indexOf('-ZH-') > -1) && (d.project.participants.includes(hookStatus.userId || '')))
+    !(d.project.id.indexOf('-ZH-') > -1) && (d.project.participants.includes(hookStatus.userId || '')) && d.project.isArchive == false)
   const unInvolvedProj = hookStatus.currentDaily?.dailyItems?.filter(d =>
-    !(d.project.id.indexOf('-ZH-') > -1) && (!d.project.participants.includes(hookStatus.userId || '')))
+    !(d.project.id.indexOf('-ZH-') > -1) && (!d.project.participants.includes(hookStatus.userId || '')) && d.project.isArchive == false)
   const syntPro = hookStatus.currentDaily?.dailyItems?.filter(d =>
     (d.project.id.indexOf('-ZH-') > -1))
   const onShowTypeChange = (e: any) => hookStatus.setShowType(e.target.value)

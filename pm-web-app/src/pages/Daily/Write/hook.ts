@@ -34,6 +34,7 @@ const myQuery = gql`
       status
       leader
       salesLeader
+      isArchive
     }
   }
 `;

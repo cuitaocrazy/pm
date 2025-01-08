@@ -195,7 +195,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
       {...layout}
       form={form}
       initialValues={data}
-      onValuesChange={(_, values) => {console.log(values.contractAmount,'MMMMMMMM');calculateAfterTaxAmount(values)}}
+      onValuesChange={(_, values) => {calculateAfterTaxAmount(values)}}
     >
       <Form.Item label="ID" name="id" hidden>
         <Input />

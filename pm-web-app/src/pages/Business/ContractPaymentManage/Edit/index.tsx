@@ -267,28 +267,37 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
         },
     },
     {
-      title: '合同金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalCount1)+')',
+      title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
       width: 200,
       align:'right' as 'right',
-      render: (value:any, row:any, index:any) =>{
-        const obj = {
-          children: new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value),
-          props: {
-            rowSpan:0
-          },
-        };
-
-        // // 设置 rowSpan 值
-        if (rowSpanMap[row.name].start === index) {
-          obj.props.rowSpan = rowSpanMap[row.name].count;
-        } else {
-          obj.props.rowSpan = 0; // 隐藏后续行
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalCount1)+')',
+          dataIndex: 'contractAmount',
+          align:'right',
+          render: (value:any, row:any, index:any) =>{
+            const obj = {
+              children: new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value),
+              props: {
+                rowSpan:0
+              },
+            };
+    
+            // // 设置 rowSpan 值
+            if (rowSpanMap[row.name].start === index) {
+              obj.props.rowSpan = rowSpanMap[row.name].count;
+            } else {
+              obj.props.rowSpan = 0; // 隐藏后续行
+            }
+    
+            return obj;
+            },
+        width: 200,
         }
-
-        return obj;
-        },
+      ],
+      
     },
     {
       title: '合同签订日期',
@@ -361,14 +370,22 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       render: (text: string, record: any) => record.milestoneValue+'%',
     },
     {
-      title: '款项金额('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber1)+')',
+      title: '款项金额',
       dataIndex: 'milestoneValue',
       key: 'milestoneValue',
       width: 200,
       align:'right' as 'right',
-      render: (text: string, record: any) => {
-        return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(record.contractAmount) * Number(record.milestoneValue)) / 100);
-      },
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber1)+')',
+          dataIndex: 'contractAmount',
+          align:'right',
+          render: (text: string, record: any) => {
+            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(record.contractAmount) * Number(record.milestoneValue)) / 100);
+          },
+        }
+      ],
+      
     },
     {
       title: '预计回款季度',

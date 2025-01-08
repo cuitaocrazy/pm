@@ -577,9 +577,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   };
   // 项目部门下拉菜单的数据源
   const [groupsOptions] = useState(groupDatas(groupType));
-
+  const calculateAfterTaxAmount = (values: any) => {
+    const { recoAmount, taxRate } = values;
+    if ((recoAmount || recoAmount === 0) && taxRate) {
+      // 计算不含税金额
+      const afterTaxAmount = parseFloat(recoAmount) / (1 + parseFloat(taxRate) / 100);
+      form.setFieldsValue({ afterTaxAmountConfirm: afterTaxAmount.toFixed(2) } as any);
+    }
+  };
   return (
-    <Form {...layout} form={form} initialValues={data} disabled={data?.status === 'endProj'}>
+    <Form {...layout} form={form} initialValues={data} disabled={data?.status === 'endProj'} onValuesChange={(_, values) => {calculateAfterTaxAmount(values)}}>
       <Form.Item shouldUpdate noStyle>
         {() => {
           return (
@@ -1120,12 +1127,30 @@ return true;
             {/* <Input /> */}
           </Form.Item>
         </Col>
-        <Col span={8}></Col>
+        <Col span={8}>
+          <Form.Item label="税率" name="taxRate" rules={[{ required: true }]}>
+            <Input
+            suffix="%"
+              min={0}
+              disabled={data?.incomeConfirm == 2}
+              style={{width:'100%'}}
+            />
+          </Form.Item>
+        </Col>
       </Row>
       <Row>
         <Col span={16}>
           <Form.Item label="项目描述" name="description" labelCol={{ span: 4}} wrapperCol={{span:20}}>
             <Input.TextArea disabled />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="税后金额" name="afterTaxAmountConfirm" rules={[{ required: true }]}>
+            <InputNumber
+              min={0}
+              disabled={data?.incomeConfirm == 2}
+              style={{width:'100%'}}
+            />
           </Form.Item>
         </Col>
       </Row>

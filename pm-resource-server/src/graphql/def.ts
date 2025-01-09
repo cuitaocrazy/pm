@@ -594,6 +594,7 @@ const dataTypeDef = gql`
       name: String
       contractState: String
       incomeConfirm: String
+      conName:String
     ): ProjectPage
     iLeadProjs_(
       isArchive: Boolean
@@ -619,6 +620,7 @@ const dataTypeDef = gql`
       group: String
       status: String
       name: String
+      conName:String
     ): ProjectPage
     filterProjs(
       isArchive: Boolean

@@ -23,6 +23,7 @@ const queryGql = gql`
     $expectedQuarter:[String]
     $payState:[String]
     $group:[String]
+    $agreementPageSize:Int
   ) {
     projectAgreements {
       id
@@ -73,6 +74,7 @@ const queryGql = gql`
         }
         contractSignDate
         contractPeriod
+        contractId
         contractNumber
         contractAmount
         afterTaxAmount
@@ -107,6 +109,15 @@ const queryGql = gql`
         code
         enable
       }
+        agreements(pageSize:$agreementPageSize) {
+      result{
+        id
+        name
+        customer
+        contractAmount
+        contractSignDate
+      }
+    }
   }
 `;
 
@@ -173,6 +184,7 @@ export function useAgreementState() {
     variables: {
       customersPageSize: 10000000,
       pageSizeAgreements: 10000000,
+      agreementPageSize:100000000,
       ...query,
     },
   });
@@ -252,6 +264,7 @@ export function useAgreementState() {
     customers,
     projs,
     projectAgreements,
+    agreements_:queryData?.agreements || [],
     refresh,
     deleteAgreement,
     pushAgreement,

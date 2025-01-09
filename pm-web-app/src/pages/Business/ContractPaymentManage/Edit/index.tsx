@@ -20,6 +20,7 @@ const Agreement: React.FC<any> = () => {
     // projs,
     // projectAgreements,
     customers,
+    agreements_,
     deleteAgreement,
     pushAgreement,
     payWaySub,
@@ -181,7 +182,7 @@ const Agreement: React.FC<any> = () => {
   const sortedData = [...agreements].sort((a, b) => (a.name > b.name ? 1 : -1));
   // 根据数据计算 rowSpan
  
-  const rowSpanMap = calculateRowSpan(sortedData, 'name');
+  const rowSpanMap = calculateRowSpan(sortedData, 'contractId');
   console.log(rowSpanMap,'rowSpanMap NNNNNNN')
   // 去重 name 并计算 count1 的总和
 const uniqueCounts = {};
@@ -208,9 +209,9 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
         };
 
         // 设置 rowSpan 值
-        if (rowSpanMap[record.name].start === index) {
-          obj.props.rowSpan = rowSpanMap[record.name].count;
-          obj.children = rowSpanMap[record.name].index;
+        if (rowSpanMap[record.contractId].start === index) {
+          obj.props.rowSpan = rowSpanMap[record.contractId].count;
+          obj.children = rowSpanMap[record.contractId].index;
         } else {
           obj.props.rowSpan = 0; // 隐藏后续行
         }
@@ -225,15 +226,15 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       width: 150,
       render: (value:any, row:any, index:any) => {
         const obj = {
-          children: value,
+          children: agreements_.result.filter(item=>item.id == row.contractId)[0].name || '---',
           props: {
             rowSpan:0
           },
         };
 
         // 设置 rowSpan 值
-        if (rowSpanMap[value].start === index) {
-          obj.props.rowSpan = rowSpanMap[value].count;
+        if (rowSpanMap[row.contractId].start === index) {
+          obj.props.rowSpan = rowSpanMap[row.contractId].count;
         } else {
           obj.props.rowSpan = 0; // 隐藏后续行
         }
@@ -248,8 +249,8 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       width: 100,
       render: (value:any, row:any, index:any) =>{
         const obj = {
-          children: customers.filter((item) => item.id === value).length
-            ? customers.filter((item) => item.id === value)[0].name
+          children: customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer).length
+            ? customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer)[0].name
             : '',
           props: {
             rowSpan:0
@@ -257,8 +258,8 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
         };
 
         // // 设置 rowSpan 值
-        if (rowSpanMap[row.name].start === index) {
-          obj.props.rowSpan = rowSpanMap[row.name].count;
+        if (rowSpanMap[row.contractId].start === index) {
+          obj.props.rowSpan = rowSpanMap[row.contractId].count;
         } else {
           obj.props.rowSpan = 0; // 隐藏后续行
         }
@@ -279,15 +280,15 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
           align:'right',
           render: (value:any, row:any, index:any) =>{
             const obj = {
-              children: new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value),
+              children: new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(agreements_.result.filter(item=>item.id == row.contractId)[0].contractAmount),
               props: {
                 rowSpan:0
               },
             };
     
             // // 设置 rowSpan 值
-            if (rowSpanMap[row.name].start === index) {
-              obj.props.rowSpan = rowSpanMap[row.name].count;
+            if (rowSpanMap[row.contractId].start === index) {
+              obj.props.rowSpan = rowSpanMap[row.contractId].count;
             } else {
               obj.props.rowSpan = 0; // 隐藏后续行
             }
@@ -307,15 +308,15 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       align:'right' as 'right',
       render: (value:any, row:any, index:any) =>{
         const obj = {
-          children: moment(value).format('YYYY-MM-DD'),
+          children: moment(agreements_.result.filter(item=>item.id == row.contractId)[0].contractSignDate).format('YYYY-MM-DD'),
           props: {
             rowSpan:0
           },
         };
 
         // // 设置 rowSpan 值
-        if (rowSpanMap[row.name].start === index) {
-          obj.props.rowSpan = rowSpanMap[row.name].count;
+        if (rowSpanMap[row.contractId].start === index) {
+          obj.props.rowSpan = rowSpanMap[row.contractId].count;
         } else {
           obj.props.rowSpan = 0; // 隐藏后续行
         }
@@ -344,8 +345,8 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
         };
 
         // // 设置 rowSpan 值
-        if (rowSpanMap[row.name].start === index) {
-          obj.props.rowSpan = rowSpanMap[row.name].count;
+        if (rowSpanMap[row.contractId].start === index) {
+          obj.props.rowSpan = rowSpanMap[row.contractId].count;
         } else {
           obj.props.rowSpan = 0; // 隐藏后续行
         }

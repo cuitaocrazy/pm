@@ -23,10 +23,21 @@ const queryGql = gql`
     $group: String
     $status: String
     $name: String
+    $agreementPageSize:Int
   ) {
     projectAgreements {
       id
       agreementId
+    }
+      agreements(pageSize:$agreementPageSize) {
+      result{
+        id
+        name
+        contractAmount
+        afterTaxAmount
+        maintenanceFreePeriod
+        contractSignDate
+      }
     }
     yearManages {
       code
@@ -161,6 +172,7 @@ export function useProjStatus() {
     variables: {
       projType: routeProjType,
       pageSize: 10000,
+      agreementPageSize:10000000,
       ...query,
     },
     fetchPolicy: 'no-cache',
@@ -183,6 +195,7 @@ export function useProjStatus() {
   }, [refresh, query]);
 
   const projectAgreements = queryData?.projectAgreements || [];
+  const agreements = queryData?.agreements || [];
   const total = queryData?.filterProjs.total || undefined;
   const tmpProjsResult = queryData?.filterProjs.result || [];
   const deleteProj = useCallback(
@@ -212,6 +225,7 @@ export function useProjStatus() {
   return {
     loading: queryLoading || deleteLoading || pushLoading,
     projectAgreements,
+    agreements,
     filter,
     routeProjType,
     setFilter,

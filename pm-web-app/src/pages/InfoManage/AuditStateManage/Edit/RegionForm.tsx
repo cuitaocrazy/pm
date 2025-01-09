@@ -17,16 +17,17 @@ const layout = {
 };
 
 export default (form: FormInstance<RegionInput>, data?: RegionInput) => {
+  console.log(data,'data JJJKKK')
   return (
     <Form {...layout} form={form} initialValues={data}>
       <Form.Item label="ID" name="id" hidden>
         <Input />
       </Form.Item>
-      <Form.Item label="季度名称" name="name" rules={[{ required: true }]}>
+      <Form.Item label="审核名称" name="name" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
-      <Form.Item label="季度编码" name="code" rules={[{ required: true }]}>
-        <Input min={0} />
+      <Form.Item label="审核编码" name="code" rules={[{ required: true }]}>
+        <Input min={0} disabled={data.type_ == 'edit' ? true : false}/>
       </Form.Item>
       <Form.Item
         label="是否启用"

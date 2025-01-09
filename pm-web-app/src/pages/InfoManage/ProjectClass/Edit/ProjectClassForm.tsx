@@ -18,7 +18,7 @@ export default (form: FormInstance<ProjectClassInput>, data?: ProjectClassInput)
         <Input />
       </Form.Item>
       <Form.Item label="项目分类编码" name="code" rules={[{ required: true }]}>
-        <Input min={0} />
+        <Input min={0} disabled={data.type_ == 'edit' ? true : false}/>
       </Form.Item>
       <Form.Item label="是否启用" name="enable" valuePropName="checked" rules={[{ required: true }]}>
         <Switch />

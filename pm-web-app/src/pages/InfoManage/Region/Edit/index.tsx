@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef } from 'react';
+import React, { useRef,useState } from 'react';
 import { Button, Table, Switch } from 'antd';
 import type { Region as RegionType, RegionInput } from '@/apollo';
 import { client } from '@/apollo';
@@ -82,6 +82,7 @@ function getColumns(
 function Region() {
   const { regions, regionones, loading, deleteRegion, pushRegion } = useRegionState();
   const ref = useRef<FormDialogHandle<RegionInput>>(null);
+  const [isAdd,setIsAdd] = useState(true)
   const columns = getColumns(
     (region) => {
       ref.current?.showDialog({
@@ -94,7 +95,8 @@ function Region() {
       });
     },
     (region) => {
-      ref.current?.showDialog({ ...region });
+      ref.current?.showDialog({ ...region,type_:'edit' });
+      setIsAdd(false)
     },
     deleteRegion,
     (region) => {
@@ -115,7 +117,7 @@ function Region() {
         <Button
           key="create"
           type="primary"
-          onClick={() =>
+          onClick={() =>{
             ref.current?.showDialog({
               name: '',
               code: '',
@@ -123,7 +125,8 @@ function Region() {
               sort: 0,
               remark: '',
             })
-          }
+            setIsAdd(true)
+          }}
         >
           新建
         </Button>,
@@ -137,7 +140,7 @@ function Region() {
         pagination={false}
         size="middle"
       />
-      <DialogForm submitHandle={(v: RegionInput) => pushRegion(v)} ref={ref} title="编辑行业">
+      <DialogForm submitHandle={(v: RegionInput) => pushRegion(v)} ref={ref} title={isAdd == true ? '新增区域' : '编辑区域'}>
         {RegionForm}
       </DialogForm>
     </PageContainer>

@@ -189,14 +189,18 @@ export function useAgreementState() {
   );
   const pushAgreement = useCallback(
     async (agreement: AgreementInput) => {
+      
       let reqAgreement = await attachmentUpload(agreement);
       reqAgreement.contractAmount = reqAgreement.contractAmount + '';
       delete reqAgreement.time;
       delete reqAgreement.customerName;
       // delete reqAgreement.taxRate;
-      reqAgreement.group = reqAgreement?.group && reqAgreement?.group.reduce((accumulator: string, currentValue: string) => {
-        return `${accumulator}/${currentValue}`;
-      }, '')
+      console.log(reqAgreement.group,'KKKKKKK')
+      if(reqAgreement?.group && reqAgreement?.group.length > 0 && typeof reqAgreement?.group !== "string"){
+        reqAgreement.group = reqAgreement?.group && reqAgreement?.group.reduce((accumulator: string, currentValue: string) => {
+          return `${accumulator}/${currentValue}`;
+        }, '')
+      }
       console.log(reqAgreement,'reqAgreement LLLLoooopppp')
       await pushAgreementHandle({
         variables: {

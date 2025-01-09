@@ -221,9 +221,9 @@ const Project: React.FC<any> = () => {
       dataIndex: 'contractState',
       key: 'contractState',
       render: (text: string, record: Proj) => {
-        if(record.contractState){
-          return record?.contractState == 0 ? '未签署' : record?.contractState == 1 ? '已签署' : '';
-        }else{
+        // if(record.contractState){
+        //   return record?.contractState == 0 ? '未签署' : record?.contractState == 1 ? '已签署' : '';
+        // }else{
           
           let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
           let contract: string | any[] = []
@@ -238,7 +238,7 @@ const Project: React.FC<any> = () => {
             return '未签署'
           }
           
-        }
+        // }
       },
       width: 100,
     },

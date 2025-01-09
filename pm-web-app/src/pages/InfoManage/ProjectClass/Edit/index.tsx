@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef } from 'react';
+import React, { useRef,useState} from 'react';
 import { Button, Table, Switch } from 'antd';
 import type { ProjectClass as ProjectClassType, ProjectClassInput } from '@/apollo';
 import { client } from '@/apollo';
@@ -76,6 +76,7 @@ function getColumns(
 function ProjectClass() {
   const { projectclasses, loading, deleteProjectClass, pushProjectClass } = useProjectClassState();
   const ref = useRef<FormDialogHandle<ProjectClassInput>>(null);
+  const [isAdd,setIsAdd] = useState(true)
   const columns = getColumns(
     (projectclass) => {
       ref.current?.showDialog({
@@ -87,7 +88,8 @@ function ProjectClass() {
       });
     },
     (projectclass) => {
-      ref.current?.showDialog({ ...projectclass });
+      ref.current?.showDialog({ ...projectclass,type_:'edit' });
+      setIsAdd(false)
     },
     deleteProjectClass,
     (projectclass) => {
@@ -107,7 +109,7 @@ function ProjectClass() {
         <Button
           key="create"
           type="primary"
-          onClick={() =>
+          onClick={() =>{
             ref.current?.showDialog({
               name: '',
               code: '',
@@ -115,7 +117,8 @@ function ProjectClass() {
               sort: 0,
               remark: '',
             })
-          }
+            setIsAdd(true)
+          }}
         >
           新建
         </Button>,
@@ -129,7 +132,7 @@ function ProjectClass() {
         pagination={false}
         size="middle"
       />
-      <DialogForm submitHandle={(v: ProjectClassInput) => pushProjectClass(v)} ref={ref} title="编辑行业">
+      <DialogForm submitHandle={(v: ProjectClassInput) => pushProjectClass(v)} ref={ref} title={isAdd == true ? '新增项目分类' : '编辑项目分类'}>
         {ProjectClassForm}
       </DialogForm>
     </PageContainer>

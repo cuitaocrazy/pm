@@ -18,7 +18,7 @@ export default (form: FormInstance<RegionInput>, data?: RegionInput) => {
         <Input />
       </Form.Item>
       <Form.Item label="区域编码" name="code" rules={[{ required: true }]}>
-        <Input min={0} />
+        <Input min={0} disabled={data.type_ == 'edit' ? true : false}/>
       </Form.Item>
       <Form.Item label="是否启用" name="enable" valuePropName="checked" rules={[{ required: true }]}>
         <Switch />

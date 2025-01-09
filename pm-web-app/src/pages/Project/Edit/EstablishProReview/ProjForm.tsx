@@ -134,11 +134,11 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   });
   useEffect(() => {
     if(data){
-      if(data.contractState){
-        form.setFieldValue('contractState1',data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '')
+      // if(data.contractState){
+      //   form.setFieldValue('contractState1',data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '')
         // data.contractState1 =
         // data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '';
-      }else{
+      // }else{
         
         // resData.projectAgreements
         //resData.agreements
@@ -158,7 +158,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           form.setFieldValue('contractState1','未签署')
         }
         
-      }
+      // }
       
     }
   }, [resData?.projectAgreements, resData?.agreements]);

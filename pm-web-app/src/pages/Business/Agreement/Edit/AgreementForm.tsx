@@ -169,7 +169,7 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
         return false;
       }
     });
-    console.log(resProj,'resProj MMMMMM')
+    // console.log(resProj,'resProj MMMMMM')
     return resProj;
   };
 

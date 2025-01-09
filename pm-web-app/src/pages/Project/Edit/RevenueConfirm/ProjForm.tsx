@@ -147,11 +147,11 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       form.setFieldsValue({ serviceCycle_: amount && amount[0]?.maintenanceFreePeriod });
     }
     if(data){
-      if(data.contractState){
-        form.setFieldValue('contractState1',data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '')
+      // if(data.contractState){
+      //   form.setFieldValue('contractState1',data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '')
         // data.contractState1 =
         // data?.contractState == 0 ? '未签署' : data?.contractState == 1 ? '已签署' : '';
-      }else{
+      // }else{
         
         // resData.projectAgreements
         //resData.agreements
@@ -171,7 +171,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           form.setFieldValue('contractState1','未签署')
         }
         
-      }
+      // }
       
     }
   }, [resData?.projectAgreements, resData?.agreements]);
@@ -1045,7 +1045,7 @@ return true;
         <Col span={8}>
           <Form.Item label="确认年度" name="confirmYear" rules={[{ required: false }]}>
             <Select
-              disabled={data?.incomeConfirm == 2}
+              // disabled={data?.incomeConfirm == 2}
               allowClear
               className="width120"
               placeholder="请选择"
@@ -1065,7 +1065,7 @@ return true;
         <Col span={8}>
           <Form.Item label="确认季度" name="confirmQuarter" rules={[{ required: false }]}>
             <Select
-              disabled={data?.incomeConfirm == 2}
+              // disabled={data?.incomeConfirm == 2}
               allowClear
               className="width120"
               placeholder="请选择"
@@ -1086,7 +1086,7 @@ return true;
           <Form.Item label="确认金额" name="recoAmount" rules={[{ required: true }]}>
             <InputNumber
               min={0}
-              disabled={data?.incomeConfirm == 2}
+              // disabled={data?.incomeConfirm == 2}
               style={{width:'100%'}}
             />
           </Form.Item>
@@ -1132,7 +1132,7 @@ return true;
             <Input
             suffix="%"
               min={0}
-              disabled={data?.incomeConfirm == 2}
+              // disabled={data?.incomeConfirm == 2}
               style={{width:'100%'}}
             />
           </Form.Item>
@@ -1148,7 +1148,7 @@ return true;
           <Form.Item label="税后金额" name="afterTaxAmountConfirm" rules={[{ required: true }]}>
             <InputNumber
               min={0}
-              disabled={data?.incomeConfirm == 2}
+              // disabled={data?.incomeConfirm == 2}
               style={{width:'100%'}}
             />
           </Form.Item>

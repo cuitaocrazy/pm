@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useRef } from 'react';
+import React, { useRef,useState } from 'react';
 import { Space, Button, Table, Switch } from 'antd';
 import type { TreeStatu as StatuType, StatuInput } from '@/apollo';
 import { client } from '@/apollo';
@@ -79,6 +79,7 @@ function getColumns(
 function Statu() {
   const { status, loading, deleteStatu, pushStatu } = useStatusState();
   const ref = useRef<FormDialogHandle<StatuInput>>(null);
+  const [isAdd,setIsAdd] = useState(true)
   const columns = getColumns(
     (statu) => {
       ref.current?.showDialog({
@@ -89,9 +90,11 @@ function Statu() {
         sort: 0,
         remark: '',
       });
+      setIsAdd(true)
     },
     (statu) => {
-      ref.current?.showDialog({ ...statu });
+      ref.current?.showDialog({ ...statu ,type_:'edit' });
+      setIsAdd(false)
     },
     deleteStatu,
     (statu) => {
@@ -112,7 +115,7 @@ function Statu() {
         <Button
           key="create"
           type="primary"
-          onClick={() =>
+          onClick={() =>{
             ref.current?.showDialog({
               pId: '0',
               name: '',
@@ -121,7 +124,8 @@ function Statu() {
               sort: 0,
               remark: '',
             })
-          }
+            setIsAdd(true)
+          }}
         >
           新建
         </Button>,
@@ -135,7 +139,7 @@ function Statu() {
         pagination={false}
         size="middle"
       />
-      <DialogForm submitHandle={(v: StatuInput) => pushStatu(v)} ref={ref} title="编辑状态">
+      <DialogForm submitHandle={(v: StatuInput) => pushStatu(v)} ref={ref} title={isAdd == true ? '新增项目类型' : '编辑项目类型'}>
         {StatuForm}
       </DialogForm>
     </PageContainer>

@@ -32,6 +32,7 @@ const Project: React.FC<any> = () => {
   const detailRef = useRef<FormDialogHandle<ProjectInput>>(null);
   const {
     projectAgreements,
+    agreements,
     routeProjType,
     loading,
     pushProj,
@@ -304,7 +305,18 @@ const Project: React.FC<any> = () => {
       render: (text: string, record: Proj) => {
         // const agree = projectAgreements.filter(item => item.id === record.id)
         // return agree.length ? agreements.find((cum) => cum.id === agree[0].agreementId)?.name : ''
-        return record.agreements ? record.agreements[0].name : '';
+        // return record.agreements ? record.agreements[0].name : '';
+        let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
+          let contract: string | any[] = []
+          if(agreementId.length > 0){
+            contract = agreements.filter(item=>item.id == agreementId[0].agreementId) || []
+          }
+          if(contract.length > 0){
+            return contract[0].name
+          }else{
+            
+            return '---'
+          }
       },
       width: 150,
     },
@@ -334,7 +346,19 @@ const Project: React.FC<any> = () => {
       dataIndex: 'contStatus',
       key: 'contStatus',
       render: (text: string, record: Proj) => {
-        return status?.find((statu) => statu.id === record.contStatus)?.name;
+        // return status?.find((statu) => statu.id === record.contStatus)?.name;
+        let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
+          let contract: string | any[] = []
+          if(agreementId.length > 0){
+            contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+          }
+          
+          if(contract.length > 0){
+            return  '已签署'
+          }else{
+            
+            return '未签署'
+          }
       },
       width: 100,
     },

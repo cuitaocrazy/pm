@@ -486,6 +486,16 @@ export default {
           { salesLeader: context.user!.id },
           { leader: { $in: subordinateIds } },
         ],
+        $and: [
+          {
+            $or: [
+              { proState: 1 }, // proState 为 1
+              { proState: { $exists: false } }, // proState 不存在
+              { proState: null }, // proState 为 null
+            ],
+          },
+        ],
+        
       };
 
       let {
@@ -502,6 +512,7 @@ export default {
         leaders,
         incomeConfirm,
         contractState,
+        conName,
       } = __
       if (!page || page === 0) {
         page = 1
@@ -519,6 +530,7 @@ export default {
         regiononesT = JSON.parse(JSON.stringify(regionones))
       }
       const regexArray: RegExp[] = []
+      const proIds: (string | number)[] = []
       if (!regions || regions.length == 0) regions = ["\\w*"];
       if (!regionones || regionones.length == 0) regionones = ["\\w*"];
       if (!industries || industries.length == 0) industries = ["\\w*"];
@@ -541,9 +553,21 @@ export default {
       if (incomeConfirm) {
         filter["incomeConfirm"] = incomeConfirm;
       }
-      if (contractState) {
-        filter["contractState"] = Number(contractState);
-      }
+      // if (contractState) {
+      //   filter["contractState"] = Number(contractState);
+      // }
+      /**
+       * 合同名称：
+       * 合同名称去找合同表，拿到合同ID
+       * 根据合同ID去找中间表，找到项目ID，
+       * 根据项目ID去找项目
+       * 和regexArray进行合并，去重
+       */
+      /**
+       * 搜索条件合同状态：
+       * 遍历每个项目，拿项目的ID去中间表和合同表查
+       * filter有合同的或者没合同的
+       */
       /**
        * 如果一级区域有值，二级区域没值，拿着一级区域去找二级区域的表，找出来符合的二级区域
        * 符合的二级区域合并到regions里，且去重
@@ -568,12 +592,47 @@ export default {
       for (let i = 0; i < newregions.length; i++) {
         for (let j = 0; j < industries.length; j++) {
           for (let k = 0; k < projTypes.length; k++) {
-            const regexStr = `^${industries[j]}-${newregions[i]}-${projTypes[k]}-.*`;
-            regexArray.push(new RegExp(regexStr))
+            // if(industries[j] !== '\\w*' || newregions[i] !== '\\w*' || projTypes[k] !== '\\w*'){
+              const regexStr = `^${industries[j]}-${newregions[i]}-${projTypes[k]}-.*`;
+              regexArray.push(new RegExp(regexStr))
+            // }
+            
           }
         }
       }
-      filter["_id"] = { $in: regexArray, $not: /-ZH-/ }
+      if(conName) {
+        let agreements = await Agreement.find({
+          name: { $regex: conName },
+          isDel:false,
+        }).sort({ sort: 1 })
+        .map(dbid2id)
+        .toArray()
+        for (const item of agreements) {
+          let proAgrs = await ProjectAgreement.find({
+            agreementId: item.id.toHexString(),
+          }).sort({ sort: 1 })
+          .map(dbid2id)
+          .toArray()
+          proIds.push(proAgrs[0].id)
+        console.log(proIds,'DDDDD')
+        }
+        }
+        
+        // (filter["id"] as any[]).push({
+        //   $or: [
+        //     { _id: { $in: proIds }},
+        //     { _id: { $in: regexArray == [] ? '' : regexArray, $not: /-ZH-/ } }
+        //   ],
+        // })
+        // filter["id"] = {_id: { $in: regexArray == [] ? '' : regexArray, $not: /-ZH-/ }}
+        // filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+        (filter['$and'] as any).push({_id:{$in: regexArray, $not: /-ZH-/}},)
+          if(proIds.length > 0 ){
+            (filter['$and'] as any).push({_id:{$in: proIds }})
+          }
+        
+        // console.dir(filter,{depth:null,color:true})
+        // console.log(proIds,{depth:null,color:true})
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
@@ -618,11 +677,32 @@ export default {
           if (customer) oneResult.customerObj = dbid2id(customer);
         }),
       )
-
+      let result_:any[] = []
+      for (let item of result) {
+        if(contractState){
+          const projAggrement = await ProjectAgreement.find({
+            _id: item.id,
+          }).toArray();
+          // console.dir(projAggrement,{depth:null,color:true})
+          // console.log('=====')
+            if(contractState == '0' ){//未签署
+              if(projAggrement.length == 0){
+                result_.push(item)
+              }
+            }else if(contractState == '1' ){//已签署
+              if(projAggrement.length > 0){
+                result_.push(item)
+              }
+            }
+        }else{
+          result_.push(item)
+        }
+      }
+      
       const total = await Project.countDocuments(filter);
-      // console.dir(result,{depth:null,color:true})
+      console.dir(result_,{depth:null,color:true})
       return {
-        result,
+        result:result_,
         page,
         total,
       };

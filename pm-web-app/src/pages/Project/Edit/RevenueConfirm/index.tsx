@@ -108,50 +108,29 @@ const Project: React.FC<any> = () => {
       width: 60,
     },
     {
-      title: '项目ID',
-      dataIndex: 'id',
-      key: 'id',
-      fixed: 'left' as 'left',
-      render: (text: string, record: Proj) => (
-        <div>
-          <a onClick={() => editHandle(record, ref)}>{buildProjName(record.id, record.name)} </a>
-        </div>
-      ),
-      width: 250,
-    },
-    //regionOneName
-    {
-      title: '一级区域',
-      dataIndex: 'regionOneName',
-      key: 'regionOneName',
+      title: '项目名称',
+      dataIndex: 'name',
+      key: 'name',
+      width: 120,
       render: (text: string, record: Proj) => {
-        return record.regionOneName || '---';
-      },
-      width: 100,
+       return (<div>
+          <a onClick={() => editHandle(record, ref)}>{text} </a>
+        </div>)
+      }
+      
     },
     {
-      title: '合同状态',
-      dataIndex: 'contractState',
-      key: 'contractState',
+      title: '项目部门',
+      dataIndex: 'group',
+      key: 'group',
+      width: '250px',
+    },
+    {
+      title: '项目状态',
+      dataIndex: 'projStatus',
+      key: 'projStatus',
       render: (text: string, record: Proj) => {
-        
-          if(record.contractState){
-            return record?.contractState == 0 ? '未签署' : record?.contractState == 1 ? '已签署' : '';
-          }else{
-            let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
-            let contract: string | any[] = []
-            if(agreementId.length > 0){
-              contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
-            }
-            
-            if(contract.length > 0){
-              return  '已签署'
-            }else{
-              
-              return '未签署'
-            }
-            
-          }
+        return status?.find((statu) => statu.id === record.projStatus)?.name;
       },
       width: 100,
     },
@@ -169,15 +148,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'incomeConfirm',
       key: 'incomeConfirm',
       render: (text: string, record: Proj) => {
-        return record.incomeConfirm == 0
-          ? '未确认'
-          : record.incomeConfirm == 1
-          ? '待确认'
-          : record.incomeConfirm == 2
-          ? '已确认'
-          : record.incomeConfirm == 3
-          ? '无法确认'
-          : '---';
+        return incomeConfirmOptions.filter(item=>item.code==text).length > 0 ? incomeConfirmOptions.filter(item=>item.code==text)[0].name : '---'
       },
       width: 100,
     },
@@ -189,6 +160,64 @@ const Project: React.FC<any> = () => {
         return confirmYear;
       },
       width: 100,
+    },
+    {
+      title: '合同名称',
+      dataIndex: 'contractAmount',
+      key: 'contractAmount',
+      render: (contractAmount: string, record: Proj) => {
+        let contract = projectAgreements.filter((item) => item.id == record.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        if(amount[0]?.name){
+          return amount[0]?.name
+        }else{
+          return '---'
+        }
+      },
+      width: 150,
+      align:'right',
+    },
+    {
+      title: '合同状态',
+      dataIndex: 'contractState',
+      key: 'contractState',
+      render: (text: string, record: Proj) => {
+        
+          // if(record.contractState){
+          //   return record?.contractState == 0 ? '未签署' : record?.contractState == 1 ? '已签署' : '';
+          // }else{
+            let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
+            let contract: string | any[] = []
+            if(agreementId.length > 0){
+              contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+            }
+            if(contract.length > 0){
+              return  '已签署'
+            }else{
+              
+              return '未签署'
+            }
+            
+          // }
+      },
+      width: 100,
+    },
+    {
+      title: '合同签订日期',
+      dataIndex: 'contractSignDate',
+      key: 'contractSignDate',
+      render: (contractSignDate: string, record: Proj) => {
+        let contract = projectAgreements.filter((item) => item.id == record.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        if(amount.length > 0){
+          return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+        } else{
+          return '---'
+        }
+        
+      },
+      width: 100,
+      align:'right',
     },
     {
       title: '合同金额(含税)',
@@ -287,36 +316,26 @@ const Project: React.FC<any> = () => {
       align:'right',
     },
     {
-      title: '合同签订日期',
-      dataIndex: 'contractSignDate',
-      key: 'contractSignDate',
-      render: (contractSignDate: string, record: Proj) => {
-        let contract = projectAgreements.filter((item) => item.id == record.id);
-        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        if(amount.length > 0){
-          return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
-        } else{
-          return '---'
-        }
-        
-      },
-      width: 100,
-      align:'right',
-    },
-    {
-      title: '项目部门',
-      dataIndex: 'group',
-      key: 'group',
-      width: '250px',
-    },
-    {
-      title: '项目状态',
-      dataIndex: 'projStatus',
-      key: 'projStatus',
+      title: '一级区域',
+      dataIndex: 'regionOneName',
+      key: 'regionOneName',
       render: (text: string, record: Proj) => {
-        return status?.find((statu) => statu.id === record.projStatus)?.name;
+        return record.regionOneName || '---';
       },
       width: 100,
+    },
+    {
+      title: '项目ID',
+      dataIndex: 'id',
+      key: 'id',
+      fixed: 'left' as 'left',
+      render: (text: string, record: Proj) => (
+        // <div>
+        //   <a onClick={() => editHandle(record, ref)}>{buildProjName(record.id, record.name)} </a>
+        // </div>
+         buildProjName(record.id, record.name)
+      ),
+      width: 250,
     },
 
     // {
@@ -387,6 +406,7 @@ const Project: React.FC<any> = () => {
     group: [],
     status: '',
     name: '',
+    conName:'',
     contractState: '',
     acceptanceStatus: '',
     incomeConfirm: '',
@@ -428,7 +448,7 @@ const Project: React.FC<any> = () => {
       ...params,
       page,
       pageSize,
-      group: params.group.length !== 0
+      group: params.group && params.group.length !== 0
       ? params.group.reduce((accumulator: string, currentValue: string) => {
           return `${accumulator}/${currentValue}`;
         }, '')
@@ -445,7 +465,7 @@ const Project: React.FC<any> = () => {
       ...params,
       page: 1,
       group:
-        params.group.length !== 0
+      params.group && params.group.length !== 0
           ? params.group.reduce((accumulator: string, currentValue: string) => {
               return `${accumulator}/${currentValue}`;
             }, '')
@@ -466,6 +486,7 @@ const Project: React.FC<any> = () => {
       name: '',
       contractState: '',
       incomeConfirm: '',
+      conName:'',
     });
     setQuery({
       ...query,
@@ -481,6 +502,7 @@ const Project: React.FC<any> = () => {
       name: '',
       contractState: '',
       incomeConfirm: '',
+      conName:'',
     });
   };
   const groupDatas = (inputArray: any) => {
@@ -667,7 +689,7 @@ const Project: React.FC<any> = () => {
           <label>区域：</label>
           <Select
             showSearch
-            fieldNames={{label:'name',value:'id'}}
+            fieldNames={{label:'name',value:'code'}}
             value={params.regions}
             mode="multiple"
             allowClear
@@ -714,6 +736,18 @@ const Project: React.FC<any> = () => {
             placeholder="请选择"
             onChange={(value, event) => handleChange(value, 'contractState')}
             options={contractStatesOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <Input
+            id="conName"
+            value={params.conName}
+            key="search"
+            addonBefore="合同名称"
+            allowClear
+            onChange={(e) => {
+              setParams({...params,conName:e.target.value});
+            }}
           />
         </Col>
         {/**incomeConfirm */}

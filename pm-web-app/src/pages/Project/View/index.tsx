@@ -34,6 +34,7 @@ const Project: React.FC<any> = (props) => {
     subordinates,
     customers,
     projectAgreements,
+    agreements,
     loading,
     setQuery,
     query,
@@ -282,7 +283,19 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'contName',
       key: 'contName',
       render: (text: string, record: Proj) => {
-        return record.agreements && record.agreements.length > 0 ? record.agreements[0].name : '';
+        // return record.agreements && record.agreements.length > 0 ? record.agreements[0].name : '';
+        let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
+          let contract: string | any[] = []
+          if(agreementId.length > 0){
+            contract = agreements.filter(item=>item.id == agreementId[0].agreementId) || []
+          }
+          if(contract.length > 0){
+            return contract[0].name
+          }else{
+            
+            return '---'
+          }
+          
       },
       width: 150,
     },
@@ -306,7 +319,19 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'contStatus',
       key: 'contStatus',
       render: (text: string, record: Proj) => {
-        return status?.find((statu) => statu.id === record.contStatus)?.name;
+        // return status?.find((statu) => statu.id === record.contStatus)?.name;
+        let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
+          let contract: string | any[] = []
+          if(agreementId.length > 0){
+            contract = agreements.filter(item=>item.id == agreementId[0].agreementId) || []
+          }
+          
+          if(contract.length > 0){
+            return  '已签署'
+          }else{
+            
+            return '未签署'
+          }
       },
       width: 100,
     },

@@ -248,9 +248,10 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       key: 'customer',
       width: 100,
       render: (value:any, row:any, index:any) =>{
+        let customer_ = agreements_.result.filter(item=>item.id == row.contractId) && agreements_.result.filter(item=>item.id == row.contractId).length>0?agreements_.result.filter(item=>item.id == row.contractId)[0].customer:'---'
         const obj = {
-          children: customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer) && customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer).length>0
-            ? customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer)[0].name
+          children: customers.filter((item) => item.id === customer_) && customers.filter((item) => item.id === customer_).length>0
+            ? customers.filter((item) => item.id === customer_)[0].name
             : '---',
           props: {
             rowSpan:0

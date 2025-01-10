@@ -226,7 +226,7 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       width: 150,
       render: (value:any, row:any, index:any) => {
         const obj = {
-          children: agreements_.result.filter(item=>item.id == row.contractId)[0].name || '---',
+          children: agreements_.result.filter(item=>item.id == row.contractId) && agreements_.result.filter(item=>item.id == row.contractId).length>0 ? agreements_.result.filter(item=>item.id == row.contractId)[0].name :'---',
           props: {
             rowSpan:0
           },
@@ -249,9 +249,9 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       width: 100,
       render: (value:any, row:any, index:any) =>{
         const obj = {
-          children: customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer).length
+          children: customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer) && customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer).length>0
             ? customers.filter((item) => item.id === agreements_.result.filter(item=>item.id == row.contractId)[0].customer)[0].name
-            : '',
+            : '---',
           props: {
             rowSpan:0
           },
@@ -280,7 +280,7 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
           align:'right',
           render: (value:any, row:any, index:any) =>{
             const obj = {
-              children: new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(agreements_.result.filter(item=>item.id == row.contractId)[0].contractAmount),
+              children: agreements_.result.filter(item=>item.id == row.contractId) && agreements_.result.filter(item=>item.id == row.contractId).length>0 ? new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(agreements_.result.filter(item=>item.id == row.contractId)[0].contractAmount):'---',
               props: {
                 rowSpan:0
               },
@@ -308,7 +308,7 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       align:'right' as 'right',
       render: (value:any, row:any, index:any) =>{
         const obj = {
-          children: moment(agreements_.result.filter(item=>item.id == row.contractId)[0].contractSignDate).format('YYYY-MM-DD'),
+          children: agreements_.result.filter(item=>item.id == row.contractId) && agreements_.result.filter(item=>item.id == row.contractId).length>0?moment(agreements_.result.filter(item=>item.id == row.contractId)[0].contractSignDate).format('YYYY-MM-DD'):'---',
           props: {
             rowSpan:0
           },

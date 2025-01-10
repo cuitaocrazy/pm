@@ -53,8 +53,8 @@ export function useChangePmState() {
     refresh();
   }, [refresh, query]);
   const users: User[] = queryData?.dailyUsers || [];
-  console.log(users,'users KKKKKKK')
   const { initialState } = useModel('@@initialState');
+  console.log(initialState?.currentUser,'initialState?.currentUser KKKK')
   if (initialState?.currentUser) {
     if (users.filter((user) => user.id === initialState?.currentUser?.id).length === 0) {
       const currentUser: User = {
@@ -66,7 +66,6 @@ export function useChangePmState() {
       users.push(currentUser);
     }
   }
-  
   const isMember = (userId: string) => {
     return users.filter((user) => user.id === userId).length > 0;
   };

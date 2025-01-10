@@ -127,9 +127,9 @@ export default {
       if (leaders && leaders.length > 0) {
         filter["leader"] = { $in: leaders };
       }
-      if (contractState) {
-        filter["contractState"] = Number(contractState);
-      }
+      // if (contractState) {
+      //   filter["contractState"] = Number(contractState);
+      // }
       if (incomeConfirm) {
         filter["incomeConfirm"] = incomeConfirm;
       }
@@ -229,11 +229,31 @@ export default {
           if (customer) oneResult.customerObj = dbid2id(customer);
         })
       );
-      
+      let result_:any[] = []
+      for (let item of result) {
+        if(contractState){
+          const projAggrement = await ProjectAgreement.find({
+            _id: item.id,
+          }).toArray();
+          // console.dir(projAggrement,{depth:null,color:true})
+          // console.log('=====')
+            if(contractState == '0' ){//未签署
+              if(projAggrement.length == 0){
+                result_.push(item)
+              }
+            }else if(contractState == '1' ){//已签署
+              if(projAggrement.length > 0){
+                result_.push(item)
+              }
+            }
+        }else{
+          result_.push(item)
+        }
+      }
       const total = await Project.find(filter).count();
 
       return {
-        result,
+        result:result_,
         page,
         total,
       };
@@ -607,16 +627,22 @@ export default {
         }).sort({ sort: 1 })
         .map(dbid2id)
         .toArray()
-        for (const item of agreements) {
-          let proAgrs = await ProjectAgreement.find({
-            agreementId: item.id.toHexString(),
-          }).sort({ sort: 1 })
-          .map(dbid2id)
-          .toArray()
-          proIds.push(proAgrs[0].id)
-        console.log(proIds,'DDDDD')
+        if(agreements.length > 0){
+          for (const item of agreements) {
+            let proAgrs = await ProjectAgreement.find({
+              agreementId: item.id.toHexString(),
+            }).sort({ sort: 1 })
+            .map(dbid2id)
+            .toArray()
+            if(proAgrs.length > 0){
+              proIds.push(proAgrs[0].id)
+              console.log(proIds,'DDDDD')
+            }
+            
+          }
         }
-        }
+        
+      }
         
         // (filter["id"] as any[]).push({
         //   $or: [
@@ -625,11 +651,11 @@ export default {
         //   ],
         // })
         // filter["id"] = {_id: { $in: regexArray == [] ? '' : regexArray, $not: /-ZH-/ }}
-        // filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
-        (filter['$and'] as any).push({_id:{$in: regexArray, $not: /-ZH-/}},)
-          if(proIds.length > 0 ){
-            (filter['$and'] as any).push({_id:{$in: proIds }})
-          }
+        filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+        // (filter['$and'] as any).push({_id:{$in: regexArray, $not: /-ZH-/}},)
+        //   if(proIds.length > 0 ){
+        //     (filter['$and'] as any).push({_id:{$in: proIds }})
+        //   }
         
         // console.dir(filter,{depth:null,color:true})
         // console.log(proIds,{depth:null,color:true})
@@ -698,11 +724,21 @@ export default {
           result_.push(item)
         }
       }
+      let result__:any[] = []
+      for (const item of result_) {
+        if(conName){
+          if(proIds.length > 0 && proIds.includes(item.id)){
+              result__.push(item)
+          }
+      }else{
+        result__.push(item)
+      }
+      }
       
       const total = await Project.countDocuments(filter);
-      console.dir(result_,{depth:null,color:true})
+      console.dir(result__,{depth:null,color:true})
       return {
-        result:result_,
+        result:result__,
         page,
         total,
       };

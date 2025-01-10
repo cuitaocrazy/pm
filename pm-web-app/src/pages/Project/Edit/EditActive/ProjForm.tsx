@@ -9,6 +9,7 @@ import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
 import { getStatusDisplayName } from './utils';
 import moment from 'moment';
+import { useProjStatus } from './hook';
 
 const layout = {
   labelCol: { span: 9 },
@@ -16,6 +17,11 @@ const layout = {
 };
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
+  const {
+    projectAgreements,
+    agreements,
+  } = useProjStatus();
+  console.log(data,'data KKKKKLLLLMMMM')
   const { status, industries, regions, buildProjName, subordinates } = useBaseState();
   const { initialState } = useModel('@@initialState');
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
@@ -81,6 +87,18 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     }
     return tempFields;
   }
+  let agreementId = projectAgreements.filter(item=>item.id==data.id) || []
+          let contract: string | any[] = []
+          if(agreementId.length > 0){
+            contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+          }
+          
+          if(contract.length > 0){
+            data.contractState1 =   '已签署'
+          }else{
+            
+            data.contractState1 = '未签署'
+          }
 
   return (
     <Tabs defaultActiveKey="1" type="card">
@@ -113,6 +131,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             <Input />
           </Form.Item>
           <Form.Item label="ID" name="acceStatus" hidden>
+            <Input />
+          </Form.Item>
+          <Form.Item label="ID" name="participants" hidden>
             <Input />
           </Form.Item>
           <Row>
@@ -321,7 +342,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             find(statu => statu.id === data?.acceStatus, status)?.name
           }</Descriptions.Item>
           <Descriptions.Item label="合同状态:">{
-            find(statu => statu.id === data?.contStatus, status)?.name
+            // find(statu => statu.id === data?.contStatus, status)?.name
+            data?.contractState1
           }</Descriptions.Item>
 
           <Descriptions.Item label="启动日期:">{

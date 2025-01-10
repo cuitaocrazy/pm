@@ -180,6 +180,7 @@ export default {
     deleteAgreement: async (_: any, args: any, context: AuthContext) => {
       const _id = new ObjectId(args.id);
       await ProjectAgreement.deleteMany({ agreementId: _id.toString() });
+      await PaymentManage.deleteMany({contractId:_id.toString() })
       return Agreement.updateOne(
         { $or: [{ _id: _id }, { _id: args.id }] },
         { $set: { isDel: true } }

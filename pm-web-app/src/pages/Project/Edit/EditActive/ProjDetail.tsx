@@ -7,13 +7,18 @@ import { useBaseState } from '@/pages/utils/hook';
 import type { FormInstance } from 'antd/lib/form';
 import { getStatusDisplayName } from './utils';
 import moment from 'moment';
+import { useProjStatus } from './hook';
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
+  console.log(data,'data KKKLLLMMM')
   const { status, industries, regions, buildProjName,subordinates } = useBaseState();
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType] = useState(result?.groups?.projType || '');
-
+  const {
+    projectAgreements,
+    agreements,
+  } = useProjStatus();
   // 客户信息
   const customer = data?.customerObj ? data?.customerObj : undefined
 
@@ -41,6 +46,18 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     
     return tempFields;
   }
+  let agreementId = projectAgreements.filter(item=>item.id==data.id) || []
+          let contract: string | any[] = []
+          if(agreementId.length > 0){
+            contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
+          }
+          
+          if(contract.length > 0){
+            data.contractState1 =   '已签署'
+          }else{
+            
+            data.contractState1 = '未签署'
+          }
   
   return (
     <Tabs defaultActiveKey="1" type="card">
@@ -120,7 +137,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             find(statu => statu.id === data?.acceStatus, status)?.name
           }</Descriptions.Item>
           <Descriptions.Item label="合同状态:">{ 
-            find(statu => statu.id === data?.contStatus, status)?.name
+            // find(statu => statu.id === data?.contStatus, status)?.name
+            data?.contractState1
           }</Descriptions.Item>
         
           <Descriptions.Item label="启动日期:">{ 

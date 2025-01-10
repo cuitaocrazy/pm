@@ -71,7 +71,7 @@ const ProjectsDailyPage = () => {
                 </Col>
                 <Col xs={10} sm={10}>
                   <Card>
-                    <Statistic title="项目总工时" value={proPartAndTime[projId].timeConsuming} suffix="h" />
+                    <Statistic title="项目总工时" value={proPartAndTime[projId].timeConsuming || 0} suffix="h" />
                   </Card>
                 </Col>
                 <Col xs={2} sm={2}></Col>

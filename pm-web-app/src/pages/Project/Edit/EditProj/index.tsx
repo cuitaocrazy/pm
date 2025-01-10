@@ -41,6 +41,7 @@ const Project: React.FC<any> = () => {
     projs,
     todoProjs,
     subordinates,
+    subordinates_,
     loading,
     archive,
     setArchive,
@@ -58,6 +59,7 @@ const Project: React.FC<any> = () => {
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType ,subordinatesOnJob} = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
+    console.log(proj,'proj KKKKKKKK')
     const { actives, ...pro } = proj;
     openRef.current?.showDialog({
       ...pro,
@@ -975,7 +977,7 @@ const Project: React.FC<any> = () => {
                 </tr> */}
                 <tr style={{border:'1px solid #000'}}>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>销售负责人</td>
-                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.salesManager}</td>
+                  <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.salesManager?subordinates_?.filter(item=>item.id == objectInfo.salesManager)[0].name:''}</td>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>联系方式</td>
                   <td colSpan={2} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.copyrightNameSale}</td>
                 </tr>
@@ -1002,7 +1004,7 @@ const Project: React.FC<any> = () => {
                   <td  colSpan={5} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.description}</td>
                 </tr>
                 <tr style={{border:'1px solid #000'}}>
-                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目安排</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px'}}>项目计划</td>
                   <td colSpan={5} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{objectInfo.projectArrangement}</td>
                 </tr>
                 <tr style={{border:'1px solid #000'}}>

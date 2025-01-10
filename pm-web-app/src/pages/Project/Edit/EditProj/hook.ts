@@ -176,8 +176,8 @@ const queryTodoProjs = gql`
       status: $status
       name: $name
     ) {
-      result {
-        id
+      result{
+          id
         pId
         name
         contName
@@ -214,11 +214,30 @@ const queryTodoProjs = gql`
         actualInspections
         timeConsuming
         confirmYear
+        confirmQuarter
         doYear
         projectClass
         group
         proState
-        agreements {
+        oldId
+        reason
+        contractAmount
+        recoAmount
+        afterTaxAmount
+        productDate
+        contractSignDate
+        contractState
+        productName
+        copyrightName
+        projectArrangement
+        address
+        customerContact
+        contactDetailsCus
+        salesManager
+        copyrightNameSale
+        merchantContact
+        contactDetailsMerchant
+        agreements{
           id
           name
           contractAmount
@@ -238,13 +257,13 @@ const queryTodoProjs = gql`
             thumbUrl
           }
         }
-        customerObj {
+        customerObj{
           id
           name
           industryCode
           regionCode
           salesman
-          contacts {
+          contacts{
             name
             phone
             tags
@@ -257,9 +276,9 @@ const queryTodoProjs = gql`
           isDel
           createDate
         }
-      }
-      page
-      total
+        }
+        page
+        total
       todoTotal
     }
   }
@@ -404,7 +423,7 @@ export function useProjStatus() {
       delete reqProj.contAmount_
       delete reqProj.taxAmount_
       delete reqProj.serviceCycle_
-      
+      console.log(reqProj,'reqProj MMMMMM')
       if (proj.proState == 1 || !proj.proState || proj.proState == null) {
         await pushCostHandle({
           variables: {
@@ -450,6 +469,7 @@ export function useProjStatus() {
     projs,
     todoProjs: todoProjs.result,
     subordinates,
+    subordinates_:queryData?.subordinates,
     agreements,
     projectAgreements,
     filter,

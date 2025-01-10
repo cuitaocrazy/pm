@@ -105,6 +105,9 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       <Form.Item label="ID" name="acceStatus" hidden>
         <Input />
       </Form.Item>
+      <Form.Item label="ID" name="participants" hidden>
+        <Input />
+      </Form.Item>
       <Row>
         <Col span={24}>
           <Form.List name='actives' rules={[{ validator: activeValidator }]}>

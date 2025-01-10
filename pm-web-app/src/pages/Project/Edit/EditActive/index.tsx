@@ -309,7 +309,7 @@ const Project: React.FC<any> = () => {
         let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
           let contract: string | any[] = []
           if(agreementId.length > 0){
-            contract = agreements.filter(item=>item.id == agreementId[0].agreementId) || []
+            contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
           }
           if(contract.length > 0){
             return contract[0].name

@@ -621,6 +621,7 @@ const dataTypeDef = gql`
       status: String
       name: String
       conName:String
+       contractState: String
     ): ProjectPage
     filterProjs(
       isArchive: Boolean

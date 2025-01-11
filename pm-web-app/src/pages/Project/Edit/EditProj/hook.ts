@@ -164,6 +164,7 @@ const queryTodoProjs = gql`
     $group: String
     $status: String
     $name: String
+    $contractState:String
   ) {
     iLeadTodoProjs(
       isArchive: $isArchiveTodo
@@ -175,6 +176,7 @@ const queryTodoProjs = gql`
       group: $group
       status: $status
       name: $name
+      contractState:$contractState
     ) {
       result{
           id

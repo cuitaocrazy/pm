@@ -36,7 +36,9 @@ const getTodoProjects = (projects: any[]) => {
       }
     } else if (result?.groups?.projType === "SH") {
       // 售后 服务周期 启动日期
+      // console.log(project.serviceCycle,'project.serviceCycle llll')
       if (project.startTime && project.serviceCycle) {
+       
         const today = new Date();
         // 启动周期和当前时间的差值，已服务了几个月
         const monthDiff = moment(today).diff(project.startTime, "month");
@@ -143,7 +145,8 @@ export default {
       }
 
       // filter = { _id: { $not: /-ZH-/ } };
-      filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+      // filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+      
 
       const maxGroup = getMaxGroup(user.groups);
       let subordinateIds: string[] = [];
@@ -181,6 +184,9 @@ export default {
           },
         ];
       }
+      (filter['$and'] as any).push({
+        _id: { $in: regexArray, $not: /-ZH-/ }
+      });
       // filter["$or"] = [];
       // if (filter["$or"]) {
       //   filter["$or"] = filter["$or"].concat([
@@ -194,6 +200,27 @@ export default {
       //   ];
       // }
 
+      // console.dir(filter,{depth:null,color:true})
+      const proagree_ = await ProjectAgreement.find({}).toArray();
+      let proAgreeProIds = proagree_.map(agreement => agreement._id)
+      // console.log(proAgreeProIds,'proAgreeProIds LLLL')
+      if(contractState) {
+        if (contractState == '0') {
+          // contractState 为 0，排除 excludeIds
+          (filter['$and'] as any).push({
+            _id: {
+              '$nin': proAgreeProIds, // 不在 excludeIds 中
+            }
+          });
+        } else if (contractState == '1') {
+          // contractState 为 1，必须在 excludeIds 中
+          (filter['$and'] as any).push({
+            _id: {
+              '$in': proAgreeProIds, // 必须在 excludeIds 中
+            }
+          });
+        }
+      }
       // console.dir(filter,{depth:null,color:true})
       const result = await Project.find(filter)
         .skip(skip)
@@ -229,8 +256,31 @@ export default {
           if (customer) oneResult.customerObj = dbid2id(customer);
         })
       );
-      let result_:any[] = []
-      for (let item of result) {
+      // let result_:any[] = []
+      // for (let item of result) {
+      //   if(contractState){
+      //     const projAggrement = await ProjectAgreement.find({
+      //       _id: item.id,
+      //     }).toArray();
+      //     // console.dir(projAggrement,{depth:null,color:true})
+      //     // console.log('=====')
+      //       if(contractState == '0' ){//未签署
+      //         if(projAggrement.length == 0){
+      //           result_.push(item)
+      //         }
+      //       }else if(contractState == '1' ){//已签署
+      //         if(projAggrement.length > 0){
+      //           result_.push(item)
+      //         }
+      //       }
+      //   }else{
+      //     result_.push(item)
+      //   }
+      // }
+      const total = await Project.find(filter).map(dbid2id).toArray();
+      // console.log(total,'total MMMMM')
+      let total_:any[] = []
+      for (let item of total) {
         if(contractState){
           const projAggrement = await ProjectAgreement.find({
             _id: item.id,
@@ -239,23 +289,22 @@ export default {
           // console.log('=====')
             if(contractState == '0' ){//未签署
               if(projAggrement.length == 0){
-                result_.push(item)
+                total_.push(item)
               }
             }else if(contractState == '1' ){//已签署
               if(projAggrement.length > 0){
-                result_.push(item)
+                total_.push(item)
               }
             }
         }else{
-          result_.push(item)
+          total_.push(item)
         }
       }
-      const total = await Project.find(filter).count();
 
       return {
-        result:result_,
+        result,
         page,
-        total,
+        total:total_.length,
       };
     },
     //获取待审核的项目（其他的限制条件都一样）
@@ -405,7 +454,9 @@ export default {
         status,
         name,
         leaders,
+        contractState,
       } = __;
+      // console.log(contractState,'dddd')
 
       if (!page || page === 0) {
         page = 1;
@@ -480,11 +531,32 @@ export default {
           if (customer) oneResult.customerObj = dbid2id(customer);
         })
       );
-
-      const total = result.length;
-      result = result.slice(skip, pageSize + skip);
+      let result_:any[] = []
+      for (let item of result) {
+        if(contractState){
+          const projAggrement = await ProjectAgreement.find({
+            _id: item.id,
+          }).toArray();
+          // console.dir(projAggrement,{depth:null,color:true})
+          // console.log('=====')
+            if(contractState == '0' ){//未签署
+              if(projAggrement.length == 0){
+                result_.push(item)
+              }
+            }else if(contractState == '1' ){//已签署
+              if(projAggrement.length > 0){
+                result_.push(item)
+              }
+            }
+        }else{
+          result_.push(item)
+        }
+      }
+      
+      const total = result_.length;
+      let result__ = result_.slice(skip, pageSize + skip);
       return {
-        result,
+        result:result__,
         page,
         total,
         todoTotal: todoTotalResult.length,
@@ -629,14 +701,16 @@ export default {
         .toArray()
         if(agreements.length > 0){
           for (const item of agreements) {
+            
             let proAgrs = await ProjectAgreement.find({
-              agreementId: item.id.toHexString(),
+              agreementId: Buffer.isBuffer(item.id)?item.id.toHexString(): item.id.toString(),
             }).sort({ sort: 1 })
             .map(dbid2id)
             .toArray()
+            
             if(proAgrs.length > 0){
-              proIds.push(proAgrs[0].id)
-              console.log(proIds,'DDDDD')
+              proAgrs.map(item=>proIds.push(item.id))
+              
             }
             
           }
@@ -651,14 +725,48 @@ export default {
         //   ],
         // })
         // filter["id"] = {_id: { $in: regexArray == [] ? '' : regexArray, $not: /-ZH-/ }}
-        filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+        // filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
         // (filter['$and'] as any).push({_id:{$in: regexArray, $not: /-ZH-/}},)
         //   if(proIds.length > 0 ){
         //     (filter['$and'] as any).push({_id:{$in: proIds }})
         //   }
         
-        // console.dir(filter,{depth:null,color:true})
+        
         // console.log(proIds,{depth:null,color:true})
+        (filter['$and'] as any).push({
+          _id: { $in: regexArray, $not: /-ZH-/ }
+        });
+        const proagree_ = await ProjectAgreement.find({}).toArray();
+      let proAgreeProIds = proagree_.map(agreement => agreement._id)
+      // console.log(proAgreeProIds,'proAgreeProIds LLLL')
+      if(contractState) {
+        if (contractState == '0') {
+          // contractState 为 0，排除 excludeIds
+          (filter['$and'] as any).push({
+            _id: {
+              '$nin': proAgreeProIds, // 不在 excludeIds 中
+            }
+          });
+        } else if (contractState == '1') {
+          // contractState 为 1，必须在 excludeIds 中
+          (filter['$and'] as any).push({
+            _id: {
+              '$in': proAgreeProIds, // 必须在 excludeIds 中
+            }
+          });
+        }
+      }
+      if(conName){
+        if(proIds.length>0){
+          (filter['$and'] as any).push({
+            _id: {
+              '$in': proIds, // 必须在 excludeIds 中
+            }
+          });
+        }
+        
+      }
+        console.dir(filter,{depth:null,color:true})
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
@@ -703,8 +811,41 @@ export default {
           if (customer) oneResult.customerObj = dbid2id(customer);
         }),
       )
-      let result_:any[] = []
-      for (let item of result) {
+      // let result_:any[] = []
+      // for (let item of result) {
+      //   if(contractState){
+      //     const projAggrement = await ProjectAgreement.find({
+      //       _id: item.id,
+      //     }).toArray();
+      //     // console.dir(projAggrement,{depth:null,color:true})
+      //     // console.log('=====')
+      //       if(contractState == '0' ){//未签署
+      //         if(projAggrement.length == 0){
+      //           result_.push(item)
+      //         }
+      //       }else if(contractState == '1' ){//已签署
+      //         if(projAggrement.length > 0){
+      //           result_.push(item)
+      //         }
+      //       }
+      //   }else{
+      //     result_.push(item)
+      //   }
+      // }
+      // let result__:any[] = []
+      // for (const item of result) {
+      //   if(conName){
+      //     if(proIds.length > 0 && proIds.includes(item.id)){
+      //         result__.push(item)
+      //     }
+      // }else{
+      //   result__.push(item)
+      // }
+      // }
+      
+      const total = await Project.find(filter).map(dbid2id).toArray();
+      let total_:any[] = []
+      for (let item of total) {
         if(contractState){
           const projAggrement = await ProjectAgreement.find({
             _id: item.id,
@@ -713,34 +854,22 @@ export default {
           // console.log('=====')
             if(contractState == '0' ){//未签署
               if(projAggrement.length == 0){
-                result_.push(item)
+                total_.push(item)
               }
             }else if(contractState == '1' ){//已签署
               if(projAggrement.length > 0){
-                result_.push(item)
+                total_.push(item)
               }
             }
         }else{
-          result_.push(item)
+          total_.push(item)
         }
       }
-      let result__:any[] = []
-      for (const item of result_) {
-        if(conName){
-          if(proIds.length > 0 && proIds.includes(item.id)){
-              result__.push(item)
-          }
-      }else{
-        result__.push(item)
-      }
-      }
-      
-      const total = await Project.countDocuments(filter);
-      console.dir(result__,{depth:null,color:true})
+      // console.dir(result__,{depth:null,color:true})
       return {
-        result:result__,
+        result:(contractState && proAgreeProIds.length == 0) || (conName && proIds.length == 0) ? [] : result,
         page,
-        total,
+        total:total_.length,
       };
     },
     iLeadProjs_: async (_: any, __: any, context: AuthContext) => {

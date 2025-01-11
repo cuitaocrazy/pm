@@ -766,7 +766,7 @@ export default {
         }
         
       }
-        console.dir(filter,{depth:null,color:true})
+        // console.dir(filter,{depth:null,color:true})
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)

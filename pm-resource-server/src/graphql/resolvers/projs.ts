@@ -63,7 +63,7 @@ export default {
       const proj = await Project.findOne(filter);
       return proj ? true : false;
     },
-    projs: (_: any, __: any, context: AuthContext) => {
+    projs: async (_: any, __: any, context: AuthContext) => {
       let filter = {};
 
       if (__.isArchive === true || __.isArchive === false) {
@@ -75,10 +75,33 @@ export default {
         { proState: { $exists: false } }, // proState 字段不存在
         { proState: null }, // proState 为 null
       ];
-      return Project.find(filter)
+      const result = await Project.find(filter)
         .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
+        // const result = await Project.find(filter)
+        // .skip(skip)
+        // .limit(pageSize)
+        // .sort({ createDate: -1 })
+        // .map(dbid2id)
+        // .toArray();
+      const projIds = (result as any).map((proj) => proj.id);
+      const projAggrement = await ProjectAgreement.find({
+        _id: { $in: projIds },
+      }).toArray();
+      await Promise.all(
+        projAggrement.map(async (pa) => {
+          const agreement = await Agreement.find({
+            _id: new ObjectId(pa.agreementId),
+          })
+            .map(dbid2id)
+            .toArray();
+          const oneResult = (result as any).find((res) => res.id === pa._id);
+          oneResult.agreements = agreement;
+        })
+      );
+      return result
+
     },
     superProjs: async (_: any, __: any, context: AuthContext) => {
       let filter = {};

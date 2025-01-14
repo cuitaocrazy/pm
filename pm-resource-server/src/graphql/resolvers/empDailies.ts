@@ -152,6 +152,7 @@ export default {
     dailyUsers: async (_: any, __: any, context: AuthContext) => {
       const user = context.user!;
       let users = await getGroupUsers(user);
+      console.log(users,'users PPPPPPP')
       users = users.filter((u) => {
         return u.enabled !== false;
       })

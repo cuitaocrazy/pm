@@ -8,6 +8,7 @@ import moment from 'moment';
 import { useAgreementState } from './hook';
 import AgreementForm from './AgreementForm';
 import PayWayForm from './PayWayForm';
+import ProjForm from './ProjForm';
 import type { FormDialogHandle } from '@/components/DialogForm';
 import DialogForm from '@/components/DialogForm';
 import { agreementType, useBaseState } from '@/pages/utils/hook';
@@ -41,6 +42,7 @@ const Agreement: React.FC<any> = () => {
   const { buildProjName,groupType } = useBaseState();
   const ref = useRef<FormDialogHandle<AgreementInput>>(null);
   const payWayref = useRef<FormDialogHandle<AgreementInput>>(null);
+  const proDetailref = useRef<FormDialogHandle<AgreementInput>>(null);
   const editHandle = (agreement: AgreementType) => {
     setType(2);
     const projArr = projectAgreements
@@ -200,14 +202,18 @@ const totalNumber2 = agreements.reduce((sum, item) => sum + Number(item.afterTax
           return item.agreementId === record.id;
         });
         const nameArrTags = projArr.map((pro) => {
-          const projName = projs?.find((item) => pro.id === item.id)?.name || '';
+          const proj = projs?.find((item) => pro.id === item.id);
           return (
             <Tag
               color="processing"
               key={pro.id}
               style={{ whiteSpace: 'normal', overflowWrap: 'break-word' }}
+              onClick={()=>{console.log('000');proDetailref.current?.showDialog({
+                ...proj,
+                contName: proj.agreements && proj.agreements.length > 0 ? proj.agreements[0].name : '',
+              });}}
             >
-              {buildProjName(pro.id, projName)}
+              {buildProjName(pro.id, proj.name)}
             </Tag>
           );
         });
@@ -335,6 +341,9 @@ const totalNumber2 = agreements.reduce((sum, item) => sum + Number(item.afterTax
       fixed: 'right' as 'right',
     },
   ];
+  const onCancelButtonProps: ButtonProps = {
+    style: { display: 'none' }, // 设置样式让按钮消失
+  };
   return (
     <PageContainer className="bgColorWhite paddingBottom20">
       <Row gutter={16}>
@@ -432,6 +441,14 @@ const totalNumber2 = agreements.reduce((sum, item) => sum + Number(item.afterTax
         title="付款方式"
       >
         {PayWayForm}
+      </DialogForm>
+      <DialogForm
+       width={1000}
+        ref={proDetailref}
+        title="项目详情"
+        cancelButtonProps={onCancelButtonProps}
+      >
+        {ProjForm}
       </DialogForm>
     </PageContainer>
   );

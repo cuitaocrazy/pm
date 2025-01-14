@@ -75,10 +75,11 @@ export default {
       if (group && group[0] !== '') {
         filterAgree["group"] = new RegExp(group, "g");
       }
+      let agreeIDs:any[] = []
       if(name || customer || group){
         let agrees = await Agreement.find(filterAgree).toArray();
         if(agrees.length>0){
-          let agreeIDs = agrees.map(item=>item._id.toString())
+          agreeIDs = agrees.map(item=>item._id.toString())
           if(agreeIDs.length > 0){
             filter['contractId'] = {$in:agreeIDs}
           }
@@ -95,7 +96,7 @@ export default {
         .toArray();
 
       const total = await PaymentManage.countDocuments(filter);
-      return { result, total, page };
+      return { result:(name || customer || group )&& agreeIDs.length == 0?[]: result, total, page };
     },
   },
   Mutation: {

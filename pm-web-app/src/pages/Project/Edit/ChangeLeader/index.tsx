@@ -22,6 +22,7 @@ const ChangePm: React.FC<any> = () => {
   // const state = useChangePmState();
   const localUsers = users.filter(item=>item.enabled == true) || [];
   const localSubordinates = realSubordinates || [];
+  // console.log(realSubordinates,'realSubordinates KKKK')
   const [localState, setLocalState] = useState<{
     isRemovePart: boolean;
     selectProject: string[];
@@ -232,7 +233,7 @@ const ChangePm: React.FC<any> = () => {
         return record.leader === value;
       },
       render: (leader: string) => {
-        return localUsers.filter((user) => user.id === leader)[0]?.name;
+        return optionArr.filter((user) => user.id === leader)[0]?.name;
       },
     },
   ];

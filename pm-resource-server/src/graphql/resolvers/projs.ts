@@ -132,8 +132,13 @@ export default {
       // if (contractState) {
       //   filter["contractState"] = Number(contractState);
       // }
-      if (incomeConfirm) {
-        filter["incomeConfirm"] = incomeConfirm;
+      if (confirmYear) {
+        if(confirmYear == 'NDDD'){
+          filter["confirmYear"] = { '$in': [confirmYear, null] };
+        }else{
+          filter["confirmYear"] = confirmYear;
+        }
+        
       }
       for (let i = 0; i < regions.length; i++) {
         for (let j = 0; j < industries.length; j++) {
@@ -475,7 +480,12 @@ export default {
         (projType) => projType === "SH" || projType === "SZ" || projType === "SQ"  || projType === "YF"  || projType === "ZH" || projType === "QT"
       );
       if (confirmYear) {
-        filter["confirmYear"] = confirmYear;
+        if(confirmYear == 'NDDD'){
+          filter["confirmYear"] = { '$in': [confirmYear, null] };
+        }else{
+          filter["confirmYear"] = confirmYear;
+        }
+        
       }
       if (status) {
         filter["status"] = status;
@@ -628,7 +638,12 @@ export default {
       if (!industries || industries.length == 0) industries = ["\\w*"];
       if (!projTypes || projTypes.length == 0) projTypes = ["\\w*"];
       if (confirmYear) {
-        filter["confirmYear"] = confirmYear;
+        if(confirmYear == 'NDDD'){
+          filter["confirmYear"] = { '$in': [confirmYear, null] };
+        }else{
+          filter["confirmYear"] = confirmYear;
+        }
+        
       }
       if (status) {
         filter["status"] = status;
@@ -766,7 +781,7 @@ export default {
         }
         
       }
-        // console.dir(filter,{depth:null,color:true})
+        console.dir(filter,{depth:null,color:true})
       const result = await Project.find(filter)
         .skip(skip)
         .limit(pageSize)
@@ -1034,7 +1049,12 @@ export default {
       } = __;
 
       if (confirmYear) {
-        filter["confirmYear"] = confirmYear;
+        if(confirmYear == 'NDDD'){
+          filter["confirmYear"] = { '$in': [confirmYear, null] };
+        }else{
+          filter["confirmYear"] = confirmYear;
+        }
+        
       }
       if (status) {
         filter["status"] = status;

@@ -378,7 +378,7 @@ const Project: React.FC<any> = () => {
       align:'right',
       render: (confirmYear: string) => {
         
-        return confirmYear;
+        return confirmYearOptions.filter(item=>item.code==confirmYear).length?confirmYearOptions.filter(item=>item.code==confirmYear)[0].name:'---';
       },
       width: 100,
     },

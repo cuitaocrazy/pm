@@ -349,7 +349,7 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'confirmYear',
       key: 'confirmYear',
       render: (confirmYear: string) => {
-        return confirmYear;
+        return confirmYearOptions.filter(item=>item.code==confirmYear).length?confirmYearOptions.filter(item=>item.code==confirmYear)[0].name:'---';
       },
       width: 100,
       align:'right',

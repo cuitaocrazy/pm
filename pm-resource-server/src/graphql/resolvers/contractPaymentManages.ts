@@ -32,19 +32,19 @@ export default {
       const skip = (page - 1) * pageSize;
       const filter = { isDel: false };
       // 添加 name 查询条件
-      if (name) {
-        filter["name"] = new RegExp(name, "i"); // 不区分大小写的模糊查询
-      }
+      // if (name) {
+      //   filter["name"] = new RegExp(name, "i"); // 不区分大小写的模糊查询
+      // }
 
       // 添加 customer 查询条件
-      if (customer && customer.length != 0) {
-        filter["customer"] = customer[0]; // 精确匹配 customer
-      }
+      // if (customer && customer.length != 0) {
+      //   filter["customer"] = customer[0]; // 精确匹配 customer
+      // }
 
       // 添加 type 查询条件
-      if (type && type.length != 0) {
-        filter["type"] = type[0]; // 精确匹配 type
-      }
+      // if (type && type.length != 0) {
+      //   filter["type"] = type[0]; // 精确匹配 type
+      // }
       if (payState && payState.length != 0) {
         filter["payState"] = { $in: payState }; // 精确匹配 type
       }
@@ -55,11 +55,38 @@ export default {
         filter["actualQuarter"] = { $in: actualQuarter }; // 精确匹配 type
       }
       // console.dir(group,{depth:null,color:true})
-      if (group && group[0] !== '') {
-        filter["group"] = new RegExp(group, "g");
-      }
+      // if (group && group[0] !== '') {
+      //   filter["group"] = new RegExp(group, "g");
+      // }
 
       // console.dir(filter,{depth:null,color:true});
+      const filterAgree:any = {
+        isDel:false
+      }
+      if (name) {
+        filterAgree["name"] = new RegExp(name, "i"); // 不区分大小写的模糊查询
+      }
+      if (customer && customer.length != 0) {
+        filterAgree["customer"] = customer[0]; // 精确匹配 customer
+      }
+      if (type && type.length != 0) {
+        filterAgree["type"] = type[0]; // 精确匹配 type
+      }
+      if (group && group[0] !== '') {
+        filterAgree["group"] = new RegExp(group, "g");
+      }
+      if(name || customer || group){
+        let agrees = await Agreement.find(filterAgree).toArray();
+        if(agrees.length>0){
+          let agreeIDs = agrees.map(item=>item._id.toString())
+          if(agreeIDs.length > 0){
+            filter['contractId'] = {$in:agreeIDs}
+          }
+          // console.log(agreeIDs,'?????')
+        }
+      }
+      
+      // console.log(filter,'filter ????')
       const result = await PaymentManage.find(filter)
         .skip(skip)
         .limit(pageSize)

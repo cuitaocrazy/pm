@@ -336,7 +336,8 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       </Row>
       <Row>
         <Col span={24}>
-          <Form.List name='actives' rules={[{ validator: activeValidator }]}>
+        {/* {rules={[{ validator: activeValidator }]}} */}
+          <Form.List name='actives' >
             {(fields, { add, remove }, { errors }) => (
               <>
                 <Form.Item>

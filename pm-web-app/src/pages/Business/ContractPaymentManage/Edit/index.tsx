@@ -272,7 +272,7 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       title: '合同金额',
       dataIndex: 'contractAmount',
       key: 'contractAmount',
-      width: 200,
+      width: 150,
       align:'right' as 'right',
       children: [
         {
@@ -296,7 +296,7 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
     
             return obj;
             },
-        width: 200,
+        width: 150,
         }
       ],
       
@@ -375,7 +375,7 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
       title: '款项金额',
       dataIndex: 'milestoneValue',
       key: 'milestoneValue',
-      width: 200,
+      width: 150,
       align:'right' as 'right',
       children: [
         {
@@ -385,6 +385,7 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
           render: (text: string, record: any) => {
             return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(record.contractAmount) * Number(record.milestoneValue)) / 100);
           },
+          width: 150,
         }
       ],
       
@@ -594,7 +595,7 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
         dataSource={sortedData}
         pagination={false}
         size="middle"
-        scroll={{ x: 1500 }}
+        scroll={{ x: 1200 }}
         bordered
       />
       <DialogForm

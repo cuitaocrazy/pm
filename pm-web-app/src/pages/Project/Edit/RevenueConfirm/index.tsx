@@ -126,6 +126,12 @@ const Project: React.FC<any> = () => {
       width: '250px',
     },
     {
+      title: '项目预算',
+      dataIndex: 'projBudget',
+      key: 'projBudget',
+      width: 100,
+    },
+    {
       title: '项目状态',
       dataIndex: 'projStatus',
       key: 'projStatus',
@@ -157,7 +163,8 @@ const Project: React.FC<any> = () => {
       dataIndex: 'confirmYear',
       key: 'confirmYear',
       render: (confirmYear: string) => {
-        return confirmYear;
+        return confirmYearOptions.filter(item=>item.code==confirmYear).length?confirmYearOptions.filter(item=>item.code==confirmYear)[0].name:'---';
+        // return confirmYear
       },
       width: 100,
     },

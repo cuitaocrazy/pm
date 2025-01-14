@@ -217,16 +217,16 @@ const Project: React.FC<any> = () => {
       },
       width: 100,
     },
-    {
-      title: '确认年度',
-      dataIndex: 'confirmYear',
-      key: 'confirmYear',
-      render: (confirmYear: string) => {
-        return confirmYear;
-      },
-      width: 100,
-      align:'right',
-    },
+    // {
+    //   title: '确认年度',
+    //   dataIndex: 'confirmYear',
+    //   key: 'confirmYear',
+    //   render: (confirmYear: string) => {
+    //     return confirmYear;
+    //   },
+    //   width: 100,
+    //   align:'right',
+    // },
     // {
     //   title: '操作',
     //   key: 'action',
@@ -517,16 +517,8 @@ const Project: React.FC<any> = () => {
             options={groupsOptions}
           />
         </Col>
-        <Col className="gutter-row">
+        {/* <Col className="gutter-row">
           <label>确认年度：</label>
-          {/* <DatePicker
-            format="YYYY"
-            value={params.confirmYear ? moment(params.confirmYear, 'YYYY') : null}
-            picker="year"
-            onChange={(value, event) => {
-              onChange(event);
-            }}
-          /> */}
           <Select
             value={params.confirmYear}
             allowClear
@@ -536,7 +528,7 @@ const Project: React.FC<any> = () => {
             fieldNames={{ value: 'code', label: 'name' }}
             options={confirmYearOptions}
           />
-        </Col>
+        </Col> */}
         <Col>
           {/* <Radio.Group
             className="gutter-row displayInlineBlock"

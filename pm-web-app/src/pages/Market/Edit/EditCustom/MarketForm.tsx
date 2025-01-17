@@ -11,6 +11,7 @@ const userQuery = gql`
     groupsUsers(groups: $groups) {
       id
       name
+      enabled
     }
     subordinates {
       id
@@ -60,7 +61,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
         <Col span={8}>
           <Form.Item label="市场经理" name="leader" rules={[{ required: true }]}>
             <Select disabled={!!data?.id } allowClear>
-              {resData?.groupsUsers.map((u) => (
+              {resData?.groupsUsers.filter(item=>item.enabled == true).map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>
@@ -80,7 +81,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
                 return true;
               }}
             >
-              {resData?.groupsUsers.map((u) => (
+              {resData?.groupsUsers.filter(item=>item.enabled == true).map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
                 </Select.Option>

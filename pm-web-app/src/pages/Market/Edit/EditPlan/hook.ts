@@ -56,6 +56,7 @@ const userQuery = gql`
     groupsUsers(groups: $groups) {
       id
       name
+      enabled
     }
   }
 `;

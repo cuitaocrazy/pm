@@ -52,17 +52,31 @@ const getEmpDailiesData = async (year: string): Promise<IEmployeeDaily[]> => {
 
 export const getUsers = async (): Promise<UserInfo[]> => {
   const users = await Users()
-    .then((users) => users.find())
+    .then(async (users) => {
+      let users_ = await users.find()
+      const usersWithRoles = await Promise.all(
+        users_.map(async (user) => {
+        const realmRoles = await users.listRealmRoleMappings({ id: user.id! });
+        return {
+          ...user,
+          realmRoles,
+        };
+        })
+      );
+      return usersWithRoles;
+    })
     .then(
       R.map((u: any) => ({
-        id: u.username,
+        id: u.username!,
         name: u.lastName + u.firstName,
         email: u.email,
         createdTimestamp: u.createdTimestamp,
         enabled: u.enabled,
+        realmRoles:u.realmRoles ?? [],
       }))
     )
-    .then(R.filter((u: any) => R.not(R.isNil(u.email))));
+    .then(R.filter((u: any) =>  R.not(R.isNil(u.email)) && !R.any(R.propEq('name', 'no_notification'))(u.realmRoles)));
+    console.dir(users,{depth:null})
   return users;
 };
 

@@ -141,7 +141,7 @@ const Market: React.FC<any> = () => {
       extra={[
         isAdmin ?
         <Select key='filter' placeholder="请选择市场人员" allowClear onChange={setFilter}>
-          {groupsUsers.map((u) => (
+          {groupsUsers.filter(item=>item.enabled == true).map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {u.name}
             </Select.Option>

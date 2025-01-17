@@ -124,6 +124,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'group',
       key: 'group',
       width: '250px',
+      // sorter: (a, b) => a.group.localeCompare(b.group),
     },
     {
       title: '项目预算',

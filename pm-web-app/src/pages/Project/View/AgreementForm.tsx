@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { PlusOutlined, FilePdfOutlined, FileWordOutlined, TableOutlined, FileOutlined, FileZipOutlined } from '@ant-design/icons';
-import { Form, Input, Upload, Select, Modal, DatePicker, message } from 'antd';
+import { Form, Input, Upload, Select, Modal, DatePicker, message,Cascader,InputNumber } from 'antd';
 import type { UploadProps, UploadFile } from 'antd';
 import type { AgreementInput, Query } from '@/apollo';
 import { gql, useQuery } from '@apollo/client';
 import type { FormInstance } from 'antd/lib/form';
 import { agreementType, useBaseState } from '@/pages/utils/hook';
+import moment from 'moment';
 
 const { RangePicker } = DatePicker;
 const dateFormat = 'YYYYMMDD';
@@ -39,7 +40,7 @@ const layout = {
 
 export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   const { data: resData } = useQuery<Query>(userQuery, { fetchPolicy: 'no-cache' ,variables:{page:1,pageSize:100000000}});
-  const { buildProjName } = useBaseState();
+  const { buildProjName,groupType } = useBaseState();
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -155,14 +156,55 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
   const dateChange = (value: any, dataString: any) => {
     form.setFieldsValue({ startTime: dataString[0],  endTime: dataString[1] })
   }
+  const groupDatas = (inputArray: any) => {
+    let result: any = [];
+    inputArray.forEach((item: any) => {
+      const path = item.substring(1).split('/');
+      let currentLevel = result;
+      path.forEach((segment: any, index: number) => {
+        const existingSegment = currentLevel.find((el: any) => el.value === segment);
 
+        if (existingSegment) {
+          currentLevel = existingSegment.children || [];
+        } else {
+          const newSegment = {
+            value: segment,
+            label: segment,
+            children: index === path.length - 1 ? [] : [],
+          };
+
+          currentLevel.push(newSegment);
+          currentLevel = newSegment.children || [];
+        }
+      });
+    });
+    return result;
+  };
+  const [groupsOptions] = useState(groupDatas(groupType));
+  const calculateAfterTaxAmount = (values: any) => {
+    const { contractAmount, taxRate } = values;
+    if ((contractAmount || contractAmount === 0) && taxRate) {
+      // 计算不含税金额
+      const afterTaxAmount = parseFloat(contractAmount) / (1 + parseFloat(taxRate) / 100);
+      form.setFieldsValue({ afterTaxAmount: afterTaxAmount.toFixed(2) } as any);
+    }
+  };
   return (
-    <Form {...layout} form={form} initialValues={data}>
+    <Form {...layout} form={form} initialValues={data} onValuesChange={(_, values) => {calculateAfterTaxAmount(values)}}>
       <Form.Item label="ID" name="id" hidden>
         <Input />
       </Form.Item>
       <Form.Item label="customerName" name="customerName" hidden>
         <Input />
+      </Form.Item>
+      <Form.Item label="部门" name="group" rules={[{ required: false }]}>
+      <Cascader
+            allowClear
+            changeOnSelect
+            className="width122"
+            placeholder="请选择"
+            options={groupsOptions}
+          />
       </Form.Item>
       <Form.Item label="合同名称" name="name" rules={[{ required: true }]}>
         <Input />
@@ -196,7 +238,8 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item label="关联项目" name="contactProj" rules={[{ required: selectType === 'DGHT' ? false : true }]}>
+      {/* {rules={[{ required: selectType === 'DGHT' ? false : true }]}} */}
+      <Form.Item label="关联项目" name="contactProj" >
         <Select mode="multiple" disabled>
           {projectOptions().map((u) => (
             <Select.Option key={u.id} value={u.id}>
@@ -213,15 +256,64 @@ export default (form: FormInstance<AgreementInput>, data?: AgreementInput) => {
           </div>
         </Upload>
       </Form.Item>
-      <Form.Item label="时间" name="time" rules={[{ required: true }]}>
+      {/* <Form.Item label="时间" name="time" rules={[{ required: true }]}>
         <RangePicker format={dateFormat} onChange={dateChange} />
+      </Form.Item> */}
+      <Form.Item
+        label="合同签订日期"
+        name="contractSignDate"
+        rules={[{ required: true }]}
+        getValueProps={(value) => ({
+          value: value ? moment(value) : undefined,
+        })}
+      >
+        <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
       </Form.Item>
-      <Form.Item label="startTime" name="startTime" hidden  rules={[{ required: true }]}>
+      <Form.Item
+        label="合同周期"
+        name="contractPeriod"
+        rules={[
+          { required: false },
+          {
+            pattern: /^[0-9]+$/,
+            message: '合同周期只能填写数字',
+          },
+        ]}
+      >
+        <Input suffix="月" />
+      </Form.Item>
+      <Form.Item label="合同编号" name="contractNumber" rules={[{ required: false }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item label="合同金额" name="contractAmount" rules={[{ required: true }]}>
+        <InputNumber style={{ width: '100%' }} />
+      </Form.Item>
+      <Form.Item label="税率" name="taxRate" rules={[{ required: false }]}>
+        <Input suffix="%" min={0} max={100} style={{ width: '100%' }} />
+      </Form.Item>
+      <Form.Item label="不含税金额" name="afterTaxAmount" rules={[{ required: true }]}>
+        <Input disabled />
+      </Form.Item>
+      <Form.Item
+        label="免维期"
+        name="maintenanceFreePeriod"
+        rules={[
+          { required: true },
+          {
+            pattern: /^[0-9]+$/,
+            message: '合同周期只能填写数字',
+          },
+        ]}
+      >
+        {/* <Input placeholder="以月为单位" style={{ width: '96%' }} />月 */}
+        <Input suffix="月" />
+      </Form.Item>
+      {/* <Form.Item label="startTime" name="startTime" hidden  rules={[{ required: true }]}>
         <Input />
       </Form.Item>
       <Form.Item label="endTime" name="endTime" hidden>
         <Input />
-      </Form.Item>
+      </Form.Item> */}
       <Form.Item label="备注" name="remark" rules={[{ required: false }]}>
         <Input.TextArea />
       </Form.Item>

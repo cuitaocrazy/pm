@@ -6,7 +6,7 @@ import { message } from 'antd';
 import { useModel } from 'umi';
 
 const QueryChangePmGql = gql`
-query($name: String, $leaders: [String!], $page: Int, $pageSize: Int) {
+query($name: String, $leaders: [String!], $page: Int, $pageSize: Int,$isArchive: Boolean) {
     dailyUsers {
       id
       name
@@ -19,7 +19,7 @@ query($name: String, $leaders: [String!], $page: Int, $pageSize: Int) {
       enabled
     }
     
-    superProjs(name: $name, leaders:$leaders, page: $page, pageSize: $pageSize) {
+    superProjs(name: $name, leaders:$leaders, page: $page, pageSize: $pageSize,isArchive: $isArchive,) {
       result{
         id
         name
@@ -43,7 +43,8 @@ export function useChangePmState() {
 
   const [refresh, { data: queryData }] = useLazyQuery<Query>(QueryChangePmGql, {
     variables: {
-      ...query
+      ...query,
+      isArchive:false,
     },
     fetchPolicy: 'no-cache',
   });
@@ -70,7 +71,8 @@ export function useChangePmState() {
     return users.filter((user) => user.id === userId).length > 0;
   };
 
-  const projs = queryData?.superProjs.result.filter((proj) => isMember(proj.leader)) || [];
+  // const projs = queryData?.superProjs.result.filter((proj) => isMember(proj.leader)) || [];//过滤掉lead是自己的项目，因为自己不能变更自己是lead的项目
+  const projs = queryData?.superProjs.result || [];
   const realSubordinates = queryData?.realSubordinates
   const page = queryData?.superProjs.page
   const total = queryData?.superProjs.total

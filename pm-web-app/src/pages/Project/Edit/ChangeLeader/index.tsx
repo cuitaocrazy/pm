@@ -65,23 +65,23 @@ const ChangePm: React.FC<any> = () => {
   //   });
   // };
 
-  const getShowProject = () => {
-    return projs?.filter((proj) => {
-      if (proj.isArchive) {
-        return false;
-      }
-        if (localState.search === '' || localState.search === undefined) {
-          return true;
-        }
-        return buildProjName(proj.id, proj.name).indexOf(localState.search) > -1;
+  // const getShowProject = () => {
+  //   return projs?.filter((proj) => {
+  //     if (proj.isArchive) {
+  //       return false;
+  //     }
+  //       if (localState.search === '' || localState.search === undefined) {
+  //         return true;
+  //       }
+  //       return buildProjName(proj.id, proj.name).indexOf(localState.search) > -1;
       
       
-    });
-  };
-  console.log(getShowProject(),'getShowProject MMMMM')
-  const revertProjs = getShowProject().map((proj) => {
-    return { ...proj, filters: '', onFilter: '' };
-  });
+  //   });
+  // };
+  // console.log(getShowProject(),'getShowProject MMMMM')
+  // const revertProjs = getShowProject().map((proj) => {
+  //   return { ...proj, filters: '', onFilter: '' };
+  // });
   const handleChangeInput = (name:string)=>{
     setParams({
       ...params,
@@ -302,7 +302,7 @@ const ChangePm: React.FC<any> = () => {
       
       <Table
         className="marginTop20"
-        dataSource={revertProjs}
+        dataSource={projs}
         pagination={false}
         columns={columns}
         rowKey="id"

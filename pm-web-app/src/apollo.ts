@@ -1008,6 +1008,13 @@ export type AgreementInput = {
   paymentFileList?:Maybe<FileInput[]>;
   actualDate?:string;
   group?:Scalars['String'][] | Scalars['String'];
+  contractSignDate:Scalars['String'];
+  contractPeriod:Scalars['String'];
+  contractNumber:Scalars['String'];
+  contractAmount:Scalars['String'];
+  taxRate:Scalars['String'];
+  afterTaxAmount:Scalars['String'];
+  maintenanceFreePeriod:Scalars['String'];
 };
 
 export type ContractPaymentInput = {

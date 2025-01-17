@@ -108,7 +108,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 合同名称: { agreement?.name }
               </Col>
               <Col xs={24} sm={18}>
-                合同时间: { agreement?.startTime + '------' +  agreement?.endTime}
+                合同时间: { moment(agreement?.contractSignDate).format('YYYY-MM-DD') + '------' +  moment(agreement?.contractSignDate).add(12, 'months').format('YYYY-MM-DD')}
               </Col>
             </Row>
             <br />

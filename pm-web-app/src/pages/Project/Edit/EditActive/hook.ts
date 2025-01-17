@@ -111,6 +111,8 @@ const queryGql = gql`
           endTime
           isDel
           createDate
+          contractSignDate
+          contractPeriod
         }
         customerObj {
           id

@@ -96,6 +96,9 @@ const Project: React.FC<any> = () => {
   let afterTaxAmountConfirm2 = projs.reduce((sum, item_) => {
     return sum+Number(item_?.afterTaxAmountConfirm)
   }, 0);
+  let projBudget1 = projs.reduce((sum, item_) => {
+    return sum + item_.projBudget
+  },0)
   const columns = [
     {
       title: '序号',
@@ -130,7 +133,18 @@ const Project: React.FC<any> = () => {
       title: '项目预算',
       dataIndex: 'projBudget',
       key: 'projBudget',
-      width: 100,
+      width: 150,
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(projBudget1)+')',
+          dataIndex: 'projBudget',
+          align:'right',
+          render: (projBudget: string, record: Proj) => {
+            return projBudget ? new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(projBudget))) : 0.0;
+          },
+        width: 150,
+        }
+      ],
     },
     {
       title: '项目状态',

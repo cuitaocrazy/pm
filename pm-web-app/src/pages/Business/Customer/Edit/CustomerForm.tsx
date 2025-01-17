@@ -209,7 +209,7 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
                   </div>
                 ))}
                 <Form.Item>
-                  <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                  <Button type="dashed" onClick={() => {add({recorder: initialState?.currentUser?.id})}} icon={<PlusOutlined />}>
                     添加联系人
                   </Button>
                 </Form.Item>

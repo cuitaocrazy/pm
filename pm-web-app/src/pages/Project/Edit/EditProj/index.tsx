@@ -74,6 +74,7 @@ const Project: React.FC<any> = () => {
   let totalNumber1 = 0;
   let totalNumber2 = 0;
   let totalNumber3 = 0;
+  let projBudget1 = 0;
   //!isAdmin && archive === '2' ? todoProjs : projs
   if(!isAdmin && archive === '2'){
     console.log(todoProjs,'todoProjs ++++++')
@@ -98,15 +99,18 @@ const Project: React.FC<any> = () => {
           }else{
             return sum + 0
           }
-          
-        } 
+
+        }
       },0)
       totalNumber3 = todoProjs.reduce((sum, item_) => {
         return sum + item_.recoAmount
       },0)
-      
+      projBudget1 = todoProjs.reduce((sum, item_) => {
+        return sum + item_.projBudget
+      },0)
+
     }
-    
+
   }else{
     totalNumber1 = projs.reduce((sum, item_) => {
       if (projectAgreements && agreements.result && agreements.result.length != 0) {
@@ -128,11 +132,14 @@ const Project: React.FC<any> = () => {
         }else{
           return sum + 0
         }
-        
-      } 
+
+      }
     },0)
     totalNumber3 = projs.reduce((sum, item_) => {
       return sum + item_.recoAmount
+    },0)
+    projBudget1 = projs.reduce((sum, item_) => {
+      return sum + item_.projBudget
     },0)
   }
   const columns = [
@@ -213,7 +220,19 @@ const Project: React.FC<any> = () => {
       title: '项目预算',
       dataIndex: 'projBudget',
       key: 'projBudget',
-      width: 100,
+      width: 150,
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(projBudget1)+')',
+          dataIndex: 'projBudget',
+          align:'right',
+          render: (projBudget: string, record: Proj) => {
+            return projBudget ? new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(projBudget))) : 0.0;
+          },
+        width: 150,
+        }
+      ],
+
     },
     {
       title: '项目状态',
@@ -232,20 +251,20 @@ const Project: React.FC<any> = () => {
         // if(record.contractState){
         //   return record?.contractState == 0 ? '未签署' : record?.contractState == 1 ? '已签署' : '';
         // }else{
-          
+
           let agreementId = projectAgreements.filter(item=>item.id==record.id) || []
           let contract: string | any[] = []
           if(agreementId.length > 0){
             contract = agreements.result.filter(item=>item.id == agreementId[0].agreementId) || []
           }
-          
+
           if(contract.length > 0){
             return  '已签署'
           }else{
-            
+
             return '未签署'
           }
-          
+
         // }
       },
       width: 100,
@@ -317,7 +336,7 @@ const Project: React.FC<any> = () => {
               }else{
                 return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
               }
-              
+
             } else {
               return '---';
             }
@@ -368,7 +387,7 @@ const Project: React.FC<any> = () => {
           }else{
             return '---'
           }
-          
+
         } else {
           return '---';
         }
@@ -420,11 +439,11 @@ const Project: React.FC<any> = () => {
             key="archive"
             onClick={() => {
               if(record.proState && ( record.proState == 0 || record.proState == 2)){
-                return 
+                return
               }else{
                 editHandle(record, activeRef);
               }
-              
+
             }}
           >
             添加项目活动
@@ -436,7 +455,7 @@ const Project: React.FC<any> = () => {
             cancelText="否"
             onConfirm={() => {
               if(record.proState && (record.proState == 0 || record.proState == 2)){
-                return 
+                return
               }else{
                 return archiveProj(record.id)
               }}}
@@ -499,7 +518,7 @@ const Project: React.FC<any> = () => {
       }else {
         return subordinatesOnJob.filter(item=>item.id == son)[0].name + '、'
       }
-      
+
     })
     new Promise<void>((resolve) => {
       console.log(record,'record MMMMMMM')
@@ -677,11 +696,11 @@ const Project: React.FC<any> = () => {
   const [confirmYearOptions, setConfirmYearOptions] = useState([]);
   useEffect(() => {
     if (yearManages) {
-      
+
       let yearManages_ = yearManages.filter((item) => item.enable == true);
       setConfirmYearOptions(yearManages_);
     }
-    
+
   }, [yearManages]);
 
   // const [customerListData, setCustomerListData] = useState({} as any);
@@ -1047,7 +1066,7 @@ const Project: React.FC<any> = () => {
                 <td ></td>
                 <td ></td>
                 </tr>
-               
+
               </tbody>
         </table>
       </div>

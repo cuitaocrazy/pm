@@ -15,6 +15,8 @@ import {
   ProjectAgreement,
   PaymentManage,
   Project,
+  Customer,
+  Region,
 } from "../../mongodb";
 import { dbid2id } from "../../util/utils";
 
@@ -22,7 +24,7 @@ export default {
   Query: {
     contractPaymentManages: async (_: any, __: any, context: AuthContext) => {
       
-      let { page, pageSize, name, customer, type,payState,expectedQuarter,actualQuarter,group } = __;
+      let { page, pageSize, name, customer, type,payState,expectedQuarter,actualQuarter,group , regions,regionones} = __;
       if (!page || page === 0) {
         page = 1;
       }
@@ -75,28 +77,57 @@ export default {
       if (group && group[0] !== '') {
         filterAgree["group"] = new RegExp(group, "g");
       }
+      /**
+       * 如果只有一级，没有二级：
+       * 拿着一级去二级表里找对应的二级，
+       * 拿着二级去客户管理里拿对应的客户
+       * 拿着客户去找对应的合同
+       * 拿着合同去找对应的款项
+       * 
+       */
+      let newregions:any[] = [];
+      if ((regionones && regionones.length > 0) && (!regions || regions.length === 0)) {
+        const regions_ = await Region.find({ isDel: false, parentId: { $in: regionones } })
+          .sort({ sort: 1 })
+          .map(dbid2id)
+          .toArray()
+        const regionsCode = regions_.map(item => item.code)
+        newregions = [...regionsCode]
+      } else if ((regionones && regionones.length > 0) && (regions && regions.length > 0)) {
+        newregions = [...regions]
+      }else if((!regionones || regionones.length === 0) && (regions && regions.length > 0)){
+        newregions = [...regions]
+      }
+      let ids:any[] = []
+      if((regionones && regionones.length>0) || (regions&&regions.length>0)){
+        let customers = await Customer.find({regionCode:{ $in: newregions }}).toArray();
+        ids = customers.map(item=>item._id)
+        
+        filterAgree['customer'] = {$in: ids}
+      }
       let agreeIDs:any[] = []
-      if(name || customer || group){
+      console.log(filterAgree,'filterAgree KKKK')
+      if(name || (customer&&customer.length>0 && customer[0]!= '') || ((group &&  group.length >0 && group[0] != '') ) || (regionones && regionones.length>0) || (regions&&regions.length>0)){
         let agrees = await Agreement.find(filterAgree).toArray();
         if(agrees.length>0){
           agreeIDs = agrees.map(item=>item._id.toString())
           if(agreeIDs.length > 0){
             filter['contractId'] = {$in:agreeIDs}
           }
-          // console.log(agreeIDs,'?????')
+          
         }
       }
       
-      // console.log(filter,'filter ????')
+     
       const result = await PaymentManage.find(filter)
         .skip(skip)
         .limit(pageSize)
         .sort({ sort: 1 })
         .map(dbid2id)
         .toArray();
-
+      
       const total = await PaymentManage.countDocuments(filter);
-      return { result:(name || customer || group )&& agreeIDs.length == 0?[]: result, total, page };
+      return { result:(name || (customer&&customer.length>0 && customer[0]!= '') || (group &&  group.length >0 && group[0] != '') || (regionones && regionones.length>0) || (regions&&regions.length>0) )&& agreeIDs.length == 0?[]: result, total, page };
     },
   },
   Mutation: {

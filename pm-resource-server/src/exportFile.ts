@@ -97,5 +97,60 @@ export default (app, express) => {
 
     }
   });
+  app.post('/api/downLoad', async (req, res) => {
+    console.log(req,'req llll')
+    // 创建工作簿及工作表
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet1');
+
+  // 设置表头，对应数据对象的键
+  worksheet.columns = [
+    { header: '序号', key: 'index', width: 10 },
+    { header: '项目名称', key: 'name', width: 10 },
+    { header: '项目ID', key: 'id', width: 10 },
+    { header: '审核状态', key: 'proState', width: 10 },
+    { header: '预算人天', key: 'estimatedWorkload', width: 10 },
+    { header: '实际人天', key: 'timeConsuming', width: 10 },
+    { header: '阶段状态', key: 'status', width: 10 },
+    { header: '项目预算', key: 'projBudget', width: 10 },
+    { header: '项目状态', key: 'projStatus', width: 10 },
+    { header: '合同状态', key: 'contractState', width: 10 },
+    { header: '验收状态', key: 'acceStatus', width: 10 },
+    { header: '确认年度', key: 'confirmYear', width: 10 },
+    { header: '合同金额(含税)', key: 'contractAmount', width: 10 },
+    { header: '合同金额(不含税)', key: 'afterTaxAmount', width: 10 },
+    { header: '确认金额(含税)', key: 'recoAmount', width: 10 },
+    { header: '投产日期', key: 'productDate', width: 10 },
+    { header: '合同签订日期', key: 'contractSignDate', width: 10 },
+    { header: '项目部门', key: 'group', width: 10 },
+    { header: '客户名称', key: 'customer', width: 10 },
+    { header: '项目经理', key: 'leader', width: 10 },
+    { header: '市场经理', key: 'salesLeader', width: 10 },
+  ];
+
+  // 要导出的数据
+  // const data = JSON.parse(req.query.datas);
+
+  // 添加数据行
+  req.body.datas.forEach(item => {
+    worksheet.addRow(item);
+  });
+
+  try {
+    // 将工作簿内容写入内存中的 Buffer
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    // 设置响应头，指定下载文件名和文件类型
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=output.xlsx');
+
+    // 返回 Buffer 数据
+    await workbook.xlsx.write(res);
+    res.end(); // 明确结束响应
+  } catch (err) {
+    console.error('生成 Excel 文件时出错：', err);
+    res.status(500).send('生成 Excel 文件失败');
+  }
+  })
 }
 

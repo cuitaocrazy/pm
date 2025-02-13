@@ -16,6 +16,7 @@ import {
   Pagination,
   Cascader,
 } from 'antd';
+import axios from 'axios';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
 import { client } from '@/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -648,6 +649,177 @@ const Project: React.FC<any> = () => {
       contractState: '',
     });
   };
+  const downLoadBtn = async ()=>{
+    let projs_ = JSON.parse(JSON.stringify(projs))
+    projs_.map(((item,index_)=>{
+        console.log(item,'item ====')
+        item.index = index_+1
+        item.id = buildProjName(item.id, item.name)
+        item.proState = item.proState == 0
+        ? '待审核'
+        : item.proState == 1 || !item.proState
+        ? '审核通过'
+        : item.proState == 2
+        ? '审核不通过'
+        : '---';
+        item.estimatedWorkload = item.estimatedWorkload ? item.estimatedWorkload  : 0;
+        item.timeConsuming = item.timeConsuming ? ((item.timeConsuming - 0) / 8).toFixed(2) : 0
+        item.status = getStatusDisplayName(item.status)
+        item.projBudget = item.projBudget ? new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(item.projBudget))) : 0.0;
+        item.projStatus = status?.find((statu) => statu.id === item.projStatus)?.name;
+        let agreementId = projectAgreements.filter(item_=>item_.id==item.id) || []
+        let contract: string | any[] = []
+        if(agreementId.length > 0){
+          contract = agreements.result.filter(item_=>item_.id == agreementId[0].agreementId) || []
+        }
+
+        if(contract.length > 0){
+          item.contractState =  '已签署'
+        }else{
+          item.contractState =  '未签署'
+        }
+        item.acceStatus = status?.find((statu) => statu.id === item.acceStatus)?.name;
+        item.confirmYear = confirmYearOptions.filter(item_=>item_.code==item.confirmYear).length?confirmYearOptions.filter(item_=>item_.code==item.confirmYear)[0].name:'---';
+        if (projectAgreements && agreements.result && agreements.result.length != 0) {
+          let contract = projectAgreements?.filter((item_) => item_.id == item.id);
+          let amount = agreements?.result.filter((item_) => item_.id == contract[0]?.agreementId);
+          if(amount[0]?.contractAmount){
+              item.contractAmount = new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(amount[0]?.contractAmount)));
+          }else{
+            item.contractAmount = new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+          }
+        } else {
+          item.contractAmount = '---';
+        }
+        
+
+       /**
+        * 
+    {
+      title: '合同金额(不含税)',
+      dataIndex: 'afterTaxAmount',
+      key: 'afterTaxAmount',
+      align:'right',
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber2)+')',
+          dataIndex: 'contractAmount',
+          align:'right',
+          render: (afterTaxAmount: string, record: Proj) => {
+            if (projectAgreements && agreements.result && agreements.result.length != 0) {
+              let contract = projectAgreements?.filter((item) => item.id == record.id);
+              let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
+              if(amount[0]?.afterTaxAmount){
+                return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
+              }else{
+                return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
+              }
+
+            } else {
+              return '---';
+            }
+          },
+        width: 150,
+        }
+      ],
+      width: 150,
+    },
+    {
+      title: '确认金额(含税)',
+      dataIndex: 'recoAmount',
+      key: 'recoAmount',
+      align:'right',
+      children: [
+        {
+          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber3)+')',
+          dataIndex: 'recoAmount',
+          align:'right',
+          render: (recoAmount: any) => {
+            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((recoAmount));
+          },
+        width: 150,
+        }
+      ],
+      width: 150,
+    },
+    {
+      title: '投产日期',
+      dataIndex: 'productDate',
+      key: 'productDate',
+      render: (productDate: string) => {
+        return productDate ? moment(productDate).format('YYYY-MM-DD') : '---';
+      },
+      width: 100,
+      align:'right',
+    },
+    {
+      title: '合同签订日期',
+      dataIndex: 'contractSignDate',
+      key: 'contractSignDate',
+      render: (contractSignDate: string, record: Proj) => {
+        if (projectAgreements && agreements.result && agreements.result.length != 0) {
+          let contract = projectAgreements.filter((item) => item.id == record.id);
+          let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+          if(amount.length > 0){
+            return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+          }else{
+            return '---'
+          }
+
+        } else {
+          return '---';
+        }
+      },
+      width: 150,
+      align:'right',
+    },
+    {
+      title: '项目部门',
+      dataIndex: 'group',
+      key: 'group',
+      width: '200px',
+    },
+
+    {
+      title: '客户名称',
+      dataIndex: 'customer',
+      key: 'customer',
+      render: (text: string, record: Proj) => {
+        return record.customerObj ? record.customerObj.name : '';
+      },
+      width: 150,
+    },
+    {
+      title: '项目经理',
+      dataIndex: 'leader',
+      key: 'leader',
+      render: (text: string, record: Proj) => {
+        return subordinates.find((user: { id: string }) => user.id === record.leader)?.name;
+      },
+      width: 110,
+    },
+    {
+      title: '市场经理',
+      dataIndex: 'salesLeader',
+      key: 'salesLeader',
+      render: (text: string, record: Proj) => {
+        return subordinates.find((user: { id: string }) => user.id === record.salesLeader)?.name;
+      },
+      width: 110,
+    },
+        */
+       
+    }))
+    console.log(projs_,'projs_')
+    // await axios.post('/api/downLoad',  { datas: !isAdmin && archive === '2' ? todoProjs : projs_},{ responseType: 'blob', }).then(response => {
+    //   const url = window.URL.createObjectURL(new Blob([response.data]));
+    //   const link = document.createElement('a');
+    //   link.href = url;
+    //   link.setAttribute('download', `项目导出.xlsx`);
+    //   document.body.appendChild(link);
+    //   link.click();
+    // });
+  }
   const groupDatas = (inputArray: any) => {
     let result: any = [];
     inputArray.forEach((item: any) => {
@@ -904,6 +1076,7 @@ const Project: React.FC<any> = () => {
             查询
           </Button>
           <Button onClick={() => canaelBtn()}>重置</Button>
+          <Button onClick={() => downLoadBtn()}>导出</Button>
         </Col>
       </Row>
       <Table
@@ -950,7 +1123,7 @@ const Project: React.FC<any> = () => {
       </DialogForm>
       <iframe id="print-frame" style={{display:'none'}}></iframe>
       <div id='printContent' style={{display:'none'}}>
-        <table style={{width:'100%',textAlign:'center',borderCollapse: 'collapse',fontSize:'14px',tableLayout: 'fixed'}}>
+        <table style={{width:'100%',textAlign:'center',borderCollapse: 'collapse',fontSize:'14px',tableLayout: 'fixed',marginTop:'50px'}}>
               {/**objectInfo */}
               <colgroup>
                 <col style={{ width: '28mm' }} />

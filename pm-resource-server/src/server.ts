@@ -8,6 +8,7 @@ import uploadFile from './uploadFile'
 import exportFile from './exportFile'
 
 const app = express()
+app.use(express.json())
 const server = new ApolloServer({
   typeDefs: def.typeDef,
   context: def.context,

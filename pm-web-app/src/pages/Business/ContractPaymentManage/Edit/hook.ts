@@ -19,11 +19,13 @@ const queryGql = gql`
     $name: String
     $customer: [String]
     $type: [String]
-    $actualQuarter:[String],,
+    $actualQuarter:[String]
     $expectedQuarter:[String]
     $payState:[String]
     $group:[String]
     $agreementPageSize:Int
+    $regions:[String]
+    $regionones:[String]
   ) {
     projectAgreements {
       id
@@ -60,6 +62,8 @@ const queryGql = gql`
       expectedQuarter:$expectedQuarter
       payState:$payState
       group:$group
+      regions:$regions
+      regionones:$regionones
     ) {
       result {
         id
@@ -109,7 +113,7 @@ const queryGql = gql`
         code
         enable
       }
-        agreements(pageSize:$agreementPageSize) {
+      agreements(pageSize:$agreementPageSize){
       result{
         id
         name
@@ -117,6 +121,19 @@ const queryGql = gql`
         contractAmount
         contractSignDate
       }
+    }
+    regionones{
+          id
+          code
+          name
+          enable
+        }
+      regions{
+      id
+      code
+      name
+      enable
+      parentId
     }
   }
 `;
@@ -273,5 +290,7 @@ export function useAgreementState() {
     payWaySub,
     collectionQuarterManages:queryData?.collectionQuarterManages,
     payStateManages:queryData?.payStateManages,
+    regionones:queryData?.regionones || [],
+    regions:queryData?.regions || [],
   };
 }

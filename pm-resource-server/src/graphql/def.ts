@@ -695,6 +695,8 @@ const dataTypeDef = gql`
       expectedQuarter:[String]
       actualQuarter:[String]
       group:[String]
+      regions:[String]
+      regionones:[String]
     ): ContractPaymentManagePage
     projectAgreements: [ProjectAgreement!]!
     getAgreementsByProjectId(id: String): [Agreement!]!

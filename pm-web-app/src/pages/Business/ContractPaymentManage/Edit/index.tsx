@@ -28,6 +28,8 @@ const Agreement: React.FC<any> = () => {
     setQuery,
     collectionQuarterManages,
     payStateManages,
+    regionones,
+    regions,
   } = useAgreementState();
   const [params, setParams] = useState({
     name: '',
@@ -37,7 +39,10 @@ const Agreement: React.FC<any> = () => {
     expectedQuarter:[],
     payState:[],
     group:[],
+    regions: [],
+    regionones:[],
   });
+  const [zoneCodeOptions,setZoneCodeOptions] = useState([]);
   const { groupType} = useBaseState();
   const groupDatas = (inputArray: any) => {
     let result: any = [];
@@ -94,9 +99,14 @@ const Agreement: React.FC<any> = () => {
     });
   };
   const handleChange = (value = '', type: string) => {
+    if(type == 'regionones'){
+      
+      let options_ = regions.filter(item=>value.includes(item.parentId))
+      setZoneCodeOptions(options_)
+    }
     setParams({
       ...params,
-      [type]: type !== 'customer' && type !== 'type' && type !== 'actualQuarter' && type !== 'expectedQuarter' && type !== 'payState' ? String(value) : value,
+      [type]: type !== 'regions' && type !== 'regionones' && type !== 'customer' && type !== 'type' && type !== 'actualQuarter' && type !== 'expectedQuarter' && type !== 'payState' ? String(value) : value,
     });
   };
   const handleChangeInput = (name: string) => {
@@ -130,6 +140,8 @@ const Agreement: React.FC<any> = () => {
       expectedQuarter:[],
       payState:[],
       group: [],
+      regionones:[],
+      regions:[],
     });
     setQuery({
       ...query,
@@ -141,6 +153,8 @@ const Agreement: React.FC<any> = () => {
       expectedQuarter:[],
       payState:[],
       group: '',
+      regionones:[],
+      regions:[],
     });
   };
   // const addContract = () => {
@@ -569,6 +583,34 @@ const totalNumber1 = sortedData.reduce((sum, item) => sum + (Number(item.contrac
               handleChangeCas(value, 'group');
             }}
             options={groupsOptions}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>一级区域：</label>
+          <Select
+            showSearch
+            value={params.regionones}
+            fieldNames={{label:'name',value:'id'}}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value: any, event) => handleChange(value, 'regionones')}
+            options={regionones?.filter(item=>item.enable == true)}
+          />
+        </Col>
+        <Col className="gutter-row">
+          <label>区域：</label>
+          <Select
+            showSearch
+            fieldNames={{label:'name',value:'code'}}
+            value={params.regions}
+            mode="multiple"
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value: any, event) => handleChange(value, 'regions')}
+            options={zoneCodeOptions?.filter(item=>item.enable == true)}
           />
         </Col>
       </Row>

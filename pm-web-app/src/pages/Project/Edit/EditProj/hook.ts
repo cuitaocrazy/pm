@@ -333,6 +333,7 @@ export function useProjStatus() {
       agreementPageSize: 10000000,
       ...query,
       pageSize:100000000,
+      page:1,
     },
     fetchPolicy: 'no-cache',
   }); //走后台获取数据，data为返回数据，refresh为函数，自己触发，variables为参数

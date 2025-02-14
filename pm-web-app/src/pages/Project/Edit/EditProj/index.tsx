@@ -57,6 +57,7 @@ const Project: React.FC<any> = () => {
     projectAgreements,
     agreements,
     printProj,
+    downLoadFlag,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType ,subordinatesOnJob} = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -650,11 +651,15 @@ const Project: React.FC<any> = () => {
     });
   };
   const downLoadBtn = async ()=>{
-    let projs_ = JSON.parse(JSON.stringify(projs))
+    let projss = await downLoadFlag()
+    console.log(projss,'projss LLL')
+    let projs_ = JSON.parse(JSON.stringify(projss))
     projs_.map(((item,index_)=>{
-        console.log(item,'item ====')
+        // console.log(item,'item ====')
         item.index = index_+1
-        item.id = buildProjName(item.id, item.name)
+        let id = JSON.parse(JSON.stringify(item.id))
+        let name = JSON.parse(JSON.stringify(item.name))
+        item.id_ = buildProjName(id, name)
         item.proState = item.proState == 0
         ? '待审核'
         : item.proState == 1 || !item.proState
@@ -665,14 +670,15 @@ const Project: React.FC<any> = () => {
         item.estimatedWorkload = item.estimatedWorkload ? item.estimatedWorkload  : 0;
         item.timeConsuming = item.timeConsuming ? ((item.timeConsuming - 0) / 8).toFixed(2) : 0
         item.status = getStatusDisplayName(item.status)
-        item.projBudget = item.projBudget ? new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(item.projBudget))) : 0.0;
+        item.projBudget_ = item.projBudget ? new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(item.projBudget))) : 0.0;
         item.projStatus = status?.find((statu) => statu.id === item.projStatus)?.name;
-        let agreementId = projectAgreements.filter(item_=>item_.id==item.id) || []
+        let agreementId = projectAgreements.filter(item_=>{return item_.id==item.id}) || []//console.log(item_.id,'??',item);
+        // console.log(agreementId,'agreementId MMM')
         let contract: string | any[] = []
         if(agreementId.length > 0){
           contract = agreements.result.filter(item_=>item_.id == agreementId[0].agreementId) || []
         }
-
+        // console.log(contract,'contract MMM')
         if(contract.length > 0){
           item.contractState =  '已签署'
         }else{
@@ -691,134 +697,81 @@ const Project: React.FC<any> = () => {
         } else {
           item.contractAmount = '---';
         }
-        
-
-       /**
-        * 
-    {
-      title: '合同金额(不含税)',
-      dataIndex: 'afterTaxAmount',
-      key: 'afterTaxAmount',
-      align:'right',
-      children: [
-        {
-          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber2)+')',
-          dataIndex: 'contractAmount',
-          align:'right',
-          render: (afterTaxAmount: string, record: Proj) => {
-            if (projectAgreements && agreements.result && agreements.result.length != 0) {
-              let contract = projectAgreements?.filter((item) => item.id == record.id);
-              let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
-              if(amount[0]?.afterTaxAmount){
-                return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
-              }else{
-                return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
-              }
-
-            } else {
-              return '---';
-            }
-          },
-        width: 150,
-        }
-      ],
-      width: 150,
-    },
-    {
-      title: '确认金额(含税)',
-      dataIndex: 'recoAmount',
-      key: 'recoAmount',
-      align:'right',
-      children: [
-        {
-          title: '('+new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber3)+')',
-          dataIndex: 'recoAmount',
-          align:'right',
-          render: (recoAmount: any) => {
-            return new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((recoAmount));
-          },
-        width: 150,
-        }
-      ],
-      width: 150,
-    },
-    {
-      title: '投产日期',
-      dataIndex: 'productDate',
-      key: 'productDate',
-      render: (productDate: string) => {
-        return productDate ? moment(productDate).format('YYYY-MM-DD') : '---';
-      },
-      width: 100,
-      align:'right',
-    },
-    {
-      title: '合同签订日期',
-      dataIndex: 'contractSignDate',
-      key: 'contractSignDate',
-      render: (contractSignDate: string, record: Proj) => {
         if (projectAgreements && agreements.result && agreements.result.length != 0) {
-          let contract = projectAgreements.filter((item) => item.id == record.id);
-          let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-          if(amount.length > 0){
-            return moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+          let contract = projectAgreements?.filter((item_) => item_.id == item.id);
+          let amount = agreements?.result?.filter((item_) => item_.id == contract[0]?.agreementId);
+          if(amount[0]?.afterTaxAmount){
+            item.afterTaxAmount =  new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
           }else{
-            return '---'
+            item.afterTaxAmount =  new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
           }
 
         } else {
-          return '---';
+          item.afterTaxAmount =  '---';
         }
-      },
-      width: 150,
-      align:'right',
-    },
-    {
-      title: '项目部门',
-      dataIndex: 'group',
-      key: 'group',
-      width: '200px',
-    },
+        item.recoAmount_ = new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((item.recoAmount));
+        item.productDate = item.productDate ? moment(item.productDate).format('YYYY-MM-DD') : '---';
+        if (projectAgreements && agreements.result && agreements.result.length != 0) {
+          let contract = projectAgreements.filter((item_) => item_.id == item.id);
+          let amount = agreements?.result.filter((item_) => item_.id == contract[0]?.agreementId);
+          if(amount.length > 0){
+            item.contractSignDate =  moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
+          }else{
+            item.contractSignDate =  '---'
+          }
 
-    {
-      title: '客户名称',
-      dataIndex: 'customer',
-      key: 'customer',
-      render: (text: string, record: Proj) => {
-        return record.customerObj ? record.customerObj.name : '';
-      },
-      width: 150,
-    },
-    {
-      title: '项目经理',
-      dataIndex: 'leader',
-      key: 'leader',
-      render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string }) => user.id === record.leader)?.name;
-      },
-      width: 110,
-    },
-    {
-      title: '市场经理',
-      dataIndex: 'salesLeader',
-      key: 'salesLeader',
-      render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string }) => user.id === record.salesLeader)?.name;
-      },
-      width: 110,
-    },
-        */
-       
+        } else {
+          item.contractSignDate =  '---';
+        } 
+        item.customer = item.customerObj ? item.customerObj.name : '';
+        item.leader = subordinates.find((user: { id: string }) => user.id === item.leader)?.name;
+        item.salesLeader = subordinates.find((user: { id: string }) => user.id === item.salesLeader)?.name;
     }))
-    console.log(projs_,'projs_')
-    // await axios.post('/api/downLoad',  { datas: !isAdmin && archive === '2' ? todoProjs : projs_},{ responseType: 'blob', }).then(response => {
-    //   const url = window.URL.createObjectURL(new Blob([response.data]));
-    //   const link = document.createElement('a');
-    //   link.href = url;
-    //   link.setAttribute('download', `项目导出.xlsx`);
-    //   document.body.appendChild(link);
-    //   link.click();
-    // });
+    let totalNumber1 = projs_.reduce((sum, item_) => {
+      if (projectAgreements && agreements.result && agreements.result.length != 0) {
+        let contract = projectAgreements?.filter((item) => item.id == item_.id);
+        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+        if(amount[0]?.contractAmount){
+            return sum + Number(amount[0]?.contractAmount);
+        }else{
+          return sum + 0;
+        }
+      }
+    },0);
+    let totalNumber2 = projs_.reduce((sum, item_) => {
+      if (projectAgreements && agreements.result && agreements.result.length != 0) {
+        let contract = projectAgreements?.filter((item) => item.id == item_.id);
+        let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
+        if(amount[0]?.afterTaxAmount){
+          return sum + Number(amount[0]?.afterTaxAmount);
+        }else{
+          return sum + 0
+        }
+
+      }
+    },0)
+    let totalNumber3 = projs_.reduce((sum, item_) => {
+      return sum + item_.recoAmount
+    },0)
+    let projBudget1 = projs_.reduce((sum, item_) => {
+      return sum + item_.projBudget
+    },0)
+    // console.log(totalNumber3,'totalNumber3 MMM')
+    projs_.push({
+      index:'合计',
+      contractAmount:new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber1),
+      afterTaxAmount:new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber2),
+      recoAmount_:new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber3),
+      projBudget_:new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(projBudget1)
+    })
+    await axios.post('/api/downLoad',  { datas: !isAdmin && archive === '2' ? todoProjs : projs_},{ responseType: 'blob', }).then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `项目导出-`+moment().format('YYYY-MM-DD')+`.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+    });
   }
   const groupDatas = (inputArray: any) => {
     let result: any = [];
@@ -1075,8 +1028,8 @@ const Project: React.FC<any> = () => {
           <Button onClick={() => searchBtn()} type="primary" className="marginRight10">
             查询
           </Button>
-          <Button onClick={() => canaelBtn()}>重置</Button>
-          <Button onClick={() => downLoadBtn()}>导出</Button>
+          <Button onClick={() => canaelBtn()} className="marginRight10">重置</Button>
+          <Button style={{display:archive == '2'?'none':''}} onClick={() => downLoadBtn()}>导出</Button>
         </Col>
       </Row>
       <Table

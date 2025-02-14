@@ -76,7 +76,7 @@ export default {
         { proState: null }, // proState 为 null
       ];
       const result = await Project.find(filter)
-        .sort({ createDate: -1 })
+        .sort({ createDate: -1, _id: 1 })
         .map(dbid2id)
         .toArray();
         // const result = await Project.find(filter)
@@ -251,9 +251,9 @@ export default {
       }
       // console.dir(filter,{depth:null,color:true})
       const result = await Project.find(filter)
+      .sort({ createDate: -1, _id: 1 })
         .skip(skip)
         .limit(pageSize)
-        .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray(); //项目数据
 
@@ -408,9 +408,9 @@ export default {
       }
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
       const result = await Project.find(filter)
+      .sort({ createDate: -1, _id: 1  })
         .skip(skip)
         .limit(pageSize)
-        .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
       const projIds = result.map((proj) => proj.id);
@@ -533,7 +533,7 @@ export default {
       }
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
       let result = await Project.find(filter)
-        .sort({ createDate: -1 })
+        .sort({ createDate: -1, _id: 1 })
         .map(dbid2id)
         .toArray();
       result = getTodoProjects(result);
@@ -806,9 +806,9 @@ export default {
       }
         console.dir(filter,{depth:null,color:true})
       const result = await Project.find(filter)
+      .sort({ createDate: -1,_id: 1 })
         .skip(skip)
         .limit(pageSize)
-        .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
       const projIds = result.map((proj) => proj.id);
@@ -990,9 +990,9 @@ export default {
       }
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
       const result = await Project.find(filter)
+      .sort({ createDate: -1, _id: 1  })
         .skip(skip)
         .limit(pageSize)
-        .sort({ createDate: -1 })
         .map(dbid2id)
         .toArray();
       const projIds = result.map((proj) => proj.id);
@@ -1115,7 +1115,7 @@ export default {
       filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
      
       const result = await Project.find(filter)
-        .sort({ createDate: -1 })
+        .sort({ createDate: -1, _id: 1  })
         .map(dbid2id)
         .skip(skip)
         .limit(pageSize)
@@ -1161,7 +1161,7 @@ export default {
           $regex: `^[0-9A-Za-z]*-[0-9A-Za-z]*-${__.projType}+-[0-9A-Za-z]*-[0-9A-Za-z]*$`,
         },
       })
-        .sort({ createDate: -1 })
+        .sort({ createDate: -1, _id: 1  })
         .map(dbid2id)
         .toArray(),
     filterProjsByApp: (_: any, __: any, context: AuthContext) => {
@@ -1191,7 +1191,7 @@ export default {
       }
       filter["_id"] = { $not: /-ZH-/ };
       return Project.find(filter)
-        .sort({ createDate: -1 })
+        .sort({ createDate: -1, _id: 1  })
         .map(dbid2id)
         .toArray();
     },

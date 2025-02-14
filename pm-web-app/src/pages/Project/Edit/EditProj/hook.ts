@@ -324,6 +324,18 @@ export function useProjStatus() {
     },
     fetchPolicy: 'no-cache',
   }); //走后台获取数据，data为返回数据，refresh为函数，自己触发，variables为参数
+  const [refresh1, { loading: queryLoading1, data: queryData1 }] = useLazyQuery<
+    Query,
+    QueryProjectArgs
+  >(queryGql, {
+    variables: {
+      isArchive: archive === '1' ? true : false, //1：归档，0:项目，2:代办项目
+      agreementPageSize: 10000000,
+      ...query,
+      pageSize:100000000,
+    },
+    fetchPolicy: 'no-cache',
+  }); //走后台获取数据，data为返回数据，refresh为函数，自己触发，variables为参数
   const [archiveProjHandle, { loading: archiveLoading }] = useMutation<
     Mutation,
     MutationDeleteProjectArgs
@@ -362,6 +374,21 @@ export function useProjStatus() {
   const projs = projectClassify(
     R.filter((el) => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs),
   );
+  //导出全部项目/项目维护
+  const downLoadFlag =async ()=>{
+    // console.log('downLoadFlag')
+    const { data } = await refresh1();
+    // console.log(data,'queryData1 <<>>')
+    const tmpProjs = (
+      (isAdmin ? data?.superProjs?.result : data?.iLeadProjs?.result) || []
+    ).map((item) => {
+      return { ...item };
+    });
+    const projs = projectClassify(
+      R.filter((el) => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs),
+    );
+    return projs
+  }
   // projs
   const subordinates = queryData?.realSubordinates || []; //realSubordinates拿到同部门及以下的人员
   const agreements = queryData?.agreements || [];
@@ -494,5 +521,6 @@ export function useProjStatus() {
     getTodoList,
     todoProjsTotal,
     printProj,
+    downLoadFlag,
   };
 }

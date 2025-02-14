@@ -1029,7 +1029,7 @@ const Project: React.FC<any> = () => {
             查询
           </Button>
           <Button onClick={() => canaelBtn()} className="marginRight10">重置</Button>
-          <Button style={{display:archive == '2'?'none':''}} onClick={() => downLoadBtn()}>导出</Button>
+          <Button style={{display:'none'}} onClick={() => downLoadBtn()}>导出</Button>
         </Col>
       </Row>
       <Table

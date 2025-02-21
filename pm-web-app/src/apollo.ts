@@ -758,6 +758,11 @@ export type DailyInput = {
   content?: Maybe<Scalars['String']>;
 };
 
+export type PrintProjInput = {
+  id: Scalars['ID'];
+  printState:Scalars['String'];
+}
+
 export type ProjectInput = {
   id: Scalars['ID'];
   pId?: Scalars['String'];
@@ -1133,6 +1138,7 @@ export type MutationPushDailyArgs = {
 export type MutationPushProjectArgs = {
   proj: ProjectInput;
 };
+
 export type MutationCheckProjArgs = {
   id: Scalars['String'];
   checkState: Scalars['Int'];
@@ -1141,6 +1147,10 @@ export type MutationCheckProjArgs = {
 
 export type MutationDeleteProjectArgs = {
   id: Scalars['ID'];
+};
+export type MutationPrintProjArgs = {
+  proj:PrintProjInput;
+  
 };
 
 export type MutationUpdateIncomeConfirmProjArgs = {

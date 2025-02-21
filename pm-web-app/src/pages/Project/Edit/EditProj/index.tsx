@@ -57,7 +57,7 @@ const Project: React.FC<any> = () => {
     projectAgreements,
     agreements,
     printProj,
-    downLoadFlag,
+    me,
   } = useProjStatus();
   const { status, orgCode, zoneCode, projType, buildProjName, groupType ,subordinatesOnJob} = useBaseState();
   const editHandle = (proj: Proj, openRef: any) => {
@@ -162,6 +162,12 @@ const Project: React.FC<any> = () => {
     },
     {
       title: '项目ID',
+      dataIndex: 'id',
+      key: 'id',
+      width: 120,
+    },
+    {
+      title: '项目全称',
       dataIndex: 'id',
       key: 'id',
       render: (text: string, record: Proj) => (
@@ -530,6 +536,7 @@ const Project: React.FC<any> = () => {
       // console.log('subordinatesOnJob:',subordinatesOnJob)
       printProj(record);
     });
+
   };
   if (!isAdmin && archive === '2') {
     columns.splice(2, 0, {
@@ -551,6 +558,18 @@ const Project: React.FC<any> = () => {
       },
     });
   }
+  if(me?.access.includes('realm:print')){
+    columns.splice(2, 0, {
+      title: '是否打印',
+      dataIndex: 'printState',
+      key: 'printState',
+      render: (text: string, record: Proj) => {
+        console.log(record,'record MMMM')
+        return text == '0' ? '否' : text == '1' ? '是' : '---'
+      },
+      width: 110,
+    },);
+  }
   //=====zhouyueyang
   const [params, setParams] = useState({
     regions: [],
@@ -564,6 +583,7 @@ const Project: React.FC<any> = () => {
     name: '',
     contractState: '',
     acceptanceStatus: '',
+    isPrint:'',
   });
   const handleChange = (value = '', type: string) => {
     setParams({
@@ -635,6 +655,7 @@ const Project: React.FC<any> = () => {
       status: '',
       name: '',
       contractState: '',
+      isPrint:'',
     });
     setQuery({
       ...query,
@@ -648,123 +669,12 @@ const Project: React.FC<any> = () => {
       status: '',
       name: '',
       contractState: '',
+      isPrint:'',
     });
   };
   const downLoadBtn = async ()=>{
-    let projss = await downLoadFlag()
-    console.log(projss,'projss LLL')
-    let projs_ = JSON.parse(JSON.stringify(projss))
-    projs_.map(((item,index_)=>{
-        // console.log(item,'item ====')
-        item.index = index_+1
-        let id = JSON.parse(JSON.stringify(item.id))
-        let name = JSON.parse(JSON.stringify(item.name))
-        item.id_ = buildProjName(id, name)
-        item.proState = item.proState == 0
-        ? '待审核'
-        : item.proState == 1 || !item.proState
-        ? '审核通过'
-        : item.proState == 2
-        ? '审核不通过'
-        : '---';
-        item.estimatedWorkload = item.estimatedWorkload ? item.estimatedWorkload  : 0;
-        item.timeConsuming = item.timeConsuming ? ((item.timeConsuming - 0) / 8).toFixed(2) : 0
-        item.status = getStatusDisplayName(item.status)
-        item.projBudget_ = item.projBudget ? new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(item.projBudget))) : 0.0;
-        item.projStatus = status?.find((statu) => statu.id === item.projStatus)?.name;
-        let agreementId = projectAgreements.filter(item_=>{return item_.id==item.id}) || []//console.log(item_.id,'??',item);
-        // console.log(agreementId,'agreementId MMM')
-        let contract: string | any[] = []
-        if(agreementId.length > 0){
-          contract = agreements.result.filter(item_=>item_.id == agreementId[0].agreementId) || []
-        }
-        // console.log(contract,'contract MMM')
-        if(contract.length > 0){
-          item.contractState =  '已签署'
-        }else{
-          item.contractState =  '未签署'
-        }
-        item.acceStatus = status?.find((statu) => statu.id === item.acceStatus)?.name;
-        item.confirmYear = confirmYearOptions.filter(item_=>item_.code==item.confirmYear).length?confirmYearOptions.filter(item_=>item_.code==item.confirmYear)[0].name:'---';
-        if (projectAgreements && agreements.result && agreements.result.length != 0) {
-          let contract = projectAgreements?.filter((item_) => item_.id == item.id);
-          let amount = agreements?.result.filter((item_) => item_.id == contract[0]?.agreementId);
-          if(amount[0]?.contractAmount){
-              item.contractAmount = new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((Number(amount[0]?.contractAmount)));
-          }else{
-            item.contractAmount = new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
-          }
-        } else {
-          item.contractAmount = '---';
-        }
-        if (projectAgreements && agreements.result && agreements.result.length != 0) {
-          let contract = projectAgreements?.filter((item_) => item_.id == item.id);
-          let amount = agreements?.result?.filter((item_) => item_.id == contract[0]?.agreementId);
-          if(amount[0]?.afterTaxAmount){
-            item.afterTaxAmount =  new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((amount[0]?.afterTaxAmount));
-          }else{
-            item.afterTaxAmount =  new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((0.00));
-          }
-
-        } else {
-          item.afterTaxAmount =  '---';
-        }
-        item.recoAmount_ = new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((item.recoAmount));
-        item.productDate = item.productDate ? moment(item.productDate).format('YYYY-MM-DD') : '---';
-        if (projectAgreements && agreements.result && agreements.result.length != 0) {
-          let contract = projectAgreements.filter((item_) => item_.id == item.id);
-          let amount = agreements?.result.filter((item_) => item_.id == contract[0]?.agreementId);
-          if(amount.length > 0){
-            item.contractSignDate =  moment(amount[0]?.contractSignDate).format('YYYY-MM-DD');
-          }else{
-            item.contractSignDate =  '---'
-          }
-
-        } else {
-          item.contractSignDate =  '---';
-        } 
-        item.customer = item.customerObj ? item.customerObj.name : '';
-        item.leader = subordinates.find((user: { id: string }) => user.id === item.leader)?.name;
-        item.salesLeader = subordinates.find((user: { id: string }) => user.id === item.salesLeader)?.name;
-    }))
-    let totalNumber1 = projs_.reduce((sum, item_) => {
-      if (projectAgreements && agreements.result && agreements.result.length != 0) {
-        let contract = projectAgreements?.filter((item) => item.id == item_.id);
-        let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-        if(amount[0]?.contractAmount){
-            return sum + Number(amount[0]?.contractAmount);
-        }else{
-          return sum + 0;
-        }
-      }
-    },0);
-    let totalNumber2 = projs_.reduce((sum, item_) => {
-      if (projectAgreements && agreements.result && agreements.result.length != 0) {
-        let contract = projectAgreements?.filter((item) => item.id == item_.id);
-        let amount = agreements?.result?.filter((item) => item.id == contract[0]?.agreementId);
-        if(amount[0]?.afterTaxAmount){
-          return sum + Number(amount[0]?.afterTaxAmount);
-        }else{
-          return sum + 0
-        }
-
-      }
-    },0)
-    let totalNumber3 = projs_.reduce((sum, item_) => {
-      return sum + item_.recoAmount
-    },0)
-    let projBudget1 = projs_.reduce((sum, item_) => {
-      return sum + item_.projBudget
-    },0)
-    // console.log(totalNumber3,'totalNumber3 MMM')
-    projs_.push({
-      index:'合计',
-      contractAmount:new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber1),
-      afterTaxAmount:new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber2),
-      recoAmount_:new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalNumber3),
-      projBudget_:new Intl.NumberFormat('en-US',{ minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(projBudget1)
-    })
-    await axios.post('/api/downLoad',  { datas: !isAdmin && archive === '2' ? todoProjs : projs_},{ responseType: 'blob', }).then(response => {
+    
+    await axios.post('/api/downLoad',  { isAdmin,archive,params,me},{ responseType: 'blob', }).then(response => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -818,6 +728,20 @@ const Project: React.FC<any> = () => {
       label: '已签署',
     },
   ]);
+  const [isPrintOptions] = useState([
+    {
+      value: '0',
+      label: '否',
+    },
+    {
+      value: '1',
+      label: '是',
+    },
+    {
+      value: '2',
+      label: '不确定',
+    },
+  ])
   const [confirmYearOptions, setConfirmYearOptions] = useState([]);
   useEffect(() => {
     if (yearManages) {
@@ -980,6 +904,17 @@ const Project: React.FC<any> = () => {
             options={contractStatesOptions}
           />
         </Col>
+        <Col className="gutter-row" style={{display:me?.access.includes('realm:print')?'':'none'}}>
+          <label>是否打印：</label>
+          <Select
+            value={params.isPrint}
+            allowClear
+            className="width120"
+            placeholder="请选择"
+            onChange={(value, event) => handleChange(value, 'isPrint')}
+            options={isPrintOptions}
+          />
+        </Col>
         {/* <Col className="gutter-row">
           <label>验收状态：</label>
           <Select
@@ -1029,7 +964,7 @@ const Project: React.FC<any> = () => {
             查询
           </Button>
           <Button onClick={() => canaelBtn()} className="marginRight10">重置</Button>
-          <Button style={{display:'none'}} onClick={() => downLoadBtn()}>导出</Button>
+          <Button style={{display:archive == '2'?'none':''}} onClick={() => downLoadBtn()}>导出</Button>
         </Col>
       </Row>
       <Table

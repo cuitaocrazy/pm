@@ -61,6 +61,9 @@ const dataTypeDef = gql`
   type Project {
     id: ID!
     pId: String
+    printName:String
+    printTime:String
+    printState:String
     leader: String!
     salesLeader: String!
     name: String!
@@ -566,6 +569,7 @@ const dataTypeDef = gql`
       leaders: [String]
       contractState: String
       incomeConfirm: String
+      isPrint:String
     ): ProjectPage
     awaitingReviewProjs(
       isArchive: Boolean
@@ -596,6 +600,7 @@ const dataTypeDef = gql`
       contractState: String
       incomeConfirm: String
       conName:String
+      isPrint:String
     ): ProjectPage
     iLeadProjs_(
       isArchive: Boolean
@@ -1078,16 +1083,21 @@ const dataTypeDef = gql`
     description: String
     information: String
   }
-
+  input PrintProjInput{
+    id:ID
+    printState:String
+  }
   type Mutation {
     pushDaily(date: String!, projDailies: [DailyInput!]!): ID!
     pushProject(proj: ProjectInput!): ID!
+    printProject(proj:PrintProjInput):ID!
     applyAgain(proj: ProjectInput!): ID!
     checkProj(
       id: String
       checkState: Int
       reason: String
       incomeConfirm: String
+      printState:String
     ): ID!
     archiveProject(id: ID!): ID!
     incomeConfirmProj(id: ID!): ID!

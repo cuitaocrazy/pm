@@ -5,6 +5,7 @@ import type {
   ProjectInput,
   Query,
   QueryProjectArgs,
+  MutationPrintProjArgs,
 } from '@/apollo';
 import { client } from '@/apollo';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
@@ -13,10 +14,15 @@ import { useBaseState } from '@/pages/utils/hook';
 import { useModel, history } from 'umi';
 import * as R from 'ramda';
 import { attachmentUpload, projectClassify } from './utils';
+import {
+  Modal,
+} from 'antd';
+
+
 
 const getGql = (proName: string) => {
   return gql`
-    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$pageSize:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String) {
+    query ($isArchive: Boolean,$industries: [String],$regions:[String],$projTypes:[String],$page:Int,$pageSize:Int,$confirmYear:String,$group:String,$status:String,$name:String,$agreementPageSize:Int,$contractState:String,$isPrint:String) {
       subordinates {
         id
         name
@@ -40,11 +46,18 @@ const getGql = (proName: string) => {
           name
           enable
         }
+          me {
+            id
+            name
+            access
+            groups
+          }
 
-      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,pageSize:$pageSize,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState){
+      ${proName}(isArchive: $isArchive,industries:$industries,regions:$regions,projTypes:$projTypes,page:$page,pageSize:$pageSize,confirmYear:$confirmYear,group:$group,status:$status,name:$name,contractState:$contractState,isPrint:$isPrint){
         result{
           id
         pId
+        printState
         name
         contName
         customer
@@ -308,6 +321,12 @@ const deleteProjGql = gql`
   }
 `;
 
+const printProjGql = gql`
+  mutation ($proj:PrintProjInput) {
+    printProject(proj:$proj)
+  }
+`;
+
 export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false; //判断是全部项目还是项目维护
   const queryGql = getGql(isAdmin ? 'superProjs' : 'iLeadProjs'); //全部项目走superProjs，项目维护走iLeadProjs
@@ -348,6 +367,10 @@ export function useProjStatus() {
   const [pushCostHandle, { loading: pushLoading }] = useMutation<Mutation, MutationPushProjectArgs>(
     pushProjGql,
   );
+  //printProjGql
+  const [printProjHandle, { loading: printProjLoading }] = useMutation<Mutation, MutationPrintProjArgs>(
+    printProjGql,
+  );
   const [applyAgain, { loading: applyAgainLoading }] = useMutation<
     Mutation,
     MutationPushProjectArgs
@@ -375,21 +398,6 @@ export function useProjStatus() {
   const projs = projectClassify(
     R.filter((el) => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs),
   );
-  //导出全部项目/项目维护
-  const downLoadFlag =async ()=>{
-    // console.log('downLoadFlag')
-    const { data } = await refresh1();
-    // console.log(data,'queryData1 <<>>')
-    const tmpProjs = (
-      (isAdmin ? data?.superProjs?.result : data?.iLeadProjs?.result) || []
-    ).map((item) => {
-      return { ...item };
-    });
-    const projs = projectClassify(
-      R.filter((el) => buildProjName(el.id, el.name).indexOf(filter) > -1, tmpProjs),
-    );
-    return projs
-  }
   // projs
   const subordinates = queryData?.realSubordinates || []; //realSubordinates拿到同部门及以下的人员
   const agreements = queryData?.agreements || [];
@@ -419,14 +427,42 @@ export function useProjStatus() {
     [deleteProjHandle, refresh],
   );
   const printProj = useCallback(async (printProj: Object)=>{
-    console.log(document.getElementById('printContent'),'MMMM')
+    console.log(printProj.id,'MMMM')
     const content = document.getElementById('printContent').innerHTML;
             const iframe = document.getElementById('print-frame');
-            
             iframe.contentWindow.document.open();
             iframe.contentWindow.document.write(content);
             iframe.contentWindow.document.close();
-
+            iframe.contentWindow.addEventListener('afterprint', async() => {
+              console.log('打印预览已关闭');
+              Modal.confirm({
+                title: '提示',
+                content: '是否真的打印？',
+                okText: '确认',
+                cancelText: '取消',
+                onOk: async() => {
+                  console.log('用户点击了确认');
+                  // 在这里添加确认后的逻辑，比如调用打印函数 
+                  await printProjHandle({
+                    variables: {
+                      proj: {id:printProj.id,printState:'1'},
+                    },
+                  })
+                  await refresh()
+                },
+                onCancel: async() => {
+                  console.log('用户点击了取消');
+                  // 在这里添加取消后的逻辑
+                  await printProjHandle({
+                    variables: {
+                      proj: {id:printProj.id,printState:'0'},
+                    },
+                  })
+                  await refresh()
+                }
+              });
+              
+            });
             // 调用iframe中的print方法进行打印
             iframe.contentWindow.print();
   },[refresh])
@@ -522,6 +558,6 @@ export function useProjStatus() {
     getTodoList,
     todoProjsTotal,
     printProj,
-    downLoadFlag,
+    me:queryData?.me,
   };
 }

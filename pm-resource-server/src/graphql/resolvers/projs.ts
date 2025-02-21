@@ -122,6 +122,7 @@ export default {
         leaders,
         contractState,
         incomeConfirm,
+        isPrint,
       } = __;
       if (!page || page === 0) {
         page = 1;
@@ -162,6 +163,11 @@ export default {
           filter["confirmYear"] = confirmYear;
         }
         
+      }
+      if (isPrint == '0' || isPrint == '1') {
+        filter["printState"] = isPrint;
+      }else if(isPrint == '2'){
+        filter["printState"] = { $exists: false };
       }
       for (let i = 0; i < regions.length; i++) {
         for (let j = 0; j < industries.length; j++) {
@@ -638,6 +644,7 @@ export default {
         incomeConfirm,
         contractState,
         conName,
+        isPrint,
       } = __
       if (!page || page === 0) {
         page = 1
@@ -682,6 +689,11 @@ export default {
       }
       if (incomeConfirm) {
         filter["incomeConfirm"] = incomeConfirm;
+      }
+      if (isPrint == '0' || isPrint == '1') {
+        filter["printState"] = isPrint;
+      }else if(isPrint == '2'){
+        filter["printState"] = { $exists: false };
       }
       // if (contractState) {
       //   filter["contractState"] = Number(contractState);
@@ -1288,10 +1300,10 @@ export default {
     },
     checkProj: async (_: any, args: any, context: AuthContext) => {
      
-      let { id, checkState, reason, incomeConfirm } = args;
+      let { id, checkState, reason, incomeConfirm,printState } = args;
       return Project.updateOne(
         { _id: id },
-        { $set: { proState: checkState, reason, incomeConfirm } },
+        { $set: { proState: checkState, reason, incomeConfirm,printState } },
         { upsert: true }
       )
         .then((res) => id || res.upsertedId._id)
@@ -1346,5 +1358,15 @@ export default {
         { upsert: true }
       ).then((res) => args.id || res.upsertedId._id);
     },
+    printProject:async (_: any, args: any, context: AuthContext) => {
+      // console.log(args,'args MMM')
+      // console.log(context,'context NNN')
+      return Project.updateOne(
+        { _id: args.proj.id },
+        { $set: { printName: context.user?.name,printTime:moment().format('YYYY-MM-DD HH:mm:ss'),printState: args.proj.printState} },
+        { upsert: true }
+      ).then((res) => args.proj.id || res.upsertedId._id);
+      return 'sss'
+    }
   },
 };

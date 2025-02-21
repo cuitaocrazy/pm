@@ -253,8 +253,8 @@ const pushProjGql = gql`
   }
 `;
 const checkProjGql = gql`
-  mutation ($id: String, $checkState: Int, $reason: String, $incomeConfirm: String) {
-    checkProj(id: $id, checkState: $checkState, reason: $reason, incomeConfirm: $incomeConfirm)
+  mutation ($id: String, $checkState: Int, $reason: String, $incomeConfirm: String,$printState:String) {
+    checkProj(id: $id, checkState: $checkState, reason: $reason, incomeConfirm: $incomeConfirm,printState:$printState)
   }
 `;
 
@@ -389,9 +389,9 @@ export function useProjStatus() {
         reason,
       };
       if (proj.checkState == 1) {
+        obj.printState = '0'
         obj.incomeConfirm = '0';
       }
-      
       await checkProjHandle({
         variables: {
           ...obj,

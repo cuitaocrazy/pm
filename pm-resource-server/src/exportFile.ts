@@ -49,6 +49,7 @@ const superProjs = async(archive,params,me)=>{
     leaders,
     contractState,
     incomeConfirm,
+    isPrint,
   } = params;
   // if (!page || page === 0) {
   //   page = 1;

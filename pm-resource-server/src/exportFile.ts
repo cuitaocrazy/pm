@@ -87,6 +87,11 @@ const superProjs = async(archive,params,me)=>{
     }
     
   }
+  if (isPrint == '0' || isPrint == '1') {
+    filter["printState"] = isPrint;
+  }else if(isPrint == '2'){
+    filter["printState"] = { $exists: false };
+  }
   for (let i = 0; i < regions.length; i++) {
     for (let j = 0; j < industries.length; j++) {
       for (let k = 0; k < projTypes.length; k++) {

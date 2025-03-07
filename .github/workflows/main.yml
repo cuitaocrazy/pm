@@ -17,12 +17,12 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 14.x
       - uses: docker/setup-buildx-action@v1.0.4
-      - uses: actions/cache@v2.1.3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -55,12 +55,12 @@ jobs:
   build-resource-server:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 14.x
       - uses: docker/setup-buildx-action@v1.0.4
-      - uses: actions/cache@v2.1.3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -88,12 +88,12 @@ jobs:
   build-daily-notify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 14.x
       - uses: docker/setup-buildx-action@v1.0.4
-      - uses: actions/cache@v2.1.3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -121,12 +121,12 @@ jobs:
   build-gw:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-java@v1.4.3
         with:
           java-version: 11
       - uses: docker/setup-buildx-action@v1.0.4
-      - uses: actions/cache@v2.1.3
+      - uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}

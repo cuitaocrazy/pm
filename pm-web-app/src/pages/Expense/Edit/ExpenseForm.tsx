@@ -43,7 +43,7 @@ export default (form: FormInstance<CostInput>, data?: CostInput) => {
             }
             return true;
           }}
-        >
+        >    
           {resData?.subordinates.map((u) => (
             <Select.Option key={u.id} value={u.id}>
               {u.name}

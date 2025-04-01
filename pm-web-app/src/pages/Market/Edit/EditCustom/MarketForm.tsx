@@ -84,7 +84,7 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
               {resData?.groupsUsers.filter(item=>item.enabled == true).map((u) => (
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
-                </Select.Option>
+                </Select.Option>   
               ))}
               x
             </Select>

@@ -829,11 +829,11 @@ return true;
                 }
                 return true;
               }}
-            >
+            >     
               {subordinatesOnJob.map((u) => (
                 <Select.Option key={u.id} value={u.id} >
                   {u.name}
-                </Select.Option>
+                </Select.Option>    
               ))}
               x
             </Select>

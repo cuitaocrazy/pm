@@ -696,7 +696,7 @@ export default () => {
                 //本级及下级
                 <Select.Option key={u.id} value={u.id}>
                   {u.name}
-                </Select.Option>
+                </Select.Option>   
               ))}
               x
             </Select>

@@ -771,7 +771,7 @@ return true;
               }}
             >
               {subordinatesOnJob.map((u) => (
-                <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
+                <Select.Option key={u.id} value={u.id} >
                   {u.name}
                 </Select.Option>
               ))}

@@ -318,7 +318,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               }}
             >
               {resData?.subordinates.map((u) => (
-                <Select.Option key={u.id} value={u.id} disabled={employeeIds.includes(u.id)}>
+                <Select.Option key={u.id} value={u.id} >
                   {u.name}
                 </Select.Option>
               ))}

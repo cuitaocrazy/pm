@@ -308,13 +308,24 @@ export function useProjStatus() {
           return `${accumulator}/${currentValue}`;
         }, '')
       }
-      console.log(reqAgreement,'reqAgreement LLLLoooopppp')
-      await pushAgreementHandle({
-        variables: {
-          agreement: reqAgreement,
-        },
+      if(reqAgreement?.group && reqAgreement?.group.length  == 0 ){
+        reqAgreement.group = '' 
+      }
+      
+      reqAgreement.fileList.forEach(item => {
+        ['lastModified', 'percent', 'size', 'type', 'response', 'xhr', 'lastModifiedDate'].forEach(key => {
+          if (item.hasOwnProperty(key)) {
+            delete item[key];
+          }
+        });
       });
-      refresh();
+      console.log(reqAgreement,'reqAgreement LLLLoooopppp')
+      // await pushAgreementHandle({
+      //   variables: {
+      //     agreement: reqAgreement,
+      //   },
+      // });
+      // refresh();
     },
     [pushAgreementHandle],
   );

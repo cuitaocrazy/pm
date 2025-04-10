@@ -297,7 +297,17 @@ export function useAgreementState() {
           return `${accumulator}/${currentValue}`;
         }, '')
       }
+      if(reqAgreement?.group && reqAgreement?.group.length  == 0 ){
+        reqAgreement.group = '' 
+      }
       console.log(reqAgreement,'reqAgreement LLLLoooopppp')
+          reqAgreement.fileList.forEach(item => {
+            ['lastModified', 'percent', 'size', 'type', 'response', 'xhr', 'lastModifiedDate'].forEach(key => {
+              if (item.hasOwnProperty(key)) {
+                delete item[key];
+              }
+            });
+          });
       await pushAgreementHandle({
         variables: {
           agreement: reqAgreement,

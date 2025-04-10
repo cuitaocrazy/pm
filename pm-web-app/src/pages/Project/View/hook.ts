@@ -320,12 +320,12 @@ export function useProjStatus() {
         });
       });
       console.log(reqAgreement,'reqAgreement LLLLoooopppp')
-      // await pushAgreementHandle({
-      //   variables: {
-      //     agreement: reqAgreement,
-      //   },
-      // });
-      // refresh();
+      await pushAgreementHandle({
+        variables: {
+          agreement: reqAgreement,
+        },
+      });
+      refresh();
     },
     [pushAgreementHandle],
   );

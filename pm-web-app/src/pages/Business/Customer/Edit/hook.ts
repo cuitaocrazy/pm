@@ -13,6 +13,7 @@ const queryGql = gql`
     subordinates {
       id
       name
+      enabled
     }
     customers(pageSize:$customersPageSize) {
       result{id

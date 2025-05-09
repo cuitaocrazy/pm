@@ -17,6 +17,7 @@ const getGql = (gqlName: string) => {
       subordinates {
         id
         name
+        enabled
       }
       ${ gqlName } {
         id
@@ -88,7 +89,7 @@ export function useProjStatus() {
   });
 
   const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    groups: ['/软件事业部/软件一部/市场组', '/软件事业部/软件二部/市场组', '/软件事业部/创新业务部/市场组'],
+    groups: ['/软件事业部/市场组'],
   } });
 
   const [deleteMarketHandle, { loading: deleteLoading }] = useMutation<Mutation, MutationDeleteMarketArgs>(

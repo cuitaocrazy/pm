@@ -28,7 +28,7 @@ const layout = {
 
 export default (form: FormInstance<MarketProjectInput>, data?: MarketProjectInput) => {
   const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    groups: ['/软件事业部/软件一部/市场组', '/软件事业部/软件二部/市场组', '/软件事业部/创新业务部/市场组'],
+    groups: ['/软件事业部/市场组'],
   } });
   const { initialState } = useModel('@@initialState');
   let files = data?.fileList as UploadFile[];

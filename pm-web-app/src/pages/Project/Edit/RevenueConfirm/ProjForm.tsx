@@ -131,7 +131,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
-      groups: filteredGroups,
+      groups: ['/软件事业部/市场组'],//
       pageSizeAgreements: 10000000,
       agreementPageSize: 10000000,
     },

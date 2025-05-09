@@ -85,7 +85,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 所属区域: { customer ? find(indu => indu.code === customer?.regionCode, regions || [])?.name : '' }
               </Col>
               <Col xs={24} sm={6}>
-                销售负责人: {customer ? find(indu => customer.salesman.includes(indu.id), subordinates || [])?.name : ''}
+                销售负责人: {customer ? find(indu => indu.enabled && customer.salesman.includes(indu.id), subordinates || [])?.name : ''}
               </Col>
             </Row>
             {customer?.contacts.map((u) => (
@@ -117,13 +117,13 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             </div>
           </Descriptions.Item>
           <Descriptions.Item label="项目经理:">{ 
-            find(sub => sub.id === data?.leader, subordinates || [])?.name
+            find(sub => sub.enabled && sub.id === data?.leader, subordinates || [])?.name
           }</Descriptions.Item>
           <Descriptions.Item label="市场经理:">{ 
-            find(sub => sub.id === data?.salesLeader, subordinates || [])?.name
+            find(sub => sub.enabled && sub.id === data?.salesLeader, subordinates || [])?.name
           }</Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>{ 
-            map(lead => filter(sub => sub.id === lead, subordinates || [])[0]?.name, data?.participants || []).join(' ')
+            map(lead => filter(sub => sub.enabled && sub.id === lead, subordinates || [])[0]?.name, data?.participants || []).join(' ')
           }</Descriptions.Item>
 
           <Descriptions.Item label="阶段状态:">{ 
@@ -192,7 +192,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                     活动名称: { act.name }
                   </div>
                   <div>
-                    活动记录人: { act.recorder ? find(indu => indu.id === act.recorder, subordinates || [])?.name : '' }
+                    活动记录人: { act.recorder ? find(indu => indu.enabled && indu.id === act.recorder, subordinates || [])?.name : '' }
                   </div>
                   <div>
                     活动内容: {act.content}

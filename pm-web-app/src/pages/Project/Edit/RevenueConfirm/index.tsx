@@ -99,6 +99,12 @@ const Project: React.FC<any> = () => {
   let projBudget1 = projs.reduce((sum, item_) => {
     return sum + item_.projBudget
   },0)
+  const normalizeDatetime = (input)=>{
+    // 让 moment 依次试 “YYYYMMDDHHmmss” 和 “YYYYMMDD” 两种格式
+    const dt = moment(input, ['YYYYMMDDHHmmss', 'YYYYMMDD'], true);
+    // 最后再按 “YYYY-MM-DD HH:mm:ss” 输出
+    return dt.format('YYYY-MM-DD HH:mm:ss');
+  }
   const columns = [
     {
       title: '序号',
@@ -350,7 +356,6 @@ const Project: React.FC<any> = () => {
       title: '项目ID',
       dataIndex: 'id',
       key: 'id',
-      fixed: 'left' as 'left',
       render: (text: string, record: Proj) => (
         // <div>
         //   <a onClick={() => editHandle(record, ref)}>{buildProjName(record.id, record.name)} </a>
@@ -359,7 +364,25 @@ const Project: React.FC<any> = () => {
       ),
       width: 250,
     },
-
+    {
+      title: '创建日期',
+      dataIndex: 'createDate',
+      key: 'createDate',
+      render: (text: string, record: Proj) => {
+        return normalizeDatetime(text)
+      },
+      width: 110,
+    },
+    {
+      title: '更新日期',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      fixed: 'left' as 'left',
+      render: (text: string, record: Proj) => {
+        return text
+      },
+      width: 110,
+    },
     // {
     //   title: '操作',
     //   key: 'action',

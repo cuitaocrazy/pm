@@ -36,6 +36,7 @@ const queryGql = gql`
     realSubordinates {
       id
       name
+      enabled
     }
     agreements(page: $pageAgreements, pageSize: $pageSizeAgreements) {
       result {

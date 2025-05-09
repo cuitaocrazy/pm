@@ -162,6 +162,7 @@ const getGql = (proName: string) => {
       realSubordinates{
         id
         name
+        enabled
       }
     }
   `;

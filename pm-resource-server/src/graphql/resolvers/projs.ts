@@ -182,13 +182,13 @@ export default {
       // filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
       
 
-      const maxGroup = getMaxGroup(user.groups);
+      const maxGroup = getMaxGroup(user.groups);//getMaxGroup会把“层级最浅”（分隔符“/”最少）的那些字符串挑出来
       let subordinateIds: string[] = [];
       // console.dir(maxGroup,{depth:null,color:true})
       // console.dir(maxGroup[0].split("/").length,{depth:null,color:true})
       // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
       if (maxGroup[0].split("/").length < 4) {
-        const subordinate = await getUsersByGroups(user, maxGroup);
+        const subordinate = await getUsersByGroups(user, maxGroup);//返回的是该分组下的所有用户
         subordinateIds = subordinate.map((subordinate) => subordinate.id);
       }
 
@@ -1223,7 +1223,7 @@ export default {
         proj.createDate = moment()
           .utc()
           .utcOffset(8 * 60)
-          .format("YYYYMMDD");
+          .format("YYYYMMDDHHmmss");
         proj.isArchive = false;
       } else {
         proj.createDate = repeat.createDate;

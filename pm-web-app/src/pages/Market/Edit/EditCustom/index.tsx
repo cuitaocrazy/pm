@@ -51,7 +51,7 @@ const Market: React.FC<any> = () => {
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Mark) => {
-        return subordinates.find((user) => user.id === record.leader)?.name;
+        return subordinates.find((user) => user.enabled && user.id === record.leader)?.name;
       },
     },
     {
@@ -80,10 +80,10 @@ const Market: React.FC<any> = () => {
     },
     {
       title: '操作',
-      key: 'action',
+      key: 'action',//
       render: (id: string, record: Mark) => (
         <Space>
-          <a hidden={!isLeader(record)} key="archive" onClick={() => editeMarketProject(record, record.projects?.length ? record.projects?.length : 0)}>
+          <a hidden={!isLeader(record)}  key="archive" onClick={() => editeMarketProject(record, record.projects?.length ? record.projects?.length : 0)}>
             添加项目
           </a>
           <Popconfirm title="将会彻底删除源数据，且无法恢复？" okText="是" cancelText="否" onConfirm={() => deleteMarket(record.id)}>
@@ -100,7 +100,7 @@ const Market: React.FC<any> = () => {
   const expandedRowRender2 = (record: MarketProject) => {
     return <ProjectVisitTable
               proj={record}
-              subordinates={subordinates}
+              subordinates={groupsUsers}
             />
   };
 
@@ -153,10 +153,10 @@ const Market: React.FC<any> = () => {
       {
         title: '操作',
         dataIndex: 'index',
-        key: 'index',
+        key: 'index',//hidden={!isLeader(record, market)}
         render: (index: number, market: MarketProject) => (
           <Space>
-            <a hidden={!isLeader(record, market)} key="edit" onClick={() => editeMarketProject(record, index)}>
+            <a  key="edit" onClick={() => editeMarketProject(record, index)}>
               编辑项目
             </a>
             <a hidden={!isLeader(record, market)} key="editVisit" onClick={() => editeMarketVisitProject(record, index)}>

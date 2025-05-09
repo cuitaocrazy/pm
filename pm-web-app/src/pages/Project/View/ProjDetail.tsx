@@ -97,10 +97,10 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             </div>
           </Descriptions.Item> */}
           <Descriptions.Item label="项目经理:">
-            {find((sub) => sub.id === data?.leader, initialState?.subordinates || [])?.name}
+            {find((sub) => sub.enabled && sub.id === data?.leader, initialState?.subordinates || [])?.name}
           </Descriptions.Item>
           <Descriptions.Item label="市场经理:">
-            {find((sub) => sub.id === data?.salesLeader, initialState?.subordinates || [])?.name}
+            {find((sub) => sub.enabled && sub.id === data?.salesLeader, initialState?.subordinates || [])?.name}
           </Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>
             {map(
@@ -187,7 +187,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                   <div>
                     活动记录人:{' '}
                     {act.recorder
-                      ? find((indu) => indu.id === act.recorder, initialState?.subordinates || [])
+                      ? find((indu) => indu.enabled && indu.id === act.recorder, initialState?.subordinates || [])
                           ?.name
                       : ''}
                   </div>

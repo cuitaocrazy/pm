@@ -81,7 +81,12 @@ const Project: React.FC<any> = () => {
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
   };
-
+  const normalizeDatetime = (input)=>{
+    // 让 moment 依次试 “YYYYMMDDHHmmss” 和 “YYYYMMDD” 两种格式
+    const dt = moment(input, ['YYYYMMDDHHmmss', 'YYYYMMDD'], true);
+    // 最后再按 “YYYY-MM-DD HH:mm:ss” 输出
+    return dt.format('YYYY-MM-DD HH:mm:ss');
+  }
   const columns = [
     {
       title: '序号',
@@ -123,7 +128,7 @@ const Project: React.FC<any> = () => {
       dataIndex: 'salesLeader',
       key: 'salesLeader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string }) => user.id === record.salesLeader)?.name;
+        return subordinates.find((user: { id: string,enabled:boolean }) => user.enabled && user.id === record.salesLeader)?.name;
       },
       width: 110,
     },
@@ -216,6 +221,24 @@ const Project: React.FC<any> = () => {
         return status?.find((statu) => statu.id === record.acceStatus)?.name;
       },
       width: 100,
+    },
+    {
+      title: '创建日期',
+      dataIndex: 'createDate',
+      key: 'createDate',
+      render: (text: string, record: Proj) => {
+        return normalizeDatetime(text)
+      },
+      width: 110,
+    },
+    {
+      title: '更新日期',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      render: (text: string, record: Proj) => {
+        return text
+      },
+      width: 110,
     },
     // {
     //   title: '确认年度',

@@ -70,9 +70,9 @@ const Customer: React.FC<any> = () => {
         }
         record.salesman.map((item, index) => {
           if (index !== record.salesman.length - 1) {
-            name += subordinates.find((user) => user.id === item)?.name + ','
+            name += subordinates.find((user) => user.enabled && user.id === item) ? subordinates.find((user) => user.enabled && user.id === item)?.name + ',' : ''
           } else {
-            name += subordinates.find((user) => user.id === item)?.name
+            name += subordinates.find((user) => user.enabled && user.id === item)?.name
           }
         })
         return name;

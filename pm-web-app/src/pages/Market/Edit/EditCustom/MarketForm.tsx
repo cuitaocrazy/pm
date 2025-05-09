@@ -37,7 +37,7 @@ const layout = {
 
 export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
   const {  data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
-    groups: ['/软件事业部/软件一部/市场组', '/软件事业部/软件二部/市场组', '/软件事业部/创新业务部/市场组'],
+    groups: ['/软件事业部/市场组'],
     customersPageSize:10000000,
   } });
   const { initialState } = useModel('@@initialState');

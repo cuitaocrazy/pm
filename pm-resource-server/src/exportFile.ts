@@ -565,6 +565,17 @@ const buildProjName = (id: string, name: string)=> {
         item.leader = subordinates.find((user: { id: string }) => user.id === item.leader)?.name;
         item.salesLeader = subordinates.find((user: { id: string }) => user.id === item.salesLeader)?.name;
         item.printState_ = item.printState == '0' ? '否' : item.printState == '1' ? '是' : '---'
+        if(item.actives && item.actives.length > 0){
+          item.actives_ = item.actives.sort(
+            (a, b) =>
+              moment(a.date).diff(moment(b.date))
+          ).map(item_ =>
+            `${moment(item_.date).format('YYYY-MM-DD HH:mm:ss')}-${subordinates.find((user: { id: string }) => user.id === item_.recorder)?.name}-${item_.content}`
+          ).join('\r\n');
+        }else{
+          item.actives_ = ''
+        }
+        
     }))
     let totalNumber1 = projs_.reduce((sum, item_) => {
       if (projectAgreements && agreements && agreements.length != 0) {
@@ -726,6 +737,7 @@ export default (app, express) => {
     { header: '客户名称', key: 'customer', width: 10 },
     { header: '项目经理', key: 'leader', width: 10 },
     { header: '市场经理', key: 'salesLeader', width: 10 },
+    { header: '进展日志(跟合同签订和验收回款相关事项)', key: 'actives_', width: 50 ,style: { alignment: { wrapText: true } }},
   ];
   if(me.access.includes('realm:print')){
     columns.splice(2, 0, { header: '是否打印', key: 'printState_', width: 10 })

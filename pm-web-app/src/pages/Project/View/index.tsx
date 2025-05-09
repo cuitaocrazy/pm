@@ -213,6 +213,12 @@ const Project: React.FC<any> = (props) => {
   const [statusOptions] = useState(projStatus.map((s) => ({ label: s[1], value: s[0] })));
   const [groupsOptions] = useState(groupDatas(groupType));
   const ref = useRef<FormDialogHandle<AgreementInput>>(null);
+  const normalizeDatetime = (input)=>{
+    // 让 moment 依次试 “YYYYMMDDHHmmss” 和 “YYYYMMDD” 两种格式
+    const dt = moment(input, ['YYYYMMDDHHmmss', 'YYYYMMDD'], true);
+    // 最后再按 “YYYY-MM-DD HH:mm:ss” 输出
+    return dt.format('YYYY-MM-DD HH:mm:ss');
+  }
   const columns = [
     {
       title: '序号',
@@ -245,7 +251,7 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user) => user.id === record.leader)?.name;
+        return subordinates.find((user) => user.enabled && user.id === record.leader)?.name;
       },
       width: 110,
     },
@@ -254,7 +260,7 @@ const Project: React.FC<any> = (props) => {
       dataIndex: 'salesLeader',
       key: 'salesLeader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user) => user.id === record.salesLeader)?.name;
+        return subordinates.find((user) => user.enabled && user.id === record.salesLeader)?.name;
       },
       width: 110,
     },
@@ -353,6 +359,24 @@ const Project: React.FC<any> = (props) => {
       },
       width: 100,
       align:'right',
+    },
+    {
+      title: '创建日期',
+      dataIndex: 'createDate',
+      key: 'createDate',
+      render: (text: string, record: Proj) => {
+        return normalizeDatetime(text)
+      },
+      width: 110,
+    },
+    {
+      title: '更新日期',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      render: (text: string, record: Proj) => {
+        return text
+      },
+      width: 110,
     },
   ];
   if (access?.includes('realm:assistant')) {

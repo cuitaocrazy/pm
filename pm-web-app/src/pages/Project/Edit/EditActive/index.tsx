@@ -217,7 +217,12 @@ const Project: React.FC<any> = () => {
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
   };
-
+  const normalizeDatetime = (input)=>{
+    // 让 moment 依次试 “YYYYMMDDHHmmss” 和 “YYYYMMDD” 两种格式
+    const dt = moment(input, ['YYYYMMDDHHmmss', 'YYYYMMDD'], true);
+    // 最后再按 “YYYY-MM-DD HH:mm:ss” 输出
+    return dt.format('YYYY-MM-DD HH:mm:ss');
+  }
   const columns = [
     {
       title: '序号',
@@ -381,6 +386,24 @@ const Project: React.FC<any> = () => {
         return confirmYearOptions.filter(item=>item.code==confirmYear).length?confirmYearOptions.filter(item=>item.code==confirmYear)[0].name:'---';
       },
       width: 100,
+    },
+    {
+      title: '创建日期',
+      dataIndex: 'createDate',
+      key: 'createDate',
+      render: (text: string, record: Proj) => {
+        return normalizeDatetime(text)
+      },
+      width: 110,
+    },
+    {
+      title: '更新日期',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      render: (text: string, record: Proj) => {
+        return text
+      },
+      width: 110,
     },
     {
       title: '操作',

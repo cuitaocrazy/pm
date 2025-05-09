@@ -19,7 +19,7 @@ export default {
       }
       return groups
         .map((group) => group.path)
-        .filter((str) => (str.match(/\//g) || []).length === 3);
+        .filter((str) => (str.match(/\//g) || []).length >= 2);
     },
     /**
      * 获取所有的group

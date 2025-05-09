@@ -95,7 +95,7 @@ export default () => {
   const { loading, data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
-      groups: salesGroups,
+      groups: ['/软件事业部/市场组'],//salesGroups
     },
   });
   // const realSubordinates = resData?.realSubordinates.filter(item => item.enabled);

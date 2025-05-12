@@ -94,6 +94,10 @@ async function main(year: number) {
       "jiabin.fan@bjyada.com",
       "fengming.jiang@bjyada.com",
       "kunhao.hou@bjyada.com",
+      "lisong.huang@bjyada.com",
+      "qiandong.zhang@bjyada.com",
+      "qiu.zhang@bjyada.com",
+      "lei.zhang@bjyada.com",
     ];
     const users = (await getUsers())
       .filter((user) => noSendEmailList.indexOf(user.email) == -1)

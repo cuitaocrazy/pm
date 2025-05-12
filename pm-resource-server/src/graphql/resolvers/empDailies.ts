@@ -182,10 +182,11 @@ export default {
             return a.length - b.length;
           };
           const userGroup = sort(diff, user.groups);
-          const boolList = zip(userGroup, u.groups).map((kv) =>
-            startsWith(kv[0], kv[1])
+          console.log(userGroup,'userGroup JJJ')
+          const boolList = userGroup.some(prefix =>
+            u.groups.some(group => group.startsWith(prefix))
           );
-          if (any(identity, boolList)) {
+          if (any(identity, [boolList])) {
             return getUserDailies(userId);
           } else {
             return getDeafultDailies(userId);

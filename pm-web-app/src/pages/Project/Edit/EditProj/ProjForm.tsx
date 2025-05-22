@@ -39,6 +39,7 @@ const userQuery = gql`
     groupsUsers(groups: $groups) {
       id
       name
+      enabled
     }
     agreements(pageSize: $agreementPageSize) {
       result {
@@ -62,6 +63,7 @@ const userQuery = gql`
     realSubordinates {
       id
       name
+      enabled
     }
     projs {
       id
@@ -773,7 +775,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             >
               {resData?.realSubordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
-                  {u.name}
+                  {u.enabled ? u.name : `${u.name}(已离职)`}
                 </Select.Option>
               ))}
             </Select>
@@ -811,7 +813,7 @@ return true;
             >
               {resData?.groupsUsers.map((u) => (
                 <Select.Option key={u.id} value={u.id}>
-                  {u.name}
+                  {u.enabled ? u.name : `${u.name}(已离职)`}
                 </Select.Option>
               ))}
             </Select>
@@ -830,9 +832,9 @@ return true;
                 return true;
               }}
             >     
-              {subordinatesOnJob.map((u) => (
+              {resData?.realSubordinates.map((u) => (
                 <Select.Option key={u.id} value={u.id} >
-                  {u.name}
+                  {u.enabled ? u.name : `${u.name}(已离职)`}
                 </Select.Option>    
               ))}
               x

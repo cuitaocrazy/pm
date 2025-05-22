@@ -240,6 +240,13 @@ async function getGroupList(root: string, fetch: AxiosInstance) {
 async function getUserByGroup(groupId: string, fetch: AxiosInstance) {
   const getName = (d: any) =>
     (d.lastName || "") + (d.firstName || "") || d.username;
+  /**
+   * Keycloak Admin API /groups/{groupId}/members 默认只返回该分组下“活跃”（enabled = true）的用户。
+   * 如果一个账户被禁用（enabled=false），它通常就不会出现在这个接口的结果里，
+   * 除非你对那个分组拥有更高权限（比如是该分组的管理员）或者专门使用 /admin/realms/{realm}/users 带 enabled=false 参数去查询。
+   * 你自己所在的分组，因为你对它有管理/查看权限，Keycloak 允许你看到 disabled 用户。
+   * 其它分组，你并没有那种管理权限，Admin API 就只给你看 enabled = true 的成员。
+   */
   const users = await fetch
     .get(`/groups/${groupId}/members`)
     .then((res) => res.data as any[]);

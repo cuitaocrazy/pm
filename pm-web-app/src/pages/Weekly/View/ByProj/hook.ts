@@ -55,6 +55,7 @@ const QueryDaily = gql`
           employee {
             id
             name
+            enabled
           }
           timeConsuming
           content

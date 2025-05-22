@@ -308,6 +308,7 @@ export default () => {
       subordinates {
         id
         name
+        enabled
       }
     }
   `;

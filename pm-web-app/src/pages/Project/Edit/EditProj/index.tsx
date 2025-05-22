@@ -430,7 +430,16 @@ const Project: React.FC<any> = () => {
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string }) => user.id === record.leader)?.name;
+        const user = subordinates.find((user: { id: string }) => user.id === record.leader)
+        if(user){
+          if(user.enabled){
+            return user.name
+          }else{
+            return user.name+'(已离职)'
+          }
+        }else{
+          return '---'
+        }
       },
       width: 110,
     },
@@ -439,7 +448,16 @@ const Project: React.FC<any> = () => {
       dataIndex: 'salesLeader',
       key: 'salesLeader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user: { id: string,enabled:boolean }) => user.id === record.salesLeader  && user.enabled== true)?.name;
+        const user = subordinates.find((user: { id: string }) => user.id === record.salesLeader )
+        if(user){
+          if(user.enabled){
+            return user.name
+          }else{
+            return user.name+'(已离职)'
+          }
+        }else{
+          return '---'
+        }
       },
       width: 110,
     },
@@ -709,7 +727,6 @@ const Project: React.FC<any> = () => {
   }
   const groupDatas = (inputArray: any) => {
     let result: any = [];
-    console.log(inputArray,'inputArray LLLL')
     inputArray.forEach((item: any) => {
       const path = item.substring(1).split('/');
       let currentLevel = result;

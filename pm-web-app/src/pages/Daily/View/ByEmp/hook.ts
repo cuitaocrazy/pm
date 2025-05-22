@@ -15,6 +15,7 @@ const QueryUsers = gql`
       id
       name
       groups
+      enabled
     }
     workCalendar
     empDailys {

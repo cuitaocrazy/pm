@@ -10,7 +10,7 @@ import moment from 'moment';
 import { useProjStatus } from './hook';
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
-  console.log(data,'data KKKLLLMMM')
+  // console.log(data,'data KKKLLLMMM')
   const { status, industries, regions, buildProjName,subordinates } = useBaseState();
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
@@ -21,7 +21,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   } = useProjStatus();
   // 客户信息
   const customer = data?.customerObj ? data?.customerObj : undefined
-
+  // console.log(customer,'customer JJJKKK')
   // 合同信息
   const agreement = data?.agreements ? data?.agreements[0] : undefined
 
@@ -85,7 +85,15 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 所属区域: { customer ? find(indu => indu.code === customer?.regionCode, regions || [])?.name : '' }
               </Col>
               <Col xs={24} sm={6}>
-                销售负责人: {customer ? find(indu => indu.enabled && customer.salesman.includes(indu.id), subordinates || [])?.name : ''}
+                销售负责人: {
+                (customer?.salesman || [])
+                .map(id => {
+                  const sub = (subordinates || []).find(s => s.id === id)
+                  return sub ? sub.enabled ? sub.name : sub.name+'(已离职)' : ''
+                })
+                .filter(name => name)               // 过滤掉找不到时的空字符串
+                .join('、')   
+                }
               </Col>
             </Row>
             {customer?.contacts.map((u) => (
@@ -116,14 +124,37 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
               <Upload { ...props } fileList={agreement?.fileList as UploadFile[]}></Upload>
             </div>
           </Descriptions.Item>
-          <Descriptions.Item label="项目经理:">{ 
-            find(sub => sub.enabled && sub.id === data?.leader, subordinates || [])?.name
-          }</Descriptions.Item>
+          <Descriptions.Item label="项目经理:">
+            {
+          (()=>{
+            const sub = (subordinates || []).find(s => s.id === data?.leader)
+            return sub 
+            ? `${sub.name}${sub.enabled ? '' : '(已离职)'}` 
+            : '---'
+          })()
+          }
+          </Descriptions.Item>
           <Descriptions.Item label="市场经理:">{ 
-            find(sub => sub.enabled && sub.id === data?.salesLeader, subordinates || [])?.name
+            (()=>{
+              const sub = (subordinates || []).find(s => s.id === data?.leader)
+              return sub 
+              ? `${sub.name}${sub.enabled ? '' : '(已离职)'}` 
+              : '---'
+            })()
           }</Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>{ 
-            map(lead => filter(sub => sub.enabled && sub.id === lead, subordinates || [])[0]?.name, data?.participants || []).join(' ')
+            (()=>{
+              const participantsText = (data?.participants || [])
+              .map(id => {
+                const sub = (subordinates || []).find(s => s.id === id)
+                if (!sub) return ''
+                return sub.enabled 
+                  ? sub.name 
+                  : `${sub.name}(已离职)`
+              })
+              .join(' ')
+              return participantsText
+            })()
           }</Descriptions.Item>
 
           <Descriptions.Item label="阶段状态:">{ 

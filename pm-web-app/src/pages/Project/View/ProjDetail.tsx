@@ -11,7 +11,7 @@ import { useModel } from 'umi';
 
 export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
   const { initialState } = useModel('@@initialState');
-  const { status, buildProjName, subordinatesOnJob } = useBaseState();
+  const { status, buildProjName, subordinatesOnJob,subordinates } = useBaseState();
   const reg = /^(?<org>\w*)-(?<zone>\w*)-(?<projType>\w*)-(?<simpleName>\w*)-(?<dateCode>\d*)$/;
   const result = reg.exec(data?.id || '');
   const [projType] = useState(result?.groups?.projType || '');
@@ -97,16 +97,38 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             </div>
           </Descriptions.Item> */}
           <Descriptions.Item label="项目经理:">
-            {find((sub) => sub.enabled && sub.id === data?.leader, initialState?.subordinates || [])?.name}
+            {
+            (()=>{
+              const user = (initialState?.subordinates || []).find((sub) => sub.id === data?.leader)
+              return user ? user.enabled ? user.name : user.name+'(已离职)' : '---'
+              
+            })()
+            }
           </Descriptions.Item>
           <Descriptions.Item label="市场经理:">
-            {find((sub) => sub.enabled && sub.id === data?.salesLeader, initialState?.subordinates || [])?.name}
+            {
+            (()=>{
+              const user = (initialState?.subordinates || []).find((sub) => sub.id === data?.salesLeader)
+              return user ? user.enabled ? user.name : user.name+'(已离职)' : '---'
+            })()
+            
+            }
           </Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>
-            {map(
-              (lead) => filter((sub) => sub.id === lead, subordinatesOnJob || [])[0]?.name,
-              data?.participants || [],
-            ).join(' ')}
+            {
+            (()=>{
+              const participantsText = (data?.participants || [])
+              .map(id => {
+                const sub = (subordinates || []).find(s => s.id === id)
+                if (!sub) return ''
+                return sub.enabled 
+                  ? sub.name 
+                  : `${sub.name}(已离职)`
+              })
+              .join(' ')
+              return participantsText
+            })()
+            }
           </Descriptions.Item>
 
           <Descriptions.Item label="阶段状态:">

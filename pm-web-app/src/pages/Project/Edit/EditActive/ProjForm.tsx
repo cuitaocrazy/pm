@@ -291,7 +291,15 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
                 所属区域: {customer ? find(indu => indu.code === customer?.regionCode, regions || [])?.name : ''}
               </Col>
               <Col xs={24} sm={6}>
-                销售负责人: {customer ? find(indu => indu.enabled && customer.salesman.includes(indu.id), subordinates || [])?.name : ''}
+                销售负责人: {
+                (customer?.salesman || [])
+                .map(id => {
+                  const sub = (subordinates || []).find(s => s.id === id)
+                  return sub ? sub.enabled ? sub.name : sub.name+'(已离职)' : ''
+                })
+                .filter(name => name)               // 过滤掉找不到时的空字符串
+                .join('、')   
+                }
               </Col>
             </Row>
             {customer?.contacts.map((u) => (
@@ -323,13 +331,34 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
             </div>
           </Descriptions.Item>
           <Descriptions.Item label="项目经理:">{
-            find(sub => sub.enabled && sub.id === data?.leader, subordinates || [])?.name
+            (()=>{
+              const sub = (subordinates || []).find(s => s.id === data?.leader)
+              return sub 
+              ? `${sub.name}${sub.enabled ? '' : '(已离职)'}` 
+              : '---'
+            })()
           }</Descriptions.Item>
           <Descriptions.Item label="市场经理:">{
-            find(sub => sub.enabled &&  sub.id === data?.salesLeader, subordinates || [])?.name
+            (()=>{
+              const sub = (subordinates || []).find(s => s.id === data?.leader)
+              return sub 
+              ? `${sub.name}${sub.enabled ? '' : '(已离职)'}` 
+              : '---'
+            })()
           }</Descriptions.Item>
           <Descriptions.Item label="参与人员:" span={3}>{
-            map(lead => filter(sub => sub.enabled &&  sub.id === lead, subordinates || [])[0]?.name, data?.participants || []).join(' ')
+            (()=>{
+              const participantsText = (data?.participants || [])
+              .map(id => {
+                const sub = (subordinates || []).find(s => s.id === id)
+                if (!sub) return ''
+                return sub.enabled 
+                  ? sub.name 
+                  : `${sub.name}(已离职)`
+              })
+              .join(' ')
+              return participantsText
+            })()
           }</Descriptions.Item>
 
           <Descriptions.Item label="阶段状态:">{

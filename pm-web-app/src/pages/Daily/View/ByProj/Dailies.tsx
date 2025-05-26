@@ -18,7 +18,7 @@ const getItem = (date: string, users: ProjectOfDailyItem[]) => {
         {users.map((ud) => (
           <Card size="small" bordered={false} key={ud.employee.id}>
             <Card.Meta
-              title={`${ud.employee.name}(${ud.timeConsuming}h)`}
+              title={`${ud.employee.name}${ud.employee.enabled?'':'(已离职)'}(${ud.timeConsuming}h)`}
               description={<div style={{ whiteSpace: 'pre-wrap' }}>{ud.content}</div>}
             />
           </Card>

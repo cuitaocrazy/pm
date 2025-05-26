@@ -156,7 +156,12 @@ const ChangePm: React.FC<any> = () => {
   //     optionArr.push(newOption)
   //   })
   // }
-  const optionArr = localSubordinates.filter((user) => user.enabled == true)
+  const optionArr = localSubordinates.map(item => ({
+    ...item,
+    name: item.enabled 
+      ? item.name 
+      : `${item.name}(已离职)`
+  }));
   
   const columns = [
     {
@@ -233,7 +238,7 @@ const ChangePm: React.FC<any> = () => {
         return record.leader === value;
       },
       render: (leader: string) => {
-        return optionArr.filter((user) => user.id === leader)[0]?.name;
+        return optionArr.filter((user) => user.id === leader)[0]?.name || '---';
       },
     },
   ];
@@ -269,6 +274,11 @@ const ChangePm: React.FC<any> = () => {
         <Col className="gutter-row">
           <label>项目经理：</label> 
             <Select
+            showSearch
+            filterOption={(input, option) => {
+              // @ts-ignore
+              return option?.name?.toLowerCase().includes(input.toLowerCase())
+            }}
               value={params.leaders}
               allowClear
               className="width160"

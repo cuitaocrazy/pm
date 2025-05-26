@@ -409,6 +409,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       subordinates {
         id
         name
+        enabled
       }
     }
   `;
@@ -510,7 +511,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
     };
     form.setFieldsValue({
       participants: initParticipants.filter((participant) =>
-        isOnJob(participant, subordinatesOnJob),
+        isOnJob(participant, subordinates),//这里本来是 subordinatesOnJob
       ),
     });
     // 更新参与人员的数组
@@ -552,10 +553,16 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
       );
       if(kehulianxiren.length >0){
         setCustomerContactOptions(kehulianxiren[0].contacts);
-        let temp = kehulianxiren[0].salesman.map((item:any) => ({
-          value: item,
-          label: customerListData1?.subordinates.find((user) => user.id === item)?.name, // 这里你可以自定义 label
-        }));
+        let temp = kehulianxiren[0].salesman.map((item:any) => {
+          const user = customerListData1?.subordinates.find((user) => user.id === item)
+          if(user){
+            if(user.enabled){
+              return {value:item,label:user.name}
+            }else{
+              return {value:item,label:user.name+'(已离职)'}
+            }
+          }
+        });
         setFormattedOptions(temp);
       }
       
@@ -837,7 +844,7 @@ return true;
                   {u.enabled ? u.name : `${u.name}(已离职)`}
                 </Select.Option>    
               ))}
-              x
+              
             </Select>
           </Form.Item>
         </Col>

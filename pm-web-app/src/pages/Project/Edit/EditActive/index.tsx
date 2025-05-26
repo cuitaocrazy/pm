@@ -268,7 +268,16 @@ const Project: React.FC<any> = () => {
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user) => user.id === record.leader)?.name;
+        const user = subordinates.find((user) => user.id === record.leader)
+        if(user){
+          if(user.enabled){
+            return user.name
+          }else{
+            return user.name+'(已离职)'
+          }
+        }else{
+          return '---'
+        }
       },
       width: 110,
     },
@@ -277,7 +286,16 @@ const Project: React.FC<any> = () => {
       dataIndex: 'salesLeader',
       key: 'salesLeader',
       render: (text: string, record: Proj) => {
-        return subordinates.find((user) => user.id === record.salesLeader)?.name;
+        const user = subordinates.find((user) => user.id === record.salesLeader)
+        if(user){
+          if(user.enbaled){
+            return user.name
+          }else{
+            return user.name+'(已离职)'
+          }
+        }else{
+          return '---'
+        }
       },
       width: 110,
     },

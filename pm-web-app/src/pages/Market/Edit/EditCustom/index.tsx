@@ -43,7 +43,7 @@ const Market: React.FC<any> = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: Mark) => (
-        <a onClick={() => editHandle(record)}>{record.name}</a>
+        <a onClick={() => editHandle({...record,type_:'edit'})}>{record.name}</a>
       ),
     },
     {
@@ -51,7 +51,8 @@ const Market: React.FC<any> = () => {
       dataIndex: 'leader',
       key: 'leader',
       render: (text: string, record: Mark) => {
-        return subordinates.find((user) => user.enabled && user.id === record.leader)?.name;
+        const user = subordinates.find((user) => user.id === record.leader)
+        return user ? user.enabled ? user.name : user.name+'(已离职)' : '---'
       },
     },
     {
@@ -59,7 +60,7 @@ const Market: React.FC<any> = () => {
       dataIndex: 'participants',
       key: 'participants',
       render: (text: string, record: Mark) => {
-        return subordinates.filter(s => record.participants?.includes(s.id)).map(user => user.name).join(' ');
+        return subordinates.filter(s => record.participants?.includes(s.id)).map(user => user.enabled ? user.name : user.name+'(已离职)').join(' ');
       },
     },
     {
@@ -226,14 +227,14 @@ const Market: React.FC<any> = () => {
       extra={[
         isAdmin ?
         <Select key='filter' placeholder="请选择市场人员" allowClear onChange={setFilter}>
-          {groupsUsers.filter(item=>item.enabled == true).map((u) => (
+          {groupsUsers.map((u) => (
             <Select.Option key={u.id} value={u.id}>
-              {u.name}
+              {u.enabled ? u.name : u.name+'(已离职)'}
             </Select.Option>
           ))}
         </Select> : ''
         ,
-        <Button key="create" type="primary" onClick={() => ref.current?.showDialog()}>
+        <Button key="create" type="primary" onClick={() => ref.current?.showDialog({type_:'add'})}>
           新建
         </Button>
       ]}

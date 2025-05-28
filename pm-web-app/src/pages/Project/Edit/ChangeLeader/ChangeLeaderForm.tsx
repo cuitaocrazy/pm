@@ -27,7 +27,8 @@ export default (
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item label="新项目经理" name="leader" rules={[{required:true}]}>
-              <Select>
+              <Select showSearch
+            optionFilterProp="children" >
                 {users?.map((u) => (
                   <Select.Option key={u.id} value={u.id}>
                     {u.name}

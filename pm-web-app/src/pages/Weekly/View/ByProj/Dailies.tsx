@@ -25,7 +25,7 @@ const getItem = (date: string, users: ProjectOfDailyItem[]) => {
           {users.map((ud) => (
             <Card.Grid key={ud.employee.id} style={gridStyle}>
               <Card.Meta
-                title={`${ud.employee.name}(${ud.timeConsuming}h)`}
+                title={`${ud.employee.name}${ud.employee.enabled?'':'(已离职)'}(${ud.timeConsuming}h)`}
                 description={<div>{ud.content}</div>}
               />
             </Card.Grid>

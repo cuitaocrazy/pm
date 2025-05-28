@@ -36,18 +36,19 @@ const layout = {
 };
 
 export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
+  console.log(data,'data KKKLLL')
   const {  data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, { fetchPolicy: 'no-cache', variables: {
     groups: ['/软件事业部/市场组'],
     customersPageSize:10000000,
   } });
   const { initialState } = useModel('@@initialState');
-
+  console.log(data.type_ == 'edit' && data?.leader !== initialState?.currentUser?.id,' BBB')
   return (
     <Form
       {...layout}
       form={form}
       initialValues={data || { leader: initialState?.currentUser?.id }}
-      disabled={data && data?.leader !== initialState?.currentUser?.id}
+      disabled={data.type_ == 'edit' && data?.leader !== initialState?.currentUser?.id}
     >
       <Row>
         <Col span={8}>
@@ -61,9 +62,9 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
         <Col span={8}>
           <Form.Item label="市场经理" name="leader" rules={[{ required: true }]}>
             <Select disabled={!!data?.id } allowClear>
-              {resData?.groupsUsers.filter(item=>item.enabled == true).map((u) => (
+              {resData?.groupsUsers.filter(item=> data.type_=='edit' ? true : item.enabled == true).map((u) => (
                 <Select.Option key={u.id} value={u.id}>
-                  {u.name}
+                  {u.enabled ? u.name : u.name+'(已离职)'}
                 </Select.Option>
               ))}
             </Select>
@@ -81,9 +82,9 @@ export default (form: FormInstance<MarketInput>, data?: MarketInput) => {
                 return true;
               }}
             >
-              {resData?.groupsUsers.filter(item=>item.enabled == true).map((u) => (
+              {resData?.groupsUsers.filter(item=>data.type_=='edit' ? true : item.enabled == true).map((u) => (
                 <Select.Option key={u.id} value={u.id}>
-                  {u.name}
+                  {u.enabled ? u.name : u.name+'(已离职)'}
                 </Select.Option>   
               ))}
               x

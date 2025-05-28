@@ -697,7 +697,7 @@ export default (form: FormInstance<ProjectInput>, data?: ProjectInput) => {
           <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
             {customerListData?.result && (
               <Select allowClear disabled={data.proState == 0} onChange={handleChange}>
-                {customerListData.result.map((u: Customer) => (
+                {customerListData.result.filter(item=>item.enable).map((u: Customer) => (
                   <Select.Option
                     key={u.id}
                     value={u.id}

@@ -22,6 +22,7 @@ const userQuery = gql`
     groupsUsers(groups: $groups) {
       id
       name
+      enabled
     }
     tags
     subordinates {
@@ -43,6 +44,7 @@ const layout = {
 };
 
 export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
+  console.log(data,'data NNNN')
   const { data: resData } = useQuery<Query, QueryGroupsUsersArgs>(userQuery, {
     fetchPolicy: 'no-cache',
     variables: {
@@ -111,9 +113,9 @@ export default (form: FormInstance<CustomerInput>, data?: CustomerInput) => {
       </Form.Item>
       <Form.Item label="销售负责人" name="salesman" rules={[{ required: true }]}>
         <Select mode="multiple">
-          {resData?.groupsUsers.map((u) => (
+          {resData?.groupsUsers.filter(item=>data.type_=='add'? item.enabled : true).map((u) => (
             <Select.Option key={u.id} value={u.id}>
-              {u.name}
+              {u.enabled ? u.name : u.name+'(已离职)'}
             </Select.Option>
           ))}
         </Select>

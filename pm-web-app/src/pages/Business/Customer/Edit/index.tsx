@@ -38,7 +38,7 @@ const Customer: React.FC<any> = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: CustomerType) => (
-        <a onClick={() => editHandle(record)}>{record.name}</a>
+        <a onClick={() => editHandle({...record,type_:'edit'})}>{record.name}</a>
       ),
       width: '20%',
     },
@@ -69,10 +69,11 @@ const Customer: React.FC<any> = () => {
           record.salesman = [record.salesman]
         }
         record.salesman.map((item, index) => {
+          const user = subordinates.find((user) =>  user.id === item)
           if (index !== record.salesman.length - 1) {
-            name += subordinates.find((user) => user.enabled && user.id === item) ? subordinates.find((user) => user.enabled && user.id === item)?.name + ',' : ''
+            name += user ? user.enabled ? user?.name + ',' : user?.name + '(已离职)' + ','  : ''
           } else {
-            name += subordinates.find((user) => user.enabled && user.id === item)?.name
+            name += user ? user.enabled ? user.name : user.name + '(已离职)' : ''
           }
         })
         return name;
@@ -83,7 +84,7 @@ const Customer: React.FC<any> = () => {
       dataIndex: 'officeAddress',
       key: 'officeAddress',
       render: (text: string, record: CustomerType) => (
-        <a onClick={() => editHandle(record)}>{record.officeAddress}</a>
+        <a onClick={() => editHandle({...record,type_:'edit'})}>{record.officeAddress}</a>
       ),
       width: '20%',
     },
@@ -192,6 +193,7 @@ const Customer: React.FC<any> = () => {
               contacts: [],
               enable: true,
               remark: '',
+              type_:'add',
             })
           }
         >

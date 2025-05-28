@@ -302,7 +302,7 @@ const deleteProjGql = gql`
 
 export function useProjStatus() {
   const isAdmin = history?.location.pathname.split('/').pop() === 'allEdit' ? true : false; //判断是全部项目还是项目维护
-  const queryGql = getGql('iLeadProjs'); //全部项目走superProjs，项目维护走iLeadProjs
+  const queryGql = getGql('revenueConfirmPros'); //全部项目走superProjs，项目维护走iLeadProjs
   const [archive, setArchive] = useState('0');
   let [query, setQuery] = useState({pageSize:100000000});
   const [refresh, { loading: queryLoading, data: queryData }] = useLazyQuery<
@@ -349,7 +349,7 @@ export function useProjStatus() {
       refresh();
     }
   }, [refresh, query, archive]);
-  const tmpProjs = (queryData?.iLeadProjs?.result || []).map((item) => {
+  const tmpProjs = (queryData?.revenueConfirmPros?.result || []).map((item) => {
     return { ...item };
   });
   const projs = projectClassify(
@@ -464,7 +464,7 @@ export function useProjStatus() {
     // yearManages: queryData?.yearManages,
     yearManages: queryData?.yearManages,
     proConfirmStateManages: queryData?.proConfirmStateManages,
-    total: queryData?.iLeadProjs?.total,
+    total: queryData?.revenueConfirmPros?.total,
     setQuery,
     query,
     getTodoList,

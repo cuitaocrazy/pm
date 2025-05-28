@@ -602,6 +602,23 @@ const dataTypeDef = gql`
       conName:String
       isPrint:String
     ): ProjectPage
+    revenueConfirmPros(
+      isArchive: Boolean
+      regions: [String]
+      regionones: [String]
+      industries: [String]
+      projTypes: [String]
+      page: Int
+      pageSize: Int
+      confirmYear: String
+      group: String
+      status: String
+      name: String
+      contractState: String
+      incomeConfirm: String
+      conName:String
+      isPrint:String
+    ): ProjectPage
     iLeadProjs_(
       isArchive: Boolean
       regions: [String]

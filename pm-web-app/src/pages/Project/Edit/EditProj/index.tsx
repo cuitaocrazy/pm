@@ -176,11 +176,16 @@ const Project: React.FC<any> = () => {
       title: '项目全称',
       dataIndex: 'id',
       key: 'id',
-      render: (text: string, record: Proj) => (
-        <div>
+      render: (text: string, record: Proj) => {
+        if(record.proState==0){
+          return buildProjName(record.id, record.name)
+        }else if(record.proState==1){
+          return (<div>
           <a onClick={() => editHandle(record, ref)}>{buildProjName(record.id, record.name)} </a>
-        </div>
-      ),
+        </div>)
+        }
+        
+      },
       width: 250,
     },
     {
@@ -482,13 +487,15 @@ const Project: React.FC<any> = () => {
     {
       title: '操作',
       key: 'action',
-      render: (id: string, record: Proj) => (
-        <Space>
-          <a
-            disabled={record.proState && (record.proState == 0 || record.proState == 2)?true:false}
+      render: (id: string, record: Proj) => {
+        // record.proState==0?'':
+        // console.log( (record.proState == 0 || record.proState == 2),' BNBNBN')
+        return (<Space>
+          <a 
+            disabled={record.proState !== undefined && (record.proState == 0 || record.proState == 2)?true:false}
             key="archive"
             onClick={() => {
-              if(record.proState && ( record.proState == 0 || record.proState == 2)){
+              if(record.proState !== undefined && ( record.proState == 0 || record.proState == 2)){
                 return
               }else{
                 editHandle(record, activeRef);
@@ -499,18 +506,18 @@ const Project: React.FC<any> = () => {
             添加项目活动
           </a>
           <Popconfirm
-          disabled={record.proState &&( record.proState == 0 || record.proState == 2)?true:false}
+          disabled={record.proState !== undefined &&( record.proState == 0 || record.proState == 2)?true:false}
             title="将项目数据归档，只能到归档列表查看！"
             okText="是"
             cancelText="否"
             onConfirm={() => {
-              if(record.proState && (record.proState == 0 || record.proState == 2)){
+              if(record.proState !== undefined && (record.proState == 0 || record.proState == 2)){
                 return
               }else{
                 return archiveProj(record.id)
               }}}
           >
-            <a disabled={record.proState && (record.proState == 0 || record.proState == 2)?true:false} key="archive" hidden={record.isArchive}>
+            <a disabled={record.proState !== undefined && (record.proState == 0 || record.proState == 2)?true:false} key="archive" hidden={record.isArchive}>
               归档
             </a>
           </Popconfirm>
@@ -525,13 +532,13 @@ const Project: React.FC<any> = () => {
             </a>
           </Popconfirm>
           <Popconfirm
-          disabled={record.proState &&( record.proState == 0 || record.proState == 2)?true:false}
+          disabled={record.proState !== undefined &&( record.proState == 0 || record.proState == 2)?true:false}
             title="打印该项目的立项申请书？"
             okText="是"
             cancelText="否"
             onConfirm={() => handleConfirm(record)}
           >
-            <a key="print" hidden={record.isArchive} disabled={record.proState &&( record.proState == 0 || record.proState == 2)?true:false}>
+            <a key="print" hidden={record.isArchive} disabled={record.proState !== undefined &&( record.proState == 0 || record.proState == 2)?true:false}>
               打印
             </a>
           </Popconfirm>
@@ -546,8 +553,8 @@ const Project: React.FC<any> = () => {
             </Button>
           </Popconfirm> */}
           {/**isAdmin */}
-        </Space>
-      ),
+        </Space>)
+      },
       fixed: 'right' as 'right',
       width: 280,
     },
@@ -571,7 +578,6 @@ const Project: React.FC<any> = () => {
 
     })
     new Promise<void>((resolve) => {
-      console.log(record,'record MMMMMMM')
       setObjectInfo(record);
       resolve();
     }).then(() => {
@@ -606,7 +612,6 @@ const Project: React.FC<any> = () => {
       dataIndex: 'printState',
       key: 'printState',
       render: (text: string, record: Proj) => {
-        console.log(record,'record MMMM')
         return text == '0' ? '否' : text == '1' ? '是' : '---'
       },
       width: 110,

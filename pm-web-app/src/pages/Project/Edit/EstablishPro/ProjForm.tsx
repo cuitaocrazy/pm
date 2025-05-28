@@ -574,7 +574,7 @@ export default () => {
         <Col span={7}>
           <Form.Item label="客户名称" name="customer" rules={[{ required: true }]}>
             <Select onChange={handleChange} allowClear onFocus={() => fetchCustomersData()}>
-              {customerListData?.customers.result.map((u) => (
+              {customerListData?.customers.result.filter(item=>item.enable).map((u) => (
                 <Select.Option
                   key={u.id}
                   value={u.id}

@@ -620,6 +620,328 @@ export default {
         $and: [
           {
             $or: [
+              { proState: 1 }, // proState 为 1 ,0-待审核，1-审核通过，2-审核驳回
+              { proState: { $exists: false } }, // proState 不存在
+              { proState: null }, // proState 为 null
+              { proState: 0 },
+            ],
+          },
+        ],
+        
+      };
+
+      let {
+        regions,
+        regionones,
+        industries,
+        projTypes,
+        page,
+        pageSize,
+        confirmYear,
+        group,
+        status,
+        name,
+        leaders,
+        incomeConfirm,
+        contractState,
+        conName,
+        isPrint,
+      } = __
+      if (!page || page === 0) {
+        page = 1
+      }
+      if (!pageSize || pageSize === 0) {
+        pageSize = 10
+      }
+      const skip = (page - 1) * pageSize
+      let regionsT = []
+      let regiononesT = []
+      if (regions) {
+        regionsT = JSON.parse(JSON.stringify(regions))
+      }
+      if (regionones) {
+        regiononesT = JSON.parse(JSON.stringify(regionones))
+      }
+      const regexArray: RegExp[] = []
+      const proIds: (string | number)[] = []
+      if (!regions || regions.length == 0) regions = ["\\w*"];
+      if (!regionones || regionones.length == 0) regionones = ["\\w*"];
+      if (!industries || industries.length == 0) industries = ["\\w*"];
+      if (!projTypes || projTypes.length == 0) projTypes = ["\\w*"];
+      if (confirmYear) {
+        if(confirmYear == 'NDDD'){
+          filter["confirmYear"] = { '$in': [confirmYear, null] };
+        }else{
+          filter["confirmYear"] = confirmYear;
+        }
+        
+      }
+      if (status) {
+        filter["status"] = status;
+      }
+      if (group) {
+        filter["group"] = new RegExp(group, "g");
+      }
+      if (name) {
+        filter["name"] = new RegExp(name, "g");
+      }
+      if (leaders) {
+        filter["leader"] = { $in: leaders };
+      }
+      if (incomeConfirm) {
+        filter["incomeConfirm"] = incomeConfirm;
+      }
+      if (isPrint == '0' || isPrint == '1') {
+        filter["printState"] = isPrint;
+      }else if(isPrint == '2'){
+        filter["printState"] = { $exists: false };
+      }
+      // if (contractState) {
+      //   filter["contractState"] = Number(contractState);
+      // }
+      /**
+       * 合同名称：
+       * 合同名称去找合同表，拿到合同ID
+       * 根据合同ID去找中间表，找到项目ID，
+       * 根据项目ID去找项目
+       * 和regexArray进行合并，去重
+       */
+      /**
+       * 搜索条件合同状态：
+       * 遍历每个项目，拿项目的ID去中间表和合同表查
+       * filter有合同的或者没合同的
+       */
+      /**
+       * 如果一级区域有值，二级区域没值，拿着一级区域去找二级区域的表，找出来符合的二级区域
+       * 符合的二级区域合并到regions里，且去重
+      */
+      let newregions = [] as any
+      if ((regiononesT && regiononesT.length > 0) && (!regionsT || regionsT.length === 0)) {
+        const regions_ = await Region.find({ isDel: false, parentId: { $in: regiononesT } })
+          .sort({ sort: 1 })
+          .map(dbid2id)
+          .toArray()
+        const regionsCode = regions_.map(item => item.code)
+        newregions = [...regionsCode]
+      } else if ((regiononesT && regiononesT.length > 0) && (regionsT && regionsT.length > 0)) {
+        newregions = [...regionsT]
+      }else if((!regiononesT || regiononesT.length === 0) && (regionsT && regionsT.length > 0)){
+        newregions = [...regionsT]
+      }
+      // console.dir(newregions,{depth:null,color:true})
+      if (!newregions || newregions.length === 0) {
+        newregions = ['\\w*']
+      }
+      for (let i = 0; i < newregions.length; i++) {
+        for (let j = 0; j < industries.length; j++) {
+          for (let k = 0; k < projTypes.length; k++) {
+            // if(industries[j] !== '\\w*' || newregions[i] !== '\\w*' || projTypes[k] !== '\\w*'){
+              const regexStr = `^${industries[j]}-${newregions[i]}-${projTypes[k]}-.*`;
+              regexArray.push(new RegExp(regexStr))
+            // }
+            
+          }
+        }
+      }
+      if(conName) {
+        let agreements = await Agreement.find({
+          name: { $regex: conName },
+          isDel:false,
+        }).sort({ sort: 1 })
+        .map(dbid2id)
+        .toArray()
+        if(agreements.length > 0){
+          for (const item of agreements) {
+            
+            let proAgrs = await ProjectAgreement.find({
+              agreementId: Buffer.isBuffer(item.id)?item.id.toHexString(): item.id.toString(),
+            }).sort({ sort: 1 })
+            .map(dbid2id)
+            .toArray()
+            
+            if(proAgrs.length > 0){
+              proAgrs.map(item=>proIds.push(item.id))
+              
+            }
+            
+          }
+        }
+        
+      }
+        
+        // (filter["id"] as any[]).push({
+        //   $or: [
+        //     { _id: { $in: proIds }},
+        //     { _id: { $in: regexArray == [] ? '' : regexArray, $not: /-ZH-/ } }
+        //   ],
+        // })
+        // filter["id"] = {_id: { $in: regexArray == [] ? '' : regexArray, $not: /-ZH-/ }}
+        // filter["_id"] = { $in: regexArray, $not: /-ZH-/ };
+        // (filter['$and'] as any).push({_id:{$in: regexArray, $not: /-ZH-/}},)
+        //   if(proIds.length > 0 ){
+        //     (filter['$and'] as any).push({_id:{$in: proIds }})
+        //   }
+        
+        
+        // console.log(proIds,{depth:null,color:true})
+        (filter['$and'] as any).push({
+          _id: { $in: regexArray, $not: /-ZH-/ }
+        });
+        const proagree_ = await ProjectAgreement.find({}).toArray();
+      let proAgreeProIds = proagree_.map(agreement => agreement._id)
+      // console.log(proAgreeProIds,'proAgreeProIds LLLL')
+      if(contractState) {
+        if (contractState == '0') {
+          // contractState 为 0，排除 excludeIds
+          (filter['$and'] as any).push({
+            _id: {
+              '$nin': proAgreeProIds, // 不在 excludeIds 中
+            }
+          });
+        } else if (contractState == '1') {
+          // contractState 为 1，必须在 excludeIds 中
+          (filter['$and'] as any).push({
+            _id: {
+              '$in': proAgreeProIds, // 必须在 excludeIds 中
+            }
+          });
+        }
+      }
+      if(conName){
+        if(proIds.length>0){
+          (filter['$and'] as any).push({
+            _id: {
+              '$in': proIds, // 必须在 excludeIds 中
+            }
+          });
+        }
+        
+      }
+        console.dir(filter,{depth:null,color:true})
+      const result = await Project.find(filter)
+      .sort({ createDate: -1,_id: 1 })
+        .skip(skip)
+        .limit(pageSize)
+        .map(dbid2id)
+        .toArray();
+      const projIds = result.map((proj) => proj.id);
+      const projAggrement = await ProjectAgreement.find({
+        _id: { $in: projIds },
+      }).toArray();
+      await Promise.all(
+        projAggrement.map(async (pa) => {
+          const agreement = await Agreement.find({
+            _id: new ObjectId(pa.agreementId),
+          })
+            .map(dbid2id)
+            .toArray();
+          const oneResult = result.find((res) => res.id === pa._id);
+          oneResult.agreements = agreement;
+        })
+      );
+
+      await Promise.all(
+        result.map(async (oneResult) => {
+          // console.dir(oneResult,{depth:null,color:true})
+          const customer = await Customer.findOne({
+            $or: [
+              { _id: new ObjectId(oneResult.customer) },
+              { _id: oneResult.customer },
+            ],
+          })
+          const regionTemp = await Region.findOne({code: oneResult.id.split('-')[1], // 添加查询条件
+            // 其他条件（如需要）
+            isDel: false,})
+          const regionOneTemp = await RegionOne.findOne({
+            $or: [
+              { _id: new ObjectId(regionTemp?.parentId) },
+            ],
+          })
+          // console.dir(regionOneTemp,{depth:null,color:true})
+          if(regionOneTemp) oneResult.regionOneName = regionOneTemp.name
+          if (customer) oneResult.customerObj = dbid2id(customer);
+        }),
+      )
+      // let result_:any[] = []
+      // for (let item of result) {
+      //   if(contractState){
+      //     const projAggrement = await ProjectAgreement.find({
+      //       _id: item.id,
+      //     }).toArray();
+      //     // console.dir(projAggrement,{depth:null,color:true})
+      //     // console.log('=====')
+      //       if(contractState == '0' ){//未签署
+      //         if(projAggrement.length == 0){
+      //           result_.push(item)
+      //         }
+      //       }else if(contractState == '1' ){//已签署
+      //         if(projAggrement.length > 0){
+      //           result_.push(item)
+      //         }
+      //       }
+      //   }else{
+      //     result_.push(item)
+      //   }
+      // }
+      // let result__:any[] = []
+      // for (const item of result) {
+      //   if(conName){
+      //     if(proIds.length > 0 && proIds.includes(item.id)){
+      //         result__.push(item)
+      //     }
+      // }else{
+      //   result__.push(item)
+      // }
+      // }
+      
+      const total = await Project.find(filter).map(dbid2id).toArray();
+      let total_:any[] = []
+      for (let item of total) {
+        if(contractState){
+          const projAggrement = await ProjectAgreement.find({
+            _id: item.id,
+          }).toArray();
+          // console.dir(projAggrement,{depth:null,color:true})
+          // console.log('=====')
+            if(contractState == '0' ){//未签署
+              if(projAggrement.length == 0){
+                total_.push(item)
+              }
+            }else if(contractState == '1' ){//已签署
+              if(projAggrement.length > 0){
+                total_.push(item)
+              }
+            }
+        }else{
+          total_.push(item)
+        }
+      }
+      // console.dir(result__,{depth:null,color:true})
+      return {
+        result:(contractState && proAgreeProIds.length == 0) || (conName && proIds.length == 0) ? [] : result,
+        page,
+        total:total_.length,
+      };
+    },
+    revenueConfirmPros:async (_: any, __: any, context: AuthContext) => {
+      const user = context.user!;
+      const maxGroup = getMaxGroup(user.groups);
+      let subordinateIds: string[] = [];
+      // 一级部门和二级部门可以看到同级全部，但3级部门职能看到自己领导的
+      if (maxGroup[0].split("/").length < 4) {
+        const subordinate = await getUsersByGroups(user, maxGroup);
+        subordinateIds = subordinate.map((subordinate) => subordinate.id);
+      }
+      const filter = {
+        isArchive: __.isArchive ? __.isArchive : false,
+        $or: [
+          { leader: context.user!.id },
+          { salesLeader: context.user!.id },
+          { leader: { $in: subordinateIds } },
+        ],
+        $and: [
+          {
+            $or: [
               { proState: 1 }, // proState 为 1
               { proState: { $exists: false } }, // proState 不存在
               { proState: null }, // proState 为 null

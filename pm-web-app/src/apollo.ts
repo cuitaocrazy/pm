@@ -617,6 +617,7 @@ export type Query = {
   superProjs: Result;
   awaitingReviewProjs: Result;
   iLeadProjs: Result;
+  revenueConfirmPros: Result;
   filterProjs: Result;
   filterProjsByType: Project[];
   expenses: Expense[];

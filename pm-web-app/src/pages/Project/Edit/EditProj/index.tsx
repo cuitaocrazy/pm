@@ -15,6 +15,7 @@ import {
   DatePicker,
   Pagination,
   Cascader,
+  Modal,
 } from 'antd';
 import axios from 'axios';
 import type { Project as Proj, ProjectInput, ActiveInput } from '@/apollo';
@@ -71,6 +72,46 @@ const Project: React.FC<any> = () => {
       // @ts-ignore
       acceptDate: pro.acceptDate && moment(pro.acceptDate),
     });
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dateCreateProj,setDateCreateProj] = useState('')
+  const [recordTmp,setRecordTmp] = useState({})
+  const [printDate,setPrintDate] = useState(null)
+  const handleOk = () => {
+    setIsModalOpen(false);
+if (projectAgreements && agreements.result && agreements.result.length != 0) {
+      let contract = projectAgreements?.filter((item) => item.id == recordTmp.id);
+      let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
+      recordTmp.contractName =  amount[0]?.name;
+      recordTmp.contractCount = amount[0]?.contractAmount;
+    } else {
+      recordTmp.contractName = ''
+      recordTmp.contractCount = ''
+    }
+    recordTmp.persons = recordTmp.participants.map((son:any,index:any)=>{
+      if(index == recordTmp.participants.length - 1){
+        return subordinatesOnJob.filter(item=>item.id == son).length > 0 ? subordinatesOnJob.filter(item=>item.id == son)[0].name  : ''
+      }else {
+        return subordinatesOnJob.filter(item=>item.id == son)[0].name + '、'
+      }
+
+    })
+    new Promise<void>((resolve) => {
+      setObjectInfo(recordTmp);
+      resolve();
+    }).then(() => {
+      // console.log('subordinatesOnJob:',subordinatesOnJob)
+      printProj(recordTmp);
+    });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const onChange_ = (date, dateString) => {
+    console.log(date, dateString);
+    setDateCreateProj(dateString)
+    setPrintDate(date)
   };
   const [objectInfo,setObjectInfo] = useState({}) as any
   let totalNumber1 = 0;
@@ -560,31 +601,10 @@ const Project: React.FC<any> = () => {
     },
   ];
   const handleConfirm = (record:any) => {
-    if (projectAgreements && agreements.result && agreements.result.length != 0) {
-      let contract = projectAgreements?.filter((item) => item.id == record.id);
-      let amount = agreements?.result.filter((item) => item.id == contract[0]?.agreementId);
-      record.contractName =  amount[0]?.name;
-      record.contractCount = amount[0]?.contractAmount;
-    } else {
-      record.contractName = ''
-      record.contractCount = ''
-    }
-    record.persons = record.participants.map((son:any,index:any)=>{
-      if(index == record.participants.length - 1){
-        return subordinatesOnJob.filter(item=>item.id == son)[0].name
-      }else {
-        return subordinatesOnJob.filter(item=>item.id == son)[0].name + '、'
-      }
-
-    })
-    new Promise<void>((resolve) => {
-      setObjectInfo(record);
-      resolve();
-    }).then(() => {
-      // console.log('subordinatesOnJob:',subordinatesOnJob)
-      printProj(record);
-    });
-
+    setDateCreateProj('')
+    setPrintDate(null)
+    setIsModalOpen(true);
+    setRecordTmp({...record})
   };
   if (!isAdmin && archive === '2') {
     columns.splice(2, 0, {
@@ -1056,6 +1076,15 @@ const Project: React.FC<any> = () => {
       >
         {ProjActiveForm}
       </DialogForm>
+      <Modal
+        title="选择日期"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <DatePicker onChange={onChange_} value={printDate} />
+      </Modal>
       <iframe id="print-frame" style={{display:'none'}}></iframe>
       <div id='printContent' style={{display:'none'}}>
         <table style={{width:'100%',textAlign:'center',borderCollapse: 'collapse',fontSize:'14px',tableLayout: 'fixed',marginTop:'50px'}}>
@@ -1144,7 +1173,7 @@ const Project: React.FC<any> = () => {
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>申请人(签字)</td>
                   <td colSpan={3} style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{subordinates.find((user: { id: string }) => user.id === objectInfo.leader)?.name}</td>
                   <td  style={{borderRight:'1px solid #000',padding:'10px'}}>立项日期</td>
-                  <td style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{moment().format('YYYY-MM-DD')}</td>
+                  <td style={{borderRight:'1px solid #000',padding:'10px',wordWrap: 'break-word', wordBreak: 'break-all'}}>{dateCreateProj}</td>
                 </tr>
                 <tr style={{border:'1px solid #000'}}>
                   <td style={{borderRight:'1px solid #000',padding:'10px'}}>部门经理意见(签字)</td>
